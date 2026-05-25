@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 1b — Architecture vs. training</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="current">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 1b — Architecture vs. training</h1>
+<p class="subtitle">The single most important distinction to internalise. Get this right and the rest of the course clicks.</p>
+
+<p>If after Lesson 1 you're wondering <em>"OK, but where exactly does the learning happen in a Transformer? Are the embeddings given or calculated? Is attention learned?"</em> — this lesson is for you.</p>
+
+<h2>Two ideas, separated</h2>
+
+<div class="widget-row two" style="gap:24px;margin:24px 0;">
+  <div class="widget" style="margin:0;">
+    <h3>🏗 Architecture — <em>what</em> the model computes</h3>
+    <p>The math pipeline that turns input into output. Linear regression is <code>y = w·x + b</code>. A Transformer is <code>embedding → attention → feed-forward → output</code>.</p>
+    <p><strong>Architecture is a choice you make when you design the model.</strong> Each layer has its own "knobs" (parameters).</p>
+  </div>
+  <div class="widget" style="margin:0;">
+    <h3>🎓 Training — <em>how</em> the knobs get tuned</h3>
+    <p>The universal "guess, measure, nudge" recipe from <a href="lesson_01.html">Lesson 1</a>. The same 5-line loop trains <em>any</em> architecture.</p>
+    <p><strong>PyTorch doesn't care if there are 2 knobs or 2 billion.</strong> Architecture changes; the training recipe does not.</p>
+  </div>
+</div>
+
+<figure>
+  <img src="../visuals/architecture_comparison.svg" alt="Three architectures compared">
+  <figcaption>Same training loop. Different architectures. Different number of knobs.</figcaption>
+</figure>
+
+<h2>Why this matters</h2>
+
+<p>When we built <a href="lesson_02.html">Lesson 2</a>'s embedding table, the numbers were random — because <strong>we never ran the training loop on them</strong>. The architecture was in place (the table existed and the lookup worked), but no training happened, so the knobs stayed at random.</p>
+
+<p>When we did <a href="lesson_03.html">Lesson 3</a>'s attention, we just showed the mechanism and hand-fed numbers. Again, no training.</p>
+
+<p>In <a href="lesson_04.html">Lesson 4</a> we'll combine architecture (embedding + attention) with training (the 5-line loop). The training loop nudges <em>every</em> knob in the architecture — the embedding numbers, the attention matrices, the output layer — all at once.</p>
+
+<h2>Side-by-side: two tiny models, one training recipe</h2>
+
+<div class="callout info">
+  Both of these are runnable as <code>course/aside/model_A_linear.py</code> and <code>model_B_embedding.py</code>.
+</div>
+
+<h3>Model A — Linear regression (2 knobs)</h3>
+<pre><code>w = torch.tensor(0.0, requires_grad=True)
+b = torch.tensor(0.0, requires_grad=True)
+# training loop nudges w, b → 2 and 1</code></pre>
+
+<h3>Model B — Embedding + linear classifier (12 knobs)</h3>
+<pre><code>emb  = nn.Embedding(3, 2)        # 3 animals × 2 dims = 6 knobs
+head = nn.Linear(2, 3)           # 2*3 + 3 = 9 knobs
+# training loop nudges EVERY one of those 15 knobs</code></pre>
+
+<h2>The 5-line loop, identical for both</h2>
+
+<figure>
+  <img src="../visuals/training_loop.svg" alt="The 5-step training loop">
+</figure>
+
+<h2>Watch the embeddings evolve</h2>
+
+<p>This is the magic: nobody designs where each word lives in embedding space. The training loop drifts them into the right positions automatically.</p>
+
+<figure>
+  <img src="../visuals/embedding_evolution.svg" alt="Embeddings drift during training">
+  <figcaption>Three animals start at random spots. After 400 training steps, each lives in its own region — a region the linear head can correctly classify.</figcaption>
+</figure>
+
+<h2>What changes between Model A, Model B, and a Transformer?</h2>
+
+<table>
+  <thead><tr><th>Model</th><th>Architecture</th><th>Knobs</th><th>Loss</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Model A</strong></td><td><code>y = w·x + b</code></td><td>2</td><td>MSE</td></tr>
+    <tr><td><strong>Model B</strong></td><td><code>id → emb → linear</code></td><td>12</td><td>Cross-entropy</td></tr>
+    <tr><td><strong>Lesson 4 toy</strong></td><td><code>emb → attention → FFN → out</code></td><td>~5,000</td><td>Cross-entropy</td></tr>
+    <tr><td><strong>PRAGMA-Large</strong></td><td>(same as above, much bigger)</td><td>1,000,000,000</td><td>Cross-entropy</td></tr>
+  </tbody>
+</table>
+
+<p>The training loop is identical for all four. <code>loss.backward()</code> computes gradients for every knob, no matter how many; <code>opt.step()</code> nudges them all.</p>
+
+<h2>TL;DR</h2>
+
+<div class="callout good">
+  <ul>
+    <li><strong>Architecture says WHAT the model computes.</strong> Pipeline of math and how many knobs.</li>
+    <li><strong>Training says HOW the knobs get tuned.</strong> The same 5-line loop, no matter the count.</li>
+    <li><strong>The embedding table is part of the architecture</strong> — a layer with trainable knobs.</li>
+    <li><strong>Embeddings are LEARNED, not given.</strong> They start random and drift to meaningful positions during training.</li>
+  </ul>
+</div>
+
+<div class="pagination">
+  <a href="lesson_01.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L1 — How a model learns</span>
+  </a>
+  <a href="lesson_01c.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L1c — Inside gradient descent</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>

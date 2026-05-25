@@ -17,6 +17,11 @@ Revolut's foundation model for banking event streams — plus a complete
   lesson is a capstone project: a mini fraud detector built using the PRAGMA
   recipe.
 
+- **[`course/html/`](course/html/)** — interactive HTML versions of every
+  lesson with sliders, live attention matrices, animated comparisons, and a
+  roll-the-ball gradient-descent demo. Open `course/html/index.html` in any
+  browser.
+
 - **[fernfant/mini-pragma-solutions](https://github.com/fernfant/mini-pragma-solutions)** —
   a separate repo with the reference solution to the capstone. Try the capstone
   yourself before peeking.

@@ -27,6 +27,13 @@ to build your own version from scratch in the capstone.
 > mental model that makes the core lessons stick. Skip them on a first read
 > and come back when something feels hand-wavy.
 
+## 🌐 Interactive HTML version
+
+Every lesson is also published as a self-contained interactive HTML page.
+Start at **[`html/index.html`](html/index.html)** and click through. Lessons 1,
+2, 3, 3b, and 4 have hands-on interactive widgets (sliders, draggable
+embeddings, live attention matrices, animated RNN vs Transformer).
+
 ## How to use the course
 
 For each numbered lesson:

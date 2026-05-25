@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 5 — pragma_mini.py line by line</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html" class="current">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 5 — <code>pragma_mini.py</code> line by line</h1>
+<p class="subtitle">Re-read every line of the toy with full understanding. Each line tagged with the lesson concept it uses.</p>
+
+<div class="callout info">
+  <strong>Companion notebook:</strong> a runnable Jupyter version lives at <a href="../notebooks/lesson_05_pragma_mini.ipynb">notebooks/lesson_05_pragma_mini.ipynb</a>.
+</div>
+
+<h2>Lesson reference legend</h2>
+<p>
+  <a class="legend-chip" href="lesson_01.html">L1 — training loop</a>
+  <a class="legend-chip" href="lesson_01b.html">L1b — arch vs training</a>
+  <a class="legend-chip" href="lesson_01c.html">L1c — gradient descent</a>
+  <a class="legend-chip" href="lesson_02.html">L2 — tokens &amp; embeddings</a>
+  <a class="legend-chip" href="lesson_03.html">L3 — attention</a>
+  <a class="legend-chip" href="lesson_03b.html">L3b — why transformers</a>
+  <a class="legend-chip" href="lesson_04.html">L4 — MLM</a>
+</p>
+
+<h2>Section 1 — Vocabulary <span class="legend-chip">L2</span></h2>
+
+<pre><code>KEYS   = ["pet", "action", "place"]
+VALUES = ["dog", "cat", "fish",
+          "eat", "sleep", "play",
+          "garden", "couch", "bowl"]
+PAD, MASK = "&lt;pad&gt;", "&lt;mask&gt;"
+vocab = [PAD, MASK] + KEYS + VALUES
+tok2id = {t: i for i, t in enumerate(vocab)}
+V = len(vocab)</code></pre>
+
+<p>Standard tokenisation — same setup as <a href="lesson_02.html">Lesson 2</a>. The new twist: tokens fall into two groups. <strong>KEYS</strong> are field names, <strong>VALUES</strong> are the actual contents.</p>
+
+<p>This is the <em>key-value tokenisation</em> PRAGMA uses for structured data:</p>
+
+<figure>
+  <img src="../visuals/key_value_tokenization.svg" alt="Key-value tokenisation">
+  <figcaption>Banking data isn't text. Plain-text tokenisation explodes "14.99" into 5 tokens and destroys magnitude. PRAGMA keeps the structure: each field = 1 key token + 1 value token.</figcaption>
+</figure>
+
+<h2>Section 2 — The synthetic data</h2>
+
+<pre><code>RULES = {
+    "dog":  {"action": ["eat", "play"],   "place": ["garden", "bowl"]},
+    "cat":  {"action": ["sleep", "play"], "place": ["couch", "bowl"]},
+    "fish": {"action": ["eat", "sleep"],  "place": ["bowl"]},
+}</code></pre>
+
+<p>Plain Python — no ML yet. The model never sees <code>RULES</code>. It has to back the structure out of training examples.</p>
+
+<h2>Section 3 — Encoding an event <span class="legend-chip">L2</span></h2>
+
+<pre><code>def encode(event):
+    ids = []
+    for k, v in event:
+        ids.append(tok2id[k])
+        ids.append(tok2id[v])
+    return ids</code></pre>
+
+<p>Turn an event into a flat list of token IDs. Key, value, key, value, …</p>
+
+<h2>Section 4 — Masking <span class="legend-chip">L4</span></h2>
+
+<pre><code>def mask(ids, p=0.25):
+    ids = list(ids)
+    labels = [-100] * len(ids)
+    for i, t in enumerate(ids):
+        if vocab[t] in KEYS:           # keep field names visible
+            continue
+        if random.random() &lt; p:
+            labels[i] = t              # remember truth
+            ids[i] = tok2id[MASK]      # hide it
+    return ids, labels</code></pre>
+
+<p>The fill-in-the-blank game from <a href="lesson_04.html">L4</a>. <code>labels[i] = -100</code> on unmasked positions tells the loss "don't score this position".</p>
+
+<h2>Section 5 — The architecture <span class="legend-chip">L1b</span> <span class="legend-chip">L2</span> <span class="legend-chip">L3</span></h2>
+
+<pre><code>class PragmaMini(nn.Module):
+    def __init__(self, V, d=32, heads=2, layers=2):
+        super().__init__()
+        self.emb = nn.Embedding(V, d)                                  # (a)
+        self.pos = nn.Embedding(64, d)                                 # (b)
+        layer = nn.TransformerEncoderLayer(d, heads, 64, batch_first=True)
+        self.enc = nn.TransformerEncoder(layer, layers)                # (c)
+        self.head = nn.Linear(d, V)                                    # (d)
+    def forward(self, x):
+        positions = torch.arange(x.size(1), device=x.device)
+        h = self.enc(self.emb(x) + self.pos(positions))                # (e)
+        return self.head(h)                                            # (f)</code></pre>
+
+<table>
+  <thead><tr><th>Piece</th><th>Lesson</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td>(a) <code>nn.Embedding(V, d)</code></td><td>L2</td><td>Embedding table. 14 × 32 = 448 knobs.</td></tr>
+    <tr><td>(b) <code>nn.Embedding(64, d)</code></td><td>(positional)</td><td>Position embeddings — so the model knows order.</td></tr>
+    <tr><td>(c) <code>TransformerEncoder(...)</code></td><td>L3, stacked</td><td>2 layers of attention + FFN.</td></tr>
+    <tr><td>(d) <code>nn.Linear(d, V)</code></td><td>(MLM head)</td><td>Project context vectors back to vocab scores.</td></tr>
+  </tbody>
+</table>
+
+<figure>
+  <img src="../visuals/encoder_depth.svg" alt="Encoder depth ladder">
+  <figcaption>Each layer takes the previous layer's output and runs attention again. Layer 1: surface relationships. Layer 18: abstract patterns. PRAGMA-L stacks 18.</figcaption>
+</figure>
+
+<h2>Section 6 — Training <span class="legend-chip">L1</span> <span class="legend-chip">L1c</span> <span class="legend-chip">L4</span></h2>
+
+<pre><code>for step in range(2000):
+    batch = [random_event() for _ in range(32)]
+    masked, labels = zip(*[mask(encode(e)) for e in batch])
+    x = torch.tensor(masked)
+    y = torch.tensor(labels)
+    logits = model(x)                                       # 1. guess
+    loss = loss_fn(logits.reshape(-1, V), y.reshape(-1))    # 2. wrongness
+    opt.zero_grad(); loss.backward(); opt.step()            # 3, 4, 5</code></pre>
+
+<p>The same 5-line loop you've seen all course. <code>loss.backward()</code> nudges <em>thousands</em> of knobs across embedding, position, attention, FFN, and head.</p>
+
+<h2>Section 7 — Inference</h2>
+
+<pre><code>def guess(event, hide_key):
+    ids = encode(event)
+    for i in range(0, len(ids), 2):
+        if vocab[ids[i]] == hide_key:
+            pos = i + 1
+            ids[pos] = tok2id[MASK]
+    with torch.no_grad():
+        logits = model(torch.tensor([ids]))
+    return vocab[logits[0, pos].argmax().item()]</code></pre>
+
+<h2>What "real PRAGMA" adds on top</h2>
+
+<h3>1. Smarter tokenisation by value type</h3>
+<p>Numerical values get bucketed by percentile. Categorical = single token. Text = BPE subwords. Each value type kept on its own terms.</p>
+
+<h3>2. Time encoding</h3>
+<p>Every event has a timestamp. PRAGMA encodes time two ways:</p>
+<ul>
+  <li><strong>Log-seconds since the previous event</strong> — compresses years while preserving second-level precision for recent activity.</li>
+  <li><strong>Calendar features</strong> — hour-of-day, day-of-week, day-of-month with sine/cosine — letting the model learn cycles (Friday-night spending, monthly salaries).</li>
+</ul>
+
+<h3>3. Three encoders instead of one</h3>
+<ul>
+  <li><strong>Profile State Encoder</strong> — static info (region, plan, balance bucket).</li>
+  <li><strong>Event Encoder</strong> — each event independently.</li>
+  <li><strong>History Encoder</strong> — looks across the whole event sequence.</li>
+</ul>
+
+<h3>4. Depth</h3>
+
+<table class="compact">
+  <thead><tr><th>Model</th><th>d_model</th><th>Encoder layers (P/E/H)</th><th>Heads</th><th>Total params</th></tr></thead>
+  <tbody>
+    <tr><td>Our toy</td><td>32</td><td>– / 2 / –</td><td>2</td><td>~5,000</td></tr>
+    <tr><td>PRAGMA-S</td><td>192</td><td>1 / 5 / 2</td><td>3</td><td>10 M</td></tr>
+    <tr><td>PRAGMA-M</td><td>512</td><td>3 / 16 / 6</td><td>8</td><td>100 M</td></tr>
+    <tr><td>PRAGMA-L</td><td>1024</td><td>9 / 45 / 18</td><td>16</td><td><strong>1 B</strong></td></tr>
+  </tbody>
+</table>
+
+<h3>5. Smarter masking strategies</h3>
+<ul>
+  <li><strong>Token-level (15%)</strong> — like our toy.</li>
+  <li><strong>Event-level (10%)</strong> — hide a whole event.</li>
+  <li><strong>Key-level (10%)</strong> — hide all values of a key everywhere.</li>
+</ul>
+
+<h3>6. Downstream adaptation</h3>
+<ul>
+  <li><strong>Embedding probe</strong> — freeze encoder, add tiny classifier on top.</li>
+  <li><strong>LoRA fine-tuning</strong> — tune ~2-4% of weights via low-rank adapters.</li>
+</ul>
+
+<div class="callout good">
+  <strong>You can now point at any line in pragma_mini.py and explain it.</strong>
+</div>
+
+<p>Next: see one more realistic worked example before the capstone.</p>
+
+<div class="pagination">
+  <a href="lesson_04.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L4 — Training a tiny BERT</span>
+  </a>
+  <a href="lesson_05b.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L5b — Streaming churn predictor</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>

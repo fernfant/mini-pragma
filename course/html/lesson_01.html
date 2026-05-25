@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 1 — How a model learns</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html" class="current">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 1 — How a model learns</h1>
+<p class="subtitle">Before transformers, before any of the fancy stuff: what does "learning" actually mean?</p>
+
+<p>A model is just:</p>
+<ol>
+  <li>A <strong>bag of numbers</strong> (the "weights" or "knobs").</li>
+  <li>A <strong>rule</strong> for combining those numbers with input to produce an output.</li>
+</ol>
+<p>Training means: show it examples, see how wrong it is, nudge the numbers to be less wrong, repeat thousands of times. That's the whole game.</p>
+
+<h2>The simplest model in the world</h2>
+<p>Two knobs (<code>w</code> and <code>b</code>), one rule: <code>y = w · x + b</code>.</p>
+<p>The data below comes from a <em>secret rule</em> — <code>y = 2x + 1</code> — that the model doesn't know. Its job is to figure that rule out by looking at example pairs.</p>
+
+<div class="callout info">
+  <strong>Try it.</strong> Move the <code>w</code> and <code>b</code> sliders below. Watch the blue line shift. Try to align it with the green points (the truth). When you're close, the loss number gets small. Then hit <em>Auto-train</em> and let the model find it itself.
+</div>
+
+<div class="widget">
+  <h3>🎚 Interactive: tune the knobs by hand, then let gradient descent take over</h3>
+  <div class="widget-row two">
+    <canvas id="cv" width="500" height="380"></canvas>
+    <div class="controls">
+      <label>
+        <span class="lbl">w (slope)</span>
+        <input id="w" type="range" min="-2" max="6" step="0.01" value="0">
+        <span class="val" id="wv">0.00</span>
+      </label>
+      <label>
+        <span class="lbl">b (intercept)</span>
+        <input id="b" type="range" min="-5" max="5" step="0.01" value="0">
+        <span class="val" id="bv">0.00</span>
+      </label>
+      <label>
+        <span class="lbl">Learning rate</span>
+        <input id="lr" type="range" min="0.001" max="0.05" step="0.001" value="0.01">
+        <span class="val" id="lrv">0.010</span>
+      </label>
+
+      <div style="margin-top:10px;">
+        <button id="step">Step ×1</button>
+        <button id="run">Auto-train</button>
+        <button class="alt" id="reset">Reset</button>
+      </div>
+
+      <table class="stats">
+        <tr><th>step</th><td id="stepc">0</td></tr>
+        <tr><th>loss</th><td id="lossv">57.00</td></tr>
+        <tr><th>true w</th><td>2.00</td></tr>
+        <tr><th>true b</th><td>1.00</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<h2>The 5 lines that ARE machine learning</h2>
+
+<p>Behind that "Auto-train" button is exactly this loop (in PyTorch). It is identical for <em>any</em> model — a linear regression, an embedding, a Transformer, anything with trainable knobs.</p>
+
+<pre><code>for step in range(1000):
+    y_pred = w * x + b                       # 1. guess
+    loss   = ((y_pred - y_true) ** 2).mean() # 2. how wrong?
+    opt.zero_grad()                          # 3. clear old notes
+    loss.backward()                          # 4. which way is "less wrong"?
+    opt.step()                               # 5. nudge w and b a little</code></pre>
+
+<p>Memorise these five lines. You will see them again — unchanged — in <a href="lesson_02.html">Lesson 2</a>, <a href="lesson_04.html">Lesson 4</a>, and PRAGMA itself.</p>
+
+<h2>Walking through it line by line</h2>
+
+<h3>The data</h3>
+<pre><code>x      = torch.tensor([1., 2., 3., 4., 5., 6., 7., 8.])
+y_true = 2 * x + 1   # the rule the model never sees</code></pre>
+<p>Eight examples. The model only sees <code>x</code> and <code>y_true</code> — never the formula.</p>
+
+<h3>The knobs</h3>
+<pre><code>w = torch.tensor(0.0, requires_grad=True)
+b = torch.tensor(0.0, requires_grad=True)</code></pre>
+<p>Two numbers. Both start at 0 — totally wrong. The <code>requires_grad=True</code> flag tells PyTorch <em>"these are the knobs to turn"</em>.</p>
+
+<h3>The optimiser</h3>
+<pre><code>opt = torch.optim.SGD([w, b], lr=0.05)</code></pre>
+<p>SGD = <strong>Stochastic Gradient Descent</strong>. It just walks downhill on the loss landscape. The <code>lr</code> is the size of each step.</p>
+
+<h3>The loss</h3>
+<p>For step 0 (with <code>w=0, b=0</code>), the model predicts all zeros. The truth is <code>[3, 5, 7, 9, 11, 13, 15, 17]</code>. The errors are <code>[-3, -5, -7, ...]</code>, squared: <code>[9, 25, 49, ...]</code>, averaged: <strong>62.5</strong>. (Slightly different from the 8-point widget here, which uses the first 5 points for simplicity.)</p>
+
+<div class="callout">
+  <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.
+</div>
+
+<h3>The three magic lines</h3>
+<ul>
+  <li><code>opt.zero_grad()</code> — clear last step's notes about which way to nudge.</li>
+  <li><code>loss.backward()</code> — PyTorch computes the <em>gradient</em> of the loss with respect to <code>w</code> and <code>b</code>. The gradient says "if I increase this knob by 1, how does the loss change?"</li>
+  <li><code>opt.step()</code> — nudge each knob in the direction opposite its gradient (because we want loss to go down).</li>
+</ul>
+
+<p>For more on <em>why</em> this works, see <a href="lesson_01c.html">Lesson 1c</a>, where we open up gradient descent and compute the gradients by hand.</p>
+
+<h2>The big takeaway</h2>
+
+<div class="callout good">
+  <strong>Three sentences. Memorise these:</strong>
+  <ol>
+    <li>A model is a bag of numbers.</li>
+    <li>Training is nudging those numbers to make guesses more correct.</li>
+    <li>PyTorch computes which way to nudge them, automatically, no matter how many numbers there are.</li>
+  </ol>
+</div>
+
+<p>That's it. Everything else in this course is decoration.</p>
+
+<div class="pagination">
+  <a href="index.html">
+    <span class="dir">← Back to</span>
+    <span class="ttl">Index</span>
+  </a>
+  <a href="lesson_01b.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L1b — Architecture vs. training</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  // Data
+  const XS = [1, 2, 3, 4, 5];
+  const YT = XS.map(x => 2 * x + 1);
+
+  // Plot bounds
+  const X_MIN = 0, X_MAX = 6, Y_MIN = -2, Y_MAX = 14;
+  const MARGIN_L = 50, MARGIN_R = 20, MARGIN_T = 20, MARGIN_B = 40;
+
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  const pw = cv.width - MARGIN_L - MARGIN_R;
+  const ph = cv.height - MARGIN_T - MARGIN_B;
+
+  function x2px(x) { return MARGIN_L + (x - X_MIN) / (X_MAX - X_MIN) * pw; }
+  function y2py(y) { return MARGIN_T + (Y_MAX - y) / (Y_MAX - Y_MIN) * ph; }
+
+  // State
+  let w = 0, b = 0, step = 0;
+  let running = false;
+  const $ = id => document.getElementById(id);
+
+  function loss() {
+    let s = 0;
+    for (let i = 0; i < XS.length; i++) {
+      const e = (w * XS[i] + b) - YT[i];
+      s += e * e;
+    }
+    return s / XS.length;
+  }
+
+  function grads() {
+    let gw = 0, gb = 0;
+    for (let i = 0; i < XS.length; i++) {
+      const e = (w * XS[i] + b) - YT[i];
+      gw += 2 * e * XS[i];
+      gb += 2 * e;
+    }
+    return [gw / XS.length, gb / XS.length];
+  }
+
+  function drawGrid() {
+    ctx.strokeStyle = '#e5e5e5';
+    ctx.lineWidth = 1;
+    for (let xv = 0; xv <= X_MAX; xv++) {
+      ctx.beginPath(); ctx.moveTo(x2px(xv), MARGIN_T); ctx.lineTo(x2px(xv), MARGIN_T + ph); ctx.stroke();
+    }
+    for (let yv = -2; yv <= Y_MAX; yv += 2) {
+      ctx.beginPath(); ctx.moveTo(MARGIN_L, y2py(yv)); ctx.lineTo(MARGIN_L + pw, y2py(yv)); ctx.stroke();
+    }
+  }
+
+  function drawAxes() {
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(MARGIN_L, MARGIN_T); ctx.lineTo(MARGIN_L, MARGIN_T + ph);
+    ctx.lineTo(MARGIN_L + pw, MARGIN_T + ph);
+    ctx.stroke();
+    ctx.fillStyle = '#555'; ctx.font = '12px ui-sans-serif,system-ui';
+    ctx.textAlign = 'center';
+    for (let xv = 0; xv <= X_MAX; xv++) ctx.fillText(xv, x2px(xv), MARGIN_T + ph + 16);
+    ctx.textAlign = 'right';
+    for (let yv = -2; yv <= Y_MAX; yv += 2) ctx.fillText(yv, MARGIN_L - 6, y2py(yv) + 4);
+    ctx.fillStyle = '#777';
+    ctx.textAlign = 'center'; ctx.fillText('x', MARGIN_L + pw / 2, cv.height - 8);
+    ctx.save();
+    ctx.translate(14, MARGIN_T + ph / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.textAlign = 'center'; ctx.fillText('y', 0, 0);
+    ctx.restore();
+  }
+
+  function drawLine(w_, b_, color, dashed) {
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    if (dashed) ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.moveTo(x2px(X_MIN), y2py(w_ * X_MIN + b_));
+    ctx.lineTo(x2px(X_MAX), y2py(w_ * X_MAX + b_));
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  function drawData() {
+    // True points
+    ctx.fillStyle = '#10b981';
+    for (let i = 0; i < XS.length; i++) {
+      ctx.beginPath(); ctx.arc(x2px(XS[i]), y2py(YT[i]), 6, 0, Math.PI * 2); ctx.fill();
+    }
+    // Prediction points
+    ctx.fillStyle = '#3b82f6';
+    for (let i = 0; i < XS.length; i++) {
+      const yp = w * XS[i] + b;
+      ctx.beginPath(); ctx.arc(x2px(XS[i]), y2py(yp), 4, 0, Math.PI * 2); ctx.fill();
+    }
+    // Error lines
+    ctx.strokeStyle = 'rgba(239,68,68,0.6)';
+    ctx.lineWidth = 1.5;
+    for (let i = 0; i < XS.length; i++) {
+      const yp = w * XS[i] + b;
+      ctx.beginPath(); ctx.moveTo(x2px(XS[i]), y2py(yp)); ctx.lineTo(x2px(XS[i]), y2py(YT[i])); ctx.stroke();
+    }
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    drawGrid();
+    drawAxes();
+    // True line (green, dashed)
+    drawLine(2, 1, '#10b981', true);
+    // Current model line (blue, solid)
+    drawLine(w, b, '#3b82f6', false);
+    drawData();
+    // legend
+    ctx.fillStyle = '#10b981'; ctx.font = '13px ui-sans-serif,system-ui'; ctx.textAlign = 'left';
+    ctx.fillText('— truth (y = 2x + 1)', MARGIN_L + 8, MARGIN_T + 16);
+    ctx.fillStyle = '#3b82f6'; ctx.fillText('— model (y = w·x + b)', MARGIN_L + 8, MARGIN_T + 32);
+    // stats
+    $('wv').textContent = w.toFixed(2);
+    $('bv').textContent = b.toFixed(2);
+    $('lossv').textContent = loss().toFixed(2);
+    $('stepc').textContent = step;
+  }
+
+  function doStep() {
+    const lr = parseFloat($('lr').value);
+    const [gw, gb] = grads();
+    w = w - lr * gw;
+    b = b - lr * gb;
+    step++;
+    // sync sliders
+    $('w').value = w;
+    $('b').value = b;
+    render();
+  }
+
+  $('w').addEventListener('input', e => { w = parseFloat(e.target.value); render(); });
+  $('b').addEventListener('input', e => { b = parseFloat(e.target.value); render(); });
+  $('lr').addEventListener('input', e => { $('lrv').textContent = (+e.target.value).toFixed(3); });
+
+  $('step').addEventListener('click', doStep);
+  $('reset').addEventListener('click', () => {
+    w = 0; b = 0; step = 0; running = false;
+    $('w').value = 0; $('b').value = 0;
+    $('run').textContent = 'Auto-train';
+    render();
+  });
+  $('run').addEventListener('click', () => {
+    running = !running;
+    $('run').textContent = running ? 'Pause' : 'Auto-train';
+    if (running) loop();
+  });
+
+  function loop() {
+    if (!running) return;
+    for (let i = 0; i < 5; i++) doStep();
+    if (loss() < 0.001) { running = false; $('run').textContent = 'Auto-train'; return; }
+    requestAnimationFrame(loop);
+  }
+
+  render();
+})();
+</script>
+
+</body>
+</html>

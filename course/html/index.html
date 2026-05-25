@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mini PRAGMA — interactive course</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html" class="current">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Mini PRAGMA — an interactive course</h1>
+<p class="subtitle">A hello-world Transformer course, built around Revolut's PRAGMA paper.
+Every lesson has a runnable script, a line-by-line walkthrough, and an interactive
+HTML page (this collection). Designed to teach a curious teenager — or curious
+adult — from zero.</p>
+
+<div class="callout info">
+  <strong>How to use this site.</strong> Read each lesson in order. The interactive
+  widgets are the heart of it — slide them around, click the buttons, watch what
+  happens. You learn more from 30 seconds of playing than from 5 minutes of
+  reading.
+</div>
+
+<h2>📖 The lessons</h2>
+
+<table>
+  <thead><tr><th>#</th><th>Title</th><th>What you'll learn</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><a href="lesson_01.html"><strong>L1</strong></a></td>
+      <td><a href="lesson_01.html">How a model learns</a></td>
+      <td>What "training" actually means. Watch a 2-knob model discover y = 2x + 1.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_01b.html"><strong>L1b</strong></a></td>
+      <td><a href="lesson_01b.html">Architecture vs. training</a></td>
+      <td>The single most important distinction in ML, separated cleanly.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_01c.html"><strong>L1c</strong></a></td>
+      <td><a href="lesson_01c.html">Inside gradient descent</a></td>
+      <td>What <code>loss.backward()</code> and <code>opt.step()</code> actually do. With a roll-the-ball demo.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_02.html"><strong>L2</strong></a></td>
+      <td><a href="lesson_02.html">Tokens &amp; embeddings</a></td>
+      <td>How words become number-lists. Drag words around in 2D space.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_03.html"><strong>L3</strong></a></td>
+      <td><a href="lesson_03.html">Attention</a></td>
+      <td>The big idea of the Transformer. Build an attention matrix word by word.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_03b.html"><strong>L3b</strong></a></td>
+      <td><a href="lesson_03b.html">Why Transformers won</a></td>
+      <td>Side-by-side animated comparison of RNN (sequential) vs Transformer (parallel).</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_04.html"><strong>L4</strong></a></td>
+      <td><a href="lesson_04.html">Training a tiny BERT</a></td>
+      <td>The fill-in-the-blank game. Mask a word, predict it back. Live demo.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_05.html"><strong>L5</strong></a></td>
+      <td><a href="lesson_05.html">pragma_mini.py walkthrough</a></td>
+      <td>Reading every line of the toy with full understanding. Plus what real PRAGMA adds.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_05b.html"><strong>L5b</strong></a></td>
+      <td><a href="lesson_05b.html">Streaming churn predictor</a></td>
+      <td>Same recipe, applied to a realistic problem. Full pre-train → freeze → probe pipeline.</td>
+    </tr>
+    <tr>
+      <td><a href="lesson_06.html"><strong>L6</strong></a></td>
+      <td><a href="lesson_06.html">Capstone: mini fraud detector</a></td>
+      <td>You build the workflow yourself. The project.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>🛠 Companion code</h2>
+<ul>
+  <li>📓 Notebooks: <a href="../notebooks/lesson_05_pragma_mini.ipynb">L5 notebook</a>, <a href="../notebooks/lesson_05b_streaming_churn.ipynb">L5b notebook</a></li>
+  <li>📦 Scripts: see <a href="..">course/</a> for runnable <code>.py</code> files</li>
+  <li>📐 Visuals: SVGs in <a href="../visuals/">course/visuals/</a></li>
+</ul>
+
+<h2>🏁 Where to start</h2>
+<p>Open <a href="lesson_01.html"><strong>Lesson 1</strong></a> and start sliding the knobs.</p>
+
+</div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+</body>
+</html>

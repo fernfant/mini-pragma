@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 2 — Tokens &amp; embeddings</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html" class="current">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 2 — Tokens &amp; embeddings</h1>
+<p class="subtitle">How a computer turns the word "dog" into a list of numbers it can do math on.</p>
+
+<h2>The big idea (forget words for a moment)</h2>
+
+<p>Imagine you describe yourself with 4 numbers, 0 to 10:</p>
+<ul>
+  <li>How much do you like <strong>ice cream</strong>?</li>
+  <li>How much do you like <strong>soccer</strong>?</li>
+  <li>How much do you like <strong>video games</strong>?</li>
+  <li>How much do you like <strong>cleaning your room</strong>?</li>
+</ul>
+
+<p>Say your answers are <strong>[10, 7, 9, 1]</strong>. Congratulations — <em>you</em> are now a list of 4 numbers. Your best friend might be <code>[9, 8, 10, 2]</code>. Grandma might be <code>[4, 0, 0, 9]</code>.</p>
+
+<h2>How does a computer tell who's similar to whom?</h2>
+
+<p>The computer only sees the number lists. It needs a math formula that turns "are these number lists alike?" into a single answer.</p>
+
+<p><strong>The formula is dumb-simple. Multiply matching slots. Add up the products.</strong> That's a <em>dot product</em>.</p>
+
+<pre><code>You · Friend  =  10×9 + 7×8 + 9×10 + 1×2 = 238   (big = similar!)
+You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</code></pre>
+
+<p>When you BOTH score high on a thing, the product is big (strong agreement → boost). When one scores high and the other low, the product is small (disagreement → no boost). Total = "how much do you agree?"</p>
+
+<h2>Words work the exact same way</h2>
+
+<p>Every word in the vocabulary gets a list of numbers. The computer pretends each word is a "person" being described by secret features.</p>
+
+<div class="widget">
+  <h3>🎮 Interactive: dot product is similarity</h3>
+  <p>Try changing each word's "feature scores" and watch the similarity matrix update. Words with similar scores have big positive dot products.</p>
+
+  <div id="emb-app"></div>
+</div>
+
+<h2>The mind-blowing twist</h2>
+
+<p>In real AI, the slots <strong>aren't given human-readable names</strong>. The computer doesn't know what "is_furry" means. It just sees:</p>
+
+<pre><code>dog  →  [0.32, -1.26, 0.35, 0.31]</code></pre>
+
+<p>Four mystery numbers. <strong>The computer invents its own categories during training.</strong> Slot 1 might end up meaning "animal-ness". Slot 2 might mean something humans can't put a name on at all. It doesn't matter — what matters is that similar words end up with similar number lists, so the dot product comes out big.</p>
+
+<p>These mystery-number lists are called <strong>embeddings</strong>. Each word's list is its <em>embedding vector</em>. Size of the list = <em>embedding dimension</em>: 4 in our toy, 1024 in PRAGMA-Large.</p>
+
+<h2>How it works in code</h2>
+
+<p>Two steps:</p>
+<ol>
+  <li><strong>TOKENISE</strong> — give each word an integer ID.</li>
+  <li><strong>EMBED</strong> — look up that ID in a table to get a vector.</li>
+</ol>
+
+<pre><code>vocab  = ["&lt;pad&gt;", "&lt;mask&gt;", "dog", "cat", "fish", "bark", "meow", "swim"]
+tok2id = {w: i for i, w in enumerate(vocab)}
+
+# Step 1: tokenise
+ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]
+
+# Step 2: embed
+emb = nn.Embedding(len(vocab), 4)            # 8 × 4 table of trainable knobs
+vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code></pre>
+
+<p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally just indexing the table at its ID row. No math, just memory lookup.</p>
+
+<div class="callout">
+  <strong>The numbers in the embedding table start RANDOM.</strong> They become meaningful through training (see <a href="lesson_01b.html">Lesson 1b</a>). The training loop nudges them until similar words have similar rows. <em>Nobody designs the meaning — it emerges from the training game.</em>
+</div>
+
+<h2>Why this matters for the Transformer</h2>
+
+<p>This is <strong>step 1 of every Transformer</strong>, including PRAGMA. Before attention can let words look at each other, words have to BE something. Embedding turns them from strings into vectors that math can operate on.</p>
+
+<div class="callout good">
+  <strong>Three things to remember:</strong>
+  <ol>
+    <li>Computers can't think about words. They can only think about numbers.</li>
+    <li>Step 1 — tokenise: every word gets an ID number.</li>
+    <li>Step 2 — embed: every ID becomes a list of numbers (coordinates on a learned map).</li>
+  </ol>
+</div>
+
+<div class="pagination">
+  <a href="lesson_01c.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L1c — Inside gradient descent</span>
+  </a>
+  <a href="lesson_03.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L3 — Attention</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  const FEATURES = ["ice cream", "soccer", "video games", "cleaning"];
+  const PEOPLE = [
+    { name: "You",     color: "#3b82f6", vec: [10, 7, 9, 1] },
+    { name: "Friend",  color: "#10b981", vec: [9, 8, 10, 2] },
+    { name: "Grandma", color: "#a855f7", vec: [4, 0, 0, 9] },
+  ];
+
+  const app = document.getElementById('emb-app');
+  app.innerHTML = `
+    <div class="widget-row two">
+      <div>
+        ${PEOPLE.map((p, i) => `
+          <div style="margin-bottom:18px;padding:12px;border:1px solid var(--border);border-radius:8px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="display:inline-block;width:14px;height:14px;background:${p.color};border-radius:50%;"></span>
+              <strong>${p.name}</strong>
+            </div>
+            ${FEATURES.map((f, j) => `
+              <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;font-size:13px;">
+                <span style="display:inline-block;width:100px;color:var(--text-dim);">${f}</span>
+                <input type="range" min="0" max="10" step="0.5" value="${p.vec[j]}" data-person="${i}" data-feature="${j}" style="flex:1;">
+                <span style="display:inline-block;width:30px;text-align:right;font-family:ui-monospace,monospace;" id="v${i}_${j}">${p.vec[j].toFixed(1)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+      <div>
+        <h4 style="margin-top:0;">Dot product (similarity)</h4>
+        <table class="stats" id="dotmat">
+        </table>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
+          <span style="color:var(--good);font-weight:600;">Big number</span> = similar tastes.
+          <br>
+          <span style="color:var(--warn);font-weight:600;">Small number</span> = different.
+        </div>
+      </div>
+    </div>
+  `;
+
+  function dot(a, b) {
+    let s = 0;
+    for (let i = 0; i < a.length; i++) s += a[i] * b[i];
+    return s;
+  }
+
+  function updateMatrix() {
+    const rows = [];
+    rows.push('<tr><th></th>' + PEOPLE.map(p => `<th style="color:${p.color}">${p.name}</th>`).join('') + '</tr>');
+    for (let i = 0; i < PEOPLE.length; i++) {
+      let r = `<tr><th style="color:${PEOPLE[i].color}">${PEOPLE[i].name}</th>`;
+      for (let j = 0; j < PEOPLE.length; j++) {
+        const d = dot(PEOPLE[i].vec, PEOPLE[j].vec);
+        // Color by magnitude — bigger = greener
+        const maxd = 4 * 10 * 10;
+        const t = Math.min(1, d / maxd);
+        const bg = `rgba(16,185,129,${0.1 + t * 0.5})`;
+        r += `<td style="background:${bg};font-weight:600;">${d.toFixed(0)}</td>`;
+      }
+      r += '</tr>';
+      rows.push(r);
+    }
+    document.getElementById('dotmat').innerHTML = rows.join('');
+  }
+
+  document.querySelectorAll('#emb-app input[type=range]').forEach(input => {
+    input.addEventListener('input', e => {
+      const p = parseInt(e.target.dataset.person, 10);
+      const f = parseInt(e.target.dataset.feature, 10);
+      const v = parseFloat(e.target.value);
+      PEOPLE[p].vec[f] = v;
+      document.getElementById(`v${p}_${f}`).textContent = v.toFixed(1);
+      updateMatrix();
+    });
+  });
+
+  updateMatrix();
+})();
+</script>
+
+</body>
+</html>

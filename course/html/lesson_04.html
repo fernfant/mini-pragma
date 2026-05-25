@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 4 — Training a tiny BERT</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html" class="current">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 4 — Training a tiny BERT</h1>
+<p class="subtitle">Combine everything: embeddings + attention + the 5-line training loop. Play fill-in-the-blank.</p>
+
+<h2>The fill-in-the-blank game</h2>
+
+<p>Pick a sentence with a word missing. Have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
+
+<p>If you have <em>"The cat sat on the mat"</em>, you can make 6 training examples from one sentence:</p>
+
+<table class="compact">
+  <thead><tr><th>Masked input</th><th>Answer</th></tr></thead>
+  <tbody>
+    <tr><td>____ cat sat on the mat</td><td>The</td></tr>
+    <tr><td>The ____ sat on the mat</td><td>cat</td></tr>
+    <tr><td>The cat ____ on the mat</td><td>sat</td></tr>
+    <tr><td>The cat sat ____ the mat</td><td>on</td></tr>
+    <tr><td>The cat sat on ____ mat</td><td>the</td></tr>
+    <tr><td>The cat sat on the ____</td><td>mat</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Free training data!</strong> This is why BERT (and PRAGMA) can be trained on the whole internet without humans labelling anything. The fancy name is <em>masked language modelling</em> (MLM).</p>
+
+<h2>🎮 Interactive: mask a word, see what the model would predict</h2>
+
+<p>This demo uses pre-baked predictions for a few example sentences (no actual model in your browser — that would need ~10 MB of trained weights). Click any word to mask it.</p>
+
+<div class="widget">
+  <div style="margin-bottom:10px;">
+    <select id="sent" style="padding:6px 10px;">
+      <option value="0">The cat sat on the mat</option>
+      <option value="1">The dog chased the squirrel</option>
+      <option value="2">She ate an apple in the park</option>
+    </select>
+  </div>
+  <div id="sentence-display" style="font-size:22px;line-height:1.8;margin:20px 0;text-align:center;"></div>
+  <div id="predictions" style="margin-top:14px;"></div>
+  <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">
+    Click any word to mask it. The model's top guesses (and their confidence) appear below.
+  </div>
+</div>
+
+<h2>How the model plays the game (step by step)</h2>
+
+<ol>
+  <li><strong>Tokenise + embed</strong> (<a href="lesson_02.html">L2</a>) — each word becomes a vector of numbers.</li>
+  <li><strong>Attention</strong> (<a href="lesson_03.html">L3</a>) — the masked vector "looks at" surrounding words and absorbs their context. After attention, the mask vector has a flavour like "small-furry-animal".</li>
+  <li><strong>Predict</strong> — the model takes the context-aware mask vector and asks: "of all words I know, which one's embedding matches this flavour?" It scores every vocab word, picks the best — say, <code>cat</code>.</li>
+  <li><strong>Compare + nudge</strong> (<a href="lesson_01.html">L1</a>) — compare to the right answer (<code>cat</code>). Run <code>loss.backward()</code> and <code>opt.step()</code> to nudge every knob.</li>
+</ol>
+
+<h2>The code, in 4 bites</h2>
+
+<h3>1. Vocabulary + the secret rules</h3>
+<pre><code>vocab  = ["&lt;pad&gt;", "&lt;mask&gt;", "dog", "cat", "fish",
+          "bark", "meow", "swim"]
+PAIRS  = [("dog", "bark"), ("cat", "meow"), ("fish", "swim")]</code></pre>
+
+<h3>2. Generate a fill-in-the-blank example</h3>
+<pre><code>def make_example():
+    animal, sound = random.choice(PAIRS)
+    ids = [tok2id[animal], tok2id[sound]]
+    labels = [-100, -100]
+    hide = random.choice([0, 1])
+    labels[hide] = ids[hide]              # remember real answer
+    ids[hide] = tok2id["&lt;mask&gt;"]      # hide it
+    return ids, labels</code></pre>
+
+<h3>3. The architecture — tiny Transformer</h3>
+<pre><code>class TinyMLM(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.emb  = nn.Embedding(V, 16)
+        self.enc  = nn.TransformerEncoderLayer(16, 2, 32, batch_first=True)
+        self.head = nn.Linear(16, V)
+    def forward(self, x):
+        return self.head(self.enc(self.emb(x)))</code></pre>
+
+<h3>4. The training loop — same 5 lines as Lesson 1!</h3>
+<pre><code>for step in range(500):
+    batch = [make_example() for _ in range(32)]
+    ids, labels = zip(*batch)
+    x = torch.tensor(ids); y = torch.tensor(labels)
+
+    logits = model(x)                                    # 1. guess
+    loss = loss_fn(logits.reshape(-1, V), y.reshape(-1)) # 2. wrongness
+    opt.zero_grad()                                      # 3. clear
+    loss.backward()                                      # 4. gradients
+    opt.step()                                           # 5. nudge ALL knobs</code></pre>
+
+<h2>The expected output</h2>
+
+<pre><code>step   0   loss 2.482     ← random guesses (8 vocab words → log(8) ≈ 2.08)
+step 100   loss 0.073     ← already nailed it
+step 400   loss 0.006     ← essentially zero
+
+Fill in the blank:
+  dog  -> bark    ✓
+  cat  -> meow    ✓
+  fish -> swim    ✓</code></pre>
+
+<div class="callout good">
+  <strong>You've now seen a real Transformer learn from scratch.</strong> Same recipe as ChatGPT — just smaller.
+</div>
+
+<h2>What's different in real PRAGMA?</h2>
+
+<table>
+  <thead><tr><th>Toy</th><th>Real PRAGMA-Large</th></tr></thead>
+  <tbody>
+    <tr><td>8 words in vocab</td><td>~28,000</td></tr>
+    <tr><td>2 tokens per example</td><td>Up to thousands</td></tr>
+    <tr><td>1 encoder layer</td><td>18 encoder layers</td></tr>
+    <tr><td>~500 knobs total</td><td>1 billion</td></tr>
+    <tr><td>3 rules to memorise</td><td>Structure of real banking event streams</td></tr>
+    <tr><td>Seconds on a laptop</td><td>2 weeks on 32× NVIDIA H100 GPUs</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Same five-line training loop. Same gradient descent.</strong> Just scaled up.</p>
+
+<div class="pagination">
+  <a href="lesson_03b.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L3b — Why Transformers won</span>
+  </a>
+  <a href="lesson_05.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  // Pre-baked predictions for each (sentence_idx, masked_position)
+  const SENTENCES = [
+    {
+      words: ["The", "cat", "sat", "on", "the", "mat"],
+      preds: {
+        0: [["The", 0.65], ["A", 0.18], ["My", 0.08], ["His", 0.05]],
+        1: [["cat", 0.42], ["dog", 0.21], ["man", 0.12], ["child", 0.08]],
+        2: [["sat", 0.38], ["slept", 0.22], ["jumped", 0.15], ["lay", 0.10]],
+        3: [["on", 0.71], ["near", 0.12], ["over", 0.08], ["under", 0.05]],
+        4: [["the", 0.78], ["a", 0.15], ["my", 0.04], ["his", 0.02]],
+        5: [["mat", 0.34], ["floor", 0.22], ["couch", 0.18], ["chair", 0.12]],
+      }
+    },
+    {
+      words: ["The", "dog", "chased", "the", "squirrel"],
+      preds: {
+        0: [["The", 0.62], ["A", 0.20], ["My", 0.10], ["His", 0.04]],
+        1: [["dog", 0.45], ["cat", 0.20], ["fox", 0.12], ["wolf", 0.08]],
+        2: [["chased", 0.40], ["caught", 0.18], ["barked", 0.15], ["watched", 0.10]],
+        3: [["the", 0.80], ["a", 0.13], ["that", 0.04], ["his", 0.02]],
+        4: [["squirrel", 0.32], ["cat", 0.24], ["rabbit", 0.20], ["bird", 0.14]],
+      }
+    },
+    {
+      words: ["She", "ate", "an", "apple", "in", "the", "park"],
+      preds: {
+        0: [["She", 0.38], ["He", 0.36], ["They", 0.12], ["I", 0.10]],
+        1: [["ate", 0.45], ["bought", 0.20], ["found", 0.12], ["picked", 0.08]],
+        2: [["an", 0.62], ["the", 0.30], ["one", 0.05], ["my", 0.02]],
+        3: [["apple", 0.36], ["orange", 0.20], ["sandwich", 0.18], ["banana", 0.12]],
+        4: [["in", 0.55], ["at", 0.22], ["near", 0.12], ["by", 0.08]],
+        5: [["the", 0.74], ["a", 0.18], ["this", 0.04], ["that", 0.03]],
+        6: [["park", 0.40], ["garden", 0.22], ["yard", 0.18], ["forest", 0.10]],
+      }
+    }
+  ];
+
+  let current = 0;
+  let masked = -1;
+
+  function render() {
+    const s = SENTENCES[current];
+    const disp = document.getElementById('sentence-display');
+    disp.innerHTML = '';
+    for (let i = 0; i < s.words.length; i++) {
+      const span = document.createElement('span');
+      const isMasked = i === masked;
+      span.style.cssText = `
+        display: inline-block;
+        margin: 0 4px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        cursor: pointer;
+        background: ${isMasked ? '#a855f7' : '#dbeafe'};
+        color: ${isMasked ? '#fff' : '#1d4ed8'};
+        font-weight: 600;
+        border: 2px solid ${isMasked ? '#7e22ce' : 'transparent'};
+      `;
+      span.textContent = isMasked ? '<mask>' : s.words[i];
+      span.onclick = () => { masked = (masked === i ? -1 : i); render(); };
+      disp.appendChild(span);
+    }
+
+    const pdiv = document.getElementById('predictions');
+    if (masked < 0) {
+      pdiv.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Click a word above to mask it and see what the model would predict.</p>';
+      return;
+    }
+    const preds = s.preds[masked] || [];
+    let html = `<h4 style="margin-bottom:10px;">Top predictions for the masked position</h4>`;
+    html += `<div style="display:flex;flex-direction:column;gap:6px;">`;
+    const truth = s.words[masked];
+    for (const [word, prob] of preds) {
+      const bgw = prob * 100;
+      const isTruth = word.toLowerCase() === truth.toLowerCase();
+      html += `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:90px;font-weight:600;font-family:ui-monospace,monospace;color:${isTruth ? '#10b981' : '#333'};">${word}${isTruth ? ' ✓' : ''}</div>
+          <div style="flex:1;background:#f4f4f5;border-radius:4px;height:22px;position:relative;">
+            <div style="background:${isTruth ? '#10b981' : '#3b82f6'};height:100%;width:${bgw}%;border-radius:4px;"></div>
+          </div>
+          <div style="width:50px;text-align:right;font-family:ui-monospace,monospace;color:var(--text-dim);font-size:13px;">${(prob * 100).toFixed(0)}%</div>
+        </div>`;
+    }
+    html += `</div>`;
+    html += `<p style="font-size:12px;color:var(--text-dim);margin-top:14px;">The green bar is the actual word that was masked. A well-trained model puts most probability on the truth — but with structurally similar words (cat / dog / fox) also showing high confidence because they make sense in context.</p>`;
+    pdiv.innerHTML = html;
+  }
+
+  document.getElementById('sent').addEventListener('change', e => {
+    current = parseInt(e.target.value, 10);
+    masked = -1;
+    render();
+  });
+  render();
+})();
+</script>
+
+</body>
+</html>

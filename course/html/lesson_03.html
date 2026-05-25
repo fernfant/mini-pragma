@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 3 — Attention</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html" class="current">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 3 — Attention</h1>
+<p class="subtitle">The big idea of the Transformer. Once you understand this, every modern AI model — GPT, BERT, PRAGMA — uses some variation of it.</p>
+
+<h2>The intuition</h2>
+
+<p>When you read <em>"the cat chased the mouse and then IT ran away"</em>, what does "it" refer to? Your brain looks at every word in the sentence, decides which ones matter, and figures out that "it" most likely refers to "mouse".</p>
+
+<p><strong>Attention</strong> lets the model do the same thing: every word looks at every other word and decides which ones are important for understanding itself.</p>
+
+<h2>A 2-word worked example</h2>
+
+<p>Let's strip it to 2 words and 2-dim embeddings so we can do every step on paper. Sentence: <strong>"the cat"</strong>. Embeddings (made up):</p>
+
+<pre><code>the  →  [1, 0]
+cat  →  [2, 3]</code></pre>
+
+<h3>Step 1 — score every pair (dot products)</h3>
+<pre><code>the · the  =  (1×1) + (0×0)  =  1
+the · cat  =  (1×2) + (0×3)  =  2
+cat · the  =  (2×1) + (3×0)  =  2
+cat · cat  =  (2×2) + (3×3)  =  13</code></pre>
+
+<table class="compact" style="width:auto;">
+  <thead><tr><th></th><th>the</th><th>cat</th></tr></thead>
+  <tbody>
+    <tr><th>the</th><td>1</td><td>2</td></tr>
+    <tr><th>cat</th><td>2</td><td>13</td></tr>
+  </tbody>
+</table>
+
+<p><code>cat · cat = 13</code> is huge — cat is very related to itself.</p>
+
+<h3>Step 2 — softmax (turn raw scores into a 100% budget)</h3>
+<p>Each word has 100% attention to spend. Softmax converts raw scores into percentages summing to 1. The biggest score wins most of the budget.</p>
+
+<table class="compact" style="width:auto;">
+  <thead><tr><th></th><th>the</th><th>cat</th></tr></thead>
+  <tbody>
+    <tr><th>the</th><td>0.27</td><td>0.73</td></tr>
+    <tr><th>cat</th><td>0.00</td><td>1.00</td></tr>
+  </tbody>
+</table>
+
+<h3>Step 3 — mix (weighted blend of word vectors)</h3>
+<pre><code>new "the" = 0.27 × [1, 0] + 0.73 × [2, 3] = [1.73, 2.19]   ← absorbed cat-flavor
+new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</code></pre>
+
+<div class="callout good">
+  <strong>"the" got smarter.</strong> It started as <code>[1, 0]</code> (bland — could mean anything). After attention, it's much closer to cat's vector. It now means "the <em>cat</em>", not just "the".
+</div>
+
+<h2>🎮 Interactive: build an attention matrix word by word</h2>
+
+<p>Pick a few words below. Each gets a random 2-dim "embedding" (you can rerandomise). We'll compute the full attention matrix and show how each word ends up "mixing" with the others.</p>
+
+<div class="widget">
+  <div class="widget-row two">
+    <canvas id="cv" width="500" height="380"></canvas>
+    <div class="controls">
+      <label>
+        <span class="lbl">Sentence</span>
+        <select id="sentence" style="width:100%;padding:6px 8px;">
+          <option value="the cat sat">the cat sat</option>
+          <option value="the dog chased the cat">the dog chased the cat</option>
+          <option value="i love pizza">i love pizza</option>
+          <option value="rain wet umbrella">rain wet umbrella</option>
+        </select>
+      </label>
+      <label>
+        <span class="lbl">Temperature</span>
+        <input id="temp" type="range" min="0.2" max="3" step="0.1" value="1">
+        <span class="val" id="tempv">1.0</span>
+      </label>
+      <button id="reroll">🎲 New random embeddings</button>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-dim);">
+        <p><strong>Lower temperature</strong> → attention sharper (one word gets almost all the budget).
+        <strong>Higher temperature</strong> → attention more spread out.</p>
+      </div>
+      <div style="font-size:12px;margin-top:10px;color:var(--text-dim);">
+        Hover a row in the matrix to see which words it attends to.
+      </div>
+    </div>
+  </div>
+  <div id="attn-table" style="margin-top:16px;"></div>
+</div>
+
+<h2>The full formula</h2>
+
+<p>Real attention uses three learned projections of each word vector — Query, Key, Value — instead of just dotting <code>x</code> with itself:</p>
+
+<pre><code>Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V</code></pre>
+
+<ul>
+  <li><strong>Q (query)</strong> — "what am I looking for?"</li>
+  <li><strong>K (key)</strong> — "what do I offer to others looking?"</li>
+  <li><strong>V (value)</strong> — "what do I actually contribute if matched?"</li>
+</ul>
+
+<p>The three matrices are trainable knobs nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Q/K/V give the model more flexibility — each word can ask different questions of others than what it offers in return.</p>
+
+<h2>Multi-head attention</h2>
+
+<p>Instead of running the attention formula once, you run it several times in parallel with different Q/K/V matrices, then concatenate the outputs. Each "head" can specialise — one might learn grammar, another might learn subject-object pairing, another might learn nearby words. PRAGMA-L uses 16 attention heads in its history encoder.</p>
+
+<h2>Why this is such a big deal</h2>
+
+<p>Before attention (~2017), models read text left to right. A word at position 100 could only "remember" position 1 through a fuzzy compressed memory. Long-range dependencies were really hard.</p>
+
+<p>Attention solved this: <strong>every word can look at every other word in parallel, directly</strong>. No fuzzy memory. No left-to-right bottleneck. Long-range information is as accessible as short-range.</p>
+
+<p>For the full "why Transformers won" story, see <a href="lesson_03b.html">Lesson 3b</a>.</p>
+
+<div class="callout good">
+  <strong>The three steps that are the heart of every modern AI model:</strong>
+  <ol>
+    <li><strong>Score every pair</strong> with a dot product.</li>
+    <li><strong>Softmax</strong> turns scores into a 100% attention budget.</li>
+    <li><strong>Mix</strong> word vectors using those weights. Each word now carries context.</li>
+  </ol>
+</div>
+
+<div class="pagination">
+  <a href="lesson_02.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L2 — Tokens &amp; embeddings</span>
+  </a>
+  <a href="lesson_03b.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L3b — Why Transformers won</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+
+  let words = [];
+  let X = [];  // 2D vectors per word
+  let hoverRow = -1;
+
+  const COLORS = ['#3b82f6', '#10b981', '#a855f7', '#ef4444', '#f59e0b', '#06b6d4', '#ec4899'];
+
+  function randn() {
+    // Box-Muller
+    const u1 = Math.random(), u2 = Math.random();
+    return Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
+  }
+
+  function setSentence(s) {
+    words = s.split(/\s+/).filter(Boolean);
+    X = words.map(() => [randn() * 1.5, randn() * 1.5]);
+    update();
+  }
+
+  function softmax(arr, T = 1) {
+    const m = Math.max(...arr);
+    const exps = arr.map(v => Math.exp((v - m) / T));
+    const s = exps.reduce((a, b) => a + b, 0);
+    return exps.map(e => e / s);
+  }
+
+  function computeAttention(T = 1) {
+    const n = words.length;
+    const A = [];
+    for (let i = 0; i < n; i++) {
+      const row = [];
+      for (let j = 0; j < n; j++) row.push(X[i][0] * X[j][0] + X[i][1] * X[j][1]);
+      A.push(softmax(row, T));
+    }
+    return A;
+  }
+
+  function drawCanvas(A) {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const cx = cv.width / 2, cy = cv.height / 2 + 20;
+    const scale = 50;
+
+    // Title
+    ctx.fillStyle = '#555';
+    ctx.font = '13px ui-sans-serif,system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('Word vectors (2D embedding space)', cv.width / 2, 20);
+
+    // grid
+    ctx.strokeStyle = '#eee'; ctx.lineWidth = 1;
+    for (let k = -5; k <= 5; k++) {
+      ctx.beginPath(); ctx.moveTo(cx + k * scale, 50); ctx.lineTo(cx + k * scale, cv.height - 20); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(40, cy + k * scale); ctx.lineTo(cv.width - 20, cy + k * scale); ctx.stroke();
+    }
+    ctx.strokeStyle = '#aaa'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx, 50); ctx.lineTo(cx, cv.height - 20); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(40, cy); ctx.lineTo(cv.width - 20, cy); ctx.stroke();
+
+    // arrows from origin to each vector, highlighting the hovered word's attention
+    for (let i = 0; i < words.length; i++) {
+      const x = cx + X[i][0] * scale, y = cy - X[i][1] * scale;
+      const color = COLORS[i % COLORS.length];
+      let lw = 2, alpha = 1;
+      if (hoverRow >= 0) {
+        // Show how much "hoverRow" attends to "i"
+        const w = A[hoverRow][i];
+        alpha = 0.2 + w * 0.8;
+        lw = 1 + w * 5;
+      }
+      ctx.globalAlpha = alpha;
+      ctx.strokeStyle = color; ctx.lineWidth = lw;
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(x, y); ctx.stroke();
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#222';
+      ctx.font = (hoverRow === i ? 'bold ' : '') + '13px ui-sans-serif,system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(words[i], x + 10, y - 6);
+    }
+    ctx.globalAlpha = 1;
+
+    if (hoverRow >= 0) {
+      ctx.fillStyle = '#1d4ed8'; ctx.font = '13px ui-sans-serif,system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(`Showing attention from "${words[hoverRow]}" to every word`, cv.width / 2, cv.height - 4);
+    }
+  }
+
+  function drawTable(A) {
+    const t = parseFloat(document.getElementById('temp').value);
+    let html = `<h4 style="margin-bottom:6px;">Attention matrix <span style="font-size:13px;color:var(--text-dim);font-weight:400;">(softmax temp = ${t.toFixed(1)})</span></h4>`;
+    html += '<table class="compact" style="width:auto;"><thead><tr><th></th>';
+    for (const w of words) html += `<th>${w}</th>`;
+    html += '</tr></thead><tbody>';
+    for (let i = 0; i < words.length; i++) {
+      html += `<tr data-row="${i}" style="cursor:pointer;"><th>${words[i]}</th>`;
+      for (let j = 0; j < words.length; j++) {
+        const v = A[i][j];
+        const bg = `rgba(59,130,246,${v * 0.8})`;
+        const color = v > 0.5 ? 'white' : '#222';
+        html += `<td style="background:${bg};color:${color};font-weight:600;">${v.toFixed(2)}</td>`;
+      }
+      html += '</tr>';
+    }
+    html += '</tbody></table>';
+    document.getElementById('attn-table').innerHTML = html;
+    document.querySelectorAll('#attn-table tr[data-row]').forEach(tr => {
+      tr.addEventListener('mouseenter', () => { hoverRow = parseInt(tr.dataset.row, 10); drawCanvas(A); });
+      tr.addEventListener('mouseleave', () => { hoverRow = -1; drawCanvas(A); });
+    });
+  }
+
+  function update() {
+    const t = parseFloat(document.getElementById('temp').value);
+    const A = computeAttention(t);
+    drawCanvas(A);
+    drawTable(A);
+  }
+
+  document.getElementById('sentence').addEventListener('change', e => setSentence(e.target.value));
+  document.getElementById('temp').addEventListener('input', e => {
+    document.getElementById('tempv').textContent = (+e.target.value).toFixed(1);
+    update();
+  });
+  document.getElementById('reroll').addEventListener('click', () => {
+    X = words.map(() => [randn() * 1.5, randn() * 1.5]);
+    update();
+  });
+
+  setSentence(document.getElementById('sentence').value);
+})();
+</script>
+
+</body>
+</html>

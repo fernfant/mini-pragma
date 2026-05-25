@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 5b — Streaming churn predictor</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html" class="current">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 5b — Streaming churn predictor</h1>
+<p class="subtitle">Same PRAGMA recipe, now applied to a realistic problem: predicting which streaming-service users are about to cancel.</p>
+
+<div class="callout info">
+  <strong>Companion notebook:</strong> <a href="../notebooks/lesson_05b_streaming_churn.ipynb">notebooks/lesson_05b_streaming_churn.ipynb</a>. Runnable script: <a href="../05b_streaming_churn.py">05b_streaming_churn.py</a>.
+</div>
+
+<h2>The plan</h2>
+
+<ol>
+  <li><strong>Generate synthetic data</strong> — engaged vs churning users.</li>
+  <li><strong>Pre-train</strong> a Transformer on ALL events via fill-in-the-blank — no labels.</li>
+  <li><strong>Freeze</strong> the encoder, add a tiny classifier head on top.</li>
+  <li><strong>Train</strong> only the head on a small labelled set.</li>
+  <li><strong>Compare</strong> to a baseline that doesn't pre-train.</li>
+</ol>
+
+<p>This is exactly the foundation-model workflow PRAGMA runs at billion-event scale.</p>
+
+<h2>The headline result</h2>
+
+<div class="widget">
+  <h3>📊 Pre-trained vs baseline at different label counts</h3>
+  <table style="margin-top:14px;">
+    <thead>
+      <tr><th>labels</th><th>pretrained accuracy</th><th>pretrained <strong>recall</strong></th><th>baseline accuracy</th><th>baseline <strong>recall</strong></th></tr>
+    </thead>
+    <tbody>
+      <tr><td>20</td><td>0.91</td><td>0.00</td><td>0.91</td><td>0.00</td></tr>
+      <tr style="background:#dcfce7"><td>50</td><td><strong>1.00</strong></td><td><strong>1.00</strong></td><td>0.97</td><td>0.63</td></tr>
+      <tr style="background:#dcfce7"><td>200</td><td><strong>1.00</strong></td><td><strong>1.00</strong></td><td>0.98</td><td>0.79</td></tr>
+      <tr><td>1000</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:var(--text-dim);margin-top:14px;">
+    <strong>Recall</strong> = "what % of actual churners did we catch?" This is the metric that matters most when 90% of users are engaged.
+  </p>
+</div>
+
+<p>Things to notice:</p>
+<ul>
+  <li><strong>20 labels: both fail.</strong> Too few examples of the rare class.</li>
+  <li><strong>50 labels: pre-training wins dramatically.</strong> Frozen probe catches <strong>100% of churners</strong>. Baseline only 63%.</li>
+  <li><strong>200 labels: pre-training still ahead.</strong> 100% vs 79%.</li>
+  <li><strong>1000 labels: they converge.</strong> Once you have enough labels, even a randomly-initialised model can learn the pattern.</li>
+</ul>
+
+<div class="callout good">
+  🔑 <strong>The pre-trained encoder is most valuable when labelled data is scarce.</strong> This is the entire foundation-model pitch — and the reason Revolut built PRAGMA. Labels are expensive; raw events are free.
+</div>
+
+<h2>The data</h2>
+
+<p>Two user types with distinct behaviour:</p>
+
+<table>
+  <thead><tr><th>Behaviour</th><th>Engaged user</th><th>Churning user</th></tr></thead>
+  <tbody>
+    <tr><td>Action</td><td>Mostly <em>finishes</em> episodes</td><td>Lots of <em>skipping</em></td></tr>
+    <tr><td>Genre</td><td>Varied tastes</td><td>Narrow taste, one genre</td></tr>
+    <tr><td>Time</td><td>Mostly evening</td><td>Mostly night</td></tr>
+    <tr><td>Duration</td><td>Long sessions</td><td>Short sessions</td></tr>
+  </tbody>
+</table>
+
+<p>The model has to discover these patterns from the event sequences alone.</p>
+
+<h2>The architecture</h2>
+
+<pre><code>class Encoder(nn.Module):
+    """Same as pragma_mini.py — embedding + position + Transformer."""
+    def __init__(self, V, d=32, heads=2, layers=2):
+        super().__init__()
+        self.emb = nn.Embedding(V, d)
+        self.pos = nn.Embedding(128, d)
+        layer    = nn.TransformerEncoderLayer(d, heads, d*2, batch_first=True)
+        self.enc = nn.TransformerEncoder(layer, layers)
+    def forward(self, x):
+        pos = torch.arange(x.size(1))
+        return self.enc(self.emb(x) + self.pos(pos))
+
+class ChurnHead(nn.Module):
+    """Pool the encoder output, predict churn (2 classes)."""
+    def __init__(self, d=32):
+        super().__init__()
+        self.proj = nn.Linear(d, 2)
+    def forward(self, h):
+        pooled = h.mean(dim=1)
+        return self.proj(pooled)</code></pre>
+
+<h2>The pre-training (L4)</h2>
+
+<pre><code>for step in range(2000):
+    idx       = torch.randint(0, N_USERS, (64,))
+    xb, yb    = mlm_mask(X[idx])             # mask ~20% of values
+    h         = encoder(xb)
+    logits    = mlm_head(h)
+    loss      = loss_fn(logits.reshape(-1, V), yb.reshape(-1))
+    opt.zero_grad(); loss.backward(); opt.step()</code></pre>
+
+<p>The same 5-line loop. The labels (engaged/churn) are never used here — this is fully self-supervised.</p>
+
+<h2>The downstream task</h2>
+
+<pre><code>def train_classifier(encoder, X_tr, y_tr, freeze_encoder=True):
+    head = ChurnHead()
+    if freeze_encoder:
+        for p in encoder.parameters(): p.requires_grad = False
+        encoder.eval()
+        params = list(head.parameters())
+    else:
+        params = list(encoder.parameters()) + list(head.parameters())
+    opt = torch.optim.AdamW(params, lr=3e-3)
+    ...</code></pre>
+
+<p>Two modes:</p>
+<ul>
+  <li><strong>Frozen encoder</strong> + classifier head only → <em>foundation-model recipe</em>.</li>
+  <li><strong>Random-init encoder</strong>, train everything → <em>baseline, no pre-training</em>.</li>
+</ul>
+
+<h2>The story, lesson by lesson</h2>
+
+<table>
+  <thead><tr><th>Step</th><th>Lesson(s) used</th></tr></thead>
+  <tbody>
+    <tr><td>Tokenise events into key-value pairs</td><td><a href="lesson_02.html">L2</a>, <a href="lesson_05.html">L5</a></td></tr>
+    <tr><td>Build encoder with embedding + position + attention</td><td><a href="lesson_01b.html">L1b</a>, <a href="lesson_02.html">L2</a>, <a href="lesson_03.html">L3</a></td></tr>
+    <tr><td>Pre-train with fill-in-the-blank, no labels</td><td><a href="lesson_01.html">L1</a>, <a href="lesson_01c.html">L1c</a>, <a href="lesson_04.html">L4</a></td></tr>
+    <tr><td>Freeze the encoder</td><td><a href="lesson_01b.html">L1b</a></td></tr>
+    <tr><td>Add a small classifier head</td><td><a href="lesson_01b.html">L1b</a></td></tr>
+    <tr><td>Train just the head on labelled data</td><td><a href="lesson_01.html">L1</a>, <a href="lesson_01c.html">L1c</a></td></tr>
+    <tr><td>Compare to baseline</td><td>scientific method</td></tr>
+  </tbody>
+</table>
+
+<p>This is PRAGMA, just smaller. Same architecture choices. Same pre-training objective. Same downstream-adaptation strategy.</p>
+
+<div class="pagination">
+  <a href="lesson_05.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+  </a>
+  <a href="lesson_06.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L6 — Capstone</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 6 — Capstone</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html" class="current">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 6 — Capstone</h1>
+<p class="subtitle">Build a mini fraud detector using the same PRAGMA recipe — yourself.</p>
+
+<div class="callout info">
+  <strong>This is the project.</strong> You write the code. The course up to here has been showing; now you do.
+  <br><br>
+  Target effort: 4–8 hours over a few sessions.
+</div>
+
+<h2>The challenge</h2>
+
+<p>You work at a tiny digital bank. Each user generates a stream of events. Most are normal — a few are fraudsters who behave very differently.</p>
+
+<p>Build a system using the exact PRAGMA recipe:</p>
+
+<ol>
+  <li><strong>Generate</strong> synthetic event data.</li>
+  <li><strong>Pre-train</strong> a tiny Transformer with fill-in-the-blank — no labels yet.</li>
+  <li><strong>Freeze</strong> the encoder. Add a classifier head on top.</li>
+  <li><strong>Train</strong> the classifier on a small labelled set (normal vs. fraud).</li>
+  <li><strong>Compare</strong> to a baseline that doesn't pre-train.</li>
+</ol>
+
+<h2>Stage 1 — Synthetic data</h2>
+
+<p>Create <code>capstone_data.py</code>. Decide on:</p>
+<ul>
+  <li><strong>Vocabulary.</strong> Some keys (e.g., <code>type</code>, <code>amount_bucket</code>, <code>time_of_day</code>) and values for each.</li>
+  <li><strong>Two user profiles:</strong>
+    <ul>
+      <li><code>NORMAL_RULES</code> — common patterns.</li>
+      <li><code>FRAUD_RULES</code> — different patterns (e.g., bursts of tiny test transactions late at night).</li>
+    </ul>
+  </li>
+  <li><strong>2000 users total</strong>: 95% normal, 5% fraudsters. 20 events each.</li>
+</ul>
+
+<p><strong>Hint:</strong> start from <code>random_event()</code> in <a href="../../pragma_mini.py">pragma_mini.py</a> and generalise.</p>
+
+<p><strong>Success check:</strong> print sample sequences for a normal and a fraud user. Eyeball them — can you spot the difference?</p>
+
+<h2>Stage 2 — Pre-train the encoder</h2>
+
+<p>Create <code>capstone_pretrain.py</code>. Same masked-token training game from <a href="lesson_04.html">L4</a> / <a href="lesson_05.html">L5</a>.</p>
+
+<p><strong>Key rule:</strong> during pre-training, <strong>ignore the labels completely</strong>. Pre-training cares nothing about whether a user is fraud — it's just learning event structure.</p>
+
+<p>Save the encoder weights with <code>torch.save(...)</code>.</p>
+
+<p><strong>Success check:</strong> pre-training loss drops to under 0.5.</p>
+
+<h2>Stage 3 — Build the fraud classifier</h2>
+
+<p>Create <code>capstone_classify.py</code>:</p>
+<ol>
+  <li><strong>Load</strong> the pre-trained encoder.</li>
+  <li><strong>Freeze</strong> it.</li>
+  <li><strong>Encode</strong> each user's full event sequence. Mean-pool to one vector per user.</li>
+  <li><strong>Add a tiny classifier head:</strong> one linear layer to 2 logits.</li>
+  <li><strong>Split</strong> data 80/20.</li>
+  <li><strong>Train</strong> just the head on the train set.</li>
+  <li><strong>Evaluate</strong>: overall accuracy + <strong>recall on fraud</strong> (the metric that actually matters with class imbalance).</li>
+</ol>
+
+<h2>Stage 4 — The crucial comparison</h2>
+
+<p>A model doing well doesn't prove pre-training mattered. Build a baseline:</p>
+<ul>
+  <li>Same architecture, same head, same data.</li>
+  <li>Start the encoder with <strong>random weights</strong> (skip Stage 2).</li>
+  <li>Train end-to-end on the labelled data.</li>
+</ul>
+
+<p>Compare and write down:</p>
+<ul>
+  <li>Did pre-training help? By how much?</li>
+  <li>Did it help more when there were fewer labels?</li>
+  <li>What surprised you?</li>
+</ul>
+
+<h2>Stretch goals</h2>
+
+<ol>
+  <li><strong>Real time encoding.</strong> Give each event a timestamp. Use PRAGMA's <code>8 * log(1 + t/8)</code>.</li>
+  <li><strong>Profile state.</strong> Add static user attributes (country, plan).</li>
+  <li><strong>LoRA fine-tuning</strong> instead of freeze + probe. Tune ~2-4% of weights.</li>
+  <li><strong>Multi-task.</strong> Two heads on the same frozen encoder.</li>
+  <li><strong>Scale.</strong> Increase to 20k, 100k users.</li>
+</ol>
+
+<h2>Reference solution</h2>
+
+<p>If you get truly stuck, the reference solution is at <a href="https://github.com/fernfant/mini-pragma-solutions">fernfant/mini-pragma-solutions</a>. Try it yourself first.</p>
+
+<div class="callout good">
+  <strong>You've learned every concept you need to build this.</strong> If you write all the code from scratch, you'll have personally built and validated a foundation model. Same recipe as PRAGMA. Same recipe as ChatGPT. Just smaller.
+  <br><br>
+  Send me what you make. — <a href="https://github.com/fernfant">@fernfant</a>
+</div>
+
+<div class="pagination">
+  <a href="lesson_05b.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L5b — Streaming churn predictor</span>
+  </a>
+  <a href="index.html" class="next">
+    <span class="dir">↑ Back to</span>
+    <span class="ttl">Index</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>

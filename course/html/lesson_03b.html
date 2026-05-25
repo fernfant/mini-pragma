@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 3b — Why Transformers won</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="current">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 3b — Why Transformers won</h1>
+<p class="subtitle">Three superpowers: speed, memory, scale. The reason ChatGPT exists.</p>
+
+<h2>What came before: RNNs</h2>
+
+<p>Before Transformers, the dominant tool for sequences was the <strong>Recurrent Neural Network (RNN)</strong>. An RNN reads sequences <em>one word at a time</em>, updating a single "memory note" at every step.</p>
+
+<p><strong>Index card analogy:</strong> imagine reading a book using only one index card. You can only write what fits on the card. For every new word, you erase the card and rewrite it to include the new info. By the end of a long chapter, almost none of the early details survive.</p>
+
+<h2>🎮 Watch them race: RNN vs Transformer</h2>
+
+<p>Click "Run" below. The same sentence will be processed by an RNN (top) and a Transformer (bottom). Watch the time difference.</p>
+
+<div class="widget">
+  <div style="display:flex;gap:10px;margin-bottom:14px;">
+    <button id="run">▶ Run</button>
+    <button class="alt" id="reset">Reset</button>
+    <select id="sentence" style="padding:6px 10px;flex:1;">
+      <option value="The cat chased the mouse">The cat chased the mouse</option>
+      <option value="The cat that the dog chased was scared">The cat that the dog chased was scared</option>
+      <option value="The early bird gets the worm in the morning">The early bird gets the worm in the morning</option>
+    </select>
+  </div>
+  <canvas id="cv" width="820" height="380"></canvas>
+  <div style="display:flex;gap:30px;margin-top:14px;font-family:ui-monospace,monospace;font-size:14px;">
+    <div>RNN time: <span id="rnntime" style="color:#ef4444;font-weight:700;">0</span> ticks</div>
+    <div>Transformer time: <span id="txtime" style="color:#10b981;font-weight:700;">0</span> tick(s)</div>
+  </div>
+</div>
+
+<h2>Problem 1: RNNs are sequential → SLOW</h2>
+
+<p>An RNN must finish word 1 before it can start word 2. <strong>A 100-word sentence = 100 sequential steps you cannot parallelise.</strong></p>
+
+<p><strong>Transformer fix:</strong> attention lets the model process all 100 words simultaneously — one big matrix multiplication. On GPUs, that's literally ~100× faster.</p>
+
+<h2>Problem 2: RNNs lose long-range info → SHORT MEMORY</h2>
+
+<p>The "single index card" problem. Information about a word fades as it passes through more update steps.</p>
+
+<figure>
+  <img src="../visuals/information_decay.svg" alt="Information decay in RNNs">
+  <figcaption>"The cat that the dog chased was scared." An RNN's memory of "cat" decays from 100% to ~5% over 6 update steps. A Transformer's "scared" attends directly back to "cat" — full strength.</figcaption>
+</figure>
+
+<p><strong>Transformer fix:</strong> with attention, when the word "scared" is being processed, it can put 90% of its attention <em>directly</em> on "cat" — across 6 words, with no information loss.</p>
+
+<h2>Problem 3: RNNs don't scale → CEILING AT ~100M PARAMETERS</h2>
+
+<p>Two reasons:</p>
+<ol>
+  <li><strong>Vanishing gradients across time.</strong> The gradient signal from the last word has to travel back through every intermediate step. Multiply small numbers together long enough and they vanish — early knobs get effectively no learning signal.</li>
+  <li><strong>Sequential compute can't be GPU-accelerated.</strong> Bigger model + already slow = unbearably slow.</li>
+</ol>
+
+<p><strong>Transformer fix:</strong> attention is parallel and gradients flow cleanly. <strong>Transformers just keep getting better as you make them bigger.</strong></p>
+
+<figure>
+  <img src="../visuals/scaling_chart.svg" alt="Scaling curve">
+  <figcaption>The single biggest practical reason Transformers won. RNNs flatten out at ~100M parameters; Transformers scale to a trillion and counting.</figcaption>
+</figure>
+
+<h2>The combined superpower: foundation models</h2>
+
+<p>When you can train on enormous data (parallel = fast), capture long-range patterns (direct attention = no fade), and scale to billions of parameters (gradients flow cleanly), <strong>a single model can absorb so much general knowledge that you reuse it for many tasks</strong> with just a small bit of fine-tuning on top.</p>
+
+<p>That's the foundation-model idea. PRAGMA does this for Revolut — pre-train once on 24 billion banking events, adapt to credit scoring, fraud detection, lifetime value, etc.</p>
+
+<div class="callout good">
+  <strong>TL;DR — the three superpowers:</strong>
+  <ol>
+    <li><strong>Speed.</strong> Process all tokens in parallel; not one at a time.</li>
+    <li><strong>Memory.</strong> Every token has direct access to every other; no fading.</li>
+    <li><strong>Scale.</strong> Because of (1) and (2), bigger means smarter.</li>
+  </ol>
+</div>
+
+<div class="pagination">
+  <a href="lesson_03.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L3 — Attention</span>
+  </a>
+  <a href="lesson_04.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L4 — Training a tiny BERT</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+  let words = [];
+  let phase = 'idle'; // 'rnn' | 'tx' | 'done'
+  let rnnStep = 0;
+  let txProgress = 0;
+  let rnnTicks = 0, txTicks = 0;
+  let last = 0;
+
+  const COL_LEFT = 30, COL_W = 110, ROW_RNN_Y = 90, ROW_TX_Y = 270;
+
+  function setSentence(s) {
+    words = s.split(/\s+/);
+    reset();
+  }
+
+  function reset() {
+    phase = 'idle';
+    rnnStep = 0; txProgress = 0; rnnTicks = 0; txTicks = 0;
+    document.getElementById('rnntime').textContent = '0';
+    document.getElementById('txtime').textContent = '0';
+    draw();
+  }
+
+  function wordX(i) {
+    const total = cv.width - 60;
+    const step = total / Math.max(words.length, 1);
+    return 30 + i * step + step / 2;
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+
+    // Labels
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 14px ui-sans-serif,system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText('🐌 RNN — one word at a time', 30, 30);
+    ctx.fillText('⚡ Transformer — all at once', 30, 220);
+
+    ctx.font = '12px ui-sans-serif,system-ui';
+    ctx.fillStyle = '#555';
+    ctx.fillText('Memory is a "single index card" — gets rewritten each step', 30, 48);
+    ctx.fillText('Every word looks at every other word directly', 30, 238);
+
+    // RNN row
+    for (let i = 0; i < words.length; i++) {
+      const x = wordX(i), y = ROW_RNN_Y;
+      const done = i < rnnStep;
+      const active = i === rnnStep && phase === 'rnn';
+      const future = i > rnnStep;
+      let color = done ? '#fca5a5' : (active ? '#ef4444' : '#e5e5e5');
+      ctx.fillStyle = color;
+      roundedRect(ctx, x - 50, y - 18, 100, 36, 6);
+      ctx.fill();
+      ctx.fillStyle = future ? '#999' : (done || active ? '#fff' : '#333');
+      ctx.font = '13px ui-sans-serif,system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(words[i], x, y + 5);
+
+      // Sequential arrow to next
+      if (i < words.length - 1) {
+        ctx.strokeStyle = i < rnnStep ? '#ef4444' : '#bbb';
+        ctx.lineWidth = 2;
+        drawArrow(x + 50, y, wordX(i + 1) - 50, y);
+      }
+
+      // Memory blob below each (showing the "card")
+      const mAlpha = i < rnnStep ? Math.max(0.1, 1 - (rnnStep - i - 1) * 0.18) : (active ? 0.9 : 0.15);
+      ctx.fillStyle = `rgba(168,85,247,${mAlpha})`;
+      ctx.beginPath();
+      ctx.arc(x, y + 56, 12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Transformer row
+    for (let i = 0; i < words.length; i++) {
+      const x = wordX(i), y = ROW_TX_Y;
+      const active = txProgress > 0;
+      ctx.fillStyle = active ? '#3b82f6' : '#dbeafe';
+      roundedRect(ctx, x - 50, y - 18, 100, 36, 6);
+      ctx.fill();
+      ctx.fillStyle = active ? '#fff' : '#1d4ed8';
+      ctx.font = '13px ui-sans-serif,system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(words[i], x, y + 5);
+    }
+
+    // Transformer attention arrows (all pair-wise)
+    if (phase === 'tx' || phase === 'done') {
+      const alpha = Math.min(1, txProgress);
+      ctx.globalAlpha = alpha * 0.4;
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < words.length; i++) {
+        for (let j = 0; j < words.length; j++) {
+          if (i === j) continue;
+          ctx.beginPath();
+          ctx.moveTo(wordX(i), ROW_TX_Y - 18);
+          ctx.bezierCurveTo(wordX(i), ROW_TX_Y - 60, wordX(j), ROW_TX_Y - 60, wordX(j), ROW_TX_Y - 18);
+          ctx.stroke();
+        }
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    // Phase indicator
+    ctx.font = '13px ui-sans-serif,system-ui';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'center';
+    if (phase === 'idle') ctx.fillText('Click ▶ Run', cv.width / 2, cv.height - 14);
+    else if (phase === 'rnn') ctx.fillText(`RNN processing step ${rnnStep + 1} / ${words.length}...`, cv.width / 2, cv.height - 14);
+    else if (phase === 'tx') ctx.fillText('Transformer processing — all at once...', cv.width / 2, cv.height - 14);
+    else ctx.fillText('Done.', cv.width / 2, cv.height - 14);
+  }
+
+  function roundedRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  function drawArrow(x1, y1, x2, y2) {
+    ctx.beginPath();
+    ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+    ctx.stroke();
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    ctx.beginPath();
+    ctx.moveTo(x2, y2);
+    ctx.lineTo(x2 - 8 * Math.cos(angle - 0.5), y2 - 8 * Math.sin(angle - 0.5));
+    ctx.lineTo(x2 - 8 * Math.cos(angle + 0.5), y2 - 8 * Math.sin(angle + 0.5));
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function tick(now) {
+    const dt = (now - last) / 1000;
+    last = now;
+    if (phase === 'rnn') {
+      // ~500ms per word
+      rnnTicks += dt;
+      rnnStep = Math.min(words.length, Math.floor(rnnTicks / 0.5));
+      document.getElementById('rnntime').textContent = rnnTicks.toFixed(1);
+      if (rnnStep >= words.length) {
+        phase = 'tx';
+        txTicks = 0;
+        document.getElementById('rnntime').textContent = rnnTicks.toFixed(1);
+      }
+    } else if (phase === 'tx') {
+      txTicks += dt;
+      txProgress = Math.min(1, txTicks / 0.5);
+      document.getElementById('txtime').textContent = '0.5';
+      if (txProgress >= 1) {
+        phase = 'done';
+      }
+    }
+    draw();
+    if (phase !== 'idle' && phase !== 'done') requestAnimationFrame(tick);
+  }
+
+  document.getElementById('run').addEventListener('click', () => {
+    if (phase === 'done') reset();
+    phase = 'rnn';
+    last = performance.now();
+    requestAnimationFrame(tick);
+  });
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('sentence').addEventListener('change', e => setSentence(e.target.value));
+
+  setSentence(document.getElementById('sentence').value);
+})();
+</script>
+
+</body>
+</html>

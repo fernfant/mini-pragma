@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 1c — Inside gradient descent</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html" class="current">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 1c — Inside gradient descent</h1>
+<p class="subtitle">A deeper look at what <code>loss.backward()</code> and <code>opt.step()</code> actually do. After this you'll never see them as "magic" again.</p>
+
+<h2>How loss is computed (MSE in Model A)</h2>
+
+<p>In Model A we use <strong>Mean Squared Error</strong>:</p>
+<ol>
+  <li>For each example: compute <code>(prediction − truth)</code></li>
+  <li>Square it</li>
+  <li>Take the average</li>
+</ol>
+
+<p>Walking through <strong>step 0</strong> with the actual numbers. At step 0, <code>w = 0</code> and <code>b = 0</code>. So the model predicts <code>y_pred = [0, 0, 0, 0, 0]</code>. The truth is <code>y_true = 2x + 1 = [3, 5, 7, 9, 11]</code>:</p>
+
+<table class="compact">
+  <thead><tr><th>x</th><th>y_pred</th><th>y_true</th><th>error</th><th>error²</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>0</td><td>3</td><td>−3</td><td>9</td></tr>
+    <tr><td>2</td><td>0</td><td>5</td><td>−5</td><td>25</td></tr>
+    <tr><td>3</td><td>0</td><td>7</td><td>−7</td><td>49</td></tr>
+    <tr><td>4</td><td>0</td><td>9</td><td>−9</td><td>81</td></tr>
+    <tr><td>5</td><td>0</td><td>11</td><td>−11</td><td>121</td></tr>
+  </tbody>
+</table>
+<p>Sum: <code>9 + 25 + 49 + 81 + 121 = 285</code>. Mean: <code>285 / 5 = 57</code>. ✓ matches the program's output: <code>step 0 ... loss = 57.000</code>.</p>
+
+<h2>What "gradient descent" actually means</h2>
+
+<p>The loss is one number. Each knob is a separate number. So the loss is a <strong>function of all the knobs</strong>. Imagine it as a hill:</p>
+
+<figure>
+  <img src="../visuals/gradient_as_slope.svg" alt="Gradient as slope">
+</figure>
+
+<p>The gradient is just <strong>the slope of that hill</strong> — measured separately for each knob. For knob <code>w</code>, the gradient answers: <em>"if I increase <code>w</code> by 1, how much does loss change?"</em></p>
+
+<p>That's where the update rule comes from:</p>
+<pre><code>new_w = old_w − learning_rate × gradient</code></pre>
+<p>The minus sign is "go opposite to the gradient" (because we want loss down). The learning rate controls step size.</p>
+
+<h2>Computing the gradient by hand at step 0</h2>
+
+<p>For our specific loss <code>mean((w·x + b − y_true)²)</code>, the gradients work out to:</p>
+<pre><code>gradient w.r.t. w  =  mean( 2 × error × x )
+gradient w.r.t. b  =  mean( 2 × error )</code></pre>
+
+<p>At step 0:</p>
+<table class="compact">
+  <thead><tr><th>x</th><th>error</th><th>2 × error × x</th><th>2 × error</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td>−3</td><td>−6</td><td>−6</td></tr>
+    <tr><td>2</td><td>−5</td><td>−20</td><td>−10</td></tr>
+    <tr><td>3</td><td>−7</td><td>−42</td><td>−14</td></tr>
+    <tr><td>4</td><td>−9</td><td>−72</td><td>−18</td></tr>
+    <tr><td>5</td><td>−11</td><td>−110</td><td>−22</td></tr>
+  </tbody>
+</table>
+<pre><code>gradient_w = mean(−6, −20, −42, −72, −110) = −250 / 5 = −50
+gradient_b = mean(−6, −10, −14, −18, −22)  = −70 / 5  = −14</code></pre>
+
+<p>Applying the update rule with <code>lr = 0.05</code>:</p>
+<pre><code>new_w = 0 − 0.05 × (−50) = +2.5
+new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
+
+<p>Now compare to the actual output:</p>
+<pre><code>step    0 |  w = 2.500  |  b = 0.700</code></pre>
+
+<div class="callout good">
+  🎉 <strong>Exact match.</strong> PyTorch did the same arithmetic we just did by hand. Nothing magical — just automated calculus.
+</div>
+
+<h2>Now play with it</h2>
+
+<p>The full interactive demo lives at <a href="../visuals/gradient_descent_interactive.html"><strong>this page</strong></a> — open it in a new tab. You'll see:</p>
+<ul>
+  <li>A 2D heatmap of the loss landscape (red = high loss, green = low).</li>
+  <li>A blue ball at <code>(w, b)</code> that you can drop anywhere by clicking.</li>
+  <li>A blue arrow showing the nudge direction at each point.</li>
+  <li>Sliders for the learning rate and animation speed.</li>
+</ul>
+
+<p style="text-align:center;margin:30px 0">
+  <a href="../visuals/gradient_descent_interactive.html" target="_blank" style="display:inline-block;padding:14px 28px;background:#1d4ed8;color:white;text-decoration:none;border-radius:8px;font-weight:600;">▶ Open the interactive gradient descent demo</a>
+</p>
+
+<h2>Try this</h2>
+
+<ol>
+  <li><strong>Click "Run"</strong> — watch the ball roll downhill from <code>(0,0)</code> to <code>(2, 1)</code>.</li>
+  <li><strong>Drop the ball somewhere wild</strong> — click anywhere on the heatmap, then run again. Does it still find the target?</li>
+  <li><strong>Crank LR to ~0.2</strong> — watch the ball <em>overshoot</em> and bounce around. Crank past 0.25 and it diverges entirely.</li>
+  <li><strong>Crank LR to ~0.001</strong> — watch it crawl. Too small a step.</li>
+</ol>
+
+<div class="callout">
+  <strong>The learning rate is the single most important hyperparameter in deep learning.</strong> Too small: training takes forever. Too big: the model oscillates or blows up. Real ML practitioners spend a lot of time tuning it.
+</div>
+
+<h2>How this generalises</h2>
+
+<p>In Model A, PyTorch tracked <strong>2 gradients</strong>. In Model B, <strong>12</strong>. In Lesson 4's Transformer, <strong>thousands</strong>. In PRAGMA-Large, <strong>1,000,000,000</strong>. Same <code>loss.backward()</code>. Same <code>opt.step()</code>. Just more numbers.</p>
+
+<p>This is the magic of <strong>automatic differentiation</strong> (autograd): you write the forward computation (predict + loss), and PyTorch computes the backward gradients automatically using the chain rule. You never derive a single derivative.</p>
+
+<h2>Three things to remember</h2>
+
+<div class="callout good">
+  <ol>
+    <li><strong>Loss</strong> is one number that measures how wrong the model is on a batch.</li>
+    <li><strong>Gradient</strong> of the loss with respect to a knob = "which way does that knob need to move to lower the loss?"</li>
+    <li><strong>Gradient descent</strong> = "nudge every knob opposite to its gradient, a tiny bit, repeat thousands of times."</li>
+  </ol>
+</div>
+
+<div class="pagination">
+  <a href="lesson_01b.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L1b — Architecture vs. training</span>
+  </a>
+  <a href="lesson_02.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L2 — Tokens &amp; embeddings</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>
