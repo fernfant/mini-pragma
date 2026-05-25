@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .title { font-size: 20px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .sub { font-size: 13px; fill: #555; text-anchor: middle; }
+    .axis-label { font-size: 12px; fill: #555; text-anchor: middle; }
+    .word-label { font-size: 14px; font-weight: 700; }
+    .trail { stroke-width: 2; fill: none; stroke-dasharray: 3 3; opacity: 0.5; }
+    .panel-title { font-size: 15px; font-weight: 700; fill: #111; text-anchor: middle; }
+  </style>
+
+  <text x="450" y="32" class="title">How embeddings evolve during training (Model B, real numbers)</text>
+  <text x="450" y="56" class="sub">Each animal's 2-number embedding starts random and drifts to a meaningful position</text>
+
+  <!-- LEFT PANEL: BEFORE -->
+  <text x="220" y="92" class="panel-title">BEFORE training (random)</text>
+
+  <!-- axes -->
+  <line x1="60" y1="380" x2="380" y2="380" stroke="#999" stroke-width="1.5"/>
+  <line x1="220" y1="120" x2="220" y2="450" stroke="#999" stroke-width="1.5"/>
+  <text x="220" y="470" class="axis-label">dim 1 →</text>
+  <text x="38" y="252" class="axis-label" transform="rotate(-90 38 252)">dim 2 →</text>
+
+  <!-- gridlines -->
+  <line x1="60" y1="250" x2="380" y2="250" class="trail" style="stroke:#ddd"/>
+  <line x1="60" y1="320" x2="380" y2="320" class="trail" style="stroke:#ddd"/>
+  <line x1="150" y1="120" x2="150" y2="450" class="trail" style="stroke:#ddd"/>
+  <line x1="300" y1="120" x2="300" y2="450" class="trail" style="stroke:#ddd"/>
+
+  <!-- dog: [+1.54, -0.29] -->
+  <!-- center (220, 250); scale: 60 px per unit -->
+  <!-- x = 220 + 1.54*60 = 312; y = 250 - (-0.29)*60 = 267 -->
+  <circle cx="312" cy="267" r="9" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+  <text x="325" y="270" class="word-label" style="fill:#f59e0b">dog</text>
+
+  <!-- cat: [-2.18, +0.57] -->
+  <!-- x = 220 + (-2.18)*60 = 89; y = 250 - 0.57*60 = 216 -->
+  <circle cx="89" cy="216" r="9" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+  <text x="65" y="208" class="word-label" style="fill:#3b82f6">cat</text>
+
+  <!-- fish: [-1.08, -1.40] -->
+  <!-- x = 220 + (-1.08)*60 = 155; y = 250 - (-1.40)*60 = 334 -->
+  <circle cx="155" cy="334" r="9" fill="#10b981" stroke="#fff" stroke-width="2"/>
+  <text x="115" y="348" class="word-label" style="fill:#10b981">fish</text>
+
+  <text x="220" y="412" class="sub">Random positions. No meaning yet.</text>
+
+  <!-- ARROW between panels -->
+  <line x1="410" y1="265" x2="490" y2="265" stroke="#333" stroke-width="3" marker-end="url(#arr-step)"/>
+  <defs>
+    <marker id="arr-step" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+  <text x="450" y="255" class="sub" style="font-weight:600">400 training steps</text>
+  <text x="450" y="285" class="sub">(fill-in-the-blank)</text>
+
+  <!-- RIGHT PANEL: AFTER -->
+  <text x="680" y="92" class="panel-title">AFTER training (meaningful)</text>
+
+  <!-- axes -->
+  <line x1="520" y1="380" x2="840" y2="380" stroke="#999" stroke-width="1.5"/>
+  <line x1="680" y1="120" x2="680" y2="450" stroke="#999" stroke-width="1.5"/>
+  <text x="680" y="470" class="axis-label">dim 1 →</text>
+  <text x="498" y="252" class="axis-label" transform="rotate(-90 498 252)">dim 2 →</text>
+
+  <!-- gridlines -->
+  <line x1="520" y1="250" x2="840" y2="250" class="trail" style="stroke:#ddd"/>
+  <line x1="520" y1="320" x2="840" y2="320" class="trail" style="stroke:#ddd"/>
+  <line x1="610" y1="120" x2="610" y2="450" class="trail" style="stroke:#ddd"/>
+  <line x1="760" y1="120" x2="760" y2="450" class="trail" style="stroke:#ddd"/>
+
+  <!-- dog after: [+2.56, -0.21] -->
+  <!-- x = 680 + 2.56*40 = 782; y = 250 - (-0.21)*40 = 258 -->
+  <circle cx="782" cy="258" r="11" fill="#f59e0b" stroke="#fff" stroke-width="2"/>
+  <text x="795" y="262" class="word-label" style="fill:#f59e0b">dog</text>
+
+  <!-- cat after: [-2.49, +1.64] -->
+  <!-- x = 680 + (-2.49)*40 = 580; y = 250 - 1.64*40 = 184 -->
+  <circle cx="580" cy="184" r="11" fill="#3b82f6" stroke="#fff" stroke-width="2"/>
+  <text x="550" y="176" class="word-label" style="fill:#3b82f6">cat</text>
+
+  <!-- fish after: [-1.26, -2.35] -->
+  <!-- x = 680 + (-1.26)*40 = 630; y = 250 - (-2.35)*40 = 344 -->
+  <circle cx="630" cy="344" r="11" fill="#10b981" stroke="#fff" stroke-width="2"/>
+  <text x="600" y="362" class="word-label" style="fill:#10b981">fish</text>
+
+  <text x="680" y="412" class="sub">Each animal now has its own region of space.</text>
+  <text x="680" y="430" class="sub">Linear head can separate them perfectly.</text>
+</svg>

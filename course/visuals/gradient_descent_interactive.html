@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gradient descent — interactive visualisation</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+    margin: 0; padding: 24px;
+    background: #fafafa; color: #111;
+  }
+  h1 { margin: 0 0 8px; font-size: 22px; }
+  p.lead { color: #555; margin: 0 0 20px; max-width: 800px; }
+  .wrap { max-width: 1100px; margin: 0 auto; }
+  .row { display: grid; grid-template-columns: 1fr 360px; gap: 24px; align-items: start; }
+  canvas { background: #fff; border: 1px solid #ddd; border-radius: 8px; display: block; cursor: crosshair; }
+  .panel {
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    padding: 18px; font-size: 14px;
+  }
+  .panel h3 { margin: 0 0 12px; font-size: 16px; }
+  .panel label { display: block; margin-bottom: 12px; }
+  .panel label span { display: inline-block; width: 100px; color: #555; }
+  .panel input[type=range] { width: 200px; vertical-align: middle; }
+  .panel .val { display: inline-block; min-width: 50px; text-align: right; font-family: ui-monospace,monospace; color: #111; font-weight: 600; }
+  button {
+    padding: 8px 14px; border-radius: 6px; border: 1px solid #333;
+    background: #111; color: #fff; cursor: pointer; font-size: 14px; font-weight: 600;
+    margin-right: 8px; margin-bottom: 4px;
+  }
+  button.alt { background: #fff; color: #111; }
+  .stat-table { width: 100%; margin-top: 16px; font-family: ui-monospace,monospace; font-size: 12px; border-collapse: collapse; }
+  .stat-table th, .stat-table td { padding: 4px 8px; text-align: right; border-bottom: 1px solid #eee; }
+  .stat-table th { background: #f5f5f5; }
+  .legend { display: flex; gap: 14px; font-size: 13px; margin-top: 10px; color: #555; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; vertical-align: middle; margin-right: 5px; }
+  .help { color: #666; font-size: 13px; margin-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Gradient descent — watch the ball roll downhill</h1>
+  <p class="lead">
+    This is Model A from the course. The "hill" is the loss landscape — height = how
+    wrong the model is at that combination of <code>w</code> and <code>b</code>.
+    Click anywhere on the plot to drop the ball, or press <b>Step</b> / <b>Run</b>
+    and watch gradient descent find the bottom. Try changing the learning rate.
+  </p>
+
+  <div class="row">
+    <canvas id="cv" width="700" height="540"></canvas>
+
+    <div class="panel">
+      <h3>Controls</h3>
+      <label>
+        <span>Learning rate</span>
+        <input id="lr" type="range" min="0.001" max="0.3" step="0.001" value="0.05">
+        <span class="val" id="lrVal">0.050</span>
+      </label>
+      <label>
+        <span>Speed (ms/step)</span>
+        <input id="spd" type="range" min="0" max="500" step="10" value="100">
+        <span class="val" id="spdVal">100</span>
+      </label>
+
+      <div style="margin-top: 14px;">
+        <button id="step">Step ×1</button>
+        <button id="run">Run</button>
+        <button class="alt" id="reset">Reset</button>
+      </div>
+
+      <table class="stat-table">
+        <tbody>
+          <tr><th>step</th><td id="stepCount">0</td></tr>
+          <tr><th>w</th><td id="wVal">0.000</td></tr>
+          <tr><th>b</th><td id="bVal">0.000</td></tr>
+          <tr><th>loss</th><td id="lossVal">57.000</td></tr>
+          <tr><th>grad w</th><td id="gwVal">-50.00</td></tr>
+          <tr><th>grad b</th><td id="gbVal">-14.00</td></tr>
+        </tbody>
+      </table>
+
+      <div class="legend">
+        <span><span class="dot" style="background:#3b82f6"></span>current</span>
+        <span><span class="dot" style="background:#10b981"></span>target</span>
+        <span><span class="dot" style="background:#ef4444"></span>path</span>
+      </div>
+
+      <p class="help">
+        The loss is <code>MSE(w·x + b, 2x+1)</code> averaged over
+        x = 1..5. The target is the green dot at <b>w=2, b=1</b>. Bigger
+        learning rate = bigger steps. Crank it past 0.15 and watch it
+        bounce or even diverge.
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // -------- Model --------
+  // Loss: MSE of (w*x + b) vs (2x + 1) over x in [1..5]
+  // Closed-form gradients (matches PyTorch's autograd):
+  //   grad_w = mean(2 * (w*x + b - true) * x)
+  //   grad_b = mean(2 * (w*x + b - true))
+  const XS = [1,2,3,4,5];
+  const YT = XS.map(x => 2*x + 1);
+
+  function loss(w, b) {
+    let s = 0;
+    for (let i = 0; i < XS.length; i++) {
+      const e = (w*XS[i] + b) - YT[i];
+      s += e*e;
+    }
+    return s / XS.length;
+  }
+  function grads(w, b) {
+    let gw = 0, gb = 0;
+    for (let i = 0; i < XS.length; i++) {
+      const e = (w*XS[i] + b) - YT[i];
+      gw += 2 * e * XS[i];
+      gb += 2 * e;
+    }
+    return [gw / XS.length, gb / XS.length];
+  }
+
+  // -------- View --------
+  const cv = document.getElementById('cv');
+  const ctx = cv.getContext('2d');
+
+  // Plot window: w in [-1, 5], b in [-3, 5]
+  const W_MIN = -1, W_MAX = 5, B_MIN = -3, B_MAX = 5;
+  const MARGIN_L = 50, MARGIN_R = 20, MARGIN_T = 20, MARGIN_B = 40;
+  const plotW = cv.width - MARGIN_L - MARGIN_R;
+  const plotH = cv.height - MARGIN_T - MARGIN_B;
+
+  function w2x(w) { return MARGIN_L + (w - W_MIN) / (W_MAX - W_MIN) * plotW; }
+  function b2y(b) { return MARGIN_T + (B_MAX - b) / (B_MAX - B_MIN) * plotH; }
+  function x2w(x) { return W_MIN + (x - MARGIN_L) / plotW * (W_MAX - W_MIN); }
+  function y2b(y) { return B_MAX - (y - MARGIN_T) / plotH * (B_MAX - B_MIN); }
+
+  function color(loss, maxLoss) {
+    // Heatmap: low loss = light green, high loss = red
+    const t = Math.min(1, Math.max(0, loss / maxLoss));
+    const r = Math.round(255 * t);
+    const g = Math.round(220 * (1 - t) + 100);
+    const b = Math.round(180 * (1 - t) + 20);
+    return `rgb(${r},${g},${b})`;
+  }
+
+  let maxLoss = loss(W_MIN, B_MAX); // pick a reference for color scaling
+
+  function drawHeatmap() {
+    const step = 4; // pixel resolution
+    for (let py = MARGIN_T; py < MARGIN_T + plotH; py += step) {
+      for (let px = MARGIN_L; px < MARGIN_L + plotW; px += step) {
+        const w = x2w(px + step/2), b = y2b(py + step/2);
+        ctx.fillStyle = color(loss(w, b), maxLoss);
+        ctx.fillRect(px, py, step, step);
+      }
+    }
+  }
+
+  function drawContours() {
+    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
+    ctx.lineWidth = 1;
+    const levels = [0.5, 2, 6, 15, 30, 60, 120, 200, 400];
+    for (const L of levels) {
+      ctx.beginPath();
+      // Sample over the grid; draw cells whose mean loss is near L
+      const step = 6;
+      for (let py = MARGIN_T; py < MARGIN_T + plotH - step; py += step) {
+        for (let px = MARGIN_L; px < MARGIN_L + plotW - step; px += step) {
+          const w = x2w(px + step/2), b = y2b(py + step/2);
+          const l = loss(w, b);
+          if (Math.abs(l - L) < L * 0.06) {
+            ctx.moveTo(px, py); ctx.lineTo(px + step, py + step);
+          }
+        }
+      }
+      ctx.stroke();
+    }
+  }
+
+  function drawAxes() {
+    ctx.strokeStyle = '#333'; ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(MARGIN_L, MARGIN_T); ctx.lineTo(MARGIN_L, MARGIN_T + plotH);
+    ctx.lineTo(MARGIN_L + plotW, MARGIN_T + plotH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#333'; ctx.font = '13px ui-sans-serif,system-ui,sans-serif';
+    ctx.textAlign = 'center';
+    // x ticks (w)
+    for (let w = Math.ceil(W_MIN); w <= W_MAX; w++) {
+      const px = w2x(w);
+      ctx.beginPath(); ctx.moveTo(px, MARGIN_T + plotH); ctx.lineTo(px, MARGIN_T + plotH + 4); ctx.stroke();
+      ctx.fillText(w, px, MARGIN_T + plotH + 18);
+    }
+    ctx.fillText('w', MARGIN_L + plotW/2, MARGIN_T + plotH + 34);
+    // y ticks (b)
+    ctx.textAlign = 'right';
+    for (let b = Math.ceil(B_MIN); b <= B_MAX; b++) {
+      const py = b2y(b);
+      ctx.beginPath(); ctx.moveTo(MARGIN_L - 4, py); ctx.lineTo(MARGIN_L, py); ctx.stroke();
+      ctx.fillText(b, MARGIN_L - 8, py + 4);
+    }
+    ctx.save();
+    ctx.translate(16, MARGIN_T + plotH/2); ctx.rotate(-Math.PI/2);
+    ctx.textAlign = 'center'; ctx.fillText('b', 0, 0);
+    ctx.restore();
+  }
+
+  function drawTarget() {
+    const tx = w2x(2), ty = b2y(1);
+    ctx.fillStyle = '#10b981';
+    ctx.strokeStyle = '#065f46'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(tx, ty, 8, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#065f46'; ctx.textAlign = 'left'; ctx.font = '12px ui-sans-serif,system-ui';
+    ctx.fillText('target (2, 1)', tx + 12, ty + 4);
+  }
+
+  // -------- State --------
+  let w = 0, b = 0, step = 0;
+  const history = [];
+  let running = false;
+
+  function pushHistory() { history.push([w, b]); }
+
+  function drawPath() {
+    if (history.length < 2) return;
+    ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(w2x(history[0][0]), b2y(history[0][1]));
+    for (let i = 1; i < history.length; i++) {
+      ctx.lineTo(w2x(history[i][0]), b2y(history[i][1]));
+    }
+    ctx.stroke();
+    // Draw history points
+    ctx.fillStyle = '#ef4444';
+    for (const [hw, hb] of history) {
+      ctx.beginPath(); ctx.arc(w2x(hw), b2y(hb), 2.5, 0, Math.PI*2); ctx.fill();
+    }
+  }
+
+  function drawCurrent() {
+    const cx = w2x(w), cy = b2y(b);
+    // gradient arrow (opposite of gradient = nudge direction)
+    const [gw, gb] = grads(w, b);
+    const arrLen = 30;
+    const mag = Math.hypot(gw, gb) || 1;
+    const dx = -gw / mag * arrLen, dy = gb / mag * arrLen; // y flipped
+    ctx.strokeStyle = '#1d4ed8'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + dx, cy + dy); ctx.stroke();
+    // arrowhead
+    const ang = Math.atan2(dy, dx);
+    ctx.beginPath();
+    ctx.moveTo(cx + dx, cy + dy);
+    ctx.lineTo(cx + dx - 8 * Math.cos(ang - 0.4), cy + dy - 8 * Math.sin(ang - 0.4));
+    ctx.lineTo(cx + dx - 8 * Math.cos(ang + 0.4), cy + dy - 8 * Math.sin(ang + 0.4));
+    ctx.closePath(); ctx.fillStyle = '#1d4ed8'; ctx.fill();
+    // ball
+    ctx.fillStyle = '#3b82f6';
+    ctx.strokeStyle = '#1e40af'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(cx, cy, 10, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+  }
+
+  function updateStatsPanel() {
+    const [gw, gb] = grads(w, b);
+    document.getElementById('stepCount').textContent = step;
+    document.getElementById('wVal').textContent = w.toFixed(3);
+    document.getElementById('bVal').textContent = b.toFixed(3);
+    document.getElementById('lossVal').textContent = loss(w, b).toFixed(3);
+    document.getElementById('gwVal').textContent = gw.toFixed(2);
+    document.getElementById('gbVal').textContent = gb.toFixed(2);
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    drawHeatmap();
+    drawContours();
+    drawAxes();
+    drawTarget();
+    drawPath();
+    drawCurrent();
+    updateStatsPanel();
+  }
+
+  function doStep() {
+    const lr = parseFloat(document.getElementById('lr').value);
+    const [gw, gb] = grads(w, b);
+    w = w - lr * gw;
+    b = b - lr * gb;
+    // Clamp into view
+    w = Math.max(W_MIN, Math.min(W_MAX, w));
+    b = Math.max(B_MIN, Math.min(B_MAX, b));
+    step++;
+    pushHistory();
+    render();
+  }
+
+  function reset() {
+    w = 0; b = 0; step = 0;
+    history.length = 0;
+    pushHistory();
+    running = false;
+    document.getElementById('run').textContent = 'Run';
+    render();
+  }
+
+  // -------- Events --------
+  document.getElementById('lr').addEventListener('input', e => {
+    document.getElementById('lrVal').textContent = (+e.target.value).toFixed(3);
+  });
+  document.getElementById('spd').addEventListener('input', e => {
+    document.getElementById('spdVal').textContent = e.target.value;
+  });
+  document.getElementById('step').addEventListener('click', doStep);
+  document.getElementById('reset').addEventListener('click', reset);
+  document.getElementById('run').addEventListener('click', () => {
+    running = !running;
+    document.getElementById('run').textContent = running ? 'Pause' : 'Run';
+    if (running) loop();
+  });
+
+  cv.addEventListener('click', e => {
+    const r = cv.getBoundingClientRect();
+    const px = e.clientX - r.left, py = e.clientY - r.top;
+    const nw = x2w(px), nb = y2b(py);
+    if (nw < W_MIN || nw > W_MAX || nb < B_MIN || nb > B_MAX) return;
+    w = nw; b = nb; step = 0;
+    history.length = 0; pushHistory();
+    render();
+  });
+
+  function loop() {
+    if (!running) return;
+    doStep();
+    const spd = parseInt(document.getElementById('spd').value, 10);
+    if (loss(w, b) < 0.0001) {
+      running = false;
+      document.getElementById('run').textContent = 'Run';
+      return;
+    }
+    setTimeout(loop, spd);
+  }
+
+  // Initial render
+  reset();
+</script>
+</body>
+</html>

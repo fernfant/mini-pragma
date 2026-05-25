@@ -250,3 +250,14 @@ Three sentences. Memorise these:
 > 3. **PyTorch computes which way to nudge them, automatically, for free, no matter how many numbers there are.**
 
 That's it. Everything else in the course is decoration.
+
+---
+
+## 🪜 Optional next steps before Lesson 2
+
+If you want to go deeper before moving on:
+
+- **[Lesson 1b — Architecture vs. Training](01b_architecture_vs_training.md)** — separates two ideas that are easy to confuse: what the model computes vs. how its knobs get tuned. Shows a side-by-side comparison of linear regression (2 knobs) and an embedding-based classifier (12 knobs), both trained with the same loop.
+- **[Lesson 1c — Inside the training loop](01c_gradient_descent.md)** — opens up `loss.backward()` and `opt.step()`. Shows by hand how the gradient is computed, and includes an [interactive visualisation](visuals/gradient_descent_interactive.html) you can play with.
+
+Both are optional. They're there in case "PyTorch handles it" felt too hand-wavy.

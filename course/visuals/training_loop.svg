@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 420" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .title { font-size: 22px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .sub { font-size: 14px; fill: #666; text-anchor: middle; }
+    .step-num { font-size: 22px; font-weight: 800; fill: #fff; text-anchor: middle; }
+    .step-title { font-size: 15px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .step-code { font-family: ui-monospace, monospace; font-size: 13px; fill: #111; text-anchor: middle; }
+    .step-desc { font-size: 12px; fill: #555; text-anchor: middle; }
+    .arrow { stroke: #333; stroke-width: 2.5; fill: none; marker-end: url(#arr); }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="450" y="32" class="title">The 5-line training loop — same for ANY architecture</text>
+  <text x="450" y="56" class="sub">Run this 100, 1000, or a million times. PyTorch nudges every knob a tiny bit each iteration.</text>
+
+  <!-- Step 1 -->
+  <circle cx="100" cy="170" r="32" fill="#3b82f6"/>
+  <text x="100" y="178" class="step-num">1</text>
+  <text x="100" y="240" class="step-title">PREDICT</text>
+  <text x="100" y="262" class="step-code">y_pred = model(x)</text>
+  <text x="100" y="284" class="step-desc">make a guess</text>
+
+  <line x1="142" y1="170" x2="218" y2="170" class="arrow"/>
+
+  <!-- Step 2 -->
+  <circle cx="260" cy="170" r="32" fill="#ef4444"/>
+  <text x="260" y="178" class="step-num">2</text>
+  <text x="260" y="240" class="step-title">LOSS</text>
+  <text x="260" y="262" class="step-code">loss = loss_fn(y_pred, y)</text>
+  <text x="260" y="284" class="step-desc">measure wrongness</text>
+
+  <line x1="302" y1="170" x2="378" y2="170" class="arrow"/>
+
+  <!-- Step 3 -->
+  <circle cx="420" cy="170" r="32" fill="#a3a3a3"/>
+  <text x="420" y="178" class="step-num">3</text>
+  <text x="420" y="240" class="step-title">CLEAR NOTES</text>
+  <text x="420" y="262" class="step-code">opt.zero_grad()</text>
+  <text x="420" y="284" class="step-desc">reset last step's gradients</text>
+
+  <line x1="462" y1="170" x2="538" y2="170" class="arrow"/>
+
+  <!-- Step 4 -->
+  <circle cx="580" cy="170" r="32" fill="#8b5cf6"/>
+  <text x="580" y="178" class="step-num">4</text>
+  <text x="580" y="240" class="step-title">BACKWARD</text>
+  <text x="580" y="262" class="step-code">loss.backward()</text>
+  <text x="580" y="284" class="step-desc">compute gradient</text>
+  <text x="580" y="302" class="step-desc">for every knob</text>
+
+  <line x1="622" y1="170" x2="698" y2="170" class="arrow"/>
+
+  <!-- Step 5 -->
+  <circle cx="740" cy="170" r="32" fill="#10b981"/>
+  <text x="740" y="178" class="step-num">5</text>
+  <text x="740" y="240" class="step-title">STEP</text>
+  <text x="740" y="262" class="step-code">opt.step()</text>
+  <text x="740" y="284" class="step-desc">nudge every knob</text>
+  <text x="740" y="302" class="step-desc">opposite to its gradient</text>
+
+  <!-- Loop arrow -->
+  <path d="M 740 138 Q 740 80 540 80 L 270 80 Q 100 80 100 138" class="arrow"/>
+  <text x="420" y="72" class="sub" style="font-weight:600;fill:#333">↻ repeat</text>
+
+  <!-- Bottom -->
+  <text x="450" y="380" class="sub" style="font-weight:600">Identical in Model A (2 knobs) and Model B (12 knobs) and PRAGMA-L (1,000,000,000 knobs).</text>
+  <text x="450" y="402" class="sub">Architecture changes. Training recipe does not.</text>
+</svg>
