@@ -17,11 +17,14 @@ to build your own version from scratch in the capstone.
 | 1c | [`aside/model_A_with_gradients.py`](aside/model_A_with_gradients.py) | [`01c_gradient_descent.md`](01c_gradient_descent.md) — inside the training loop: loss and gradient descent (with an [interactive visualisation](visuals/gradient_descent_interactive.html)) |
 | 2 | [`02_tokens_and_embeddings.py`](02_tokens_and_embeddings.py) | [`02_walkthrough.md`](02_walkthrough.md) — how text becomes numbers |
 | 3 | [`03_attention.py`](03_attention.py) | [`03_walkthrough.md`](03_walkthrough.md) — the heart of the Transformer |
+| 3b | — | [`03b_why_transformers_won.md`](03b_why_transformers_won.md) — why attention beat RNNs (speed, memory, scale) |
 | 4 | [`04_transformer_and_mlm.py`](04_transformer_and_mlm.py) | [`04_walkthrough.md`](04_walkthrough.md) — putting it all together with the fill-in-the-blank training game |
 | 5 | — | [`05_putting_it_together.md`](05_putting_it_together.md) — re-read `pragma_mini.py` and see what real PRAGMA adds |
 | 6 | — | [`06_capstone.md`](06_capstone.md) — build your own mini fraud detector |
 
-> **Lessons 1b and 1c are optional but recommended** if Lesson 1 left you wondering "but where exactly does the learning happen?" or "what is gradient descent actually doing?". They build the mental model that makes Lessons 2-4 click.
+> **Lessons 1b, 1c, and 3b are optional but recommended.** They build the
+> mental model that makes the core lessons stick. Skip them on a first read
+> and come back when something feels hand-wavy.
 
 ## How to use the course
 

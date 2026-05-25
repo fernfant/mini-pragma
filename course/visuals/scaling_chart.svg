@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .title { font-size: 20px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .sub { font-size: 13px; fill: #555; text-anchor: middle; }
+    .axis { stroke: #333; stroke-width: 1.5; fill: none; }
+    .gridline { stroke: #eee; stroke-width: 1; }
+    .tick-label { font-size: 11px; fill: #666; }
+    .axis-title { font-size: 13px; fill: #333; font-weight: 600; }
+    .rnn-line { stroke: #ef4444; stroke-width: 3; fill: none; }
+    .tx-line { stroke: #3b82f6; stroke-width: 3; fill: none; }
+    .annot { font-size: 12px; }
+    .milestone { font-size: 11px; fill: #555; }
+    .milestone-bold { font-size: 12px; font-weight: 700; }
+  </style>
+
+  <text x="450" y="32" class="title">Why scale matters: Transformers keep getting smarter as they grow</text>
+  <text x="450" y="54" class="sub">Models from ~2015–2025. Y axis = task quality (rough). X axis = parameters (log scale).</text>
+
+  <!-- Plot area -->
+  <line x1="100" y1="420" x2="820" y2="420" class="axis"/>
+  <line x1="100" y1="100" x2="100" y2="420" class="axis"/>
+
+  <!-- X axis ticks: log scale 10^6 to 10^12 -->
+  <!-- 1M, 10M, 100M, 1B, 10B, 100B, 1T -->
+  <g>
+    <line x1="100" y1="420" x2="100" y2="425" class="axis"/>
+    <text x="100" y="440" class="tick-label" text-anchor="middle">1M</text>
+
+    <line x1="220" y1="420" x2="220" y2="425" class="axis"/>
+    <text x="220" y="440" class="tick-label" text-anchor="middle">10M</text>
+
+    <line x1="340" y1="420" x2="340" y2="425" class="axis"/>
+    <text x="340" y="440" class="tick-label" text-anchor="middle">100M</text>
+
+    <line x1="460" y1="420" x2="460" y2="425" class="axis"/>
+    <text x="460" y="440" class="tick-label" text-anchor="middle">1B</text>
+
+    <line x1="580" y1="420" x2="580" y2="425" class="axis"/>
+    <text x="580" y="440" class="tick-label" text-anchor="middle">10B</text>
+
+    <line x1="700" y1="420" x2="700" y2="425" class="axis"/>
+    <text x="700" y="440" class="tick-label" text-anchor="middle">100B</text>
+
+    <line x1="820" y1="420" x2="820" y2="425" class="axis"/>
+    <text x="820" y="440" class="tick-label" text-anchor="middle">1T</text>
+  </g>
+
+  <text x="460" y="468" class="axis-title" text-anchor="middle">Number of parameters (the "knobs")</text>
+
+  <!-- Y axis tick labels -->
+  <text x="92" y="424" class="tick-label" text-anchor="end">basic</text>
+  <text x="92" y="332" class="tick-label" text-anchor="end">good</text>
+  <text x="92" y="240" class="tick-label" text-anchor="end">great</text>
+  <text x="92" y="148" class="tick-label" text-anchor="end">superhuman</text>
+
+  <text x="50" y="260" class="axis-title" transform="rotate(-90 50 260)" text-anchor="middle">Task quality →</text>
+
+  <!-- gridlines -->
+  <line x1="100" y1="332" x2="820" y2="332" class="gridline"/>
+  <line x1="100" y1="240" x2="820" y2="240" class="gridline"/>
+  <line x1="100" y1="148" x2="820" y2="148" class="gridline"/>
+
+  <!-- RNN/LSTM line: flattens around 100M params -->
+  <!-- Goes from (100, 400) up to plateau around (340, 320), then flat -->
+  <path d="M 100 400 Q 200 360 280 330 T 380 318 L 580 318 L 820 318" class="rnn-line"/>
+
+  <!-- RNN dots -->
+  <circle cx="100" cy="400" r="5" fill="#ef4444"/>
+  <circle cx="220" cy="360" r="5" fill="#ef4444"/>
+  <circle cx="340" cy="320" r="5" fill="#ef4444"/>
+  <circle cx="460" cy="318" r="5" fill="#ef4444"/>
+
+  <!-- Transformer line: keeps climbing -->
+  <path d="M 100 390 Q 180 360 250 320 T 380 240 Q 480 175 580 145 T 820 110" class="tx-line"/>
+
+  <!-- Transformer dots with model labels -->
+  <circle cx="100" cy="390" r="5" fill="#3b82f6"/>
+  <circle cx="220" cy="350" r="5" fill="#3b82f6"/>
+  <circle cx="340" cy="270" r="5" fill="#3b82f6"/>
+  <text x="350" y="265" class="milestone">BERT-Base (110M)</text>
+
+  <circle cx="460" cy="190" r="5" fill="#3b82f6"/>
+  <text x="470" y="185" class="milestone">GPT-3 (175B...)</text>
+
+  <circle cx="580" cy="145" r="6" fill="#3b82f6"/>
+  <text x="445" y="135" class="milestone-bold" style="fill:#1d4ed8">PRAGMA-L (1B)</text>
+
+  <circle cx="700" cy="125" r="6" fill="#3b82f6"/>
+  <text x="600" y="120" class="milestone">GPT-4 era</text>
+
+  <circle cx="820" cy="110" r="6" fill="#3b82f6"/>
+  <text x="820" y="100" class="milestone" text-anchor="end">today's frontier</text>
+
+  <!-- Legend -->
+  <rect x="640" y="78" width="180" height="44" rx="6" fill="#fafafa" stroke="#ddd"/>
+  <line x1="654" y1="92" x2="688" y2="92" class="tx-line"/>
+  <text x="694" y="96" class="annot" style="fill:#1d4ed8;font-weight:600">Transformer</text>
+  <line x1="654" y1="112" x2="688" y2="112" class="rnn-line"/>
+  <text x="694" y="116" class="annot" style="fill:#b45309;font-weight:600">RNN / LSTM</text>
+
+  <!-- Plateau annotation -->
+  <text x="600" y="332" class="annot" style="fill:#b45309;font-style:italic">stuck — hits a wall around 100M params</text>
+  <line x1="600" y1="338" x2="540" y2="332" stroke="#b45309" stroke-width="1" marker-end="url(#arr-orange)"/>
+  <defs>
+    <marker id="arr-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#b45309"/>
+    </marker>
+  </defs>
+
+  <!-- key takeaway -->
+  <text x="450" y="490" class="sub" style="font-weight:700;fill:#111">The Transformer broke the scaling ceiling. That's the headline.</text>
+</svg>
