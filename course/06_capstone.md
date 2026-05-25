@@ -162,5 +162,6 @@ Have fun.
 
 ---
 
-> **Note for parents/teachers:** a reference solution lives in a separate
-> private repo. Ask the repo owner for access if you need it.
+> **Stuck? Want to compare?** A full reference solution lives at
+> [fernfant/mini-pragma-solutions](https://github.com/fernfant/mini-pragma-solutions).
+> Try it yourself first — peek only when you've given it a real shot.
