@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Built artifacts from the capstone solution
+course/_solutions/data.pt
+course/_solutions/encoder.pt
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Claude
+.claude/
+
+# Source paper (not redistributable)
+Pragna_Model.pdf
