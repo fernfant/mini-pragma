@@ -25,7 +25,7 @@ torch.manual_seed(0)
 # In real life this rule could be "given these events, will the user default
 # on a loan?" — but the principle is identical.
 x      = torch.tensor([1., 2., 3., 4., 5., 6., 7., 8.])
-y_true = 2 * x + 1
+y_true = -2 * x + 100
 
 # Our model is two numbers. We start them at 0 — totally wrong.
 # The `requires_grad=True` part tells PyTorch: "these are the knobs to turn".
@@ -38,13 +38,13 @@ opt = torch.optim.SGD([w, b], lr=0.01)
 
 print(f"Before training:  y ≈ {w.item():.2f}*x + {b.item():.2f}")
 
-for step in range(1000):
+for step in range(5000):
     y_pred = w * x + b                          # the model's guess
     loss   = ((y_pred - y_true) ** 2).mean()    # how wrong are we?
     opt.zero_grad()
     loss.backward()                             # which way is "less wrong"?
     opt.step()                                  # take one tiny step that way
-    if step % 200 == 0:
+    if step % 500 == 0:
         print(f"  step {step:4d}   w={w.item():.3f}   b={b.item():.3f}   loss={loss.item():.4f}")
 
 print(f"After training:   y ≈ {w.item():.2f}*x + {b.item():.2f}")
