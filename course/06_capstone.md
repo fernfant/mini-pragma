@@ -159,3 +159,8 @@ A folder with:
 If you ever publish a paper based on this, send it to dad.
 
 Have fun.
+
+---
+
+> **Note for parents/teachers:** a reference solution lives in a separate
+> private repo. Ask the repo owner for access if you need it.

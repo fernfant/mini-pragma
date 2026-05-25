@@ -42,3 +42,13 @@ unlabelled data, then adapt to many downstream tasks. PRAGMA shows this works
 not just for text or images but for structured financial event streams too.
 
 This repo is a hands-on way to understand the recipe.
+
+## License
+
+[MIT](LICENSE) — use it, fork it, remix it, teach with it.
+
+## Author
+
+Built by [@fernfant](https://github.com/fernfant) as a way to teach
+machine-learning fundamentals to my son. If you use it to teach anyone in
+your life, I'd love to hear about it.
