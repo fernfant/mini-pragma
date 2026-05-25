@@ -19,8 +19,8 @@ to build your own version from scratch in the capstone.
 | 3 | [`03_attention.py`](03_attention.py) | [`03_walkthrough.md`](03_walkthrough.md) — the heart of the Transformer |
 | 3b | — | [`03b_why_transformers_won.md`](03b_why_transformers_won.md) — why attention beat RNNs (speed, memory, scale) |
 | 4 | [`04_transformer_and_mlm.py`](04_transformer_and_mlm.py) | [`04_walkthrough.md`](04_walkthrough.md) — putting it all together with the fill-in-the-blank training game |
-| 5 | [`../pragma_mini.py`](../pragma_mini.py) | [`05_putting_it_together.md`](05_putting_it_together.md) — line-by-line walkthrough of `pragma_mini.py`, plus a deeper look at what real PRAGMA adds (key-value tokenisation, encoder depth, …) |
-| 5b | [`05b_streaming_churn.py`](05b_streaming_churn.py) | [`05b_walkthrough.md`](05b_walkthrough.md) — same recipe applied to a realistic problem: streaming-service churn prediction (with the full pre-train → freeze → probe pipeline) |
+| 5 | [`../pragma_mini.py`](../pragma_mini.py)<br>[notebook 📓](notebooks/lesson_05_pragma_mini.ipynb) | [`05_putting_it_together.md`](05_putting_it_together.md) — line-by-line walkthrough of `pragma_mini.py`, plus a deeper look at what real PRAGMA adds (key-value tokenisation, encoder depth, …) |
+| 5b | [`05b_streaming_churn.py`](05b_streaming_churn.py)<br>[notebook 📓](notebooks/lesson_05b_streaming_churn.ipynb) | [`05b_walkthrough.md`](05b_walkthrough.md) — same recipe applied to a realistic problem: streaming-service churn prediction (with the full pre-train → freeze → probe pipeline) |
 | 6 | — | [`06_capstone.md`](06_capstone.md) — build your own mini fraud detector |
 
 > **Lessons 1b, 1c, and 3b are optional but recommended.** They build the
@@ -41,9 +41,25 @@ Then move on to the next lesson.
 
 ## How to run a lesson
 
+Three ways:
+
 ```bash
+# 1. Run a script straight through
 cd course
 python3 01_how_models_learn.py
+```
+
+```bash
+# 2. Open a Jupyter notebook (Lessons 5 and 5b)
+pip3 install jupyter   # if you don't have it
+jupyter notebook course/notebooks/
+# then click into lesson_05_pragma_mini.ipynb and run cells one by one
+```
+
+```bash
+# 3. Just READ on GitHub
+# Both the .py files and the .ipynb notebooks render directly on GitHub —
+# you can read the line-by-line explanations without installing anything.
 ```
 
 ## What you should already know
