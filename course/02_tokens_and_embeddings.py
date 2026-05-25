@@ -11,10 +11,19 @@ To make text usable, we do two things:
 Why two steps? IDs alone are meaningless — "dog" might be 5 and "cat" might be 6,
 but 5 and 6 don't tell us anything about how those words relate.
 
-An EMBEDDING is a vector of numbers — like coordinates in space. After training,
-words with similar meanings end up at nearby points. "Dog" and "puppy" become
-close; "dog" and "spaceship" become far apart. The model figures out where to
-put each word on its own.
+An EMBEDDING is a list of numbers that describes a word — like a checklist of
+"hidden features". Think of how you might describe a person with 4 numbers
+(0-10 for: ice cream, soccer, video games, cleaning). Two kids with similar
+lists are similar people. Words work the same way: similar words end up with
+similar number lists. The computer makes up the "features" by itself during
+training — nobody tells it what each slot means.
+
+To compare two lists, use a DOT PRODUCT — multiply matching slots, add the
+products. Big total = similar. Small total = not similar. We do an example
+by hand below.
+
+For the full intuition with worked examples, see the companion walkthrough:
+  02_walkthrough.md  (read it before reading the code if any of this is fuzzy)
 
 Run:  python3 02_tokens_and_embeddings.py
 """
@@ -49,7 +58,10 @@ print(f"\nSentence {sentence}  ->  ids {ids}")
 # Step 2: EMBED
 # ----------------------------------------------------------------------------
 # An embedding table is just a 2-D table. Row i = vector for word i.
-# We pick how many numbers each vector has — here, 4.
+# Same idea as the "kid checklist" in the intro: each word is described by
+# 4 numbers (hidden features the computer makes up itself during training).
+# Real models use 512, 768, or 1024 numbers per word — we use 4 so we can
+# print them and look at them.
 embedding_dim = 4
 emb = nn.Embedding(len(vocab), embedding_dim)
 
@@ -75,9 +87,12 @@ vectors = emb(ids_tensor)
 print(f"\nSentence vectors:  shape {tuple(vectors.shape)}  (2 words, 4 numbers each)")
 print(vectors.detach())
 
-# Measuring "similarity" between words: the dot product. Two vectors that
-# point in the same direction have a big dot product. Two random vectors
-# usually have a small one.
+# Measuring "similarity" between two words: the dot product.
+# Same math as the kid example from the intro: multiply matching slots
+# (slot 1 × slot 1, slot 2 × slot 2, ...) and add the products.
+# Big number = words are similar. Small or negative = words are different.
+# (Right now the embeddings are random, so these numbers are meaningless.
+#  After training, they would actually reflect word meaning.)
 def similarity(a, b):
     return torch.dot(emb(torch.tensor(tok2id[a])), emb(torch.tensor(tok2id[b]))).item()
 

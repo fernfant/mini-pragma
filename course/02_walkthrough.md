@@ -6,6 +6,75 @@ This lesson teaches **how text becomes numbers** so a model can work with it. Th
 
 ---
 
+## 🍕 Before the code: the big idea (forget words for a moment)
+
+The leap from "the word `dog`" to "the list of numbers `[0.32, -1.26, 0.35, 0.31]`" is huge. Let's build the intuition with something concrete first.
+
+### Describing a person as a list of numbers
+
+How much (0 to 10) do you like each of these?
+
+- Ice cream: ___
+- Soccer: ___
+- Video games: ___
+- Cleaning your room: ___
+
+Say you answered **[10, 7, 9, 1]**. Congratulations — *you* are now a list of 4 numbers.
+
+Your best friend might be **[9, 8, 10, 2]** — very similar. Grandma might be **[4, 0, 0, 9]** — very different.
+
+| | Ice cream | Soccer | Games | Cleaning |
+|---|---|---|---|---|
+| **You** | 10 | 7 | 9 | 1 |
+| **Friend** | 9 | 8 | 10 | 2 |
+| **Grandma** | 4 | 0 | 0 | 9 |
+
+### How does a computer tell who's similar to whom?
+
+The computer only sees the number lists. It needs a math formula that turns *"are these number lists alike?"* into a single answer.
+
+**The formula is dumb-simple. Multiply matching slots. Add up the products.** That's the *dot product*.
+
+```
+You · Friend  =  10×9 + 7×8 + 9×10 + 1×2  =  90 + 56 + 90 + 2  =  238    (big = similar!)
+You · Grandma =  10×4 + 7×0 + 9×0 + 1×9   =  40 +  0 +  0 + 9  =   49    (small = not similar)
+```
+
+**Why this works**:
+
+- When you BOTH score high on a thing, the product is big (`10 × 9 = 90`) → strong agreement → boosts the score.
+- When one scores high and the other scores low, the product is small (`9 × 0 = 0`) → disagreement → doesn't help the score.
+- Big total = "you agree about lots of things" = similar. Small total = not similar.
+
+### Now the punchline — words work the exact same way
+
+Every word in the computer's vocabulary gets a list of numbers. Pretend `dog` looks like this (if the slots had human-readable names):
+
+| | is_animal | makes_sound | is_pet | is_furry |
+|---|---|---|---|---|
+| `dog` | 8 | 7 | 9 | 9 |
+| `cat` | 8 | 6 | 9 | 9 |
+| `bark` | 0 | 9 | 0 | 0 |
+| `spaceship` | 0 | 1 | 0 | 0 |
+
+`dog` and `cat` have nearly identical lists → big dot product → SIMILAR. `dog` and `spaceship` have tiny overlap → small dot product → NOT similar. The computer can tell *purely from the numbers*, without ever knowing what the words mean.
+
+### The mind-blowing twist
+
+In real AI, **the slots aren't given human-readable names**. The computer doesn't know what "is_furry" means. It just sees:
+
+```
+dog  →  [0.32, -1.26, 0.35, 0.31]
+```
+
+Four mystery numbers. **The computer invents its own categories** during training. Maybe slot 1 ends up meaning "animal-ness" — but nobody told it to. Maybe slot 2 means something humans can't put a name on at all. It doesn't matter. What matters: *similar words end up with similar number lists*, so the dot product comes out big.
+
+These mystery-number lists are called **embeddings**. Each word's list is its embedding vector. The size of the list (4 in our toy, 1024 in PRAGMA-Large) is called the *embedding dimension*.
+
+OK — now the code makes sense. Let's go.
+
+---
+
 ### Lines 20–22: imports and reproducibility
 
 ```python
@@ -147,15 +216,32 @@ print(f"  dog · fish  = {similarity('dog', 'fish'):.2f}")
 print(f"  bark · meow = {similarity('bark', 'meow'):.2f}")
 ```
 
-**What it does:** computes the *dot product* of two word vectors. A dot product is a single number that measures how much two vectors "agree":
-- Big positive → vectors point in similar directions → words are similar.
-- Near zero → vectors are unrelated.
-- Big negative → vectors point in opposite directions.
+**What it does:** computes the *dot product* of two word vectors — same math we did with you-vs-friend-vs-grandma at the top of this file. Multiply matching slots, add the products.
 
-Right now the numbers are random (e.g., `dog · cat = -1.21`). Meaningless. **But** if you trained these embeddings on real text:
-- `dog · cat` would become a big positive number (both are pets).
-- `bark · meow` would also become positive (both are animal sounds).
-- `dog · couch` would be smaller.
+Let's actually do one by hand. From the program's output, suppose:
+```
+dog  =  [ 0.32, -1.26,  0.35,  0.31]
+fish =  [-1.35, -1.70,  0.57,  0.79]
+```
+
+Then:
+```
+dog · fish  =  (0.32 × -1.35) + (-1.26 × -1.70) + (0.35 × 0.57) + (0.31 × 0.79)
+            =  -0.43 + 2.14 + 0.20 + 0.24
+            =   2.15
+```
+
+Same arithmetic, exactly. Just with smaller, signed numbers (the embeddings can go negative — that just means "below average on this hidden feature").
+
+What the result means:
+- **Big positive** → vectors point in similar directions → words are similar.
+- **Near zero** → vectors are unrelated.
+- **Big negative** → vectors point in opposite directions (one has "high" where the other has "low" on the same hidden feature).
+
+Right now the numbers are random (e.g., `dog · cat = -1.21`, which falsely says "dog and cat have nothing in common"). Meaningless. **But** if you trained these embeddings on real text:
+- `dog · cat` would slide up to become a big positive number (both are pets).
+- `bark · meow` would also become big positive (both are animal sounds).
+- `dog · couch` would stay smaller.
 
 Dot products are the heart of **attention** (Lesson 3) and the standard way to measure embedding similarity in production systems (search engines, recommendation systems, RAG).
 
