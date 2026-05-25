@@ -6,6 +6,125 @@ This is **the** big lesson. Attention is the heart of the Transformer. Once you'
 
 ---
 
+## 🐾 Before the code: a 2-word worked example (do this by hand)
+
+The code uses 4 random words. Too many numbers to follow. Let's strip it down to **2 words** and **2-dim embeddings** so we can compute every step on paper.
+
+### Setup
+
+Sentence: **"the cat"**. Pretend the embeddings are (these are made up — only the mechanism matters):
+
+```
+the  →  [1, 0]
+cat  →  [2, 3]
+```
+
+So the input matrix `x` looks like:
+
+```
+        num1  num2
+  the  [  1    0  ]
+  cat  [  2    3  ]
+```
+
+### Step 1 — score every pair of words (dot products)
+
+We compute one dot product per pair, all four at once. This is what `x @ x.T` does in the code; let's do it by hand:
+
+```
+the · the  =  (1×1) + (0×0)  =  1
+the · cat  =  (1×2) + (0×3)  =  2
+cat · the  =  (2×1) + (3×0)  =  2
+cat · cat  =  (2×2) + (3×3)  =  13
+```
+
+Drop the four numbers into a grid — the **scores matrix**:
+
+```
+              the    cat
+   the   [   1      2  ]
+   cat   [   2     13  ]
+```
+
+What this tells us:
+- `cat · cat = 13` is huge — cat is very related to itself (no surprise).
+- `the · the = 1` is small — "the" is a weak/bland word.
+- `the · cat = 2` — a little relation.
+
+### Step 2 — softmax: turn scores into "attention budgets"
+
+Each word has 100% attention to spend. Softmax converts a row of raw scores into a row of percentages that sum to 1. **Rule of thumb:** the biggest number wins most of the percentage. When one number is *way* bigger than the others, it eats almost the whole budget.
+
+**Row for "the": [1, 2]**
+Both small, 2 is a bit bigger → "the" leans toward cat:
+```
+the looks at:  the (0.27)   cat (0.73)
+```
+
+**Row for "cat": [2, 13]**
+13 is *way* bigger than 2 → cat ignores everything else:
+```
+cat looks at:  the (≈ 0.00)   cat (≈ 1.00)
+```
+
+The **attention matrix**:
+
+```
+                the      cat
+   the   [    0.27    0.73   ]   ← "the" mostly looks at "cat"
+   cat   [    0.00    1.00   ]   ← "cat" looks entirely at itself
+```
+
+### Step 3 — mix: each word's new vector = a weighted blend
+
+Each row of attention is a recipe for mixing the word vectors. This is what `attention @ x` does in the code.
+
+**New "the":** the attention row is `[0.27, 0.73]`:
+
+```
+new "the"  =  0.27 × [1, 0]   +  0.73 × [2, 3]
+           =  [0.27, 0]       +  [1.46, 2.19]
+           =  [1.73, 2.19]
+```
+
+**New "cat":** the attention row is `[0.00, 1.00]`:
+
+```
+new "cat"  =  0.00 × [1, 0]   +  1.00 × [2, 3]
+           =  [0, 0]          +  [2, 3]
+           =  [2, 3]                              ← unchanged
+```
+
+### The reveal
+
+```
+              BEFORE              AFTER
+    the    [1.00, 0.00]   →   [1.73, 2.19]    ← absorbed cat-flavor!
+    cat    [2.00, 3.00]   →   [2.00, 3.00]    ← stayed itself
+```
+
+**"The" got smarter.** It started as `[1, 0]` (bland — could mean anything). After attention, it's `[1.73, 2.19]` — much closer to cat. It now means "the *cat*", not just "the".
+
+**"Cat" stayed itself** because it already had a strong identity (huge `cat · cat = 13`), so it gave 100% of its attention to itself.
+
+> **The intuition:** words that have weak meaning on their own (*the*, *a*, *is*) borrow meaning from the strong words around them. Strong words stay strong. This is how *"bank"* can mean different things in *"river bank"* vs *"money bank"* — after attention, the `bank` vector has absorbed flavor from `river` or `money`.
+
+### Three steps, one mental picture
+
+```
+  Step 1:  Words ──►  Scores matrix         "how related is each pair?"
+                 ↓
+  Step 2:  Scores ──► Attention matrix      "split 100% across other words"
+                 ↓
+  Step 3:  Attention + words ──► New words  "blend — each word now has context"
+```
+
+**That's attention.** Same idea in ChatGPT, BERT, PRAGMA — they just use thousands of words instead of 2, and 1024 numbers per word instead of 2. The lines you're about to read in the code do exactly this, just with bigger matrices.
+
+OK, now the code makes sense. Let's go.
+
+---
+
 ### Lines 18–22: imports
 
 ```python

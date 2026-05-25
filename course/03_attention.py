@@ -12,6 +12,23 @@ The intuition:
 ATTENTION lets the model do the same thing: every word looks at every other
 word and decides which ones are important for understanding itself.
 
+Mechanically, attention is THREE STEPS:
+
+  1. SCORES  — for every pair of words, compute their dot product (Lesson 2).
+               Big dot product = related.
+  2. SOFTMAX — turn each row of scores into a "100% attention budget"
+               (percentages that sum to 1). The biggest score wins most.
+  3. MIX     — each word's new vector = a weighted blend of all word vectors,
+               weighted by its attention budget. Now each word's vector has
+               absorbed context from the others.
+
+For a tiny worked example you can do on paper (just 2 words, 2-dim
+embeddings, every multiplication shown), see the companion walkthrough:
+
+  03_walkthrough.md  (read it first if any of this feels abstract)
+
+The code below does the same three steps with 4 words and 4-dim embeddings.
+
 Run:  python3 03_attention.py
 """
 import torch
@@ -31,12 +48,15 @@ print(x)
 # ----------------------------------------------------------------------------
 # Naïve attention — the simplest possible version
 # ----------------------------------------------------------------------------
-# For each pair of words, compute a SCORE = how much they match.
-# The simplest score: the dot product of their vectors.
+
+# STEP 1 — SCORES. For every pair of words, compute their dot product.
+# x @ x.T does all 16 pair-wise dot products at once. Big number = related.
+# (Same trick we did by hand for "the · cat" in the walkthrough.)
 scores = x @ x.T                          # shape (4, 4)
 
-# Convert scores into probabilities with softmax (each row sums to 1).
-# Now row i says: "of all the other words, how much should I focus on each?"
+# STEP 2 — SOFTMAX. Turn each row of raw scores into percentages summing to 1.
+# Each row is now a "100% attention budget" — how much this word spends on
+# each other word. Biggest score in the row wins most of the budget.
 attention = F.softmax(scores, dim=-1)
 
 print("\nAttention weights (each row is a probability distribution):")
@@ -44,8 +64,10 @@ print("              " + "  ".join(f"{w:>7s}" for w in words))
 for i, w in enumerate(words):
     print(f"  {w:10s}  " + "  ".join(f"{a:7.3f}" for a in attention[i]))
 
-# Each word's NEW vector = weighted average of all word vectors.
-# So now every word's representation has information about its neighbours.
+# STEP 3 — MIX. Each word's new vector is a weighted blend of all word vectors,
+# using its attention budget as the weights. Words that started bland
+# (small self-score) absorb flavor from their neighbours. Strong words
+# (big self-score) stay mostly themselves.
 new_x = attention @ x
 print("\nOutput vectors (after attention — each word now 'knows' about the others):")
 print(new_x)
