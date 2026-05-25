@@ -19,7 +19,8 @@ to build your own version from scratch in the capstone.
 | 3 | [`03_attention.py`](03_attention.py) | [`03_walkthrough.md`](03_walkthrough.md) — the heart of the Transformer |
 | 3b | — | [`03b_why_transformers_won.md`](03b_why_transformers_won.md) — why attention beat RNNs (speed, memory, scale) |
 | 4 | [`04_transformer_and_mlm.py`](04_transformer_and_mlm.py) | [`04_walkthrough.md`](04_walkthrough.md) — putting it all together with the fill-in-the-blank training game |
-| 5 | — | [`05_putting_it_together.md`](05_putting_it_together.md) — re-read `pragma_mini.py` and see what real PRAGMA adds |
+| 5 | [`../pragma_mini.py`](../pragma_mini.py) | [`05_putting_it_together.md`](05_putting_it_together.md) — line-by-line walkthrough of `pragma_mini.py`, plus a deeper look at what real PRAGMA adds (key-value tokenisation, encoder depth, …) |
+| 5b | [`05b_streaming_churn.py`](05b_streaming_churn.py) | [`05b_walkthrough.md`](05b_walkthrough.md) — same recipe applied to a realistic problem: streaming-service churn prediction (with the full pre-train → freeze → probe pipeline) |
 | 6 | — | [`06_capstone.md`](06_capstone.md) — build your own mini fraud detector |
 
 > **Lessons 1b, 1c, and 3b are optional but recommended.** They build the

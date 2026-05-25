@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" font-family="ui-sans-serif, system-ui, sans-serif">
+  <style>
+    .title { font-size: 22px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .panel-title { font-size: 16px; font-weight: 700; fill: #111; text-anchor: middle; }
+    .sub { font-size: 13px; fill: #555; text-anchor: middle; }
+    .layer-label { font-size: 13px; font-weight: 600; fill: #111; text-anchor: middle; }
+    .insight { font-size: 12px; fill: #555; text-anchor: start; }
+    .arrow { stroke: #333; stroke-width: 2; fill: none; marker-end: url(#arr); }
+  </style>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#333"/>
+    </marker>
+  </defs>
+
+  <text x="500" y="32" class="title">Stacking encoder layers — each layer "looks again" with more context</text>
+  <text x="500" y="56" class="sub">Toy uses 1 layer. Real PRAGMA-Large uses 18. Each layer is one more "round of attention + feed-forward".</text>
+
+  <!-- LEFT: single-layer flow -->
+  <text x="200" y="98" class="panel-title">Lesson 4's tiny model — 1 layer</text>
+
+  <!-- Input -->
+  <rect x="100" y="120" width="200" height="40" rx="6" fill="#f5f5f5" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="200" y="146" class="layer-label">"the cat chased"</text>
+
+  <line x1="200" y1="160" x2="200" y2="184" class="arrow"/>
+
+  <rect x="100" y="188" width="200" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="200" y="208" class="layer-label">Embedding</text>
+  <text x="200" y="224" class="sub">(Lesson 2)</text>
+
+  <line x1="200" y1="232" x2="200" y2="256" class="arrow"/>
+
+  <rect x="100" y="260" width="200" height="60" rx="8" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-width="2"/>
+  <text x="200" y="282" class="layer-label">Encoder Layer 1</text>
+  <text x="200" y="300" class="sub">attention + FFN</text>
+  <text x="200" y="316" class="sub">(Lesson 3)</text>
+
+  <line x1="200" y1="320" x2="200" y2="344" class="arrow"/>
+
+  <rect x="100" y="348" width="200" height="44" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="200" y="370" class="layer-label">Output head</text>
+  <text x="200" y="384" class="sub">predict masked word</text>
+
+  <text x="200" y="430" class="sub">Each word can only "look around once".</text>
+  <text x="200" y="448" class="sub">Catches simple patterns.</text>
+
+  <!-- RIGHT: stacked layers -->
+  <text x="700" y="98" class="panel-title">PRAGMA-Large — 18 layers (drawn as 5)</text>
+
+  <rect x="600" y="120" width="200" height="40" rx="6" fill="#f5f5f5" stroke="#999" stroke-dasharray="4 3"/>
+  <text x="700" y="146" class="layer-label">"the cat chased"</text>
+
+  <line x1="700" y1="160" x2="700" y2="178" class="arrow"/>
+
+  <rect x="600" y="182" width="200" height="38" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="700" y="206" class="layer-label">Embedding</text>
+
+  <line x1="700" y1="220" x2="700" y2="234" class="arrow"/>
+
+  <!-- Stack of 5 encoder layers, each with insight annotation -->
+  <g>
+    <rect x="600" y="238" width="200" height="38" rx="8" fill="#a855f7" fill-opacity="0.15" stroke="#a855f7" stroke-width="2"/>
+    <text x="700" y="262" class="layer-label">Encoder Layer 1</text>
+    <text x="810" y="262" class="insight">surface relationships</text>
+  </g>
+
+  <line x1="700" y1="276" x2="700" y2="288" class="arrow"/>
+
+  <g>
+    <rect x="600" y="292" width="200" height="38" rx="8" fill="#a855f7" fill-opacity="0.25" stroke="#a855f7" stroke-width="2"/>
+    <text x="700" y="316" class="layer-label">Encoder Layer 2</text>
+    <text x="810" y="316" class="insight">phrase patterns</text>
+  </g>
+
+  <line x1="700" y1="330" x2="700" y2="342" class="arrow"/>
+
+  <g>
+    <rect x="600" y="346" width="200" height="38" rx="8" fill="#a855f7" fill-opacity="0.35" stroke="#a855f7" stroke-width="2"/>
+    <text x="700" y="370" class="layer-label">Encoder Layer 3</text>
+    <text x="810" y="370" class="insight">grammatical roles</text>
+  </g>
+
+  <line x1="700" y1="384" x2="700" y2="396" class="arrow"/>
+
+  <g>
+    <rect x="600" y="400" width="200" height="38" rx="8" fill="#a855f7" fill-opacity="0.5" stroke="#a855f7" stroke-width="2"/>
+    <text x="700" y="424" class="layer-label">Encoder Layer 4</text>
+    <text x="810" y="424" class="insight">semantic meaning</text>
+  </g>
+
+  <text x="700" y="456" class="layer-label" style="fill:#a855f7">⋯ 13 more layers ⋯</text>
+
+  <g>
+    <rect x="600" y="468" width="200" height="38" rx="8" fill="#a855f7" fill-opacity="0.75" stroke="#a855f7" stroke-width="2"/>
+    <text x="700" y="492" class="layer-label" style="fill:#fff">Encoder Layer 18</text>
+    <text x="810" y="492" class="insight">abstract patterns</text>
+  </g>
+
+  <line x1="700" y1="506" x2="700" y2="520" class="arrow"/>
+
+  <rect x="600" y="524" width="200" height="38" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+  <text x="700" y="548" class="layer-label">Output head</text>
+
+  <!-- Bottom note -->
+  <text x="500" y="600" class="sub" style="font-weight:700;fill:#111">Each layer takes the previous layer's output and runs attention again — building progressively richer understanding.</text>
+</svg>
