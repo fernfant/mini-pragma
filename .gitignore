@@ -2,20 +2,14 @@
 __pycache__/
 *.pyc
 *.pyo
-.venv/
-venv/
 
-# Built artifacts from the capstone solution
-course/_solutions/data.pt
-course/_solutions/encoder.pt
+# Jupyter
+.ipynb_checkpoints/
 
-# OS / editor
+# Build artifacts from runnable scripts
+*.pt
+data.pt
+encoder.pt
+
+# OS
 .DS_Store
-.idea/
-.vscode/
-
-# Claude
-.claude/
-
-# Source paper (not redistributable)
-Pragna_Model.pdf
