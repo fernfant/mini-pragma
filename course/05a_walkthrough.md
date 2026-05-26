@@ -203,6 +203,18 @@ After 3,000 steps, the encoder has rich learned representations. **We then freez
 
 ## STEP 7 — The downstream task: predict price class
 
+> 🧰 **Concept bridge — pieces and their origin**
+>
+> The encoder used in this lesson is exactly the one from `pragma_mini.py`:
+>
+> | Component | Origin |
+> |---|---|
+> | Encoder (Embedding + position + Transformer × 2) | **[L5 / `pragma_mini.py`](05_putting_it_together.md)** — same backbone |
+> | The pre-training recipe (mask + cross-entropy) | **[L4](04_walkthrough.md)** — masked language modelling |
+> | `PriceHead` (mean-pool + Linear) | **[L1](01_walkthrough.md)** — linear projection |
+> | The "freeze + probe" downstream pattern | **[PRAGMA paper §3.1.1](../Pragna_Model.pdf)** — embedding probe |
+> | The 5-line training loop | **[L1](01_walkthrough.md)** |
+
 Stack a tiny new layer on top of the (frozen) encoder:
 
 ```python

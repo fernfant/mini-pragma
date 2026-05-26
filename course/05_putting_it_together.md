@@ -155,6 +155,20 @@ class PragmaMini(nn.Module):
 
 This is **the whole Transformer**, in 6 lines. Let's tag every piece.
 
+> 🧰 **Concept bridge — every piece traced to its origin lesson**
+>
+> | PragmaMini component | Origin |
+> |---|---|
+> | `nn.Embedding(V, d)` | **[L2](02_walkthrough.md)** — token → vector |
+> | `nn.Embedding(64, d)` (positional) | (positional encoding — added during this lesson) |
+> | `nn.TransformerEncoderLayer` (attention) | **[L3](03_walkthrough.md)** — Q/K/V + softmax |
+> | `nn.TransformerEncoderLayer` (feed-forward) | **[L1.5 Step 7.5](notebooks/lesson_01_5_from_linear_to_neural.ipynb)** — Linear → GELU → Linear |
+> | `nn.TransformerEncoderLayer` (LayerNorm + residual) | **[L4e](04e_encoder_layer_from_scratch.py)** — full breakdown |
+> | `nn.TransformerEncoder(layer, layers=2)` — stacking | **[L1.5 Step 7.6](notebooks/lesson_01_5_from_linear_to_neural.ipynb)** — why depth matters |
+> | `nn.Linear(d, V)` (output head) | **[L1](01_walkthrough.md)** — linear projection |
+>
+> No new concepts. Just composition.
+
 ### (a) `self.emb = nn.Embedding(V, d)`
 > **L2 in action.** The embedding table. `V` rows (one per vocab word),
 > `d=32` columns. **14 × 32 = 448 knobs**, all trainable.

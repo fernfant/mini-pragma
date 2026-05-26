@@ -101,6 +101,19 @@ class TinyMLM(nn.Module):
 
 This is our first time defining a model as a Python class. Let's go piece by piece.
 
+> 🧰 **Concept bridge — where each piece comes from**
+>
+> | TinyMLM component | Lesson where introduced |
+> |---|---|
+> | `nn.Embedding(V, 16)` | **[L2](02_walkthrough.md)** — token → vector lookup table |
+> | `nn.TransformerEncoderLayer` (attention part) | **[L3](03_walkthrough.md)** — every word looks at every other |
+> | `nn.TransformerEncoderLayer` (feed-forward part) | **[L1.5 Step 7.5](notebooks/lesson_01_5_from_linear_to_neural.ipynb)** — same MLP you trained on the parabola |
+> | `nn.Linear(16, V)` (output head) | **[L1](01_walkthrough.md)** — linear projection (`y = Wx + b`) |
+> | The 5-line training loop below | **[L1](01_walkthrough.md)** — predict → loss → zero_grad → backward → step |
+> | Cross-entropy loss | **[L1c](01c_gradient_descent.md)** — for classification (not MSE) |
+>
+> **You've already learned every piece.** Nothing in `TinyMLM` is new — we're just putting the pieces together.
+
 **`class TinyMLM(nn.Module):`** — by inheriting from `nn.Module`, we get:
 - automatic parameter tracking (so the optimiser can find all the knobs to tune),
 - a `.to(device)` method for moving to GPU,

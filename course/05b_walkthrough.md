@@ -92,6 +92,21 @@ def encode_user(events):
 
 ## Section 3 — Architecture (L1b + L2 + L3 + L3b)
 
+> 🧰 **Concept bridge — every piece traced**
+>
+> | Component | Origin |
+> |---|---|
+> | `nn.Embedding(V, d)` | **[L2](02_walkthrough.md)** — token → vector |
+> | `nn.Embedding(max_len, d)` (positional) | **[L5](05_putting_it_together.md)** — position embeddings |
+> | `nn.TransformerEncoderLayer` (attention) | **[L3](03_walkthrough.md)** |
+> | `nn.TransformerEncoderLayer` (feed-forward) | **[L1.5 Step 7.5](notebooks/lesson_01_5_from_linear_to_neural.ipynb)** |
+> | `nn.TransformerEncoderLayer` (LayerNorm + residual) | **[L4e](04e_encoder_layer_from_scratch.py)** |
+> | `nn.TransformerEncoder(layer, layers=2)` (stacking) | **[L1.5 Step 7.6](notebooks/lesson_01_5_from_linear_to_neural.ipynb)** — why depth matters |
+> | `MLMHead` (vocab projection) | **[L4](04_walkthrough.md)** — the MLM head |
+> | `ChurnHead` (mean-pool + Linear) | NEW — but each piece is `nn.Linear` + `tensor.mean()` |
+>
+> Same `Encoder` as `pragma_mini.py`. Only the heads change per task.
+
 ```python
 class Encoder(nn.Module):
     def __init__(self, V, d=D_MODEL, heads=N_HEADS, layers=N_LAYERS, max_len=128):
