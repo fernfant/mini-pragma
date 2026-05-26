@@ -27,27 +27,27 @@ For the full intuition with worked examples, see the companion walkthrough:
 
 Run:  python3 02_tokens_and_embeddings.py
 """
-import torch
-import torch.nn as nn
+import torch                                    # PyTorch: tensors, autograd.
+import torch.nn as nn                           # nn.Embedding lives here.
 
-torch.manual_seed(0)
-torch.set_printoptions(precision=2, sci_mode=False)
+torch.manual_seed(0)                            # Reproducible RNG.
+torch.set_printoptions(precision=2, sci_mode=False)     # Clean tensor printing.
 
 # ----------------------------------------------------------------------------
 # Step 1: TOKENISE
 # ----------------------------------------------------------------------------
 # A vocabulary is just a list of all the words the model knows.
 # Each word's position in the list is its ID.
-vocab = ["<pad>", "<mask>", "dog", "cat", "fish", "bark", "meow", "swim"]
-tok2id = {w: i for i, w in enumerate(vocab)}
+vocab = ["<pad>", "<mask>", "dog", "cat", "fish", "bark", "meow", "swim"]   # 8 tokens.
+tok2id = {w: i for i, w in enumerate(vocab)}    # Lookup table: word → integer id.
 
 print("Vocabulary:")
-for i, w in enumerate(vocab):
+for i, w in enumerate(vocab):                   # Iterate paired (id, word).
     print(f"  id={i}  word={w}")
 
 # Encoding a sentence = look up each word's ID.
-sentence = ["dog", "bark"]
-ids = [tok2id[w] for w in sentence]
+sentence = ["dog", "bark"]                      # Two-word example sentence.
+ids = [tok2id[w] for w in sentence]             # Convert each word to its id.
 print(f"\nSentence {sentence}  ->  ids {ids}")
 
 # Note the two special tokens:
@@ -62,17 +62,17 @@ print(f"\nSentence {sentence}  ->  ids {ids}")
 # 4 numbers (hidden features the computer makes up itself during training).
 # Real models use 512, 768, or 1024 numbers per word — we use 4 so we can
 # print them and look at them.
-embedding_dim = 4
-emb = nn.Embedding(len(vocab), embedding_dim)
+embedding_dim = 4                               # How many numbers per word.
+emb = nn.Embedding(len(vocab), embedding_dim)   # 8×4 trainable lookup table.
 
-print(f"\nEmbedding table shape: {tuple(emb.weight.shape)}")
+print(f"\nEmbedding table shape: {tuple(emb.weight.shape)}")    # Should print (8, 4).
 print(f"  ({len(vocab)} words in vocab, each represented by {embedding_dim} numbers)")
 
 # Looking up a word's vector is just indexing the table.
 print("\nWord -> vector:")
-for word in ["dog", "cat", "fish"]:
-    i = tok2id[word]
-    v = emb(torch.tensor(i)).detach()
+for word in ["dog", "cat", "fish"]:             # Show 3 example words.
+    i = tok2id[word]                            # Find the id.
+    v = emb(torch.tensor(i)).detach()           # Look up row in table; detach from autograd.
     print(f"  {word:5s} ->  {v}")
 
 # These vectors are RANDOM right now! Embeddings only become meaningful
@@ -82,8 +82,8 @@ for word in ["dog", "cat", "fish"]:
 # ----------------------------------------------------------------------------
 # Encoding a whole sentence at once
 # ----------------------------------------------------------------------------
-ids_tensor = torch.tensor(ids)
-vectors = emb(ids_tensor)
+ids_tensor = torch.tensor(ids)                  # Convert id list to tensor.
+vectors = emb(ids_tensor)                       # Look up all words at once. Shape (2, 4).
 print(f"\nSentence vectors:  shape {tuple(vectors.shape)}  (2 words, 4 numbers each)")
 print(vectors.detach())
 
@@ -94,6 +94,7 @@ print(vectors.detach())
 # (Right now the embeddings are random, so these numbers are meaningless.
 #  After training, they would actually reflect word meaning.)
 def similarity(a, b):
+    # Compute dot product between embeddings of words a and b.
     return torch.dot(emb(torch.tensor(tok2id[a])), emb(torch.tensor(tok2id[b]))).item()
 
 print("\nSimilarity (random embeddings, all meaningless for now):")

@@ -31,16 +31,16 @@ The code below does the same three steps with 4 words and 4-dim embeddings.
 
 Run:  python3 03_attention.py
 """
-import torch
-import torch.nn.functional as F
+import torch                                    # PyTorch tensors.
+import torch.nn.functional as F                 # F.softmax used below.
 
-torch.manual_seed(0)
-torch.set_printoptions(precision=2, sci_mode=False)
+torch.manual_seed(0)                            # Reproducible RNG.
+torch.set_printoptions(precision=2, sci_mode=False)     # Clean tensor printing.
 
 # Pretend these vectors came out of the embedding lookup from Lesson 2.
-words = ["the", "dog", "chased", "cat"]
-d = 4                                     # vector dimension
-x = torch.randn(len(words), d)            # shape (4 words, 4 numbers each)
+words = ["the", "dog", "chased", "cat"]         # 4-word example sentence.
+d = 4                                            # Vector dimension per word.
+x = torch.randn(len(words), d)                  # Random "embeddings". Shape (4, 4).
 
 print("Input vectors x (one row per word):")
 print(x)
@@ -52,23 +52,23 @@ print(x)
 # STEP 1 — SCORES. For every pair of words, compute their dot product.
 # x @ x.T does all 16 pair-wise dot products at once. Big number = related.
 # (Same trick we did by hand for "the · cat" in the walkthrough.)
-scores = x @ x.T                          # shape (4, 4)
+scores = x @ x.T                                # Shape (4, 4). scores[i,j] = x[i] · x[j].
 
 # STEP 2 — SOFTMAX. Turn each row of raw scores into percentages summing to 1.
 # Each row is now a "100% attention budget" — how much this word spends on
 # each other word. Biggest score in the row wins most of the budget.
-attention = F.softmax(scores, dim=-1)
+attention = F.softmax(scores, dim=-1)           # dim=-1 = softmax along each row.
 
 print("\nAttention weights (each row is a probability distribution):")
 print("              " + "  ".join(f"{w:>7s}" for w in words))
-for i, w in enumerate(words):
+for i, w in enumerate(words):                   # Print one row per word.
     print(f"  {w:10s}  " + "  ".join(f"{a:7.3f}" for a in attention[i]))
 
 # STEP 3 — MIX. Each word's new vector is a weighted blend of all word vectors,
 # using its attention budget as the weights. Words that started bland
 # (small self-score) absorb flavor from their neighbours. Strong words
 # (big self-score) stay mostly themselves.
-new_x = attention @ x
+new_x = attention @ x                           # Weighted blend. Same shape (4, 4).
 print("\nOutput vectors (after attention — each word now 'knows' about the others):")
 print(new_x)
 
@@ -87,20 +87,20 @@ print(new_x)
 
 # These three matrices would be LEARNED during training. We initialise them
 # randomly here just to show the shape of the computation.
-Wq = torch.randn(d, d)
-Wk = torch.randn(d, d)
-Wv = torch.randn(d, d)
+Wq = torch.randn(d, d)                          # Query projection matrix.
+Wk = torch.randn(d, d)                          # Key projection matrix.
+Wv = torch.randn(d, d)                          # Value projection matrix.
 
-Q = x @ Wq                                # (4, 4)
-K = x @ Wk                                # (4, 4)
-V = x @ Wv                                # (4, 4)
+Q = x @ Wq                                      # Apply query lens. Shape (4, 4).
+K = x @ Wk                                      # Apply key lens.
+V = x @ Wv                                      # Apply value lens.
 
 # Score every query against every key.
 # Divide by sqrt(d) to keep numbers from getting huge — this is the
 # "scaled" in "scaled dot-product attention".
-scores = Q @ K.T / (d ** 0.5)
-attention = F.softmax(scores, dim=-1)
-output = attention @ V                    # apply weights to values
+scores = Q @ K.T / (d ** 0.5)                   # Scaled dot-product scores.
+attention = F.softmax(scores, dim=-1)           # Convert to attention weights.
+output = attention @ V                          # Apply weights to V.
 
 print("\nReal scaled dot-product attention output:")
 print(output.detach())
