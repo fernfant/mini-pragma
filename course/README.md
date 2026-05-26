@@ -8,7 +8,7 @@ plain English.
 By the end you'll understand every line of `../pragma_mini.py` and be ready
 to build your own version from scratch in the capstone.
 
-## Lessons
+## Lessons (main track)
 
 | # | Code | Walkthrough |
 |---|------|-------------|
@@ -27,6 +27,39 @@ to build your own version from scratch in the capstone.
 > **Lessons 1b, 1c, and 3b are optional but recommended.** They build the
 > mental model that makes the core lessons stick. Skip them on a first read
 > and come back when something feels hand-wavy.
+
+## 🛠 Karpathy track (first-principles, no black boxes)
+
+Inspired by Andrej Karpathy's "Zero to Hero" series. These lessons either
+**re-implement PyTorch primitives from scratch** (so you see exactly what
+nn.Embedding, attention, and TransformerEncoderLayer are doing), or
+**build PRAGMA up incrementally** (so you watch the architecture grow
+piece by piece on the same dataset).
+
+### Internals — re-implement primitives from scratch
+
+| # | What it re-implements | Why |
+|---|---|---|
+| 1d | [`01d_autograd_from_scratch.py`](01d_autograd_from_scratch.py) | A 100-line autograd engine (micrograd-style). Trains Lesson 1's regression with NO PyTorch autograd. Matches PyTorch's gradients exactly. |
+| 2c | [`02c_embedding_from_scratch.py`](02c_embedding_from_scratch.py) | `nn.Embedding` in 4 lines. Verifies bit-exact outputs and gradients vs PyTorch. |
+| 3c | [`03c_attention_from_scratch.py`](03c_attention_from_scratch.py) | Multi-head self-attention from primitives. Numerically identical to `nn.MultiheadAttention`. |
+| 4e | [`04e_encoder_layer_from_scratch.py`](04e_encoder_layer_from_scratch.py) | `nn.TransformerEncoderLayer` decomposed: LayerNorm, FFN, MHA, residuals. Numerically identical to PyTorch's version. |
+
+### Incremental build-up — same data, growing model
+
+The same pets MLM task across four lessons. Each lesson adds one piece and
+re-evaluates on the same test set. You watch loss go down (or, in one
+case, up — and learn why).
+
+| # | What it adds | Result |
+|---|---|---|
+| 4a | [`04a_counts_model.py`](04a_counts_model.py) — no neural net at all | 63.4% acc, 0.670 CE |
+| 4b | [`04b_embedding_linear.py`](04b_embedding_linear.py) — embedding + mean-pool + linear | 64.2% acc, 0.558 CE |
+| 4c | [`04c_with_attention.py`](04c_with_attention.py) — add self-attention | **53.6% acc, 0.902 CE (gets WORSE)** |
+| 4d | [`04d_full_block.py`](04d_full_block.py) — full Transformer block | **64.5% acc, 0.533 CE (best)** |
+
+The L4c regression is intentional — it shows attention alone isn't enough.
+The fix (residuals + FFN + LayerNorm) is exactly what makes L4d win.
 
 ## 🌐 Interactive HTML version
 
