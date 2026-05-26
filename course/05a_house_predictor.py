@@ -208,6 +208,34 @@ def encode_house(house):
 
 N_HOUSES = 8000
 
+# ----- Show some sample houses BEFORE we train anything -----
+# Look at the columns: notice how attributes within an archetype cluster
+# together. This is the "correlation structure" pre-training will learn.
+print("=" * 70)
+print("STEP 1 — Look at the data. Three sample houses, side by side.")
+print("=" * 70)
+sample_arch = ["rural_cottage", "suburban_family", "luxury_beach"]
+samples = []
+for arch in sample_arch:
+    dists = ARCHETYPES[arch]
+    h = {k: weighted_choice(dists[k]) for k in KEYS}
+    p = house_price(h)
+    samples.append((arch, h, p, price_to_class(p)))
+
+header = f"  {'attribute':<14s}" + "".join(f"{a[0]:>16s}" for a in samples)
+print(header)
+print("  " + "-" * (14 + 16 * len(samples)))
+for k in KEYS:
+    row = f"  {k:<14s}" + "".join(f"{a[1][k]:>16s}" for a in samples)
+    print(row)
+print(f"  {'PRICE ($k)':<14s}" + "".join(f"{a[2]:>16.0f}" for a in samples))
+print(f"  {'CLASS':<14s}" + "".join(f"{PRICE_CLASSES[a[3]]:>16s}" for a in samples))
+print()
+print("  See the patterns? Luxury beach: BIG everywhere. Rural cottage: SMALL.")
+print("  Attributes within a house tend to AGREE. That's correlation —")
+print("  exactly what pre-training (the fill-in-the-blank game) will learn.\n")
+
+# ----- Now generate the full dataset -----
 print(f"Generating {N_HOUSES} synthetic houses with realistic correlations...")
 houses, classes = [], []
 for _ in range(N_HOUSES):
@@ -219,12 +247,23 @@ for _ in range(N_HOUSES):
 X = torch.tensor([encode_house(h) for h in houses], dtype=torch.long)
 y = torch.tensor(classes, dtype=torch.long)
 seq_len = X.size(1)
-print(f"  shape X: {tuple(X.shape)}  ({seq_len} tokens per house)")
+print(f"  shape X: {tuple(X.shape)}  ({seq_len} tokens per house: 10 keys × 2)")
 
 class_counts = [int((y == c).sum()) for c in range(5)]
 print(f"  class spread: bargain={class_counts[0]}, cheap={class_counts[1]}, "
       f"average={class_counts[2]}, expensive={class_counts[3]}, luxury={class_counts[4]}")
 print(f"  vocab size: {V}\n")
+
+# ----- Show what one house looks like to the computer -----
+print("=" * 70)
+print("STEP 2 — How the computer sees a house. (Plain key-value token IDs.)")
+print("=" * 70)
+first_arch, first_h, _, _ = samples[0]
+print(f"  House: {first_arch}")
+print(f"  Dict form: {first_h}")
+print(f"  Token IDs: {encode_house(first_h)}")
+print(f"  Tokens:    {[vocab[i] for i in encode_house(first_h)]}\n")
+print("  The model never sees 'rural cottage'. Just this 20-element list.\n")
 
 
 # ============================================================================
@@ -360,6 +399,19 @@ def train_classifier(encoder, X_tr, y_tr, epochs=500, freeze_encoder=True, batch
         macro_recall = sum(valid) / len(valid) if valid else float("nan")
     return acc, macro_recall, head
 
+
+print("=" * 70)
+print("STEP 7 — The big experiment: PRE-TRAINING recipe vs BASELINE recipe")
+print("=" * 70)
+print("  PRE-TRAINING recipe: encoder was pre-trained via MLM, then FROZEN.")
+print("                       We train ONLY the price head on N labelled houses.")
+print()
+print("  BASELINE recipe:     random-init encoder, no pre-training.")
+print("                       We train the ENTIRE model (encoder + head) end-to-end")
+print("                       on the same N labelled houses.")
+print()
+print("  Both recipes use the same architecture and the same labelled data.")
+print("  The ONLY difference is whether we did the pre-training step first.\n")
 
 print(f"{'labels':>7} | {'pretrained acc':>14}  {'pretrained recall':>17} | "
       f"{'baseline acc':>12}  {'baseline recall':>15}")

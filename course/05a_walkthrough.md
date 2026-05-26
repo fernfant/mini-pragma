@@ -1,25 +1,8 @@
-# Lesson 5a — Walkthrough: house price predictor
+# Lesson 5a — House price predictor (walkthrough)
 
 Companion to [`05a_house_predictor.py`](05a_house_predictor.py).
 
-## Where this fits
-
-Progression from simple to more realistic:
-
-| Lesson | Tokens / record | Domain | Task |
-|---|---|---|---|
-| L4 toy | 2 | dog/cat/fish + sound | predict masked word |
-| L5 (pragma_mini) | 6 | pet + action + place | predict masked value |
-| **L5a (this one)** | **20** | **house with 10 attributes** | **predict price (5 classes)** |
-| L5b (streaming) | 120 | 15 events of streaming | predict churn (binary) |
-
-This lesson sits between `pragma_mini` and streaming. **One record per "user"** (no event sequence), but **10 keys instead of 3** — closer to a real tabular dataset.
-
-What's NEW vs prior lessons:
-
-- **5-class** classification (not binary), a step toward regression
-- **Realistic inter-attribute correlations** in the data (beach houses tend to have pools; vintage houses are usually smaller) — this is what makes MLM useful here
-- A more nuanced pre-train vs baseline story: pre-training wins when labels are scarce, baseline catches up at scale
+We're going to apply the PRAGMA recipe to houses. **Step by step. Slow.** First we look at the data, then build intuition for how the model sees it, then run two experiments and compare.
 
 ## 🧰 Lesson reference legend
 
@@ -33,209 +16,300 @@ What's NEW vs prior lessons:
 
 ---
 
-## Section 1 — Vocabulary (L2 + L5)
+## STEP 1 — Look at the data (build your eye first)
+
+Before any model, just look at three houses. Each house has 10 attributes.
+
+| Attribute      | 🏡 Rural cottage  | 🏘 Suburban family | 🏖 Luxury beach |
+|----------------|------------------:|-------------------:|---------------:|
+| bedrooms       | 2bed              | 3bed               | 5+bed          |
+| bathrooms      | 1bath             | 2bath              | 3+bath         |
+| size           | small             | medium             | **huge**       |
+| age            | **vintage**       | modern             | new            |
+| neighborhood   | rural             | suburb             | **beach**      |
+| garage         | 1car              | 2car               | 2car           |
+| pool           | nopool            | nopool             | **haspool**    |
+| garden         | largegarden       | smallgarden        | largegarden    |
+| schools        | avgschool         | goodschool         | excschool      |
+| condition      | faircond          | goodcond           | exccond        |
+| **price**      | **$280k (cheap)** | **$580k (avg)**    | **$1.4M (luxury)** |
+
+> **What do you notice?** Look at the columns top-to-bottom.
+>
+> - The **luxury beach** house has BIG values everywhere — huge size, beach location, pool, excellent everything. They go together.
+> - The **rural cottage** has SMALL values everywhere — small size, rural, no pool, vintage, fair condition. They go together too.
+> - The **suburban family** sits in the middle.
+
+This is **correlation**: the attributes aren't independent. Knowing a house is on the *beach* tells you it probably *has a pool*. Knowing it's *rural* tells you it probably has *no pool*.
+
+> 🔑 **The whole reason MLM (Lesson 4) works here:** correlations like these are what the fill-in-the-blank game can learn. Without them, the attributes would be unrelated and there'd be nothing context-dependent to predict.
+
+---
+
+## STEP 2 — How the computer sees each house
+
+The computer doesn't see a nice table. It sees a **flat list of token IDs** (L2 + L5):
+
+```
+event:  [("bedrooms", "2bed"),
+         ("bathrooms", "1bath"),
+         ("size",  "small"),
+         ...
+         ("condition", "faircond")]
+
+ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
+        ↳ 20 token IDs total (10 keys × 2 each)
+```
+
+That's it. The model never sees "rural cottage" as a label. Just a 20-element list of integers. Its whole job is to find structure in those integer sequences.
+
+---
+
+## STEP 3 — The TWO games the model plays
+
+> **This is the part that needs to be crystal clear.** Pre-training and the downstream task are **two separate training sessions** on the same data.
+
+### Game 1: Pre-training (a.k.a. self-supervised learning)
+
+```
+Task:  fill-in-the-blank on house attributes
+       (mask some values, predict them)
+
+Data:  ALL 8,000 houses
+Labels needed?  NO — the data labels itself
+                (we just hide tokens we already have)
+Goal:  teach the encoder the correlation structure
+```
+
+This is the L4 game from earlier. The model never sees prices here.
+
+### Game 2: Downstream task (the thing we actually care about)
+
+```
+Task:  predict price class (bargain / cheap / avg / expensive / luxury)
+Data:  a SMALL labelled set (50, 100, 500, or 4000 houses)
+Labels needed?  YES — we need the price for each training house
+Goal:  classify houses by price
+```
+
+> 🔑 **The big PRAGMA bet:** if Game 1 has taught the encoder something useful about house structure, Game 2 can be done with very few labels — because the encoder already knows the patterns. We just need to teach a tiny "translator" layer (the price head) that maps encoder output → price class.
+
+---
+
+## STEP 4 — Pre-training, walked through with one concrete house
+
+Take the rural cottage from Step 1. Encode it as token IDs. Now randomly mask ~30% of the value tokens (never key tokens — those are the "prompt" telling the model what KIND of thing to predict):
+
+```
+ORIGINAL:
+  bedrooms→2bed  bathrooms→1bath  size→small  age→vintage  neighborhood→rural
+  garage→1car    pool→nopool      garden→largegarden       schools→avgschool
+  condition→faircond
+
+AFTER MASKING (random 30%):
+  bedrooms→2bed  bathrooms→1bath  size→<MASK>  age→vintage  neighborhood→rural
+  garage→1car    pool→<MASK>      garden→largegarden       schools→avgschool
+  condition→<MASK>
+```
+
+The model has to predict the 3 masked values. It looks at the visible context — *rural, vintage, 1car, largegarden, avgschool* — and uses **attention** (L3) to figure out:
+
+- `size→<MASK>` — context says rural cottage, so probably `small` or `medium`.
+- `pool→<MASK>` — rural + vintage + avgschool = probably `nopool`.
+- `condition→<MASK>` — vintage + fair-ish profile = probably `faircond`.
+
+The model's guesses (random at first) get compared to the actual masked values. The loss is high → backprop → nudge knobs → guesses get a little better next time. Run this 3,000 times across random batches and the model learns:
+
+- "beach" embeddings drift close to "haspool", "largegarden", "exccond"
+- "rural" embeddings drift close to "small", "vintage", "largegarden"
+- "downtown" embeddings drift close to "small", "nogarden", "nopool"
+
+The encoder has now learned the **archetype structure** without ever being told there are archetypes.
+
+---
+
+## STEP 5 — How training works in this lesson (link back to L1, L1c)
+
+Same 5-line loop as Lesson 1, just with thousands more knobs to nudge:
+
+```python
+for step in range(3000):
+    xb, yb = mlm_mask(X[idx])                   # take a batch, mask some values
+    logits = mlm_head(encoder(xb))              # 1. guess
+    loss   = loss_fn(logits, yb)                # 2. measure wrongness
+    opt.zero_grad()                             # 3. clear notes
+    loss.backward()                             # 4. compute gradients for ALL knobs
+    opt.step()                                  # 5. nudge them
+```
+
+`loss.backward()` is the magic — it computes gradients for every embedding number, every position embedding, every Q/K/V matrix in attention, every feed-forward weight, and the MLM head — all in one line. We saw exactly how this works in [L1c](01c_gradient_descent.md).
+
+After 3,000 steps, the encoder has rich learned representations. **We then freeze it** and move to Game 2.
+
+---
+
+## STEP 6 — The downstream task: predict price class
+
+Stack a tiny new layer on top of the (frozen) encoder:
+
+```python
+class PriceHead(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.proj = nn.Linear(32, 5)   # 32-d encoder output → 5 price classes
+    def forward(self, h):
+        pooled = h.mean(dim=1)          # average across positions
+        return self.proj(pooled)
+```
+
+Then train *only* this head on labelled houses, using the same 5-line loop again. The encoder is frozen — `opt` only knows about the head's parameters.
+
+That's the full **embedding probe** recipe from PRAGMA §3.1.1.
+
+---
+
+## STEP 7 — The big experiment (PRE-TRAINING vs BASELINE, defined clearly)
+
+This is the comparison the lesson is built around. **It's not "pre-trained encoder vs no encoder"** — both have an encoder. The difference is what happens BEFORE we train the price head.
+
+```
+  PRE-TRAINING RECIPE                       BASELINE RECIPE
+  ─────────────────────                     ───────────────────
+                                            (skip pre-training entirely)
+  Step 1: Train encoder via MLM
+          on all 8,000 houses
+          (no price labels needed)
+                                            Step 1: Random-init encoder
+                                                    (knobs start as noise)
+
+  Step 2: FREEZE encoder
+          (don't nudge its knobs anymore)
+
+  Step 3: Add price head                    Step 2: Add price head
+
+  Step 4: Train price head ONLY             Step 3: Train EVERYTHING
+          on N labelled houses                       (encoder + head together)
+                                                     on N labelled houses
+```
+
+**Why we compare them.** We want to know: *does the pre-training step actually help?* If the baseline (skip pre-training, train end-to-end on labels) does just as well, then pre-training was wasted effort. If the pre-trained recipe wins — especially when labels are scarce — that's the whole foundation-model pitch validated.
+
+Both recipes use the same data, the same architecture, and the same downstream training loop. The only difference is whether we do the self-supervised pre-training step first.
+
+---
+
+## STEP 8 — Results, interpreted
+
+```
+ labels | pretrained acc  pretrained recall | baseline acc  baseline recall
+─────────────────────────────────────────────────────────────────────────────
+     50 |       0.66 ✓              0.64    |      0.59           0.62
+    100 |       0.70 ✓              0.59    |      0.67           0.60
+    500 |       0.72                0.61    |      0.79 ✓         0.76 ✓
+   4000 |       0.73                0.61    |      0.86 ✓         0.84 ✓
+```
+
+### What the numbers say
+
+- **50 labels**: pre-training wins by 7 accuracy points. With so few labels, training the encoder from scratch can't find the price-relevant patterns. The pre-trained encoder *already knows* the house structure — the price head just has to learn the small mapping from encoder output → price class.
+- **100 labels**: pre-training still ahead, smaller margin.
+- **500 labels**: **baseline overtakes**. With more labels, training end-to-end can find encoder representations specifically optimised for price prediction. The frozen pre-trained encoder is stuck with generic representations.
+- **4000 labels**: baseline wins clearly. End-to-end has enough signal to dominate.
+
+### Why isn't pre-training a clear winner everywhere?
+
+Two reasons specific to this lesson:
+
+1. **Tabular data has limited contextual richness.** Yes, attributes are correlated — but only 10 of them. Compare to streaming data in L5b: 15 events × 4 attributes = 60 correlated pieces of info, plus temporal ordering. More structure = more for pre-training to learn.
+2. **A frozen encoder is a hard constraint.** It can't be tuned for the price task. Once we hit ~500 labels, the supervised signal is rich enough that the baseline's flexibility wins.
+
+**The real-world fix:** instead of a fully frozen probe, **LoRA fine-tuning** (PRAGMA §3.1.2). Unfreeze a small fraction (~2-4%) of the encoder's weights during downstream training. You get pre-training's warm start AND the ability to tune for the task. Best of both worlds. We'll see this in the capstone.
+
+---
+
+## STEP 9 — What you should walk away with
+
+1. **The PRAGMA recipe (pre-train → freeze → probe) is most valuable when labels are scarce AND the data has rich contextual structure.**
+2. **Pre-training and downstream are two separate training sessions on the same data.** Different goals, different losses, different things being nudged.
+3. **The "baseline" comparison is what proves pre-training mattered.** Without it, you can't tell if your shiny pre-trained model is actually helping vs just doing what end-to-end training would have done anyway.
+4. **The recipe doesn't ALWAYS win.** As you'll see in L5b, with richer sequential data it wins much more decisively — because there's much more structure for MLM to capture.
+
+---
+
+## Code walkthrough (line by line, for reference)
+
+If you want to dig into the code in detail:
+
+### Section A — Vocabulary <span>L2</span> <span>L5</span>
 
 ```python
 KEYS = ["bedrooms", "bathrooms", "size", "age", "neighborhood",
         "garage", "pool", "garden", "schools", "condition"]
-
-VALUE_BUCKETS = {
-    "bedrooms":     ["1bed", "2bed", "3bed", "4bed", "5+bed"],
-    "size":         ["small", "medium", "large", "huge"],
-    "neighborhood": ["downtown", "suburb", "rural", "beach"],
-    ...
-}
-
+VALUE_BUCKETS = {...}
 vocab  = [PAD, MASK] + KEYS + VALUES
 tok2id = {t: i for i, t in enumerate(vocab)}
 V      = len(vocab)
 ```
 
-> **L2 + L5 in action.** Same key-value structure as `pragma_mini.py`,
-> just with 10 keys instead of 3. Total vocab: ~48 tokens.
+Standard key-value vocab. 10 keys + ~36 values + 2 special tokens = 48 token IDs.
 
-Each house becomes a flat 20-token sequence: `[bedrooms_key, 3bed_value, bathrooms_key, 2bath_value, ...]`.
-
-## Section 2 — Realistic correlations (the secret sauce)
+### Section B — Archetypes (the correlation structure)
 
 ```python
 ARCHETYPES = {
-    "rural_cottage": {
-        "size":         {"small":5, "medium":4, "large":1, "huge":0},
-        "age":          {"new":0, "modern":1, "older":4, "vintage":5},
-        "neighborhood": {"downtown":0, "suburb":1, "rural":8, "beach":1},
-        "pool":         {"nopool":9, "haspool":1},
-        ...
-    },
-    "luxury_beach": {
-        "size":         {"small":0, "medium":1, "large":4, "huge":5},
-        "neighborhood": {"downtown":0, "suburb":0, "rural":0, "beach":10},
-        "pool":         {"nopool":1, "haspool":9},
-        ...
-    },
-    ...
+    "rural_cottage":   {"size": {"small":5, "medium":4, "large":1, "huge":0}, ...},
+    "luxury_beach":    {"size": {"small":0, "medium":1, "large":4, "huge":5}, ...},
+    "urban_apartment": {...},
+    "suburban_family": {...},
+    "old_townhouse":   {...},
 }
 ```
 
-> **Pure Python — no ML yet.** Five "archetypes" of houses with
-> characteristic attribute distributions. Each house is generated by
-> first picking an archetype, then sampling each attribute from that
-> archetype's weighted choices.
+Each archetype is a weighted distribution over attribute values. Generating a house = pick an archetype, then sample each attribute from its distribution. This is what creates the correlations.
 
-**Why this matters.** Without correlations between attributes, MLM
-has nothing context-dependent to learn — masking a `size` value and
-guessing it is just "predict the average". With correlations, masking
-the `pool` value of a beach house *should* predict `haspool` (because
-beach houses usually have pools). The model has to use surrounding
-context — exactly what attention does.
-
-> **The pedagogical lesson here:** pre-training is only useful when the
-> data has **contextual structure** the model can learn. Tabular data
-> with independent columns gives MLM nothing to chew on; correlated
-> data lets it shine.
-
-## Section 3 — Architecture (L1b + L2 + L3)
+### Section C — Architecture <span>L1b</span> <span>L2</span> <span>L3</span>
 
 ```python
 class Encoder(nn.Module):
-    def __init__(self, V, d=32, heads=2, layers=2, max_len=64):
-        super().__init__()
-        self.emb = nn.Embedding(V, d)            # L2
-        self.pos = nn.Embedding(max_len, d)
+    def __init__(self, V, d=32, heads=2, layers=2):
+        self.emb = nn.Embedding(V, d)             # L2
+        self.pos = nn.Embedding(64, d)
         layer    = nn.TransformerEncoderLayer(d, heads, d*2, batch_first=True)
-        self.enc = nn.TransformerEncoder(layer, layers)   # L3
+        self.enc = nn.TransformerEncoder(layer, layers)   # L3, stacked
     def forward(self, x):
-        positions = torch.arange(x.size(1))
-        return self.enc(self.emb(x) + self.pos(positions))
-
-
-class MLMHead(nn.Module):    # for pre-training (predict masked tokens)
-    def __init__(self, V, d=32):
-        super().__init__()
-        self.proj = nn.Linear(d, V)
-    def forward(self, h):
-        return self.proj(h)
-
-
-class PriceHead(nn.Module):  # for downstream (predict price bucket)
-    def __init__(self, d=32, n_classes=5):
-        super().__init__()
-        self.proj = nn.Linear(d, n_classes)
-    def forward(self, h):
-        pooled = h.mean(dim=1)
-        return self.proj(pooled)
+        pos = torch.arange(x.size(1))
+        return self.enc(self.emb(x) + self.pos(pos))
 ```
 
-> Identical architecture to `pragma_mini.py` and the streaming churn
-> example. **The encoder is reusable — only the head changes per task.**
-> That's the foundation-model idea.
+Same backbone as `pragma_mini.py`. Embedding + position + 2 attention layers.
 
-## Section 4 — Pre-train via MLM (L4)
+### Section D — Pre-training loop <span>L1</span> <span>L1c</span> <span>L4</span>
 
 ```python
-def mlm_mask(X_batch, p=0.30):
-    X = X_batch.clone()
-    y = torch.full_like(X, -100)
-    is_value = ~torch.isin(X, KEY_IDS)
-    pick = (torch.rand_like(X, dtype=torch.float) < p) & is_value
-    y[pick] = X[pick]
-    X[pick] = tok2id[MASK]
-    return X, y
-
 for step in range(3000):
     idx       = torch.randint(0, N_HOUSES, (128,))
-    xb, yb    = mlm_mask(X[idx])
-    h         = encoder(xb)
-    logits    = mlm_head(h)
+    xb, yb    = mlm_mask(X[idx])                  # 30% masking
+    logits    = mlm_head(encoder(xb))
     loss      = loss_fn(logits.reshape(-1, V), yb.reshape(-1))
     opt.zero_grad(); loss.backward(); opt.step()
 ```
 
-> **L1 + L1c + L4 in action.** The same 5-line training loop. Mask 30%
-> of value tokens (higher than L5b's 20% — gives the encoder more "missing
-> info" to learn to fill in from context).
+The 5-line loop. Nothing new — but the model is now learning house correlation structure.
 
-The price labels are NEVER used here. This is self-supervised: the data
-labels itself.
+### Section E — Downstream comparison
 
-## Section 5 — Compare pre-trained vs baseline
-
-| labels | pretrained acc | pretrained recall | baseline acc | baseline recall |
-|---:|---:|---:|---:|---:|
-|     50 |  **0.66** |  0.64 |  0.59 |  0.62 |
-|    100 |  0.70 |  0.59 |  0.67 |  0.60 |
-|    500 |  0.72 |  0.61 |  **0.79** |  **0.76** |
-|   4000 |  0.73 |  0.61 |  **0.86** |  **0.84** |
-
-Read across the rows:
-
-- **50 labels**: pre-training **wins**. 7 percentage points on accuracy.
-  When labelled data is scarce, the encoder's MLM-learned representations
-  give the linear probe a head start.
-- **100 labels**: still a small pre-trained edge.
-- **500 labels**: **baseline pulls ahead**. With enough labels, an
-  end-to-end trained model can find better representations specific to
-  the price-classification task.
-- **4000 labels**: baseline wins clearly. The pre-trained encoder is
-  "stuck" with frozen features that weren't optimised for price.
-
-### Why isn't pre-training dominant at all label sizes?
-
-A more honest framing than streaming churn:
-
-1. **Tabular data has less rich structure than sequential data.** A
-   sequence has temporal/contextual patterns that span many positions.
-   A row has a fixed set of attributes — easier for an end-to-end model
-   to fit directly.
-2. **The downstream task is a clean signal.** With 4000 labelled houses,
-   end-to-end training can learn price patterns directly without needing
-   pre-training's "warm start".
-3. **Frozen features are a hard constraint.** A frozen encoder can't be
-   tuned to emphasise what matters for THIS task — it learned generic
-   structure during MLM.
-
-**Real-world fix:** instead of a frozen probe, use **LoRA fine-tuning**
-(PRAGMA §3.1.2) — unfreeze a small fraction of the encoder's weights
-(~2-4%) during downstream training. This combines the best of both:
-pre-trained representations as a starting point, but tuned for the task.
-
-> **The lesson:** pre-training is most valuable when (a) labels are
-> scarce and (b) the data has rich contextual structure. House attributes
-> have moderate correlations; banking event histories have far more. That's
-> why PRAGMA's recipe shines on the latter.
-
-## Section 6 — Sample predictions
-
-```
-rural cottage      → cheap     (45% bargain, 53% cheap)
-suburban family    → average   (96% confidence)
-luxury beach       → luxury    (99% confidence)
+```python
+for n_labels in [50, 100, 500, 4000]:
+    enc_a = copy.deepcopy(pretrained_encoder)
+    acc_a, rec_a, _ = train_classifier(enc_a, X_tr, y_tr, freeze_encoder=True)
+    enc_b = Encoder(V)
+    acc_b, rec_b, _ = train_classifier(enc_b, X_tr, y_tr, freeze_encoder=False)
 ```
 
-The model has clearly learned that `(beach + pool + huge + new + exccond)` =
-luxury, and `(rural + small + vintage + faircond)` = bargain/cheap. Even
-without seeing prices during pre-training.
+Two recipes, side by side. `freeze_encoder=True` is the pre-training recipe (Step 7 above, left column). `freeze_encoder=False` is the baseline (right column).
 
-## What you saw, lesson by lesson
+---
 
-| Step | Lesson(s) used |
-|---|---|
-| Tokenise houses as key-value pairs | L2, L5 |
-| Build encoder with embedding + position + attention | L1b, L2, L3 |
-| Pre-train via fill-in-the-blank (no labels) | L1, L1c, L4 |
-| Freeze the encoder; add a 5-class head | L1b |
-| Train just the head | L1, L1c |
-| Compare to baseline at different label counts | scientific method |
+## Bridge to L5b
 
-## Bridge to the next lesson
-
-In [Lesson 5b](05b_walkthrough.md), the same recipe is applied to
-**sequential event data** (streaming sessions). There, pre-training wins
-much more decisively across all label counts — because the data has rich
-sequential structure (skipping patterns over time, narrow vs varied genre
-choices) that's hard for an end-to-end model to discover without the
-self-supervised warm-up.
-
-The pattern: as data gets richer and more structured, pre-training's
-advantage grows. **PRAGMA's banking event streams are the extreme case
-where pre-training is essentially required.**
+Same recipe, but with sequential event data — where pre-training wins much more decisively. Onward to [Lesson 5b](05b_walkthrough.md).
