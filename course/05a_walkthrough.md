@@ -46,9 +46,62 @@ This is **correlation**: the attributes aren't independent. Knowing a house is o
 
 ---
 
-## STEP 2 — How the computer sees each house
+## STEP 2 — A wider view: 10 actual rows from the dataset
 
-The computer doesn't see a nice table. It sees a **flat list of token IDs** (L2 + L5):
+Now zoom out from the 3 archetypal examples and look at 10 actual rows from the full 8,000-house dataset. Same data shown two ways:
+
+### (a) As pre-training sees them — features only, NO labels
+
+```
+  row | bedrooms  bathrooms size      age       neighborh garage    pool      garden    schools   condition
+  ---------------------------------------------------------------------------------------------------------
+    1 | 1bed      2bath     small     older     downtown  nogarage  nopool    smGarden  avgSch    faircond
+    2 | 2bed      2bath     medium    vintage   suburb    1car      nopool    nogarden  avgSch    exccond
+    3 | 2bed      2bath     small     vintage   downtown  nogarage  nopool    nogarden  avgSch    goodcond
+    4 | 3bed      2bath     large     modern    suburb    nogarage  haspool   lgGarden  excSch    exccond
+    5 | 3bed      3+bath    medium    older     rural     2car      nopool    lgGarden  goodSch   goodcond
+    6 | 3bed      3+bath    medium    new       downtown  nogarage  nopool    smGarden  avgSch    goodcond
+    7 | 4bed      3+bath    large     new       beach     1car      haspool   lgGarden  excSch    exccond
+    8 | 2bed      2bath     medium    older     rural     2car      nopool    nogarden  goodSch   poorcond
+    9 | 5+bed     2bath     large     new       beach     2car      haspool   lgGarden  goodSch   exccond
+   10 | 1bed      3+bath    small     older     rural     2car      haspool   smGarden  avgSch    exccond
+```
+
+> Pre-training plays fill-in-the-blank on these features alone. **Uses ALL 8,000 houses. No labels needed.**
+
+### (b) As the downstream task sees them — same rows, with price class
+
+```
+  row | bedrooms  bathrooms size      age       neighborh garage    pool      garden    schools   condition | price class
+  -----------------------------------------------------------------------------------------------------------------------
+    1 | 1bed      2bath     small     older     downtown  nogarage  nopool    smGarden  avgSch    faircond  | cheap
+    2 | 2bed      2bath     medium    vintage   suburb    1car      nopool    nogarden  avgSch    exccond   | average
+    3 | 2bed      2bath     small     vintage   downtown  nogarage  nopool    nogarden  avgSch    goodcond  | cheap
+    4 | 3bed      2bath     large     modern    suburb    nogarage  haspool   lgGarden  excSch    exccond   | expensive
+    5 | 3bed      3+bath    medium    older     rural     2car      nopool    lgGarden  goodSch   goodcond  | average
+    6 | 3bed      3+bath    medium    new       downtown  nogarage  nopool    smGarden  avgSch    goodcond  | average
+    7 | 4bed      3+bath    large     new       beach     1car      haspool   lgGarden  excSch    exccond   | luxury
+    8 | 2bed      2bath     medium    older     rural     2car      nopool    nogarden  goodSch   poorcond  | cheap
+    9 | 5+bed     2bath     large     new       beach     2car      haspool   lgGarden  goodSch   exccond   | luxury
+   10 | 1bed      3+bath    small     older     rural     2car      haspool   smGarden  avgSch    exccond   | cheap
+```
+
+> Downstream task uses the full row, **including the price class**. Uses only a small subset of houses (50, 100, 500, or 4000).
+
+**Read the rows carefully:**
+
+- Row 7: 4-bed, large, new, beach, pool, excellent schools → **luxury**. Of course.
+- Row 9: 5+bed, large, new, beach, pool → **luxury** again. Beach + pool + size = luxury, every time.
+- Row 1: 1-bed, small, downtown, no pool, no garage → **cheap**. Tiny urban apartment.
+- Row 8: 2-bed, medium, rural, poor condition → **cheap**. Rural fixer-upper.
+
+You can practically read the price class by eye. **That's the signal the model has to learn from the token sequences alone.**
+
+---
+
+## STEP 3 — How the computer sees each house
+
+The computer doesn't see those nice rows. It sees a **flat list of token IDs** (L2 + L5):
 
 ```
 event:  [("bedrooms", "2bed"),
@@ -65,7 +118,7 @@ That's it. The model never sees "rural cottage" as a label. Just a 20-element li
 
 ---
 
-## STEP 3 — The TWO games the model plays
+## STEP 4 — The TWO games the model plays
 
 > **This is the part that needs to be crystal clear.** Pre-training and the downstream task are **two separate training sessions** on the same data.
 
@@ -96,7 +149,7 @@ Goal:  classify houses by price
 
 ---
 
-## STEP 4 — Pre-training, walked through with one concrete house
+## STEP 5 — Pre-training, walked through with one concrete house
 
 Take the rural cottage from Step 1. Encode it as token IDs. Now randomly mask ~30% of the value tokens (never key tokens — those are the "prompt" telling the model what KIND of thing to predict):
 
@@ -128,7 +181,7 @@ The encoder has now learned the **archetype structure** without ever being told 
 
 ---
 
-## STEP 5 — How training works in this lesson (link back to L1, L1c)
+## STEP 6 — How training works in this lesson (link back to L1, L1c)
 
 Same 5-line loop as Lesson 1, just with thousands more knobs to nudge:
 
@@ -148,7 +201,7 @@ After 3,000 steps, the encoder has rich learned representations. **We then freez
 
 ---
 
-## STEP 6 — The downstream task: predict price class
+## STEP 7 — The downstream task: predict price class
 
 Stack a tiny new layer on top of the (frozen) encoder:
 
@@ -168,7 +221,7 @@ That's the full **embedding probe** recipe from PRAGMA §3.1.1.
 
 ---
 
-## STEP 7 — The big experiment (PRE-TRAINING vs BASELINE, defined clearly)
+## STEP 8 — The big experiment (PRE-TRAINING vs BASELINE, defined clearly)
 
 This is the comparison the lesson is built around. **It's not "pre-trained encoder vs no encoder"** — both have an encoder. The difference is what happens BEFORE we train the price head.
 
@@ -198,7 +251,7 @@ Both recipes use the same data, the same architecture, and the same downstream t
 
 ---
 
-## STEP 8 — Results, interpreted
+## STEP 9 — Results, interpreted
 
 ```
  labels | pretrained acc  pretrained recall | baseline acc  baseline recall
@@ -227,7 +280,7 @@ Two reasons specific to this lesson:
 
 ---
 
-## STEP 9 — What you should walk away with
+## STEP 10 — What you should walk away with
 
 1. **The PRAGMA recipe (pre-train → freeze → probe) is most valuable when labels are scarce AND the data has rich contextual structure.**
 2. **Pre-training and downstream are two separate training sessions on the same data.** Different goals, different losses, different things being nudged.

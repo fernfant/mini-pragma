@@ -85,9 +85,63 @@
   🔑 <strong>The whole reason MLM (L4) works here:</strong> correlations like these are what the fill-in-the-blank game can learn. Without them, the attributes would be unrelated and there'd be nothing context-dependent to predict.
 </div>
 
-<h2>Step 2 — How the computer sees each house</h2>
+<h2>Step 2 — A wider view: 10 actual rows from the dataset</h2>
 
-<p>The computer doesn't see a nice table. It sees a flat list of token IDs:</p>
+<p>Now zoom out from the 3 archetypal examples and look at 10 actual rows from the full 8,000-house dataset. Same data shown two ways:</p>
+
+<h3>(a) As pre-training sees them — features only, NO labels</h3>
+
+<pre style="font-size:11px;line-height:1.5;"><code>  row | bedrooms  bathrooms size      age       neighborh garage    pool      garden    schools   condition
+  ---------------------------------------------------------------------------------------------------------
+    1 | 1bed      2bath     small     older     downtown  nogarage  nopool    smGarden  avgSch    faircond
+    2 | 2bed      2bath     medium    vintage   suburb    1car      nopool    nogarden  avgSch    exccond
+    3 | 2bed      2bath     small     vintage   downtown  nogarage  nopool    nogarden  avgSch    goodcond
+    4 | 3bed      2bath     large     modern    suburb    nogarage  haspool   lgGarden  excSch    exccond
+    5 | 3bed      3+bath    medium    older     rural     2car      nopool    lgGarden  goodSch   goodcond
+    6 | 3bed      3+bath    medium    new       downtown  nogarage  nopool    smGarden  avgSch    goodcond
+    7 | 4bed      3+bath    large     new       beach     1car      haspool   lgGarden  excSch    exccond
+    8 | 2bed      2bath     medium    older     rural     2car      nopool    nogarden  goodSch   poorcond
+    9 | 5+bed     2bath     large     new       beach     2car      haspool   lgGarden  goodSch   exccond
+   10 | 1bed      3+bath    small     older     rural     2car      haspool   smGarden  avgSch    exccond</code></pre>
+
+<div class="callout">
+  Pre-training plays fill-in-the-blank on these features alone. <strong>Uses ALL 8,000 houses. No labels needed.</strong>
+</div>
+
+<h3>(b) As the downstream task sees them — same rows, with price class</h3>
+
+<pre style="font-size:11px;line-height:1.5;"><code>  row | bedrooms  bathrooms size      age       neighborh garage    pool      garden    schools   condition | price class
+  -----------------------------------------------------------------------------------------------------------------------
+    1 | 1bed      2bath     small     older     downtown  nogarage  nopool    smGarden  avgSch    faircond  | cheap
+    2 | 2bed      2bath     medium    vintage   suburb    1car      nopool    nogarden  avgSch    exccond   | average
+    3 | 2bed      2bath     small     vintage   downtown  nogarage  nopool    nogarden  avgSch    goodcond  | cheap
+    4 | 3bed      2bath     large     modern    suburb    nogarage  haspool   lgGarden  excSch    exccond   | expensive
+    5 | 3bed      3+bath    medium    older     rural     2car      nopool    lgGarden  goodSch   goodcond  | average
+    6 | 3bed      3+bath    medium    new       downtown  nogarage  nopool    smGarden  avgSch    goodcond  | average
+    7 | 4bed      3+bath    large     new       beach     1car      haspool   lgGarden  excSch    exccond   | luxury
+    8 | 2bed      2bath     medium    older     rural     2car      nopool    nogarden  goodSch   poorcond  | cheap
+    9 | 5+bed     2bath     large     new       beach     2car      haspool   lgGarden  goodSch   exccond   | luxury
+   10 | 1bed      3+bath    small     older     rural     2car      haspool   smGarden  avgSch    exccond   | cheap</code></pre>
+
+<div class="callout">
+  Downstream task uses the full row, <strong>including the price class</strong>. Uses only a small subset of houses (50, 100, 500, or 4000).
+</div>
+
+<p><strong>Read the rows carefully:</strong></p>
+<ul>
+  <li>Row 7: 4-bed, large, new, beach, pool, excellent schools → <strong>luxury</strong>. Of course.</li>
+  <li>Row 9: 5+bed, large, new, beach, pool → <strong>luxury</strong> again. Beach + pool + size = luxury, every time.</li>
+  <li>Row 1: 1-bed, small, downtown, no pool, no garage → <strong>cheap</strong>. Tiny urban apartment.</li>
+  <li>Row 8: 2-bed, medium, rural, poor condition → <strong>cheap</strong>. Rural fixer-upper.</li>
+</ul>
+
+<div class="callout good">
+  You can practically read the price class by eye. <strong>That's the signal the model has to learn from the token sequences alone.</strong>
+</div>
+
+<h2>Step 3 — How the computer sees each house</h2>
+
+<p>The computer doesn't see those nice rows. It sees a flat list of token IDs:</p>
 
 <pre><code>event:  [("bedrooms", "2bed"),
          ("bathrooms", "1bath"),
@@ -100,7 +154,7 @@ ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
 
 <p>The model never sees "rural cottage" as a label. Just a 20-element list of integers. Its whole job is to find structure in those integer sequences.</p>
 
-<h2>Step 3 — The TWO games the model plays</h2>
+<h2>Step 4 — The TWO games the model plays</h2>
 
 <div class="callout info">
   <strong>This is the part that needs to be crystal clear.</strong> Pre-training and the downstream task are <em>two separate training sessions</em> on the same data.
@@ -128,7 +182,7 @@ ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
   🔑 <strong>The big PRAGMA bet:</strong> if Game 1 has taught the encoder something useful about house structure, Game 2 can be done with very few labels — because the encoder already knows the patterns. We just need a tiny "translator" layer (the price head) that maps encoder output → price class.
 </div>
 
-<h2>Step 4 — Pre-training, walked through with one concrete house</h2>
+<h2>Step 5 — Pre-training, walked through with one concrete house</h2>
 
 <p>Take the rural cottage. Encode it. Now randomly mask ~30% of the <em>value</em> tokens (never key tokens — those are the prompt telling the model what KIND of thing to predict):</p>
 
@@ -160,7 +214,7 @@ AFTER MASKING (random 30%):
 
 <p><strong>The encoder has learned the archetype structure without being told it exists.</strong></p>
 
-<h2>Step 5 — How training works (link back to L1)</h2>
+<h2>Step 6 — How training works (link back to L1)</h2>
 
 <p>Same 5-line loop as <a href="lesson_01.html">Lesson 1</a>, just with thousands more knobs:</p>
 
@@ -176,7 +230,7 @@ AFTER MASKING (random 30%):
 
 <p>After 3,000 steps, the encoder has rich learned representations. <strong>We then freeze it</strong> and move to Game 2.</p>
 
-<h2>Step 6 — The downstream task: predict price class</h2>
+<h2>Step 7 — The downstream task: predict price class</h2>
 
 <p>Stack a tiny new layer on top of the frozen encoder:</p>
 
@@ -192,7 +246,7 @@ AFTER MASKING (random 30%):
 
 <p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1.</p>
 
-<h2>Step 7 — The big experiment: PRE-TRAINING vs BASELINE</h2>
+<h2>Step 8 — The big experiment: PRE-TRAINING vs BASELINE</h2>
 
 <p>This is the comparison the lesson is built around. <strong>It's not "pre-trained encoder vs no encoder"</strong> — both have an encoder. The difference is what happens BEFORE we train the price head.</p>
 
@@ -232,7 +286,7 @@ AFTER MASKING (random 30%):
   Both recipes use the same data, the same architecture, and the same downstream training loop. The only difference is whether we did the self-supervised pre-training step first.
 </div>
 
-<h2>Step 8 — Results, interpreted</h2>
+<h2>Step 9 — Results, interpreted</h2>
 
 <div class="widget">
   <h3>📊 Pre-trained probe vs random-init baseline, across label counts</h3>
@@ -269,7 +323,7 @@ AFTER MASKING (random 30%):
   <strong>Real-world fix:</strong> instead of a fully frozen probe, use <strong>LoRA fine-tuning</strong> (PRAGMA §3.1.2) — unfreeze ~2-4% of weights during downstream training. You get pre-training's warm start AND the ability to tune for the task. Best of both worlds.
 </div>
 
-<h2>Step 9 — Sample predictions</h2>
+<h2>Step 10 — Sample predictions</h2>
 
 <table>
   <thead><tr><th>Input house</th><th>Prediction</th><th>Confidence</th></tr></thead>

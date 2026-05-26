@@ -254,15 +254,68 @@ print(f"  class spread: bargain={class_counts[0]}, cheap={class_counts[1]}, "
       f"average={class_counts[2]}, expensive={class_counts[3]}, luxury={class_counts[4]}")
 print(f"  vocab size: {V}\n")
 
+# ----- Show 10 sample rows from the actual dataset -----
+# This is the visceral "what does the dataset look like" view.
+# Same 10 rows shown two ways: as pre-training sees them (features only),
+# and as the downstream task sees them (features + price label).
+
+# Short abbreviations for values that are too long to fit in 9-char columns
+SHORT = {
+    "smallgarden": "smGarden", "largegarden": "lgGarden",
+    "poorschool":  "poorSch",  "avgschool":   "avgSch",
+    "goodschool":  "goodSch",  "excschool":   "excSch",
+}
+def s(v):
+    return SHORT.get(v, v)
+
+CW = 9   # column width
+SAMPLE_N = 10
+
+def print_data_table(houses_subset, classes_subset, show_label):
+    """Print houses as a wide table. If show_label, append the price class."""
+    cols = KEYS
+    header = "  row | " + " ".join(f"{c[:CW]:<{CW}}" for c in cols)
+    if show_label:
+        header += " | price class"
+    print(header)
+    print("  " + "-" * (len(header) - 2))
+    for i in range(SAMPLE_N):
+        h = houses_subset[i]
+        row = f"  {i+1:>3} | " + " ".join(f"{s(h[k])[:CW]:<{CW}}" for k in cols)
+        if show_label:
+            row += f" | {PRICE_CLASSES[classes_subset[i]]}"
+        print(row)
+
+print("=" * 100)
+print("STEP 2 — A wider view: 10 sample rows from the full 8,000-house dataset")
+print("=" * 100)
+print()
+print("(a) As PRE-TRAINING sees them — features only, NO price labels needed:")
+print()
+print_data_table(houses, classes, show_label=False)
+print()
+print("    ↑ Pre-training plays fill-in-the-blank on these features alone.")
+print("    ↑ Uses ALL 8,000 houses. Labels not needed.")
+print()
+print("-" * 100)
+print()
+print("(b) As the DOWNSTREAM TASK sees them — features + price class:")
+print()
+print_data_table(houses, classes, show_label=True)
+print()
+print("    ↑ Downstream task uses the full row, INCLUDING the price class.")
+print("    ↑ Uses only a small subset of houses (50, 100, 500, or 4000).")
+print()
+
 # ----- Show what one house looks like to the computer -----
-print("=" * 70)
-print("STEP 2 — How the computer sees a house. (Plain key-value token IDs.)")
-print("=" * 70)
+print("=" * 100)
+print("STEP 3 — How the computer sees a single house (plain key-value token IDs)")
+print("=" * 100)
 first_arch, first_h, _, _ = samples[0]
-print(f"  House: {first_arch}")
-print(f"  Dict form: {first_h}")
-print(f"  Token IDs: {encode_house(first_h)}")
-print(f"  Tokens:    {[vocab[i] for i in encode_house(first_h)]}\n")
+print(f"  Sample house: {first_arch}")
+print(f"  Dict form:    {first_h}")
+print(f"  Token IDs:    {encode_house(first_h)}")
+print(f"  Tokens:       {[vocab[i] for i in encode_house(first_h)]}\n")
 print("  The model never sees 'rural cottage'. Just this 20-element list.\n")
 
 
