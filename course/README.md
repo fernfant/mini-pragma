@@ -15,8 +15,8 @@ to build your own version from scratch in the capstone.
 | 1 | [`01_how_models_learn.py`](01_how_models_learn.py) | [`01_walkthrough.md`](01_walkthrough.md) — what "learning" actually means |
 | 1b | [`aside/model_A_linear.py`](aside/model_A_linear.py)<br>[`aside/model_B_embedding.py`](aside/model_B_embedding.py) | [`01b_architecture_vs_training.md`](01b_architecture_vs_training.md) — architecture vs. training (the key distinction) |
 | 1c | [`aside/model_A_with_gradients.py`](aside/model_A_with_gradients.py) | [`01c_gradient_descent.md`](01c_gradient_descent.md) — inside the training loop: loss and gradient descent (with an [interactive visualisation](visuals/gradient_descent_interactive.html)) |
-| 2 | [`02_tokens_and_embeddings.py`](02_tokens_and_embeddings.py) | [`02_walkthrough.md`](02_walkthrough.md) — how text becomes numbers |
-| 3 | [`03_attention.py`](03_attention.py) | [`03_walkthrough.md`](03_walkthrough.md) — the heart of the Transformer |
+| 2 | [`02_tokens_and_embeddings.py`](02_tokens_and_embeddings.py)<br>[notebook 📓](notebooks/lesson_02_tokens_embeddings.ipynb) | [`02_walkthrough.md`](02_walkthrough.md) — how text becomes numbers |
+| 3 | [`03_attention.py`](03_attention.py)<br>[notebook 📓](notebooks/lesson_03_attention.ipynb) | [`03_walkthrough.md`](03_walkthrough.md) — the heart of the Transformer |
 | 3b | — | [`03b_why_transformers_won.md`](03b_why_transformers_won.md) — why attention beat RNNs (speed, memory, scale) |
 | 4 | [`04_transformer_and_mlm.py`](04_transformer_and_mlm.py) | [`04_walkthrough.md`](04_walkthrough.md) — putting it all together with the fill-in-the-blank training game |
 | 5 | [`../pragma_mini.py`](../pragma_mini.py)<br>[notebook 📓](notebooks/lesson_05_pragma_mini.ipynb) | [`05_putting_it_together.md`](05_putting_it_together.md) — line-by-line walkthrough of `pragma_mini.py`, plus a deeper look at what real PRAGMA adds (key-value tokenisation, encoder depth, …) |
@@ -40,10 +40,10 @@ piece by piece on the same dataset).
 
 | # | What it re-implements | Why |
 |---|---|---|
-| 1d | [`01d_autograd_from_scratch.py`](01d_autograd_from_scratch.py) | A 100-line autograd engine (micrograd-style). Trains Lesson 1's regression with NO PyTorch autograd. Matches PyTorch's gradients exactly. |
-| 2c | [`02c_embedding_from_scratch.py`](02c_embedding_from_scratch.py) | `nn.Embedding` in 4 lines. Verifies bit-exact outputs and gradients vs PyTorch. |
-| 3c | [`03c_attention_from_scratch.py`](03c_attention_from_scratch.py) | Multi-head self-attention from primitives. Numerically identical to `nn.MultiheadAttention`. |
-| 4e | [`04e_encoder_layer_from_scratch.py`](04e_encoder_layer_from_scratch.py) | `nn.TransformerEncoderLayer` decomposed: LayerNorm, FFN, MHA, residuals. Numerically identical to PyTorch's version. |
+| 1d | [`01d_autograd_from_scratch.py`](01d_autograd_from_scratch.py)<br>[notebook 📓](notebooks/lesson_01d_autograd_from_scratch.ipynb) | A 100-line autograd engine (micrograd-style). Trains Lesson 1's regression with NO PyTorch autograd. Matches PyTorch's gradients exactly. |
+| 2c | [`02c_embedding_from_scratch.py`](02c_embedding_from_scratch.py)<br>[notebook 📓](notebooks/lesson_02c_embedding_from_scratch.ipynb) | `nn.Embedding` in 4 lines. Verifies bit-exact outputs and gradients vs PyTorch. |
+| 3c | [`03c_attention_from_scratch.py`](03c_attention_from_scratch.py)<br>[notebook 📓](notebooks/lesson_03c_attention_from_scratch.ipynb) | Multi-head self-attention from primitives. Numerically identical to `nn.MultiheadAttention`. |
+| 4e | [`04e_encoder_layer_from_scratch.py`](04e_encoder_layer_from_scratch.py)<br>[notebook 📓](notebooks/lesson_04e_encoder_layer_from_scratch.ipynb) | `nn.TransformerEncoderLayer` decomposed: LayerNorm, FFN, MHA, residuals. Numerically identical to PyTorch's version. |
 
 ### Incremental build-up — same data, growing model
 
@@ -53,10 +53,10 @@ case, up — and learn why).
 
 | # | What it adds | Result |
 |---|---|---|
-| 4a | [`04a_counts_model.py`](04a_counts_model.py) — no neural net at all | 63.4% acc, 0.670 CE |
-| 4b | [`04b_embedding_linear.py`](04b_embedding_linear.py) — embedding + mean-pool + linear | 64.2% acc, 0.558 CE |
-| 4c | [`04c_with_attention.py`](04c_with_attention.py) — add self-attention | **53.6% acc, 0.902 CE (gets WORSE)** |
-| 4d | [`04d_full_block.py`](04d_full_block.py) — full Transformer block | **64.5% acc, 0.533 CE (best)** |
+| 4a | [`04a_counts_model.py`](04a_counts_model.py)<br>[notebook 📓](notebooks/lesson_04a_counts_baseline.ipynb) — no neural net at all | 63.4% acc, 0.670 CE |
+| 4b | [`04b_embedding_linear.py`](04b_embedding_linear.py)<br>[notebook 📓](notebooks/lesson_04b_embedding_linear.ipynb) — embedding + mean-pool + linear | 64.2% acc, 0.558 CE |
+| 4c | [`04c_with_attention.py`](04c_with_attention.py)<br>[notebook 📓](notebooks/lesson_04c_with_attention.ipynb) — add self-attention | **53.6% acc, 0.902 CE (gets WORSE)** |
+| 4d | [`04d_full_block.py`](04d_full_block.py)<br>[notebook 📓](notebooks/lesson_04d_full_block.ipynb) — full Transformer block | **64.5% acc, 0.533 CE (best)** |
 
 The L4c regression is intentional — it shows attention alone isn't enough.
 The fix (residuals + FFN + LayerNorm) is exactly what makes L4d win.
