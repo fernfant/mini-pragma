@@ -20,6 +20,7 @@ to build your own version from scratch in the capstone.
 | 3b | — | [`03b_why_transformers_won.md`](03b_why_transformers_won.md) — why attention beat RNNs (speed, memory, scale) |
 | 4 | [`04_transformer_and_mlm.py`](04_transformer_and_mlm.py) | [`04_walkthrough.md`](04_walkthrough.md) — putting it all together with the fill-in-the-blank training game |
 | 5 | [`../pragma_mini.py`](../pragma_mini.py)<br>[notebook 📓](notebooks/lesson_05_pragma_mini.ipynb) | [`05_putting_it_together.md`](05_putting_it_together.md) — line-by-line walkthrough of `pragma_mini.py`, plus a deeper look at what real PRAGMA adds (key-value tokenisation, encoder depth, …) |
+| 5a | [`05a_house_predictor.py`](05a_house_predictor.py)<br>[notebook 📓](notebooks/lesson_05a_house_predictor.ipynb) | [`05a_walkthrough.md`](05a_walkthrough.md) — same recipe on **tabular data with realistic correlations**. 10 attributes per house, 5 price classes. Bridge between the toy and streaming. |
 | 5b | [`05b_streaming_churn.py`](05b_streaming_churn.py)<br>[notebook 📓](notebooks/lesson_05b_streaming_churn.ipynb) | [`05b_walkthrough.md`](05b_walkthrough.md) — same recipe applied to a realistic problem: streaming-service churn prediction (with the full pre-train → freeze → probe pipeline) |
 | 6 | — | [`06_capstone.md`](06_capstone.md) — build your own mini fraud detector |
 

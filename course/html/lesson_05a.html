@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 5a — House price predictor</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html" class="current">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 5a — House price predictor</h1>
+<p class="subtitle">The same PRAGMA recipe applied to tabular data with realistic inter-attribute correlations. A bridge between the pets toy and the streaming churn predictor.</p>
+
+<div class="callout info">
+  <strong>Companion files:</strong>
+  runnable script <a href="../05a_house_predictor.py"><code>05a_house_predictor.py</code></a> ·
+  notebook <a href="../notebooks/lesson_05a_house_predictor.ipynb">lesson_05a_house_predictor.ipynb</a> ·
+  walkthrough <a href="../05a_walkthrough.md"><code>05a_walkthrough.md</code></a>
+</div>
+
+<h2>Where this fits</h2>
+
+<table>
+  <thead><tr><th>Lesson</th><th>Tokens / record</th><th>Domain</th><th>Task</th></tr></thead>
+  <tbody>
+    <tr><td>L4 toy</td><td>2</td><td>dog/cat/fish + sound</td><td>masked word</td></tr>
+    <tr><td>L5 (pragma_mini)</td><td>6</td><td>pet + action + place</td><td>masked value</td></tr>
+    <tr><td><strong>L5a (this one)</strong></td><td><strong>20</strong></td><td><strong>house with 10 attributes</strong></td><td><strong>price (5 classes)</strong></td></tr>
+    <tr><td>L5b (streaming)</td><td>120</td><td>15 events of streaming</td><td>churn (binary)</td></tr>
+  </tbody>
+</table>
+
+<p>One record per "user" (no event sequence), but 10 keys instead of 3 — closer to a real tabular dataset.</p>
+
+<h2>What's new vs prior lessons</h2>
+
+<ul>
+  <li><strong>5-class classification</strong> (a step toward regression)</li>
+  <li><strong>Realistic inter-attribute correlations</strong> in the data — beach houses tend to have pools, vintage houses are usually smaller, etc.</li>
+  <li>A more nuanced pre-train vs baseline story: pre-training wins when labels are scarce, baseline catches up at scale</li>
+</ul>
+
+<h2>The headline result</h2>
+
+<div class="widget">
+  <h3>📊 Pre-trained probe vs random-init baseline, by label count</h3>
+  <table>
+    <thead><tr><th>labels</th><th>pretrained acc</th><th>pretrained recall</th><th>baseline acc</th><th>baseline recall</th></tr></thead>
+    <tbody>
+      <tr style="background:#dcfce7"><td>50</td><td><strong>0.66</strong></td><td>0.64</td><td>0.59</td><td>0.62</td></tr>
+      <tr><td>100</td><td>0.70</td><td>0.59</td><td>0.67</td><td>0.60</td></tr>
+      <tr style="background:#fef3c7"><td>500</td><td>0.72</td><td>0.61</td><td><strong>0.79</strong></td><td><strong>0.76</strong></td></tr>
+      <tr style="background:#fef3c7"><td>4000</td><td>0.73</td><td>0.61</td><td><strong>0.86</strong></td><td><strong>0.84</strong></td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:var(--text-dim);margin-top:14px;">
+    <span style="background:#dcfce7;padding:2px 6px;border-radius:4px;">Green</span> = pre-training wins.
+    <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;">Yellow</span> = baseline wins.
+  </p>
+</div>
+
+<p>The story is more nuanced than the streaming churn example:</p>
+
+<ul>
+  <li><strong>50 labels: pre-training wins.</strong> 7 percentage points on accuracy. When labelled data is scarce, the encoder's MLM-learned representations give the linear probe a head start.</li>
+  <li><strong>100 labels: still a small pre-trained edge.</strong></li>
+  <li><strong>500-4000 labels: baseline pulls ahead.</strong> With enough labels, an end-to-end model can find better representations specific to the price-classification task.</li>
+</ul>
+
+<div class="callout">
+  <strong>Why isn't pre-training dominant everywhere?</strong> Tabular data has less rich contextual structure than sequential data. With 4000 labelled houses, end-to-end training can learn price patterns directly without needing pre-training's warm start. Frozen features are a hard constraint — the encoder can't be tuned to emphasise what matters for THIS task.
+  <br><br>
+  <strong>Real-world fix:</strong> instead of a frozen probe, use <strong>LoRA fine-tuning</strong> — unfreeze a small fraction of weights (~2-4%) during downstream training. PRAGMA does this (§3.1.2).
+</div>
+
+<h2>The data — with correlations this time</h2>
+
+<p>The key insight: without correlations between attributes, MLM has nothing context-dependent to learn. With correlations, the encoder learns the underlying structure (beach houses tend to have pools, vintage houses are smaller).</p>
+
+<p>We define 5 house archetypes — each is a probability distribution over attribute values:</p>
+
+<pre><code>ARCHETYPES = {
+    "rural_cottage": {
+        "size":         {"small":5, "medium":4, "large":1, "huge":0},
+        "neighborhood": {"downtown":0, "suburb":1, "rural":8, "beach":1},
+        "pool":         {"nopool":9, "haspool":1},
+        ...
+    },
+    "luxury_beach": {
+        "size":         {"small":0, "medium":1, "large":4, "huge":5},
+        "neighborhood": {"downtown":0, "suburb":0, "rural":0, "beach":10},
+        "pool":         {"nopool":1, "haspool":9},
+        ...
+    },
+    "urban_apartment", "suburban_family", "old_townhouse",
+}</code></pre>
+
+<p>Each house is generated by picking an archetype, then sampling each attribute from that archetype's weighted distribution. The result is rich realistic structure for the encoder to learn.</p>
+
+<h2>The architecture (identical to pragma_mini)</h2>
+
+<pre><code>class Encoder(nn.Module):
+    """Same backbone as pragma_mini.py — embedding + position + Transformer."""
+    def __init__(self, V, d=32, heads=2, layers=2):
+        ...
+
+class PriceHead(nn.Module):
+    """Pool the encoder output, predict price bucket (5 classes)."""
+    def __init__(self, d=32):
+        super().__init__()
+        self.proj = nn.Linear(d, 5)
+    def forward(self, h):
+        pooled = h.mean(dim=1)
+        return self.proj(pooled)</code></pre>
+
+<p>The encoder is reusable across tasks. Only the head changes per task. <strong>That's the foundation-model idea.</strong></p>
+
+<h2>The pre-training (L4)</h2>
+
+<pre><code>for step in range(3000):
+    idx       = torch.randint(0, N_HOUSES, (128,))
+    xb, yb    = mlm_mask(X[idx])             # mask 30% of value tokens
+    h         = encoder(xb)
+    logits    = mlm_head(h)
+    loss      = loss_fn(logits.reshape(-1, V), yb.reshape(-1))
+    opt.zero_grad(); loss.backward(); opt.step()</code></pre>
+
+<p>Higher mask rate (30%) than in other lessons. The reason: with more missing info per record, the model is forced to use surrounding context heavily — which is exactly what teaches it the inter-attribute correlations.</p>
+
+<p>The price labels are never used here. This is fully self-supervised — the data labels itself.</p>
+
+<h2>Sample predictions</h2>
+
+<table>
+  <thead><tr><th>Input house</th><th>Prediction</th><th>Confidence</th></tr></thead>
+  <tbody>
+    <tr><td>rural cottage <br><small>(2bed, small, vintage, rural, no pool)</small></td><td>cheap</td><td>53% (45% bargain)</td></tr>
+    <tr><td>suburban family <br><small>(3bed, medium, modern, suburb, 2-car)</small></td><td>average</td><td>96%</td></tr>
+    <tr><td>luxury beach <br><small>(5+bed, huge, new, beach, pool, exc schools)</small></td><td>luxury</td><td>99%</td></tr>
+  </tbody>
+</table>
+
+<p>The model has clearly learned that <code>(beach + pool + huge + new + exccond)</code> = luxury, and <code>(rural + small + vintage + faircond)</code> = bargain/cheap — without ever seeing prices during pre-training.</p>
+
+<h2>The story, lesson by lesson</h2>
+
+<table>
+  <thead><tr><th>Step</th><th>Lesson(s) used</th></tr></thead>
+  <tbody>
+    <tr><td>Tokenise houses as key-value pairs</td><td><a href="lesson_02.html">L2</a>, <a href="lesson_05.html">L5</a></td></tr>
+    <tr><td>Encoder = embedding + position + attention</td><td><a href="lesson_01b.html">L1b</a>, <a href="lesson_02.html">L2</a>, <a href="lesson_03.html">L3</a></td></tr>
+    <tr><td>Pre-train via fill-in-the-blank (no labels)</td><td><a href="lesson_01.html">L1</a>, <a href="lesson_01c.html">L1c</a>, <a href="lesson_04.html">L4</a></td></tr>
+    <tr><td>Freeze encoder, add 5-class price head</td><td><a href="lesson_01b.html">L1b</a></td></tr>
+    <tr><td>Train just the head</td><td><a href="lesson_01.html">L1</a>, <a href="lesson_01c.html">L1c</a></td></tr>
+    <tr><td>Compare to baseline at different label counts</td><td>scientific method</td></tr>
+  </tbody>
+</table>
+
+<h2>Bridge to L5b</h2>
+
+<div class="callout good">
+  <strong>The pattern emerging:</strong> as data gets richer and more structured, pre-training's advantage grows.
+  <br><br>
+  In <a href="lesson_05b.html">Lesson 5b</a> the same recipe is applied to <strong>sequential event data</strong> (streaming sessions). There, pre-training wins much more decisively across ALL label counts — because the data has rich sequential structure (skipping patterns over time, narrow vs varied genre choices) that's hard for an end-to-end model to discover without the self-supervised warm-up.
+  <br><br>
+  <strong>PRAGMA's banking event streams are the extreme case where pre-training is essentially required.</strong> Tabular data: optional. Long sequences with subtle patterns: pre-training is the whole game.
+</div>
+
+<div class="pagination">
+  <a href="lesson_05.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+  </a>
+  <a href="lesson_05b.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L5b — Streaming churn predictor</span>
+  </a>
+</div>
+
+</div>
+</body>
+</html>
