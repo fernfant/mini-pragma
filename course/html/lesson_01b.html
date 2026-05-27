@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html" class="current">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,9 +32,27 @@
 <h1>Lesson 1b — Architecture vs. training</h1>
 <p class="subtitle">The single most important distinction to internalise. Get this right and the rest of the course clicks.</p>
 
+<div class="lesson-links">
+  <a href="../aside/model_A_linear.py"><span class="ico">🐍</span> model_A_linear.py</a>
+  <a href="../aside/model_B_embedding.py"><span class="ico">🐍</span> model_B_embedding.py</a>
+  <a href="../01b_architecture_vs_training.md"><span class="ico">📝</span> Walkthrough</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Sections</summary>
+  <ol>
+    <li><a href="#two-ideas">Architecture vs. training, separated</a></li>
+    <li><a href="#why">Why this matters</a></li>
+    <li><a href="#side-by-side">Two tiny models, one training recipe</a></li>
+    <li><a href="#loop">The 5-line loop, identical for both</a></li>
+    <li><a href="#evolve">Watch the embeddings evolve</a></li>
+    <li><a href="#tldr">TL;DR</a></li>
+  </ol>
+</details>
+
 <p>If after Lesson 1 you're wondering <em>"OK, but where exactly does the learning happen in a Transformer? Are the embeddings given or calculated? Is attention learned?"</em> — this lesson is for you.</p>
 
-<h2>Two ideas, separated</h2>
+<h2 class="step" id="two-ideas"><span class="step-num">Idea</span> Two ideas, separated</h2>
 
 <div class="widget-row two" style="gap:24px;margin:24px 0;">
   <div class="widget" style="margin:0;">
@@ -48,12 +67,12 @@
   </div>
 </div>
 
-<figure>
+<figure class="figure-wide">
   <img src="../visuals/architecture_comparison.svg" alt="Three architectures compared">
   <figcaption>Same training loop. Different architectures. Different number of knobs.</figcaption>
 </figure>
 
-<h2>Why this matters</h2>
+<h2 class="step" id="why"><span class="step-num">Why</span> Why this matters</h2>
 
 <p>When we built <a href="lesson_02.html">Lesson 2</a>'s embedding table, the numbers were random — because <strong>we never ran the training loop on them</strong>. The architecture was in place (the table existed and the lookup worked), but no training happened, so the knobs stayed at random.</p>
 
@@ -61,7 +80,7 @@
 
 <p>In <a href="lesson_04.html">Lesson 4</a> we'll combine architecture (embedding + attention) with training (the 5-line loop). The training loop nudges <em>every</em> knob in the architecture — the embedding numbers, the attention matrices, the output layer — all at once.</p>
 
-<h2>Side-by-side: two tiny models, one training recipe</h2>
+<h2 class="step" id="side-by-side"><span class="step-num">Compare</span> Two tiny models, one training recipe</h2>
 
 <div class="callout info">
   Both of these are runnable as <code>course/aside/model_A_linear.py</code> and <code>model_B_embedding.py</code>.
@@ -77,13 +96,13 @@ b = torch.tensor(0.0, requires_grad=True)
 head = nn.Linear(2, 3)           # 2*3 + 3 = 9 knobs
 # training loop nudges EVERY one of those 15 knobs</code></pre>
 
-<h2>The 5-line loop, identical for both</h2>
+<h2 class="step" id="loop"><span class="step-num">Loop</span> The 5-line loop, identical for both</h2>
 
 <figure>
   <img src="../visuals/training_loop.svg" alt="The 5-step training loop">
 </figure>
 
-<h2>Watch the embeddings evolve</h2>
+<h2 class="step" id="evolve"><span class="step-num">Evolve</span> Watch the embeddings evolve</h2>
 
 <p>This is the magic: nobody designs where each word lives in embedding space. The training loop drifts them into the right positions automatically.</p>
 
@@ -106,7 +125,7 @@ head = nn.Linear(2, 3)           # 2*3 + 3 = 9 knobs
 
 <p>The training loop is identical for all four. <code>loss.backward()</code> computes gradients for every knob, no matter how many; <code>opt.step()</code> nudges them all.</p>
 
-<h2>TL;DR</h2>
+<h2 class="step" id="tldr"><span class="step-num">TL;DR</span> Three things to remember</h2>
 
 <div class="callout good">
   <ul>

@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html" class="current">L3b</a>
@@ -31,13 +32,35 @@
 <h1>Lesson 3b — Why Transformers won</h1>
 <p class="subtitle">Three superpowers: speed, memory, scale. The reason ChatGPT exists.</p>
 
-<h2>What came before: RNNs</h2>
+<div class="lesson-links">
+  <a href="../03b_why_transformers_won.md"><span class="ico">📝</span> Walkthrough</a>
+  <a href="lesson_03.html"><span class="ico">←</span> L3 attention</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Sections</summary>
+  <ol>
+    <li><a href="#before">What came before: RNNs</a></li>
+    <li><a href="#race">🎮 Watch them race: RNN vs Transformer</a></li>
+    <li><a href="#speed">Problem 1: Speed</a></li>
+    <li><a href="#memory">Problem 2: Memory</a></li>
+    <li><a href="#scale">Problem 3: Scale</a></li>
+    <li><a href="#foundation">The combined superpower: foundation models</a></li>
+  </ol>
+</details>
+
+<figure class="figure-wide">
+  <img src="../visuals/rnn_vs_transformer.svg" alt="RNN sequential vs Transformer parallel">
+  <figcaption>RNNs read sequentially (one word at a time, single "memory card"). Transformers process every token in parallel and let each look directly at every other.</figcaption>
+</figure>
+
+<h2 class="step" id="before"><span class="step-num">Before</span> What came before: RNNs</h2>
 
 <p>Before Transformers, the dominant tool for sequences was the <strong>Recurrent Neural Network (RNN)</strong>. An RNN reads sequences <em>one word at a time</em>, updating a single "memory note" at every step.</p>
 
 <p><strong>Index card analogy:</strong> imagine reading a book using only one index card. You can only write what fits on the card. For every new word, you erase the card and rewrite it to include the new info. By the end of a long chapter, almost none of the early details survive.</p>
 
-<h2>🎮 Watch them race: RNN vs Transformer</h2>
+<h2 class="step" id="race"><span class="step-num">Race</span> 🎮 Watch them race: RNN vs Transformer</h2>
 
 <p>Click "Run" below. The same sentence will be processed by an RNN (top) and a Transformer (bottom). Watch the time difference.</p>
 
@@ -58,24 +81,24 @@
   </div>
 </div>
 
-<h2>Problem 1: RNNs are sequential → SLOW</h2>
+<h2 class="step" id="speed"><span class="step-num">1. Speed</span> RNNs are sequential → SLOW</h2>
 
 <p>An RNN must finish word 1 before it can start word 2. <strong>A 100-word sentence = 100 sequential steps you cannot parallelise.</strong></p>
 
 <p><strong>Transformer fix:</strong> attention lets the model process all 100 words simultaneously — one big matrix multiplication. On GPUs, that's literally ~100× faster.</p>
 
-<h2>Problem 2: RNNs lose long-range info → SHORT MEMORY</h2>
+<h2 class="step" id="memory"><span class="step-num">2. Memory</span> RNNs lose long-range info → SHORT MEMORY</h2>
 
 <p>The "single index card" problem. Information about a word fades as it passes through more update steps.</p>
 
-<figure>
+<figure class="figure-wide">
   <img src="../visuals/information_decay.svg" alt="Information decay in RNNs">
   <figcaption>"The cat that the dog chased was scared." An RNN's memory of "cat" decays from 100% to ~5% over 6 update steps. A Transformer's "scared" attends directly back to "cat" — full strength.</figcaption>
 </figure>
 
 <p><strong>Transformer fix:</strong> with attention, when the word "scared" is being processed, it can put 90% of its attention <em>directly</em> on "cat" — across 6 words, with no information loss.</p>
 
-<h2>Problem 3: RNNs don't scale → CEILING AT ~100M PARAMETERS</h2>
+<h2 class="step" id="scale"><span class="step-num">3. Scale</span> RNNs don't scale → CEILING AT ~100M PARAMETERS</h2>
 
 <p>Two reasons:</p>
 <ol>
@@ -85,12 +108,12 @@
 
 <p><strong>Transformer fix:</strong> attention is parallel and gradients flow cleanly. <strong>Transformers just keep getting better as you make them bigger.</strong></p>
 
-<figure>
+<figure class="figure-wide">
   <img src="../visuals/scaling_chart.svg" alt="Scaling curve">
   <figcaption>The single biggest practical reason Transformers won. RNNs flatten out at ~100M parameters; Transformers scale to a trillion and counting.</figcaption>
 </figure>
 
-<h2>The combined superpower: foundation models</h2>
+<h2 class="step" id="foundation"><span class="step-num">Foundation</span> The combined superpower: foundation models</h2>
 
 <p>When you can train on enormous data (parallel = fast), capture long-range patterns (direct attention = no fade), and scale to billions of parameters (gradients flow cleanly), <strong>a single model can absorb so much general knowledge that you reuse it for many tasks</strong> with just a small bit of fine-tuning on top.</p>
 

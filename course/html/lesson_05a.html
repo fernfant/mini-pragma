@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,14 +32,29 @@
 <h1>Lesson 5a — House price predictor</h1>
 <p class="subtitle">The PRAGMA recipe on tabular data, step by step. First we look at the data, then build intuition, then run two experiments and compare.</p>
 
-<div class="callout info">
-  <strong>Companion files:</strong>
-  runnable script <a href="../05a_house_predictor.py"><code>05a_house_predictor.py</code></a> ·
-  Jupyter notebook <a href="../notebooks/lesson_05a_house_predictor.ipynb">lesson_05a_house_predictor.ipynb</a> ·
-  walkthrough <a href="../05a_walkthrough.md"><code>05a_walkthrough.md</code></a>
+<div class="lesson-links">
+  <a href="../notebooks/lesson_05a_house_predictor.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../05a_house_predictor.py"><span class="ico">🐍</span> 05a_house_predictor.py</a>
+  <a href="../05a_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
 
-<h2>Step 1 — Look at the data (build your eye first)</h2>
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson (matches the notebook)</summary>
+  <ol>
+    <li><a href="#step-1">Step 1 — Look at the data</a></li>
+    <li><a href="#step-2">Step 2 — 10 actual rows from the dataset</a></li>
+    <li><a href="#step-3">Step 3 — How the computer sees each house</a></li>
+    <li><a href="#step-4">Step 4 — The TWO games the model plays</a></li>
+    <li><a href="#step-5">Step 5 — Pre-training with one concrete house</a></li>
+    <li><a href="#step-6">Step 6 — How training works</a></li>
+    <li><a href="#step-7">Step 7 — The downstream task</a></li>
+    <li><a href="#step-8">Step 8 — Pre-training vs baseline</a></li>
+    <li><a href="#step-9">Step 9 — Results, interpreted</a></li>
+    <li><a href="#step-10">Step 10 — Sample predictions</a></li>
+  </ol>
+</details>
+
+<h2 class="step" id="step-1"><span class="step-num">Step 1</span> Look at the data (build your eye first)</h2>
 
 <p>Before any model, just look at three houses. Each has 10 attributes.</p>
 
@@ -85,7 +101,7 @@
   🔑 <strong>The whole reason MLM (L4) works here:</strong> correlations like these are what the fill-in-the-blank game can learn. Without them, the attributes would be unrelated and there'd be nothing context-dependent to predict.
 </div>
 
-<h2>Step 2 — A wider view: 10 actual rows from the dataset</h2>
+<h2 class="step" id="step-2"><span class="step-num">Step 2</span> A wider view: 10 actual rows from the dataset</h2>
 
 <p>Now zoom out from the 3 archetypal examples and look at 10 actual rows from the full 8,000-house dataset. Same data shown two ways:</p>
 
@@ -139,7 +155,7 @@
   You can practically read the price class by eye. <strong>That's the signal the model has to learn from the token sequences alone.</strong>
 </div>
 
-<h2>Step 3 — How the computer sees each house</h2>
+<h2 class="step" id="step-3"><span class="step-num">Step 3</span> How the computer sees each house</h2>
 
 <p>The computer doesn't see those nice rows. It sees a flat list of token IDs:</p>
 
@@ -154,7 +170,7 @@ ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
 
 <p>The model never sees "rural cottage" as a label. Just a 20-element list of integers. Its whole job is to find structure in those integer sequences.</p>
 
-<h2>Step 4 — The TWO games the model plays</h2>
+<h2 class="step" id="step-4"><span class="step-num">Step 4</span> The TWO games the model plays</h2>
 
 <div class="callout info">
   <strong>This is the part that needs to be crystal clear.</strong> Pre-training and the downstream task are <em>two separate training sessions</em> on the same data.
@@ -182,7 +198,7 @@ ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
   🔑 <strong>The big PRAGMA bet:</strong> if Game 1 has taught the encoder something useful about house structure, Game 2 can be done with very few labels — because the encoder already knows the patterns. We just need a tiny "translator" layer (the price head) that maps encoder output → price class.
 </div>
 
-<h2>Step 5 — Pre-training, walked through with one concrete house</h2>
+<h2 class="step" id="step-5"><span class="step-num">Step 5</span> Pre-training, walked through with one concrete house</h2>
 
 <p>Take the rural cottage. Encode it. Now randomly mask ~30% of the <em>value</em> tokens (never key tokens — those are the prompt telling the model what KIND of thing to predict):</p>
 
@@ -214,7 +230,7 @@ AFTER MASKING (random 30%):
 
 <p><strong>The encoder has learned the archetype structure without being told it exists.</strong></p>
 
-<h2>Step 6 — How training works (link back to L1)</h2>
+<h2 class="step" id="step-6"><span class="step-num">Step 6</span> How training works (link back to L1)</h2>
 
 <p>Same 5-line loop as <a href="lesson_01.html">Lesson 1</a>, just with thousands more knobs:</p>
 
@@ -230,7 +246,7 @@ AFTER MASKING (random 30%):
 
 <p>After 3,000 steps, the encoder has rich learned representations. <strong>We then freeze it</strong> and move to Game 2.</p>
 
-<h2>Step 7 — The downstream task: predict price class</h2>
+<h2 class="step" id="step-7"><span class="step-num">Step 7</span> The downstream task: predict price class</h2>
 
 <p>Stack a tiny new layer on top of the frozen encoder:</p>
 
@@ -246,7 +262,7 @@ AFTER MASKING (random 30%):
 
 <p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1.</p>
 
-<h2>Step 8 — The big experiment: PRE-TRAINING vs BASELINE</h2>
+<h2 class="step" id="step-8"><span class="step-num">Step 8</span> The big experiment: PRE-TRAINING vs BASELINE</h2>
 
 <p>This is the comparison the lesson is built around. <strong>It's not "pre-trained encoder vs no encoder"</strong> — both have an encoder. The difference is what happens BEFORE we train the price head.</p>
 
@@ -286,7 +302,7 @@ AFTER MASKING (random 30%):
   Both recipes use the same data, the same architecture, and the same downstream training loop. The only difference is whether we did the self-supervised pre-training step first.
 </div>
 
-<h2>Step 9 — Results, interpreted</h2>
+<h2 class="step" id="step-9"><span class="step-num">Step 9</span> Results, interpreted</h2>
 
 <div class="widget">
   <h3>📊 Pre-trained probe vs random-init baseline, across label counts</h3>
@@ -323,7 +339,7 @@ AFTER MASKING (random 30%):
   <strong>Real-world fix:</strong> instead of a fully frozen probe, use <strong>LoRA fine-tuning</strong> (PRAGMA §3.1.2) — unfreeze ~2-4% of weights during downstream training. You get pre-training's warm start AND the ability to tune for the task. Best of both worlds.
 </div>
 
-<h2>Step 10 — Sample predictions</h2>
+<h2 class="step" id="step-10"><span class="step-num">Step 10</span> Sample predictions</h2>
 
 <table>
   <thead><tr><th>Input house</th><th>Prediction</th><th>Confidence</th></tr></thead>
@@ -336,7 +352,7 @@ AFTER MASKING (random 30%):
 
 <p>The model has learned that <code>(beach + pool + huge + new + excellent)</code> = luxury, and <code>(rural + small + vintage + fair)</code> = bargain/cheap — entirely from MLM on attribute correlations.</p>
 
-<h2>What you should walk away with</h2>
+<h2 class="step" id="walkaway"><span class="step-num">TL;DR</span> What you should walk away with</h2>
 
 <div class="callout good">
   <ol>

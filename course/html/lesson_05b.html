@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,11 +32,26 @@
 <h1>Lesson 5b — Streaming churn predictor</h1>
 <p class="subtitle">Same PRAGMA recipe, now applied to a realistic problem: predicting which streaming-service users are about to cancel.</p>
 
-<div class="callout info">
-  <strong>Companion notebook:</strong> <a href="../notebooks/lesson_05b_streaming_churn.ipynb">notebooks/lesson_05b_streaming_churn.ipynb</a>. Runnable script: <a href="../05b_streaming_churn.py">05b_streaming_churn.py</a>.
+<div class="lesson-links">
+  <a href="../notebooks/lesson_05b_streaming_churn.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../05b_streaming_churn.py"><span class="ico">🐍</span> 05b_streaming_churn.py</a>
+  <a href="../05b_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
 
-<h2>The plan</h2>
+<details class="lesson-toc" open>
+  <summary>Sections (full pre-train → freeze → probe pipeline)</summary>
+  <ol>
+    <li><a href="#plan">The 5-step plan</a></li>
+    <li><a href="#headline">Headline result</a></li>
+    <li><a href="#data">The data: engaged vs churning</a></li>
+    <li><a href="#arch">The architecture (Encoder + ChurnHead)</a></li>
+    <li><a href="#pretrain">Pre-training (MLM)</a></li>
+    <li><a href="#downstream">The downstream task</a></li>
+    <li><a href="#story">Story lesson by lesson</a></li>
+  </ol>
+</details>
+
+<h2 class="step" id="plan"><span class="step-num">Plan</span> The 5-step plan</h2>
 
 <ol>
   <li><strong>Generate synthetic data</strong> — engaged vs churning users.</li>
@@ -47,7 +63,7 @@
 
 <p>This is exactly the foundation-model workflow PRAGMA runs at billion-event scale.</p>
 
-<h2>The headline result</h2>
+<h2 class="step" id="headline"><span class="step-num">Result</span> The headline result</h2>
 
 <div class="widget">
   <h3>📊 Pre-trained vs baseline at different label counts</h3>
@@ -79,7 +95,7 @@
   🔑 <strong>The pre-trained encoder is most valuable when labelled data is scarce.</strong> This is the entire foundation-model pitch — and the reason Revolut built PRAGMA. Labels are expensive; raw events are free.
 </div>
 
-<h2>The data</h2>
+<h2 class="step" id="data"><span class="step-num">Data</span> The data: engaged vs churning</h2>
 
 <p>Two user types with distinct behaviour:</p>
 
@@ -95,7 +111,7 @@
 
 <p>The model has to discover these patterns from the event sequences alone.</p>
 
-<h2>The architecture</h2>
+<h2 class="step" id="arch"><span class="step-num">Arch</span> The architecture <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 
 <pre><code>class Encoder(nn.Module):
     """Same as pragma_mini.py — embedding + position + Transformer."""
@@ -118,7 +134,7 @@ class ChurnHead(nn.Module):
         pooled = h.mean(dim=1)
         return self.proj(pooled)</code></pre>
 
-<h2>The pre-training (L4)</h2>
+<h2 class="step" id="pretrain"><span class="step-num">Pre-train</span> Pre-training (L4 MLM)</h2>
 
 <pre><code>for step in range(2000):
     idx       = torch.randint(0, N_USERS, (64,))
@@ -130,7 +146,7 @@ class ChurnHead(nn.Module):
 
 <p>The same 5-line loop. The labels (engaged/churn) are never used here — this is fully self-supervised.</p>
 
-<h2>The downstream task</h2>
+<h2 class="step" id="downstream"><span class="step-num">Downstream</span> The downstream task (freeze + probe)</h2>
 
 <pre><code>def train_classifier(encoder, X_tr, y_tr, freeze_encoder=True):
     head = ChurnHead()
@@ -149,13 +165,13 @@ class ChurnHead(nn.Module):
   <li><strong>Random-init encoder</strong>, train everything → <em>baseline, no pre-training</em>.</li>
 </ul>
 
-<h2>The story, lesson by lesson</h2>
+<h2 class="step" id="story"><span class="step-num">Story</span> The story, lesson by lesson</h2>
 
 <table>
   <thead><tr><th>Step</th><th>Lesson(s) used</th></tr></thead>
   <tbody>
     <tr><td>Tokenise events into key-value pairs</td><td><a href="lesson_02.html">L2</a>, <a href="lesson_05.html">L5</a></td></tr>
-    <tr><td>Build encoder with embedding + position + attention</td><td><a href="lesson_01b.html">L1b</a>, <a href="lesson_02.html">L2</a>, <a href="lesson_03.html">L3</a></td></tr>
+    <tr><td>Build encoder with embedding + position + attention + FFN</td><td><a href="lesson_01b.html">L1b</a>, <a href="lesson_02.html">L2</a>, <a href="lesson_03.html">L3</a>, <a href="lesson_01_5.html">L1.5</a></td></tr>
     <tr><td>Pre-train with fill-in-the-blank, no labels</td><td><a href="lesson_01.html">L1</a>, <a href="lesson_01c.html">L1c</a>, <a href="lesson_04.html">L4</a></td></tr>
     <tr><td>Freeze the encoder</td><td><a href="lesson_01b.html">L1b</a></td></tr>
     <tr><td>Add a small classifier head</td><td><a href="lesson_01b.html">L1b</a></td></tr>

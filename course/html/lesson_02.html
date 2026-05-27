@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html" class="current">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,7 +32,27 @@
 <h1>Lesson 2 — Tokens &amp; embeddings</h1>
 <p class="subtitle">How a computer turns the word "dog" into a list of numbers it can do math on.</p>
 
-<h2>The big idea (forget words for a moment)</h2>
+<div class="lesson-links">
+  <a href="../notebooks/lesson_02_tokens_embeddings.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../02_tokens_and_embeddings.py"><span class="ico">🐍</span> 02_tokens_and_embeddings.py</a>
+  <a href="../02_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
+  <a href="../notebooks/lesson_02c_embedding_from_scratch.ipynb"><span class="ico">🛠</span> L2c from-scratch</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson (matches the notebook)</summary>
+  <ol>
+    <li><a href="#intuition">The big idea — describe people as numbers</a></li>
+    <li><a href="#dot">Dot product = similarity</a></li>
+    <li><a href="#widget">🎮 Interactive: dot product is similarity</a></li>
+    <li><a href="#step-1">Step 1 — Tokenise (word → integer)</a></li>
+    <li><a href="#step-2">Step 2 — Embed (integer → vector)</a></li>
+    <li><a href="#emerge">The mind-blowing twist: the slots emerge</a></li>
+    <li><a href="#why">Why this matters for the Transformer</a></li>
+  </ol>
+</details>
+
+<h2 class="step" id="intuition"><span class="step-num">Idea</span> The big idea (forget words for a moment)</h2>
 
 <p>Imagine you describe yourself with 4 numbers, 0 to 10:</p>
 <ul>
@@ -43,7 +64,7 @@
 
 <p>Say your answers are <strong>[10, 7, 9, 1]</strong>. Congratulations — <em>you</em> are now a list of 4 numbers. Your best friend might be <code>[9, 8, 10, 2]</code>. Grandma might be <code>[4, 0, 0, 9]</code>.</p>
 
-<h2>How does a computer tell who's similar to whom?</h2>
+<h2 class="step" id="dot"><span class="step-num">Dot</span> How does a computer tell who's similar to whom?</h2>
 
 <p>The computer only sees the number lists. It needs a math formula that turns "are these number lists alike?" into a single answer.</p>
 
@@ -54,7 +75,7 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
 
 <p>When you BOTH score high on a thing, the product is big (strong agreement → boost). When one scores high and the other low, the product is small (disagreement → no boost). Total = "how much do you agree?"</p>
 
-<h2>Words work the exact same way</h2>
+<h2 class="step" id="widget"><span class="step-num">Words</span> Words work the exact same way</h2>
 
 <p>Every word in the vocabulary gets a list of numbers. The computer pretends each word is a "person" being described by secret features.</p>
 
@@ -65,7 +86,7 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
   <div id="emb-app"></div>
 </div>
 
-<h2>The mind-blowing twist</h2>
+<h2 class="step" id="emerge"><span class="step-num">Twist</span> The mind-blowing twist</h2>
 
 <p>In real AI, the slots <strong>aren't given human-readable names</strong>. The computer doesn't know what "is_furry" means. It just sees:</p>
 
@@ -75,31 +96,33 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
 
 <p>These mystery-number lists are called <strong>embeddings</strong>. Each word's list is its <em>embedding vector</em>. Size of the list = <em>embedding dimension</em>: 4 in our toy, 1024 in PRAGMA-Large.</p>
 
-<h2>How it works in code</h2>
+<h2 class="step" id="step-1"><span class="step-num">Step 1</span> Tokenise — word → integer</h2>
 
-<p>Two steps:</p>
-<ol>
-  <li><strong>TOKENISE</strong> — give each word an integer ID.</li>
-  <li><strong>EMBED</strong> — look up that ID in a table to get a vector.</li>
-</ol>
+<p>Give each word in the vocabulary an integer ID.</p>
 
 <pre><code>vocab  = ["&lt;pad&gt;", "&lt;mask&gt;", "dog", "cat", "fish", "bark", "meow", "swim"]
 tok2id = {w: i for i, w in enumerate(vocab)}
+ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]</code></pre>
 
-# Step 1: tokenise
-ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]
+<h2 class="step" id="step-2"><span class="step-num">Step 2</span> Embed — integer → vector</h2>
 
-# Step 2: embed
-emb = nn.Embedding(len(vocab), 4)            # 8 × 4 table of trainable knobs
+<p>Each ID is a row index in a learnable table of vectors:</p>
+
+<pre><code>emb = nn.Embedding(len(vocab), 4)            # 8 × 4 table of trainable knobs
 vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code></pre>
 
 <p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally just indexing the table at its ID row. No math, just memory lookup.</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/embedding_evolution.svg" alt="Embeddings drift during training">
+  <figcaption>Random at init (left), meaningful after training (right). Nobody designs the meaning — it emerges from the training game (see <a href="lesson_01b.html">L1b</a>).</figcaption>
+</figure>
 
 <div class="callout">
   <strong>The numbers in the embedding table start RANDOM.</strong> They become meaningful through training (see <a href="lesson_01b.html">Lesson 1b</a>). The training loop nudges them until similar words have similar rows. <em>Nobody designs the meaning — it emerges from the training game.</em>
 </div>
 
-<h2>Why this matters for the Transformer</h2>
+<h2 class="step" id="why"><span class="step-num">Why</span> Why this matters for the Transformer</h2>
 
 <p>This is <strong>step 1 of every Transformer</strong>, including PRAGMA. Before attention can let words look at each other, words have to BE something. Embedding turns them from strings into vectors that math can operate on.</p>
 
@@ -113,9 +136,9 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 </div>
 
 <div class="pagination">
-  <a href="lesson_01c.html">
+  <a href="lesson_01_5.html">
     <span class="dir">← Previous</span>
-    <span class="ttl">L1c — Inside gradient descent</span>
+    <span class="ttl">L1.5 — From linear regression to neural nets</span>
   </a>
   <a href="lesson_03.html" class="next">
     <span class="dir">Next →</span>

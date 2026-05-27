@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html" class="current">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,20 +32,42 @@
 <h1>Lesson 3 — Attention</h1>
 <p class="subtitle">The big idea of the Transformer. Once you understand this, every modern AI model — GPT, BERT, PRAGMA — uses some variation of it.</p>
 
-<h2>The intuition</h2>
+<div class="lesson-links">
+  <a href="../notebooks/lesson_03_attention.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../03_attention.py"><span class="ico">🐍</span> 03_attention.py</a>
+  <a href="../03_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
+  <a href="../notebooks/lesson_03c_attention_from_scratch.ipynb"><span class="ico">🛠</span> L3c from-scratch</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson (matches the notebook)</summary>
+  <ol>
+    <li><a href="#intuition">The intuition</a></li>
+    <li><a href="#worked">A 2-word worked example</a></li>
+    <li><a href="#step-1">Step 1 — Scores (dot products)</a></li>
+    <li><a href="#step-2">Step 2 — Softmax (100% attention budget)</a></li>
+    <li><a href="#step-3">Step 3 — Mix (weighted blend)</a></li>
+    <li><a href="#widget">🎮 Interactive: build an attention matrix</a></li>
+    <li><a href="#qkv">The full formula (Q, K, V)</a></li>
+    <li><a href="#multi">Multi-head attention</a></li>
+    <li><a href="#why">Why this is such a big deal</a></li>
+  </ol>
+</details>
+
+<h2 class="step" id="intuition"><span class="step-num">Idea</span> The intuition</h2>
 
 <p>When you read <em>"the cat chased the mouse and then IT ran away"</em>, what does "it" refer to? Your brain looks at every word in the sentence, decides which ones matter, and figures out that "it" most likely refers to "mouse".</p>
 
 <p><strong>Attention</strong> lets the model do the same thing: every word looks at every other word and decides which ones are important for understanding itself.</p>
 
-<h2>A 2-word worked example</h2>
+<h2 class="step" id="worked"><span class="step-num">Example</span> A 2-word worked example</h2>
 
 <p>Let's strip it to 2 words and 2-dim embeddings so we can do every step on paper. Sentence: <strong>"the cat"</strong>. Embeddings (made up):</p>
 
 <pre><code>the  →  [1, 0]
 cat  →  [2, 3]</code></pre>
 
-<h3>Step 1 — score every pair (dot products)</h3>
+<h3 id="step-1">Step 1 — Score every pair (dot products)</h3>
 <pre><code>the · the  =  (1×1) + (0×0)  =  1
 the · cat  =  (1×2) + (0×3)  =  2
 cat · the  =  (2×1) + (3×0)  =  2
@@ -60,7 +83,7 @@ cat · cat  =  (2×2) + (3×3)  =  13</code></pre>
 
 <p><code>cat · cat = 13</code> is huge — cat is very related to itself.</p>
 
-<h3>Step 2 — softmax (turn raw scores into a 100% budget)</h3>
+<h3 id="step-2">Step 2 — Softmax (turn raw scores into a 100% budget)</h3>
 <p>Each word has 100% attention to spend. Softmax converts raw scores into percentages summing to 1. The biggest score wins most of the budget.</p>
 
 <table class="compact" style="width:auto;">
@@ -71,7 +94,7 @@ cat · cat  =  (2×2) + (3×3)  =  13</code></pre>
   </tbody>
 </table>
 
-<h3>Step 3 — mix (weighted blend of word vectors)</h3>
+<h3 id="step-3">Step 3 — Mix (weighted blend of word vectors)</h3>
 <pre><code>new "the" = 0.27 × [1, 0] + 0.73 × [2, 3] = [1.73, 2.19]   ← absorbed cat-flavor
 new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</code></pre>
 
@@ -79,7 +102,7 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <strong>"the" got smarter.</strong> It started as <code>[1, 0]</code> (bland — could mean anything). After attention, it's much closer to cat's vector. It now means "the <em>cat</em>", not just "the".
 </div>
 
-<h2>🎮 Interactive: build an attention matrix word by word</h2>
+<h2 class="step" id="widget"><span class="step-num">Play</span> 🎮 Interactive: build an attention matrix word by word</h2>
 
 <p>Pick a few words below. Each gets a random 2-dim "embedding" (you can rerandomise). We'll compute the full attention matrix and show how each word ends up "mixing" with the others.</p>
 
@@ -114,7 +137,7 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <div id="attn-table" style="margin-top:16px;"></div>
 </div>
 
-<h2>The full formula</h2>
+<h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> The full formula</h2>
 
 <p>Real attention uses three learned projections of each word vector — Query, Key, Value — instead of just dotting <code>x</code> with itself:</p>
 
@@ -128,11 +151,11 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
 
 <p>The three matrices are trainable knobs nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Q/K/V give the model more flexibility — each word can ask different questions of others than what it offers in return.</p>
 
-<h2>Multi-head attention</h2>
+<h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>
 
 <p>Instead of running the attention formula once, you run it several times in parallel with different Q/K/V matrices, then concatenate the outputs. Each "head" can specialise — one might learn grammar, another might learn subject-object pairing, another might learn nearby words. PRAGMA-L uses 16 attention heads in its history encoder.</p>
 
-<h2>Why this is such a big deal</h2>
+<h2 class="step" id="why"><span class="step-num">Why</span> Why this is such a big deal</h2>
 
 <p>Before attention (~2017), models read text left to right. A word at position 100 could only "remember" position 1 through a fuzzy compressed memory. Long-range dependencies were really hard.</p>
 

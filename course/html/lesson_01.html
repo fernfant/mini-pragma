@@ -15,6 +15,7 @@
     <a href="lesson_01.html" class="current">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,6 +32,24 @@
 <h1>Lesson 1 — How a model learns</h1>
 <p class="subtitle">Before transformers, before any of the fancy stuff: what does "learning" actually mean?</p>
 
+<div class="lesson-links">
+  <a href="../notebooks/lesson_01_linear_regression.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../01_how_models_learn.py"><span class="ico">🐍</span> 01_how_models_learn.py</a>
+  <a href="../01_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Sections (matches the notebook's Step 0–10 flow)</summary>
+  <ol>
+    <li><a href="#model">The simplest model in the world</a></li>
+    <li><a href="#loop">The 5-line training loop (notebook Step 5)</a></li>
+    <li><a href="#data">The data &amp; the knobs (Step 1, Step 2)</a></li>
+    <li><a href="#loss">The loss (Step 3)</a></li>
+    <li><a href="#magic">The three magic lines (Step 4)</a></li>
+    <li><a href="#takeaway">The big takeaway</a></li>
+  </ol>
+</details>
+
 <p>A model is just:</p>
 <ol>
   <li>A <strong>bag of numbers</strong> (the "weights" or "knobs").</li>
@@ -38,7 +57,7 @@
 </ol>
 <p>Training means: show it examples, see how wrong it is, nudge the numbers to be less wrong, repeat thousands of times. That's the whole game.</p>
 
-<h2>The simplest model in the world</h2>
+<h2 class="step" id="model"><span class="step-num">Model</span> The simplest model in the world</h2>
 <p>Two knobs (<code>w</code> and <code>b</code>), one rule: <code>y = w · x + b</code>.</p>
 <p>The data below comes from a <em>secret rule</em> — <code>y = 2x + 1</code> — that the model doesn't know. Its job is to figure that rule out by looking at example pairs.</p>
 
@@ -83,7 +102,7 @@
   </div>
 </div>
 
-<h2>The 5 lines that ARE machine learning</h2>
+<h2 class="step" id="loop"><span class="step-num">Step 5</span> The 5 lines that ARE machine learning</h2>
 
 <p>Behind that "Auto-train" button is exactly this loop (in PyTorch). It is identical for <em>any</em> model — a linear regression, an embedding, a Transformer, anything with trainable knobs.</p>
 
@@ -96,7 +115,7 @@
 
 <p>Memorise these five lines. You will see them again — unchanged — in <a href="lesson_02.html">Lesson 2</a>, <a href="lesson_04.html">Lesson 4</a>, and PRAGMA itself.</p>
 
-<h2>Walking through it line by line</h2>
+<h2 class="step" id="data"><span class="step-num">Steps 1–2</span> Walking through it line by line</h2>
 
 <h3>The data</h3>
 <pre><code>x      = torch.tensor([1., 2., 3., 4., 5., 6., 7., 8.])
@@ -112,14 +131,14 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 <pre><code>opt = torch.optim.SGD([w, b], lr=0.05)</code></pre>
 <p>SGD = <strong>Stochastic Gradient Descent</strong>. It just walks downhill on the loss landscape. The <code>lr</code> is the size of each step.</p>
 
-<h3>The loss</h3>
+<h3 id="loss">The loss (Step 3)</h3>
 <p>For step 0 (with <code>w=0, b=0</code>), the model predicts all zeros. The truth is <code>[3, 5, 7, 9, 11, 13, 15, 17]</code>. The errors are <code>[-3, -5, -7, ...]</code>, squared: <code>[9, 25, 49, ...]</code>, averaged: <strong>62.5</strong>. (Slightly different from the 8-point widget here, which uses the first 5 points for simplicity.)</p>
 
 <div class="callout">
   <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.
 </div>
 
-<h3>The three magic lines</h3>
+<h3 id="magic">The three magic lines (Step 4)</h3>
 <ul>
   <li><code>opt.zero_grad()</code> — clear last step's notes about which way to nudge.</li>
   <li><code>loss.backward()</code> — PyTorch computes the <em>gradient</em> of the loss with respect to <code>w</code> and <code>b</code>. The gradient says "if I increase this knob by 1, how does the loss change?"</li>
@@ -128,7 +147,7 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 
 <p>For more on <em>why</em> this works, see <a href="lesson_01c.html">Lesson 1c</a>, where we open up gradient descent and compute the gradients by hand.</p>
 
-<h2>The big takeaway</h2>
+<h2 class="step" id="takeaway"><span class="step-num">Takeaway</span> The big takeaway</h2>
 
 <div class="callout good">
   <strong>Three sentences. Memorise these:</strong>

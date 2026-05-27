@@ -237,6 +237,154 @@ figcaption { color: var(--text-dim); font-size: 13px; margin-top: 8px; }
   margin: 0 4px;
 }
 
+/* LESSON TOC (table of contents at top of each lesson) */
+.lesson-toc {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 18px 0 28px;
+  font-size: 14px;
+}
+.lesson-toc summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+  list-style: none;
+}
+.lesson-toc summary::-webkit-details-marker { display: none; }
+.lesson-toc summary::before {
+  content: "▸ ";
+  color: var(--text-faint);
+  font-size: 11px;
+}
+.lesson-toc[open] summary::before { content: "▾ "; }
+.lesson-toc ol {
+  margin: 10px 0 0;
+  padding-left: 22px;
+  columns: 2;
+  column-gap: 28px;
+}
+@media (max-width: 720px) { .lesson-toc ol { columns: 1; } }
+.lesson-toc li { margin: 4px 0; break-inside: avoid; }
+.lesson-toc a { color: var(--text-dim); text-decoration: none; }
+.lesson-toc a:hover { color: var(--accent-strong); text-decoration: underline; }
+
+/* STEP HEADINGS — used like <h2 class="step" id="step-3">... */
+h2.step {
+  scroll-margin-top: 80px;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-top: 1px dashed var(--border);
+  padding-top: 28px;
+  margin-top: 40px;
+}
+h2.step .step-num {
+  font-family: ui-monospace, "SF Mono", Monaco, monospace;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: var(--code-bg);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+h2.step:first-of-type { border-top: none; padding-top: 0; margin-top: 24px; }
+
+/* NOTEBOOK / SOURCE LINKS row at top of a lesson */
+.lesson-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 8px 0 20px;
+}
+.lesson-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--code-bg);
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+.lesson-links a:hover { background: white; box-shadow: var(--shadow); }
+.lesson-links a .ico { font-size: 14px; }
+
+/* SIDE-BY-SIDE COMPARISON (e.g. "linear head vs MLP head") */
+.compare-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin: 18px 0;
+}
+@media (max-width: 720px) { .compare-two { grid-template-columns: 1fr; } }
+.compare-two > div {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+.compare-two h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--accent-strong);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* WIDE FIGURE — for SVGs that deserve full width */
+figure.figure-wide {
+  margin: 28px -20px;
+  padding: 0;
+}
+figure.figure-wide svg, figure.figure-wide img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+@media (max-width: 720px) {
+  figure.figure-wide { margin: 20px 0; }
+}
+
+/* BLOCK STACK DIAGRAM (used in L1.5, L4, L5 to show "18 layers") */
+.stack-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin: 18px 0;
+  font-family: ui-monospace, monospace;
+  font-size: 13px;
+}
+.stack-diagram .block {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 18px;
+  min-width: 220px;
+  text-align: center;
+}
+.stack-diagram .block.attn   { background: #eff6ff; border-color: var(--accent); }
+.stack-diagram .block.ffn    { background: #f0fdf4; border-color: var(--good); }
+.stack-diagram .block.emb    { background: #fef3c7; border-color: var(--warn); }
+.stack-diagram .block.head   { background: #fce7f3; border-color: var(--purple); }
+.stack-diagram .arrow { color: var(--text-faint); }
+.stack-diagram .repeat {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 12px;
+}
+
 /* FOOTER */
 footer.site {
   margin-top: 60px;

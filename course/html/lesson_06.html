@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -31,13 +32,30 @@
 <h1>Lesson 6 — Capstone</h1>
 <p class="subtitle">Build a mini fraud detector using the same PRAGMA recipe — yourself.</p>
 
+<div class="lesson-links">
+  <a href="../06_capstone.md"><span class="ico">📝</span> Brief / walkthrough</a>
+  <a href="https://github.com/fernfant/mini-pragma-solutions"><span class="ico">✅</span> Reference solution (try yourself first)</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Project stages</summary>
+  <ol>
+    <li><a href="#challenge">The challenge</a></li>
+    <li><a href="#stage-1">Stage 1 — Synthetic data</a></li>
+    <li><a href="#stage-2">Stage 2 — Pre-train the encoder</a></li>
+    <li><a href="#stage-3">Stage 3 — Build the fraud classifier</a></li>
+    <li><a href="#stage-4">Stage 4 — The crucial comparison</a></li>
+    <li><a href="#stretch">Stretch goals</a></li>
+  </ol>
+</details>
+
 <div class="callout info">
   <strong>This is the project.</strong> You write the code. The course up to here has been showing; now you do.
   <br><br>
   Target effort: 4–8 hours over a few sessions.
 </div>
 
-<h2>The challenge</h2>
+<h2 class="step" id="challenge"><span class="step-num">Brief</span> The challenge</h2>
 
 <p>You work at a tiny digital bank. Each user generates a stream of events. Most are normal — a few are fraudsters who behave very differently.</p>
 
@@ -51,7 +69,7 @@
   <li><strong>Compare</strong> to a baseline that doesn't pre-train.</li>
 </ol>
 
-<h2>Stage 1 — Synthetic data</h2>
+<h2 class="step" id="stage-1"><span class="step-num">Stage 1</span> Synthetic data</h2>
 
 <p>Create <code>capstone_data.py</code>. Decide on:</p>
 <ul>
@@ -69,7 +87,7 @@
 
 <p><strong>Success check:</strong> print sample sequences for a normal and a fraud user. Eyeball them — can you spot the difference?</p>
 
-<h2>Stage 2 — Pre-train the encoder</h2>
+<h2 class="step" id="stage-2"><span class="step-num">Stage 2</span> Pre-train the encoder</h2>
 
 <p>Create <code>capstone_pretrain.py</code>. Same masked-token training game from <a href="lesson_04.html">L4</a> / <a href="lesson_05.html">L5</a>.</p>
 
@@ -79,7 +97,7 @@
 
 <p><strong>Success check:</strong> pre-training loss drops to under 0.5.</p>
 
-<h2>Stage 3 — Build the fraud classifier</h2>
+<h2 class="step" id="stage-3"><span class="step-num">Stage 3</span> Build the fraud classifier</h2>
 
 <p>Create <code>capstone_classify.py</code>:</p>
 <ol>
@@ -92,7 +110,7 @@
   <li><strong>Evaluate</strong>: overall accuracy + <strong>recall on fraud</strong> (the metric that actually matters with class imbalance).</li>
 </ol>
 
-<h2>Stage 4 — The crucial comparison</h2>
+<h2 class="step" id="stage-4"><span class="step-num">Stage 4</span> The crucial comparison</h2>
 
 <p>A model doing well doesn't prove pre-training mattered. Build a baseline:</p>
 <ul>
@@ -108,7 +126,7 @@
   <li>What surprised you?</li>
 </ul>
 
-<h2>Stretch goals</h2>
+<h2 class="step" id="stretch"><span class="step-num">Stretch</span> Stretch goals</h2>
 
 <ol>
   <li><strong>Real time encoding.</strong> Give each event a timestamp. Use PRAGMA's <code>8 * log(1 + t/8)</code>.</li>
@@ -118,7 +136,7 @@
   <li><strong>Scale.</strong> Increase to 20k, 100k users.</li>
 </ol>
 
-<h2>Reference solution</h2>
+<h2 class="step" id="ref"><span class="step-num">Ref</span> Reference solution</h2>
 
 <p>If you get truly stuck, the reference solution is at <a href="https://github.com/fernfant/mini-pragma-solutions">fernfant/mini-pragma-solutions</a>. Try it yourself first.</p>
 

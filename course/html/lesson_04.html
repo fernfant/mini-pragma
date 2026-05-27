@@ -15,6 +15,7 @@
     <a href="lesson_01.html">L1</a>
     <a href="lesson_01b.html">L1b</a>
     <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
     <a href="lesson_03b.html">L3b</a>
@@ -29,13 +30,36 @@
 <div class="wrap">
 
 <h1>Lesson 4 — Training a tiny BERT</h1>
-<p class="subtitle">Combine everything: embeddings + attention + the 5-line training loop. Play fill-in-the-blank.</p>
+<p class="subtitle">Combine embeddings (L2) + attention (L3) + the feed-forward MLP (L1.5) + the 5-line training loop (L1). Play fill-in-the-blank.</p>
 
-<h2>The fill-in-the-blank game</h2>
+<div class="lesson-links">
+  <a href="../notebooks/lesson_04_tiny_bert.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="../04_transformer_and_mlm.py"><span class="ico">🐍</span> 04_transformer_and_mlm.py</a>
+  <a href="../04_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson (matches the notebook)</summary>
+  <ol>
+    <li><a href="#big-idea">The fill-in-the-blank game</a></li>
+    <li><a href="#step-1">Step 1 — Vocabulary and the secret rules</a></li>
+    <li><a href="#step-2">Step 2 — Build one training example</a></li>
+    <li><a href="#step-3">Step 3 — A function that makes random examples</a></li>
+    <li><a href="#step-4">Step 4 — Cross-entropy loss, by hand</a></li>
+    <li><a href="#step-5">Step 5 — Build the tiny model</a></li>
+    <li><a href="#step-6">Step 6 — What the model says BEFORE training</a></li>
+    <li><a href="#step-7">Step 7 — Train, with predictions at checkpoints</a></li>
+    <li><a href="#step-9">Step 9 — Test the trained model on each rule</a></li>
+    <li><a href="#step-10">Step 10 — What did the embeddings learn?</a></li>
+    <li><a href="#whats-different">What's different in real PRAGMA?</a></li>
+  </ol>
+</details>
+
+<h2 id="big-idea">The fill-in-the-blank game</h2>
 
 <p>Pick a sentence with a word missing. Have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
 
-<p>If you have <em>"The cat sat on the mat"</em>, you can make 6 training examples from one sentence:</p>
+<p>If you have <em>"The cat sat on the mat"</em>, you get 6 training examples from one sentence:</p>
 
 <table class="compact">
   <thead><tr><th>Masked input</th><th>Answer</th></tr></thead>
@@ -51,11 +75,10 @@
 
 <p><strong>Free training data!</strong> This is why BERT (and PRAGMA) can be trained on the whole internet without humans labelling anything. The fancy name is <em>masked language modelling</em> (MLM).</p>
 
-<h2>🎮 Interactive: mask a word, see what the model would predict</h2>
-
-<p>This demo uses pre-baked predictions for a few example sentences (no actual model in your browser — that would need ~10 MB of trained weights). Click any word to mask it.</p>
-
 <div class="widget">
+  <h3>🎮 Interactive: mask a word, see what the model would predict</h3>
+  <p>This demo uses pre-baked predictions for example sentences (no actual model in your browser). Click any word to mask it.</p>
+
   <div style="margin-bottom:10px;">
     <select id="sent" style="padding:6px 10px;">
       <option value="0">The cat sat on the mat</option>
@@ -65,9 +88,6 @@
   </div>
   <div id="sentence-display" style="font-size:22px;line-height:1.8;margin:20px 0;text-align:center;"></div>
   <div id="predictions" style="margin-top:14px;"></div>
-  <div style="font-size:12px;color:var(--text-dim);margin-top:10px;">
-    Click any word to mask it. The model's top guesses (and their confidence) appear below.
-  </div>
 </div>
 
 <h2>How the model plays the game (step by step)</h2>
@@ -75,56 +95,95 @@
 <ol>
   <li><strong>Tokenise + embed</strong> (<a href="lesson_02.html">L2</a>) — each word becomes a vector of numbers.</li>
   <li><strong>Attention</strong> (<a href="lesson_03.html">L3</a>) — the masked vector "looks at" surrounding words and absorbs their context. After attention, the mask vector has a flavour like "small-furry-animal".</li>
-  <li><strong>Predict</strong> — the model takes the context-aware mask vector and asks: "of all words I know, which one's embedding matches this flavour?" It scores every vocab word, picks the best — say, <code>cat</code>.</li>
-  <li><strong>Compare + nudge</strong> (<a href="lesson_01.html">L1</a>) — compare to the right answer (<code>cat</code>). Run <code>loss.backward()</code> and <code>opt.step()</code> to nudge every knob.</li>
+  <li><strong>Feed-forward</strong> (<a href="lesson_01_5.html#step-75">L1.5</a>) — Linear → GELU → Linear refines the per-token vector. (In real Transformers, attention + feed-forward repeat 18 times.)</li>
+  <li><strong>Predict</strong> — score every vocab word, pick the best.</li>
+  <li><strong>Compare + nudge</strong> (<a href="lesson_01.html">L1</a>) — <code>loss.backward()</code>, <code>opt.step()</code>, repeat.</li>
 </ol>
 
-<h2>The code, in 4 bites</h2>
+<h2 class="step" id="step-1"><span class="step-num">Step 1</span> Vocabulary and the secret rules</h2>
 
-<h3>1. Vocabulary + the secret rules</h3>
+<p>8 words. 3 hidden rules the model must rediscover from masked examples.</p>
+
 <pre><code>vocab  = ["&lt;pad&gt;", "&lt;mask&gt;", "dog", "cat", "fish",
           "bark", "meow", "swim"]
 PAIRS  = [("dog", "bark"), ("cat", "meow"), ("fish", "swim")]</code></pre>
 
-<h3>2. Generate a fill-in-the-blank example</h3>
-<pre><code>def make_example():
-    animal, sound = random.choice(PAIRS)
-    ids = [tok2id[animal], tok2id[sound]]
-    labels = [-100, -100]
-    hide = random.choice([0, 1])
-    labels[hide] = ids[hide]              # remember real answer
-    ids[hide] = tok2id["&lt;mask&gt;"]      # hide it
-    return ids, labels</code></pre>
+<h2 class="step" id="step-2"><span class="step-num">Step 2</span> Build one training example by hand</h2>
 
-<h3>3. The architecture — tiny Transformer</h3>
+<p>Pick a pair, randomly choose which slot to hide, replace it with <code>&lt;mask&gt;</code>, remember the true answer.</p>
+
+<pre><code>animal, sound = random.choice(PAIRS)   # e.g. ("dog", "bark")
+ids = [tok2id[animal], tok2id[sound]]  # [2, 5]
+labels = [-100, -100]                  # -100 = "don't score this position"
+hide = random.choice([0, 1])
+labels[hide] = ids[hide]               # remember real answer
+ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
+# → ids = [1, 5], labels = [2, -100]    "predict dog at position 0"</code></pre>
+
+<h2 class="step" id="step-3"><span class="step-num">Step 3</span> A function that makes random examples</h2>
+
+<p>Same logic, wrapped in <code>make_example()</code>. Called 32 times per training step to build a batch.</p>
+
+<h2 class="step" id="step-4"><span class="step-num">Step 4</span> Cross-entropy loss, by hand</h2>
+
+<p>Cross-entropy is the standard loss for classification. For each masked position the model outputs a score per vocab word, softmaxes to probabilities, and we measure <code>-log(probability of the right answer)</code>. Lower = more confident in the right answer.</p>
+
+<div class="callout">
+  <strong>Why not MSE?</strong> MSE is for predicting numbers. We're predicting a word (a discrete choice over 8 vocab items). Cross-entropy is the natural loss for that.
+</div>
+
+<h2 class="step" id="step-5"><span class="step-num">Step 5</span> Build the tiny model</h2>
+
+<p>The entire architecture is three lines. You've seen each piece in earlier lessons.</p>
+
 <pre><code>class TinyMLM(nn.Module):
     def __init__(self):
         super().__init__()
-        self.emb  = nn.Embedding(V, 16)
-        self.enc  = nn.TransformerEncoderLayer(16, 2, 32, batch_first=True)
-        self.head = nn.Linear(16, V)
+        self.emb  = nn.Embedding(V, 16)                              # L2
+        self.enc  = nn.TransformerEncoderLayer(16, 2, 32,            # L3 + L1.5
+                                              batch_first=True)
+        self.head = nn.Linear(16, V)                                 # predict word
     def forward(self, x):
         return self.head(self.enc(self.emb(x)))</code></pre>
 
-<h3>4. The training loop — same 5 lines as Lesson 1!</h3>
+<table class="compact">
+  <thead><tr><th>Component</th><th>Origin</th><th>What it does</th></tr></thead>
+  <tbody>
+    <tr><td><code>nn.Embedding(V, 16)</code></td><td><a href="lesson_02.html">L2</a></td><td>Token id → 16-number vector</td></tr>
+    <tr><td><code>nn.TransformerEncoderLayer</code> (attention)</td><td><a href="lesson_03.html">L3</a></td><td>Q/K/V + softmax — tokens look at each other</td></tr>
+    <tr><td><code>nn.TransformerEncoderLayer</code> (feed-forward)</td><td><a href="lesson_01_5.html#step-75">L1.5</a></td><td>Linear → GELU → Linear, per token</td></tr>
+    <tr><td><code>nn.Linear(16, V)</code></td><td>—</td><td>Vector → score per vocab word</td></tr>
+  </tbody>
+</table>
+
+<h2 class="step" id="step-6"><span class="step-num">Step 6</span> What does the model say BEFORE training?</h2>
+
+<p>Random weights → random predictions. On 8 vocab words the expected loss is <code>log(8) ≈ 2.08</code>. The notebook prints the model's confidence on a sample masked input — it's uniform-ish across all 8 words. The model knows nothing yet.</p>
+
+<h2 class="step" id="step-7"><span class="step-num">Step 7</span> Train, with predictions inspected at checkpoints</h2>
+
+<p>Same 5-line loop you've used since L1. The only thing that's new is the model in the middle.</p>
+
 <pre><code>for step in range(500):
     batch = [make_example() for _ in range(32)]
     ids, labels = zip(*batch)
     x = torch.tensor(ids); y = torch.tensor(labels)
 
-    logits = model(x)                                    # 1. guess
-    loss = loss_fn(logits.reshape(-1, V), y.reshape(-1)) # 2. wrongness
-    opt.zero_grad()                                      # 3. clear
-    loss.backward()                                      # 4. gradients
-    opt.step()                                           # 5. nudge ALL knobs</code></pre>
+    logits = model(x)                                      # 1. guess
+    loss   = loss_fn(logits.reshape(-1, V), y.reshape(-1)) # 2. wrongness
+    opt.zero_grad()                                        # 3. clear
+    loss.backward()                                        # 4. gradients
+    opt.step()                                             # 5. nudge ALL knobs</code></pre>
 
-<h2>The expected output</h2>
+<p>Loss curve from the notebook:</p>
 
-<pre><code>step   0   loss 2.482     ← random guesses (8 vocab words → log(8) ≈ 2.08)
+<pre><code>step   0   loss 2.482     ← random guesses
 step 100   loss 0.073     ← already nailed it
-step 400   loss 0.006     ← essentially zero
+step 400   loss 0.006     ← essentially zero</code></pre>
 
-Fill in the blank:
+<h2 class="step" id="step-9"><span class="step-num">Step 9</span> Test the trained model on each rule</h2>
+
+<pre><code>Fill in the blank:
   dog  -> bark    ✓
   cat  -> meow    ✓
   fish -> swim    ✓</code></pre>
@@ -133,21 +192,34 @@ Fill in the blank:
   <strong>You've now seen a real Transformer learn from scratch.</strong> Same recipe as ChatGPT — just smaller.
 </div>
 
-<h2>What's different in real PRAGMA?</h2>
+<h2 class="step" id="step-10"><span class="step-num">Step 10</span> What did the embeddings learn?</h2>
+
+<p>After training, the 16-dim embedding vectors for <code>dog</code> and <code>bark</code> have moved <em>closer together</em> than at random init — because the model needs them to be predictable from each other. Same for cat/meow and fish/swim. The training game taught the embeddings what's related to what.</p>
+
+<figure>
+  <img src="../visuals/embedding_evolution.svg" alt="Embedding vectors at init vs after training — related words cluster">
+  <figcaption>Embedding evolution: at random init (left), all words scattered; after training (right), each (animal, sound) pair has drifted together.</figcaption>
+</figure>
+
+<h2 id="whats-different">What's different in real PRAGMA?</h2>
+
+<figure class="figure-wide">
+  <img src="../visuals/architecture_comparison.svg" alt="Architecture comparison: TinyMLM vs real PRAGMA">
+</figure>
 
 <table>
-  <thead><tr><th>Toy</th><th>Real PRAGMA-Large</th></tr></thead>
+  <thead><tr><th>Our TinyMLM</th><th>Real PRAGMA-Large</th></tr></thead>
   <tbody>
     <tr><td>8 words in vocab</td><td>~28,000</td></tr>
     <tr><td>2 tokens per example</td><td>Up to thousands</td></tr>
-    <tr><td>1 encoder layer</td><td>18 encoder layers</td></tr>
+    <tr><td>1 encoder layer (1 attention + 1 FFN)</td><td>18 encoder layers (18 attention + 18 FFN)</td></tr>
     <tr><td>~500 knobs total</td><td>1 billion</td></tr>
     <tr><td>3 rules to memorise</td><td>Structure of real banking event streams</td></tr>
     <tr><td>Seconds on a laptop</td><td>2 weeks on 32× NVIDIA H100 GPUs</td></tr>
   </tbody>
 </table>
 
-<p><strong>Same five-line training loop. Same gradient descent.</strong> Just scaled up.</p>
+<p><strong>Same five-line training loop. Same gradient descent.</strong> Just scaled up — and with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
 
 <div class="pagination">
   <a href="lesson_03b.html">
@@ -162,9 +234,14 @@ Fill in the blank:
 
 </div>
 
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
 <script>
 (() => {
-  // Pre-baked predictions for each (sentence_idx, masked_position)
   const SENTENCES = [
     {
       words: ["The", "cat", "sat", "on", "the", "mat"],
@@ -249,7 +326,7 @@ Fill in the blank:
         </div>`;
     }
     html += `</div>`;
-    html += `<p style="font-size:12px;color:var(--text-dim);margin-top:14px;">The green bar is the actual word that was masked. A well-trained model puts most probability on the truth — but with structurally similar words (cat / dog / fox) also showing high confidence because they make sense in context.</p>`;
+    html += `<p style="font-size:12px;color:var(--text-dim);margin-top:14px;">The green bar is the word that was actually masked. A well-trained model puts most probability on the truth — with structurally similar words (cat/dog, apple/orange) also showing reasonable confidence.</p>`;
     pdiv.innerHTML = html;
   }
 
