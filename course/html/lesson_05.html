@@ -53,6 +53,12 @@
   </ol>
 </details>
 
+<figure class="figure-wide">
+  <img src="../visuals/data_flow.svg" alt="How data flows through the model: words to ids to vectors to attention to a guess">
+  <figcaption><code>pragma_mini.py</code> is exactly this pipeline in code — embed, stack attention+feed-forward, then a head.</figcaption>
+</figure>
+
+
 <h2 id="legend">Lesson reference legend</h2>
 <p>
   <a class="legend-chip" href="lesson_01.html">L1 — training loop</a>

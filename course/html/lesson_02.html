@@ -49,9 +49,16 @@
     <li><a href="#step-1">Step 1 — Tokenise (word → integer)</a></li>
     <li><a href="#step-2">Step 2 — Embed (integer → vector)</a></li>
     <li><a href="#emerge">The mind-blowing twist: the slots emerge</a></li>
+    <li><a href="#train">🎬 Watch the embeddings learn</a></li>
     <li><a href="#why">Why this matters for the Transformer</a></li>
   </ol>
 </details>
+
+<figure class="figure-wide">
+  <img src="../visuals/data_flow.svg" alt="How data flows through the model: words to ids to vectors to attention to a guess">
+  <figcaption>You're here at <strong>Tokenise → Embed</strong> — turning words into number-vectors. The rest comes in later lessons.</figcaption>
+</figure>
+
 
 <h2 class="step" id="intuition"><span class="step-num">Idea</span> The big idea (forget words for a moment)</h2>
 
@@ -123,6 +130,31 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
   <strong>The numbers in the embedding table start RANDOM.</strong> They become meaningful through training (see <a href="lesson_01b.html">Lesson 1b</a>). The training loop nudges them until similar words have similar rows. <em>Nobody designs the meaning — it emerges from the training game.</em>
 </div>
 
+<h2 class="step" id="train"><span class="step-num">Play</span> 🎬 Watch the embeddings actually learn</h2>
+
+<p>Everything above said "training nudges similar words together" — now <em>watch it happen</em>. Six words start scattered at random. Their secret partners are <strong>dog↔bark</strong>, <strong>cat↔meow</strong>, <strong>fish↔swim</strong>. Press <strong>Train</strong> and the loop pulls each word toward its partner. Watch the <code>dog·bark</code> similarity climb while <code>dog·meow</code> stays low.</p>
+
+<div class="widget">
+  <div class="widget-row two">
+    <canvas id="emb-train" width="500" height="360"></canvas>
+    <div class="controls">
+      <div style="margin-bottom:12px;">
+        <button id="et-train">▶ Train</button>
+        <button class="alt" id="et-reset">🎲 Reset</button>
+      </div>
+      <table class="stats">
+        <tr><th>step</th><td id="et-step">0</td></tr>
+        <tr><th style="color:var(--good)">dog · bark</th><td id="et-good">—</td></tr>
+        <tr><th style="color:var(--warn)">dog · meow</th><td id="et-bad">—</td></tr>
+      </table>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
+        Partners share a colour. They start scattered (random embeddings) and drift together as the model trains —
+        exactly what the <a href="../notebooks/lesson_02_tokens_embeddings.ipynb">notebook</a> does in code.
+      </div>
+    </div>
+  </div>
+</div>
+
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this matters for the Transformer</h2>
 
 <p>This is <strong>step 1 of every Transformer</strong>, including PRAGMA. Before attention can let words look at each other, words have to BE something. Embedding turns them from strings into vectors that math can operate on.</p>
@@ -151,6 +183,97 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 </div>
 
 </div>
+
+<script>
+// --- "Watch embeddings learn" training animation ---
+(() => {
+  const cv = document.getElementById('emb-train');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2, S = 95;  // S = units->pixels
+
+  const WORDS = ['dog','bark','cat','meow','fish','swim'];
+  const PARTNER = {dog:'bark', bark:'dog', cat:'meow', meow:'cat', fish:'swim', swim:'fish'};
+  const COLOR = {dog:'#3b82f6', bark:'#3b82f6', cat:'#10b981', meow:'#10b981', fish:'#a855f7', swim:'#a855f7'};
+  let pos = {}, step = 0, running = false, raf = null;
+
+  function reset() {
+    running = false; if (raf) cancelAnimationFrame(raf);
+    document.getElementById('et-train').textContent = '▶ Train';
+    step = 0;
+    for (const w of WORDS) pos[w] = [(Math.random()*2-1)*1.3, (Math.random()*2-1)*1.3];
+    draw();
+  }
+  function dot(a, b) { return pos[a][0]*pos[b][0] + pos[a][1]*pos[b][1]; }
+
+  function trainStep() {
+    // attraction: each word eases toward its partner
+    const next = {}; for (const w of WORDS) next[w] = pos[w].slice();
+    for (const w of WORDS) {
+      const p = PARTNER[w];
+      next[w][0] += 0.04 * (pos[p][0] - pos[w][0]);
+      next[w][1] += 0.04 * (pos[p][1] - pos[w][1]);
+    }
+    // repulsion: push non-partners apart so the three pairs don't pile up in the middle
+    for (const a of WORDS) for (const b of WORDS) {
+      if (a === b || PARTNER[a] === b) continue;
+      let dx = pos[a][0]-pos[b][0], dy = pos[a][1]-pos[b][1];
+      let d2 = dx*dx + dy*dy + 0.05;
+      next[a][0] += 0.012 * dx / d2;
+      next[a][1] += 0.012 * dy / d2;
+    }
+    pos = next; step++;
+  }
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    // faint axes
+    ctx.strokeStyle = '#eee'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,H); ctx.moveTo(0,cy); ctx.lineTo(W,cy); ctx.stroke();
+    // partner link lines
+    const drawn = new Set();
+    for (const w of WORDS) {
+      const p = PARTNER[w]; const key = [w,p].sort().join();
+      if (drawn.has(key)) continue; drawn.add(key);
+      ctx.strokeStyle = COLOR[w] + '55'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(cx+pos[w][0]*S, cy-pos[w][1]*S);
+      ctx.lineTo(cx+pos[p][0]*S, cy-pos[p][1]*S);
+      ctx.stroke();
+    }
+    // dots + labels
+    for (const w of WORDS) {
+      const x = cx+pos[w][0]*S, y = cy-pos[w][1]*S;
+      ctx.fillStyle = COLOR[w];
+      ctx.beginPath(); ctx.arc(x,y,7,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 13px ui-sans-serif,system-ui'; ctx.textAlign='left';
+      ctx.fillText(w, x+10, y+4);
+    }
+    document.getElementById('et-step').textContent = step;
+    const g = dot('dog','bark'), b = dot('dog','meow');
+    const eg = document.getElementById('et-good'), eb = document.getElementById('et-bad');
+    eg.textContent = g.toFixed(2); eg.style.color = g > 1 ? 'var(--good)' : 'var(--text)';
+    eb.textContent = b.toFixed(2);
+  }
+
+  function loop() {
+    if (!running) return;
+    for (let i=0;i<2;i++) trainStep();
+    draw();
+    if (step >= 220) { running = false; document.getElementById('et-train').textContent = '✓ Trained (reset to replay)'; return; }
+    raf = requestAnimationFrame(loop);
+  }
+
+  document.getElementById('et-train').addEventListener('click', () => {
+    if (step >= 220) reset();
+    running = !running;
+    document.getElementById('et-train').textContent = running ? '⏸ Pause' : '▶ Train';
+    if (running) loop();
+  });
+  document.getElementById('et-reset').addEventListener('click', reset);
+  reset();
+})();
+</script>
 
 <script>
 (() => {

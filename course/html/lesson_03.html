@@ -49,11 +49,18 @@
     <li><a href="#step-2">Step 2 — Softmax (100% attention budget)</a></li>
     <li><a href="#step-3">Step 3 — Mix (weighted blend)</a></li>
     <li><a href="#widget">🎮 Interactive: build an attention matrix</a></li>
+    <li><a href="#transform">🔬 One word, step by step</a></li>
     <li><a href="#qkv">The full formula (Q, K, V)</a></li>
     <li><a href="#multi">Multi-head attention</a></li>
     <li><a href="#why">Why this is such a big deal</a></li>
   </ol>
 </details>
+
+<figure class="figure-wide">
+  <img src="../visuals/data_flow.svg" alt="How data flows through the model: words to ids to vectors to attention to a guess">
+  <figcaption>You're here at <strong>Attention</strong> — the step where the word-vectors look at each other and mix.</figcaption>
+</figure>
+
 
 <h2 class="step" id="intuition"><span class="step-num">Idea</span> The intuition</h2>
 
@@ -138,6 +145,24 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <div id="attn-table" style="margin-top:16px;"></div>
 </div>
 
+<h2 class="step" id="transform"><span class="step-num">Trace</span> 🔬 One word, step by step</h2>
+
+<p>Let's follow a single word through all three steps with <strong>meaningful</strong> vectors (the same ones the <a href="../notebooks/lesson_03_attention.ipynb">notebook</a> uses). Each word is described by two readable features — how <strong>animal-ish</strong> and how <strong>action-ish</strong> it is. Pick a word and watch its vector turn into scores, then percentages, then a new blended vector.</p>
+
+<div class="widget">
+  <div style="margin-bottom:14px;">
+    <span class="lbl" style="color:var(--text-dim);">Follow this word:</span>
+    <select id="tr-word" style="padding:6px 10px;">
+      <option value="0">the</option>
+      <option value="1" selected>dog</option>
+      <option value="2">chased</option>
+      <option value="3">cat</option>
+    </select>
+    <button id="tr-play" style="margin-left:8px;">▶ Play steps</button>
+  </div>
+  <div id="tr-stages"></div>
+</div>
+
 <h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> The full formula</h2>
 
 <p>Real attention uses three learned projections of each word vector — Query, Key, Value — instead of just dotting <code>x</code> with itself:</p>
@@ -188,6 +213,67 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
 </div>
 
 </div>
+
+<script>
+// --- "One word, step by step" trace panel ---
+(() => {
+  const host = document.getElementById('tr-stages');
+  if (!host) return;
+  const WORDS = ['the','dog','chased','cat'];
+  //                animal action
+  const X = [[0.2,0.1],[1.0,0.1],[0.1,1.0],[0.9,0.1]];
+  const COL = ['#94a3b8','#3b82f6','#f59e0b','#10b981'];
+
+  function dot(a,b){ return a[0]*b[0]+a[1]*b[1]; }
+  function softmax(a){ const m=Math.max(...a); const e=a.map(v=>Math.exp(v-m)); const s=e.reduce((x,y)=>x+y,0); return e.map(v=>v/s); }
+  function bar(frac, color, label){
+    return `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px;">
+      <span style="width:58px;color:var(--text-dim);">${label}</span>
+      <div style="flex:1;background:var(--code-bg);border-radius:4px;height:18px;">
+        <div style="width:${Math.max(0,Math.min(100,frac*100))}%;height:100%;background:${color};border-radius:4px;"></div>
+      </div></div>`;
+  }
+
+  function render(fi, upto){
+    const f = X[fi];
+    const scores = X.map(v => dot(f,v));
+    const attn = softmax(scores);
+    const out = [0,0];
+    attn.forEach((w,j)=>{ out[0]+=w*X[j][0]; out[1]+=w*X[j][1]; });
+    const maxScore = Math.max(...scores);
+    const topj = attn.indexOf(Math.max(...attn));
+
+    const stages = [];
+    // Stage 1
+    stages.push(`<div class="tr-stage" ${upto<1?'style="opacity:.25"':''}>
+      <strong>1.</strong> <b style="color:${COL[fi]}">${WORDS[fi]}</b> starts as a vector:
+      ${bar(f[0],'#3b82f6','animal')}${bar(f[1],'#f59e0b','action')}</div>`);
+    // Stage 2
+    stages.push(`<div class="tr-stage" ${upto<2?'style="opacity:.25"':''}>
+      <strong>2.</strong> Score it against every word (dot product). Bigger = more alike:
+      ${WORDS.map((w,j)=>bar(scores[j]/(maxScore||1), COL[j], w+' '+scores[j].toFixed(2))).join('')}</div>`);
+    // Stage 3
+    stages.push(`<div class="tr-stage" ${upto<3?'style="opacity:.25"':''}>
+      <strong>3.</strong> Softmax → attention budget (adds to 100%):
+      ${WORDS.map((w,j)=>bar(attn[j], COL[j], w+' '+(attn[j]*100).toFixed(0)+'%')).join('')}</div>`);
+    // Stage 4
+    stages.push(`<div class="tr-stage" ${upto<4?'style="opacity:.25"':''}>
+      <strong>4.</strong> Blend the vectors by those weights → new <b style="color:${COL[fi]}">${WORDS[fi]}</b>:
+      ${bar(out[0],'#3b82f6','animal')}${bar(out[1],'#f59e0b','action')}
+      <div style="font-size:13px;color:var(--text-dim);margin-top:6px;">Paid most attention to <b>${WORDS[topj]}</b> (${(attn[topj]*100).toFixed(0)}%). Its vector absorbed a little of that word's flavour.</div></div>`);
+
+    host.innerHTML = stages.map(s=>`<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:8px 0;transition:opacity .3s;">${s}</div>`).join('');
+  }
+
+  const sel = document.getElementById('tr-word');
+  sel.addEventListener('change', ()=>render(+sel.value, 4));
+  document.getElementById('tr-play').addEventListener('click', ()=>{
+    let u=0; render(+sel.value, 0);
+    const t=setInterval(()=>{ u++; render(+sel.value,u); if(u>=4) clearInterval(t); }, 650);
+  });
+  render(1, 4);
+})();
+</script>
 
 <script>
 (() => {

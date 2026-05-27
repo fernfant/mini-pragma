@@ -1,0 +1,71 @@
+<svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="df-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <text x="460" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">How your words flow through the model</text>
+
+  <!-- Stage boxes: x positions -->
+  <!-- 1 input -->
+  <rect x="20" y="60" width="120" height="48" rx="8" fill="#f4f4f5" stroke="#d4d4d8"/>
+  <text x="80" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">"the dog"</text>
+  <text x="80" y="100" text-anchor="middle" font-size="11" fill="#888">raw words</text>
+  <text x="80" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">2 words</text>
+
+  <line x1="142" y1="84" x2="172" y2="84" stroke="#888" stroke-width="1.5" marker-end="url(#df-arrow)"/>
+  <text x="157" y="76" text-anchor="middle" font-size="9" fill="#a1a1aa">L2</text>
+
+  <!-- 2 tokenise -->
+  <rect x="174" y="60" width="120" height="48" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="234" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Tokenise</text>
+  <text x="234" y="100" text-anchor="middle" font-size="11" fill="#92722a">word → id</text>
+  <text x="234" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">[2, 5]</text>
+
+  <line x1="296" y1="84" x2="326" y2="84" stroke="#888" stroke-width="1.5" marker-end="url(#df-arrow)"/>
+  <text x="311" y="76" text-anchor="middle" font-size="9" fill="#a1a1aa">L2</text>
+
+  <!-- 3 embed -->
+  <rect x="328" y="60" width="120" height="48" rx="8" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="388" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Embed</text>
+  <text x="388" y="100" text-anchor="middle" font-size="11" fill="#92722a">id → vector</text>
+  <text x="388" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">2 × d</text>
+
+  <line x1="450" y1="84" x2="480" y2="84" stroke="#888" stroke-width="1.5" marker-end="url(#df-arrow)"/>
+  <text x="465" y="76" text-anchor="middle" font-size="9" fill="#a1a1aa">L3</text>
+
+  <!-- 4 attention -->
+  <rect x="482" y="60" width="120" height="48" rx="8" fill="#eff6ff" stroke="#3b82f6"/>
+  <text x="542" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Attention</text>
+  <text x="542" y="100" text-anchor="middle" font-size="11" fill="#1d4ed8">words mix</text>
+  <text x="542" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">2 × d</text>
+
+  <line x1="604" y1="84" x2="634" y2="84" stroke="#888" stroke-width="1.5" marker-end="url(#df-arrow)"/>
+  <text x="619" y="76" text-anchor="middle" font-size="9" fill="#a1a1aa">L1.5</text>
+
+  <!-- 5 feed-forward -->
+  <rect x="636" y="60" width="120" height="48" rx="8" fill="#f0fdf4" stroke="#10b981"/>
+  <text x="696" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Feed-forward</text>
+  <text x="696" y="100" text-anchor="middle" font-size="11" fill="#047857">refine each</text>
+  <text x="696" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">2 × d</text>
+
+  <line x1="758" y1="84" x2="788" y2="84" stroke="#888" stroke-width="1.5" marker-end="url(#df-arrow)"/>
+  <text x="773" y="76" text-anchor="middle" font-size="9" fill="#a1a1aa">L4</text>
+
+  <!-- 6 head -->
+  <rect x="790" y="60" width="110" height="48" rx="8" fill="#fce7f3" stroke="#a855f7"/>
+  <text x="845" y="82" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">Head</text>
+  <text x="845" y="100" text-anchor="middle" font-size="11" fill="#7e22ce">guess word</text>
+  <text x="845" y="132" text-anchor="middle" font-size="11" fill="#555" font-family="ui-monospace,monospace">"bark" ✓</text>
+
+  <!-- repeat bracket under attention+FFN -->
+  <path d="M482 150 L482 158 L756 158 L756 150" fill="none" stroke="#a1a1aa" stroke-width="1.2"/>
+  <text x="619" y="174" text-anchor="middle" font-size="11" fill="#71717a" font-style="italic">this pair repeats ~18× (the "layers")</text>
+
+  <!-- legend -->
+  <text x="460" y="216" text-anchor="middle" font-size="11.5" fill="#555">
+    Same flow in every lesson: <tspan font-weight="700">words → numbers → mixed numbers → a guess.</tspan>
+    The shape stays <tspan font-family="ui-monospace,monospace">N × d</tspan> from Embed onward.
+  </text>
+</svg>
