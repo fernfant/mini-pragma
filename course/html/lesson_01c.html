@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -31,6 +32,10 @@
 
 <h1>Lesson 1c — Inside gradient descent</h1>
 <p class="subtitle">A deeper look at what <code>loss.backward()</code> and <code>opt.step()</code> actually do. After this you'll never see them as "magic" again.</p>
+
+<div class="sidequest">
+  <strong>🧭 Optional side-quest — the mathiest page in the course.</strong> It opens up the "magic" of <code>loss.backward()</code> so it never feels like a black box again. Totally fine to skip on your first pass and jump to <a href="lesson_01_5.html">L1.5</a>; the playable lessons don't depend on the hand-calculations here.
+</div>
 
 <div class="lesson-links">
   <a href="../aside/model_A_with_gradients.py"><span class="ico">🐍</span> model_A_with_gradients.py</a>
@@ -162,6 +167,9 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
   </ol>
 </div>
 
+<div id="quiz-l1c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1c",[{"q": "What is a <em>gradient</em>?", "options": ["The model's final answer", "The slope of the loss — which way to nudge a knob", "The learning rate"], "answer": 1, "explain": "Gradient = slope of the loss for each knob. Step opposite it to go downhill."}, {"q": "You crank the learning rate way too high. What happens?", "options": ["The model overshoots and bounces around", "It learns faster with no downside", "Nothing changes"], "answer": 0, "explain": "Too big = overshoot/diverge. Too small = crawls. It's the key dial to tune."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_01b.html">
     <span class="dir">← Previous</span>
@@ -174,5 +182,6 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 </div>
 
 </div>
+<script src="course.js"></script>
 </body>
 </html>

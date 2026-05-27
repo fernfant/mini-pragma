@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -53,6 +54,19 @@
     <li><a href="#step-8">Step 8 — The big reveal: what BERT actually is</a></li>
   </ol>
 </details>
+
+<div class="callout good">
+  <strong>🌱 Start here — the whole lesson in one picture.</strong>
+  <p style="margin:10px 0 0;">Imagine you're trying to trace a shape with a stick:</p>
+  <ul style="margin:8px 0 0;">
+    <li>A <strong>straight stick</strong> can only draw straight lines. Great for a ramp, useless for a hill. → that's <em>linear regression</em> (L1).</li>
+    <li>A <strong>bendy stick</strong> can follow curves, hills, wiggles. → that's a <em>neural network</em>.</li>
+    <li>A Transformer (BERT, ChatGPT, PRAGMA) is just a <strong>bendy stick for sentences</strong> — many bendy pieces stacked up.</li>
+  </ul>
+  <p style="margin:10px 0 0;">The cool part: <strong>you train all three the exact same way</strong> — the 5-line loop from L1. Only the "stick" changes. That's the entire lesson. Everything below just proves it with a real curve.</p>
+</div>
+
+<p style="text-align:center;color:var(--text-dim);font-size:14px;">⬇ Want the proof? Keep going. Just wanted the idea? You can skip to <a href="#step-8">the big reveal</a>. ⬇</p>
 
 <h2>The two questions this lesson answers</h2>
 
@@ -349,6 +363,9 @@ Linear(2048, 512)</code></pre>
   <strong>What's different:</strong> the middle. Linear regression has <code>w*x + b</code>; BERT has 18 stacks of attention + feed-forward.
 </div>
 
+<div id="quiz-l15"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l15",[{"q": "Why can't plain linear regression fit a parabola?", "options": ["It runs out of memory", "A straight line can't bend into a U-shape", "It needs more data"], "answer": 1, "explain": "Linear regression only draws straight lines. A curve needs something bendy."}, {"q": "What gives a neural network its power to fit curves?", "options": ["More data", "The nonlinearity (ReLU/GELU) between linear layers", "A bigger learning rate"], "answer": 1, "explain": "Without the nonlinearity, stacked Linears collapse back into one straight line."}, {"q": "In an 18-layer Transformer, attention happens in…", "options": ["Only the first layer", "Only the last layer", "Every single layer"], "answer": 2, "explain": "Each of the 18 blocks runs its OWN attention + feed-forward. The whole block repeats."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_01c.html">
     <span class="dir">← Previous</span>
@@ -368,5 +385,6 @@ Linear(2048, 512)</code></pre>
   MIT licensed</p>
 </footer>
 
+<script src="course.js"></script>
 </body>
 </html>

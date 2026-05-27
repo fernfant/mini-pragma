@@ -24,6 +24,7 @@
     <a href="lesson_05a.html" class="current">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -363,6 +364,9 @@ AFTER MASKING (random 30%):
   </ol>
 </div>
 
+<div id="quiz-l5a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5a",[{"q": "What does PRE-TRAINING use?", "options": ["Only labelled houses", "All houses, features only, no price labels", "Just the 3 example houses"], "answer": 1, "explain": "Pre-training plays fill-in-the-blank on features alone — no labels, all the data."}, {"q": "Why does pre-training help most when labels are scarce?", "options": ["It already learned the structure, so the head needs little labelled data", "It memorises the labels", "It makes training slower"], "answer": 0, "explain": "The frozen encoder brings knowledge for free; the tiny head learns from few labels."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_05.html">
     <span class="dir">← Previous</span>
@@ -375,5 +379,6 @@ AFTER MASKING (random 30%):
 </div>
 
 </div>
+<script src="course.js"></script>
 </body>
 </html>

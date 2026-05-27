@@ -24,91 +24,160 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
 <div class="wrap">
 
-<h1>Mini PRAGMA — an interactive course</h1>
-<p class="subtitle">A hello-world Transformer course, built around Revolut's PRAGMA paper.
-Every lesson has a runnable script, a line-by-line walkthrough, and an interactive
-HTML page (this collection). Designed to teach a curious teenager — or curious
-adult — from zero.</p>
+<h1>Mini PRAGMA — learn how AI really works</h1>
 
-<div class="callout info">
-  <strong>How to use this site.</strong> Read each lesson in order. The interactive
-  widgets are the heart of it — slide them around, click the buttons, watch what
-  happens. You learn more from 30 seconds of playing than from 5 minutes of
-  reading.
+<div class="mission">
+  <h2>🎯 Your mission</h2>
+  <p>Computers can't read. They only do math on numbers. By the end of this course you'll know
+  <strong>exactly</strong> how a pile of numbers learns to play <em>fill-in-the-blank</em> — the
+  same trick behind ChatGPT — and you'll build your own little AI <strong>fraud detective</strong>
+  from scratch.</p>
+  <p>No math degree needed. Just basic Python and curiosity. Every lesson has something to
+  <strong>click, drag, or run</strong> — you learn more in 30 seconds of playing than 5 minutes of reading.</p>
+  <a href="lesson_01.html" class="go">▶ Start the mission — Lesson 1</a>
 </div>
 
-<h2>📖 The lessons</h2>
+<div class="callout info">
+  <strong>New word? Don't panic.</strong> Any <span class="term" data-def="See? Hover a dotted word for a one-line definition. Click it for the full glossary.">dotted word</span>
+  like that one has a definition — hover it, or open the <a href="glossary.html">📖 glossary</a> any time.
+</div>
 
-<table>
-  <thead><tr><th>#</th><th>Title</th><th>What you'll learn</th></tr></thead>
-  <tbody>
-    <tr>
-      <td><a href="lesson_01.html"><strong>L1</strong></a></td>
-      <td><a href="lesson_01.html">How a model learns</a></td>
-      <td>What "training" actually means. Watch a 2-knob model discover y = 2x + 1.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_01b.html"><strong>L1b</strong></a></td>
-      <td><a href="lesson_01b.html">Architecture vs. training</a></td>
-      <td>The single most important distinction in ML, separated cleanly.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_01c.html"><strong>L1c</strong></a></td>
-      <td><a href="lesson_01c.html">Inside gradient descent</a></td>
-      <td>What <code>loss.backward()</code> and <code>opt.step()</code> actually do. With a roll-the-ball demo.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_01_5.html"><strong>L1.5</strong></a></td>
-      <td><a href="lesson_01_5.html">From linear regression to neural networks</a></td>
-      <td>Bridge lesson. Why a parabola breaks linear regression, what an MLP fixes, why BERT has 18 stacked blocks.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_02.html"><strong>L2</strong></a></td>
-      <td><a href="lesson_02.html">Tokens &amp; embeddings</a></td>
-      <td>How words become number-lists. Drag words around in 2D space.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_03.html"><strong>L3</strong></a></td>
-      <td><a href="lesson_03.html">Attention</a></td>
-      <td>The big idea of the Transformer. Build an attention matrix word by word.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_03b.html"><strong>L3b</strong></a></td>
-      <td><a href="lesson_03b.html">Why Transformers won</a></td>
-      <td>Side-by-side animated comparison of RNN (sequential) vs Transformer (parallel).</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_04.html"><strong>L4</strong></a></td>
-      <td><a href="lesson_04.html">Training a tiny BERT</a></td>
-      <td>The fill-in-the-blank game. Mask a word, predict it back. Live demo.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_05.html"><strong>L5</strong></a></td>
-      <td><a href="lesson_05.html">pragma_mini.py walkthrough</a></td>
-      <td>Reading every line of the toy with full understanding. Plus what real PRAGMA adds.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_05a.html"><strong>L5a</strong></a></td>
-      <td><a href="lesson_05a.html">House price predictor</a></td>
-      <td>Same recipe on tabular data. 10 attributes, 5 price classes. Bridge between toy and streaming.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_05b.html"><strong>L5b</strong></a></td>
-      <td><a href="lesson_05b.html">Streaming churn predictor</a></td>
-      <td>Same recipe, applied to a realistic problem. Full pre-train → freeze → probe pipeline.</td>
-    </tr>
-    <tr>
-      <td><a href="lesson_06.html"><strong>L6</strong></a></td>
-      <td><a href="lesson_06.html">Capstone: mini fraud detector</a></td>
-      <td>You build the workflow yourself. The project.</td>
-    </tr>
-  </tbody>
-</table>
+<h2>🗺 The roadmap</h2>
+<p class="subtitle" style="margin-top:0;">Do the blue ones in order. The purple "side-quests" are optional — skip them on the first pass and come back when something feels hand-wavy.</p>
+
+<div class="roadmap">
+
+  <div class="rm-group">
+    <h3>Part 1 · How learning works</h3>
+
+    <a class="rm-card" href="lesson_01.html">
+      <span class="rm-num">L1</span>
+      <span class="rm-body">
+        <span class="rm-title">How a model learns <span class="rm-tag play">play</span></span>
+        <span class="rm-desc">Drag two knobs until a line fits the dots. That's "training".</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 15 min</span><span class="diff"><span class="on">●</span><span class="off">●●</span></span></span>
+    </a>
+
+    <a class="rm-card optional" href="lesson_01b.html">
+      <span class="rm-num">L1b</span>
+      <span class="rm-body">
+        <span class="rm-title">Architecture vs. training <span class="rm-tag side">side-quest</span></span>
+        <span class="rm-desc">The one idea that makes everything click. Read when curious.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 8 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card optional" href="lesson_01c.html">
+      <span class="rm-num">L1c</span>
+      <span class="rm-body">
+        <span class="rm-title">Inside gradient descent <span class="rm-tag side">side-quest</span></span>
+        <span class="rm-desc">Roll a ball downhill. The math behind the knob-nudging.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 12 min</span><span class="diff"><span class="on">●●●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_01_5.html">
+      <span class="rm-num">L1.5</span>
+      <span class="rm-body">
+        <span class="rm-title">From lines to brains</span>
+        <span class="rm-desc">Why a curve breaks a straight-line model — and what a neural network fixes. <em>The big "what IS BERT?" reveal.</em></span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 20 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+  </div>
+
+  <div class="rm-group">
+    <h3>Part 2 · The building blocks</h3>
+
+    <a class="rm-card" href="lesson_02.html">
+      <span class="rm-num">L2</span>
+      <span class="rm-body">
+        <span class="rm-title">Tokens &amp; embeddings <span class="rm-tag play">play</span></span>
+        <span class="rm-desc">Turn yourself into a list of numbers. Drag sliders, watch "similarity".</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 15 min</span><span class="diff"><span class="on">●</span><span class="off">●●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_03.html">
+      <span class="rm-num">L3</span>
+      <span class="rm-body">
+        <span class="rm-title">Attention <span class="rm-tag play">play</span></span>
+        <span class="rm-desc">The heart of the Transformer. Build an attention matrix word by word.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 18 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card optional" href="lesson_03b.html">
+      <span class="rm-num">L3b</span>
+      <span class="rm-body">
+        <span class="rm-title">Why Transformers won <span class="rm-tag side">side-quest</span></span>
+        <span class="rm-desc">Watch an old AI race a Transformer. Speed, memory, scale.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 10 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+  </div>
+
+  <div class="rm-group">
+    <h3>Part 3 · Putting it together</h3>
+
+    <a class="rm-card" href="lesson_04.html">
+      <span class="rm-num">L4</span>
+      <span class="rm-body">
+        <span class="rm-title">Train a tiny BERT <span class="rm-tag play">play</span></span>
+        <span class="rm-desc">The fill-in-the-blank game. Mask a word, watch it guess. 🎉 the payoff.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 18 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_05.html">
+      <span class="rm-num">L5</span>
+      <span class="rm-body">
+        <span class="rm-title">pragma_mini.py, line by line</span>
+        <span class="rm-desc">Read every line of the real toy with full understanding.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 20 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_05a.html">
+      <span class="rm-num">L5a</span>
+      <span class="rm-body">
+        <span class="rm-title">House price predictor</span>
+        <span class="rm-desc">Same recipe on real-ish data: 10 features, 5 price classes.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 20 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_05b.html">
+      <span class="rm-num">L5b</span>
+      <span class="rm-body">
+        <span class="rm-title">Streaming churn predictor</span>
+        <span class="rm-desc">Predict who's about to cancel. The full pre-train → freeze → probe pipeline.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 25 min</span><span class="diff"><span class="on">●●●</span></span></span>
+    </a>
+  </div>
+
+  <div class="rm-group">
+    <h3>Part 4 · Build it yourself</h3>
+
+    <a class="rm-card" href="lesson_06.html">
+      <span class="rm-num">L6</span>
+      <span class="rm-body">
+        <span class="rm-title">🏆 Capstone: your own fraud detective</span>
+        <span class="rm-desc">No more hand-holding. You write the code. The mission finale.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 4–8 hrs</span><span class="diff"><span class="on">●●●</span></span></span>
+    </a>
+  </div>
+
+</div>
 
 <h2>🛠 Companion code</h2>
 <ul>
@@ -121,6 +190,8 @@ adult — from zero.</p>
 <p>Open <a href="lesson_01.html"><strong>Lesson 1</strong></a> and start sliding the knobs.</p>
 
 </div>
+
+<script src="course.js"></script>
 
 <footer class="site">
   <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·

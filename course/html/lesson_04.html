@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -126,10 +127,20 @@ ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
 
 <h2 class="step" id="step-4"><span class="step-num">Step 4</span> Cross-entropy loss, by hand</h2>
 
-<p>Cross-entropy is the standard loss for classification. For each masked position the model outputs a score per vocab word, softmaxes to probabilities, and we measure <code>-log(probability of the right answer)</code>. Lower = more confident in the right answer.</p>
+<p>Cross-entropy is the loss for when the model is <strong>picking from a list of choices</strong> (here: "which of the 8 vocab words?"). For each masked position the model outputs a score per word, softmaxes them to probabilities, and the loss is <code>−log(probability it gave the RIGHT answer)</code>. It looks <em>only</em> at how much probability landed on the truth.</p>
+
+<div class="callout good">
+  <strong>Make it concrete.</strong> The hidden word is <code>bark</code>.
+  <ul>
+    <li>Model says bark is <strong>80%</strong> likely → loss = <code>−log(0.80) ≈ 0.22</code> &nbsp;😀 small</li>
+    <li>Model says bark is <strong>30%</strong> likely → loss = <code>−log(0.30) ≈ 1.20</code> &nbsp;😐 medium</li>
+    <li>Model says bark is <strong>2%</strong> likely → loss = <code>−log(0.02) ≈ 3.91</code> &nbsp;😖 big</li>
+  </ul>
+  So the loss is <strong>small when the model was confident and right</strong>, and <strong>blows up when it was sure of the wrong thing</strong>. Training pushes probability onto the true word.
+</div>
 
 <div class="callout">
-  <strong>Why not MSE?</strong> MSE is for predicting numbers. We're predicting a word (a discrete choice over 8 vocab items). Cross-entropy is the natural loss for that.
+  <strong>Why not MSE?</strong> MSE is for predicting a <em>number</em> (how far off is the guess?). Here we're predicting a <em>word</em> — a discrete choice — so "how far off" makes no sense. Cross-entropy measures "how much did you believe the right answer?" instead.
 </div>
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Build the tiny model</h2>
@@ -220,6 +231,9 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 </table>
 
 <p><strong>Same five-line training loop. Same gradient descent.</strong> Just scaled up — and with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
+
+<div id="quiz-l4"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4",[{"q": "In fill-in-the-blank training, where does the 'right answer' come from?", "options": ["A human labels every example", "The word we hid — it's free", "A separate answer file"], "answer": 1, "explain": "That's the magic of MLM: the hidden word IS the label. No manual labelling needed."}, {"q": "TinyMLM is: embedding → ??? → linear head. What's in the middle?", "options": ["Another embedding", "Attention + feed-forward (the encoder layer)", "Just a bigger embedding"], "answer": 1, "explain": "The TransformerEncoderLayer = attention (L3) + feed-forward (L1.5)."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_03b.html">
@@ -339,5 +353,6 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 })();
 </script>
 
+<script src="course.js"></script>
 </body>
 </html>

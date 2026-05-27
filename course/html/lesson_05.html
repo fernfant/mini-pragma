@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -225,6 +226,9 @@ V = len(vocab)</code></pre>
 
 <p>Next: see one more realistic worked example before the capstone.</p>
 
+<div id="quiz-l5"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5",[{"q": "Why key-value tokenisation instead of plain text for banking data?", "options": ["It's shorter to type", "It keeps each field's structure and magnitude", "It uses fewer GPUs"], "answer": 1, "explain": "Plain text shatters '14.99' into pieces and loses magnitude. Key+value keeps structure."}, {"q": "What does the final linear head do?", "options": ["Projects each vector to a score per vocab word", "Adds up all the vectors", "Picks a random word"], "answer": 0, "explain": "The head turns context vectors into vocab scores so it can predict the masked token."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_04.html">
     <span class="dir">← Previous</span>
@@ -237,5 +241,6 @@ V = len(vocab)</code></pre>
 </div>
 
 </div>
+<script src="course.js"></script>
 </body>
 </html>

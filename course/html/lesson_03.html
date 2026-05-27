@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -171,6 +172,9 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
     <li><strong>Mix</strong> word vectors using those weights. Each word now carries context.</li>
   </ol>
 </div>
+
+<div id="quiz-l3"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3",[{"q": "After the word 'the' attends to 'cat', what happens to 'the'?", "options": ["It disappears", "It absorbs some of cat's meaning", "It stays exactly the same"], "answer": 1, "explain": "'the' blends in cat's vector — it now means 'the (cat)', carrying context."}, {"q": "What does <em>softmax</em> do inside attention?", "options": ["Turns raw scores into percentages adding to 100%", "Adds the vectors together", "Removes the smallest word"], "answer": 0, "explain": "Softmax gives each word a 100% attention budget to spread over the others."}, {"q": "In Q/K/V, the <em>query</em> is…", "options": ["What a word offers others", "What a word is looking for", "The final output"], "answer": 1, "explain": "Query = 'what am I looking for?'. Key = 'what do I offer?'. Value = 'what I pass along'."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_02.html">
@@ -322,5 +326,6 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
 })();
 </script>
 
+<script src="course.js"></script>
 </body>
 </html>

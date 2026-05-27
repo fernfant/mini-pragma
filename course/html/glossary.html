@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Glossary — Mini PRAGMA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html" class="current">📖</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Glossary</h1>
+<p class="subtitle">Every nerdy word in this course, explained in plain English with a real example. Hover any dotted word elsewhere in the course for the short version — or click it to land here for the full story.</p>
+
+<div class="callout info">
+  <strong>How to use this.</strong> You don't need to memorise any of this. When a lesson uses a word you forgot, the dotted underline means "hover me." This page is the full list, with worked examples.
+</div>
+
+<h2>🎓 How models learn</h2>
+<dl>
+  <dt id="model">model</dt>
+  <dd>A model is just two things: a bag of numbers and a rule for combining them with your input to make an output. <span class="eg"><strong>Example:</strong> the rule <code>y = w·x + b</code> with numbers <code>w=2, b=1</code> is a tiny model. "Learning" means hunting for good numbers.</span></dd>
+
+  <dt id="weights">weights / <span id="knobs">knobs</span></dt>
+  <dd>The adjustable numbers inside a model. We call them "knobs" because training turns them like dials on a radio. A tiny model has 2 knobs; PRAGMA has about a billion. Training is the search for knob settings that make good predictions.</dd>
+
+  <dt id="parameter">parameter / <span id="parameters">parameters</span></dt>
+  <dd>A fancy word for one knob — a single adjustable number. "This model has 7 million parameters" just means 7 million little tunable numbers. More parameters = more room to learn complicated patterns (but also more data needed to train them).</dd>
+
+  <dt id="training">training</dt>
+  <dd>Showing the model examples, measuring how wrong it is, and nudging every knob a tiny bit to be less wrong — then repeating thousands of times. <span class="eg"><strong>Example:</strong> show it that <code>x=3</code> should give <code>y=7</code>; it guesses 4; nudge <code>w</code> and <code>b</code> so next time it's closer to 7. That loop <em>is</em> machine learning.</span></dd>
+
+  <dt id="loss">loss</dt>
+  <dd>One number that scores how wrong the model's current guesses are — lower is better, 0 is perfect. <span class="eg"><strong>Example:</strong> it guessed 4 but the truth was 7, so the squared error is <code>(7−4)² = 9</code>. The entire job of training is to push this number down.</span></dd>
+
+  <dt id="gradient">gradient</dt>
+  <dd>For each knob, the gradient answers: "if I nudge this knob up a little, does the loss go up or down, and how steeply?" It's the <em>slope</em> of the loss. Knowing the slope tells you which way to turn each knob to make the loss smaller.</dd>
+
+  <dt id="gradient-descent">gradient descent</dt>
+  <dd>The actual learning step: check the slope (gradient) for every knob, then nudge each one a tiny step in the downhill direction. Repeat. <span class="eg"><strong>Picture it:</strong> finding the bottom of a foggy valley by always taking one small step downhill from wherever you're standing.</span></dd>
+
+  <dt id="learning-rate">learning rate</dt>
+  <dd>How big each downhill step is. Too big and you leap clear over the valley and bounce around (or blow up); too small and you crawl and training takes forever. <span class="eg"><strong>Example:</strong> <code>lr=0.01</code> is a common gentle step. It's the single most fiddled-with dial in deep learning.</span></dd>
+
+  <dt id="optimiser">optimiser</dt>
+  <dd>The helper that performs the nudging each step so you don't do the arithmetic by hand. You hand it the knobs and a learning rate; it runs <code>knob = knob − rate × gradient</code> for every knob. SGD and Adam are the two you'll meet.</dd>
+
+  <dt id="sgd">SGD</dt>
+  <dd>Stochastic Gradient Descent — the simplest optimiser. Each step it nudges every knob straight opposite its gradient by the learning rate. "Stochastic" just means it uses a small random batch of examples each step instead of all of them.</dd>
+
+  <dt id="adam">Adam</dt>
+  <dd>A smarter optimiser that gives each knob its own adaptive step size — so knobs with tiny gradients still move and knobs with huge gradients don't explode. It usually trains faster and more reliably than plain SGD, which is why most modern models use it.</dd>
+
+  <dt id="mse">MSE</dt>
+  <dd>Mean Squared Error — the loss for predicting <em>numbers</em>. Take each <code>(guess − truth)</code>, square it, average them all. <span class="eg"><strong>Example:</strong> guesses off by 1 and 3 give <code>(1² + 3²) / 2 = 5</code>. Squaring punishes big misses far more than small ones.</span></dd>
+
+  <dt id="cross-entropy">cross-entropy</dt>
+  <dd>The loss for when the model is <em>picking from a list of choices</em> (like "which word?"). It looks only at the probability the model gave to the <strong>correct</strong> answer: the less confident it was, the bigger the loss.
+    <span class="eg"><strong>Example:</strong> the true word is <code>cat</code>.<br>
+    • Model said cat was <strong>70%</strong> likely → loss = <code>−log(0.70) ≈ 0.36</code> (small, good).<br>
+    • Model gave cat only <strong>5%</strong> → loss = <code>−log(0.05) ≈ 3.0</code> (big, bad).<br>
+    So cross-entropy rewards being <em>confident and right</em>, and punishes being unsure about the true answer.</span></dd>
+
+  <dt id="batch">batch</dt>
+  <dd>A small group of examples processed together in one training step (e.g. 32 at a time) instead of one-by-one or all-at-once. Bigger batches give smoother, steadier nudges; smaller batches are noisier but quicker per step.</dd>
+
+  <dt id="epoch">epoch</dt>
+  <dd>One full pass through all of your training data. Models usually train for many epochs — seeing the same examples again and again, getting a little better each pass.</dd>
+</dl>
+
+<h2>🔤 Turning words into numbers</h2>
+<dl>
+  <dt id="token">token</dt>
+  <dd>One chunk of the input after you chop it up — usually a word, sometimes part of a word. <span class="eg"><strong>Example:</strong> "the cat sat" becomes 3 tokens: <code>the / cat / sat</code>. Models work on tokens, never on raw text.</span></dd>
+
+  <dt id="tokenise">tokenise</dt>
+  <dd>The chopping step: split the input into tokens and give each one an ID number from a fixed vocabulary. <span class="eg"><strong>Example:</strong> with vocab <code>{the:0, cat:1, sat:2}</code>, "the cat" tokenises to <code>[0, 1]</code>. Now it's numbers the model can handle.</span></dd>
+
+  <dt id="embedding">embedding / <span id="embeddings">embeddings</span></dt>
+  <dd>A short list of numbers that stands in for a word — like secret coordinates on a map of meaning. Words used in similar ways end up with similar lists. <span class="eg"><strong>Example:</strong> "dog" might be <code>[0.3, −1.2, 0.4]</code>; "cat" lands nearby; "pizza" lands far away. These numbers are <em>learned</em> during training, not typed in by a human.</span></dd>
+
+  <dt id="vector">vector</dt>
+  <dd>Just a list of numbers, e.g. <code>[0.3, −1.2, 0.4]</code>. An embedding is a vector; a house's features become a vector; almost everything gets turned into a vector so the model can do math on it.</dd>
+
+  <dt id="dot-product">dot product</dt>
+  <dd>A quick way to measure how similar two number-lists are: multiply matching slots and add up the results. <span class="eg"><strong>Example:</strong> <code>[1,0] · [2,3] = 1×2 + 0×3 = 2</code>. A big result means the lists "agree" and point the same way — i.e. they're similar. This is the core move inside attention.</span></dd>
+</dl>
+
+<h2>👀 Attention</h2>
+<dl>
+  <dt id="attention">attention</dt>
+  <dd>The mechanism that lets every word look at every other word and pull in the ones that matter for understanding itself. <span class="eg"><strong>Example:</strong> in "the cat that ran <em>was</em> fast", the word "was" can look straight back at "cat" to know what was fast. It's how Transformers handle context.</span></dd>
+
+  <dt id="self-attention">self-attention</dt>
+  <dd>Attention where a sequence looks at <em>itself</em> — each word attends to the other words in the same sentence, rather than to some separate input. It's the kind used inside BERT, GPT and PRAGMA.</dd>
+
+  <dt id="query">query</dt>
+  <dd>In attention, each word makes a "query" that asks <em>"what kind of word am I looking for?"</em> It gets compared against every other word's <a href="#key">key</a> to decide how much to attend to it. One of the three learned projections (Q/K/V).</dd>
+
+  <dt id="key">key</dt>
+  <dd>Each word also offers a "key" that advertises <em>"here's what I am, in case you're looking for me."</em> Attention matches every <a href="#query">query</a> against every key (with a dot product) to score how relevant each word is.</dd>
+
+  <dt id="value">value</dt>
+  <dd>Once attention decides how much to focus on each word, the "value" is what actually gets passed along and blended in. <span class="eg"><strong>In a sentence:</strong> Query = what I want, Key = what I offer, Value = what I contribute if you pick me.</span></dd>
+
+  <dt id="softmax">softmax</dt>
+  <dd>Turns a row of raw scores into percentages that add up to 100%, so they can act as weights. <span class="eg"><strong>Example:</strong> scores <code>[2, 1, 0]</code> become roughly <code>[66%, 24%, 9%]</code>. The biggest score gets the biggest slice. Attention uses it to split each word's "focus budget".</span></dd>
+
+  <dt id="multi-head">multi-head</dt>
+  <dd>Instead of paying attention once, the model does it several times in parallel ("heads"), each free to focus on a different kind of relationship — one head on grammar, another on who-did-what-to-whom. Their results are combined. PRAGMA's history encoder uses 16 heads.</dd>
+</dl>
+
+<h2>🧠 Neural networks</h2>
+<dl>
+  <dt id="mlp">MLP</dt>
+  <dd>Multi-Layer Perceptron — the simplest neural network: <code>Linear → activation → Linear</code>. The activation (a "bend") is what lets it learn curves instead of just straight lines. You build and train one by hand in Lesson 1.5.</dd>
+
+  <dt id="feed-forward">feed-forward / <span id="ffn">FFN</span></dt>
+  <dd>The little MLP that sits inside every Transformer block and processes each token on its own (<code>Linear → GELU → Linear</code>). It's literally the same thing as the MLP from L1.5, just bigger. "FFN" and "feed-forward sub-layer" all mean this.</dd>
+
+  <dt id="activation">activation</dt>
+  <dd>The non-linear "bend" (like ReLU or GELU) placed between linear layers. Without it, stacking layers just collapses into one big straight line — useless for curves. With it, a network can fit almost any shape.</dd>
+
+  <dt id="relu">ReLU</dt>
+  <dd>The most common activation: keep positive numbers, turn negatives into 0. <span class="eg"><strong>Example:</strong> <code>ReLU(3) = 3</code>, <code>ReLU(−2) = 0</code>. That simple "kink" is enough to let networks bend and fit complex shapes.</span></dd>
+
+  <dt id="gelu">GELU</dt>
+  <dd>A smoother version of ReLU used inside Transformers — instead of a hard kink at zero it bends gently. It tends to train a touch better, which is why BERT and PRAGMA use it instead of plain ReLU.</dd>
+</dl>
+
+<h2>🏗 Transformer parts</h2>
+<dl>
+  <dt id="transformer">Transformer</dt>
+  <dd>The model design behind BERT, GPT and PRAGMA: a tall stack of identical blocks, each made of <a href="#attention">attention</a> + <a href="#feed-forward">feed-forward</a>. Attention mixes information across words; feed-forward processes each word on its own. Stack ~18 of these blocks and you get a powerful sequence model.</dd>
+
+  <dt id="encoder">encoder</dt>
+  <dd>The stack of Transformer blocks that reads the input and turns each token into a rich, context-aware vector. PRAGMA's encoder is the part you <a href="#pre-training">pre-train</a>; later you bolt a small task head on top of it.</dd>
+
+  <dt id="layer">layer / block</dt>
+  <dd>One unit of (attention + feed-forward). "An 18-layer model" means this whole unit is repeated 18 times, each one refining the previous one's output. <span class="eg"><strong>Watch out:</strong> attention happens in <em>every</em> layer, not just the first one.</span></dd>
+
+  <dt id="residual">residual</dt>
+  <dd>A shortcut wire that adds a block's input back onto its output. It lets information (and the training signal) skip past blocks, which is what makes very deep stacks trainable instead of getting stuck.</dd>
+
+  <dt id="layernorm">LayerNorm</dt>
+  <dd>A tidy-up step that rescales each token's numbers into a sane range (roughly centered, not too big or too small) before the next block. It keeps training stable so deep stacks don't blow up.</dd>
+
+  <dt id="logits">logits</dt>
+  <dd>The raw, un-normalised scores the model spits out for each choice, <em>before</em> softmax turns them into percentages. <span class="eg"><strong>Example:</strong> logits <code>[2.0, 0.5, −1.0]</code> over three words → softmax → probabilities. Higher logit = the model favours that option.</span></dd>
+</dl>
+
+<h2>🚀 Foundation models</h2>
+<dl>
+  <dt id="mlm">MLM / <span id="masked-language-modelling">masked language modelling</span></dt>
+  <dd>The training game where you hide a token and make the model guess it from the surrounding context. The hidden word is its own answer key, so you need <em>zero</em> human labels — that's why you can train on the whole internet. <span class="eg"><strong>Example:</strong> "the ___ barked" → predict <code>dog</code>.</span></dd>
+
+  <dt id="pre-training">pre-training</dt>
+  <dd>The first, big training phase: play fill-in-the-blank on tons of unlabelled data so the model learns general structure. <span class="eg"><strong>Example:</strong> PRAGMA pre-trains on 24 billion banking events before anyone asks it a single specific question.</span></dd>
+
+  <dt id="fine-tuning">fine-tuning</dt>
+  <dd>Taking an already pre-trained model and training it a little more on a specific labelled task. Because it already "knows a lot", this needs far less data than starting from scratch.</dd>
+
+  <dt id="freeze">freeze</dt>
+  <dd>Lock a part of the model so the optimiser leaves its knobs alone during training. <span class="eg"><strong>Example:</strong> freeze the pre-trained encoder and train only a small new head on top — it's fast and needs very few labels.</span></dd>
+
+  <dt id="foundation-model">foundation model</dt>
+  <dd>One big model, pre-trained once on huge data, then reused for many different tasks with only small additions. PRAGMA is Revolut's foundation model for banking events; GPT is one for text.</dd>
+
+  <dt id="recall">recall</dt>
+  <dd>Of all the <em>real</em> positive cases, what fraction did the model actually catch? <span class="eg"><strong>Example:</strong> 100 real fraudsters, the model flags 80 of them → 80% recall. It's the metric that matters when the thing you're hunting is rare (fraud, churn, disease).</span></dd>
+
+  <dt id="rnn">RNN</dt>
+  <dd>Recurrent Neural Network — the older approach that read sequences one step at a time, carrying a single running "memory note". It struggled to remember far-back words and couldn't be sped up easily, so Transformers replaced it. (See <a href="lesson_03b.html">L3b</a>.)</dd>
+</dl>
+
+<div class="pagination">
+  <a href="index.html">
+    <span class="dir">↑ Back to</span>
+    <span class="ttl">Index</span>
+  </a>
+  <a href="lesson_01.html" class="next">
+    <span class="dir">Start →</span>
+    <span class="ttl">L1 — How a model learns</span>
+  </a>
+</div>
+
+</div>
+
+<style>
+dl { margin: 14px 0 30px; }
+dt { font-weight: 700; font-family: ui-monospace, "SF Mono", Monaco, monospace; color: var(--accent-strong); margin-top: 20px; scroll-margin-top: 80px; }
+dd { margin: 4px 0 0 0; color: var(--text); }
+dd .eg {
+  display: block;
+  margin-top: 7px;
+  padding: 8px 12px;
+  background: var(--code-bg);
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-dim);
+}
+</style>
+
+</body>
+</html>

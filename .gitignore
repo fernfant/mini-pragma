@@ -6,6 +6,12 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
+# Virtual environment (torch + jupyter)
+.venv/
+
+# Source PDF (not course material)
+Pragna_Model.pdf
+
 # Build artifacts from runnable scripts
 *.pt
 data.pt

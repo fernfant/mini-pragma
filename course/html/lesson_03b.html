@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -127,6 +128,9 @@
     <li><strong>Scale.</strong> Because of (1) and (2), bigger means smarter.</li>
   </ol>
 </div>
+
+<div id="quiz-l3b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3b",[{"q": "Why are RNNs slow on long sentences?", "options": ["They use too much memory", "They process one word at a time, in order", "They have too many knobs"], "answer": 1, "explain": "RNNs are sequential — word 100 must wait for word 99. Attention does all at once."}, {"q": "The 'single index card' analogy describes which RNN weakness?", "options": ["Losing long-range memory", "Being too accurate", "Using too little power"], "answer": 0, "explain": "Early words fade as the one card gets rewritten each step. Attention looks back directly."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_03.html">
@@ -324,5 +328,6 @@
 })();
 </script>
 
+<script src="course.js"></script>
 </body>
 </html>

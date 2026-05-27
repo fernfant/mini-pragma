@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -159,6 +160,9 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 </div>
 
 <p>That's it. Everything else in this course is decoration.</p>
+
+<div id="quiz-l1"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1",[{"q": "What does it mean to <em>train</em> a model?", "options": ["Nudge its numbers until its guesses get less wrong", "Write more code", "Give it the right answer formula"], "answer": 0, "explain": "Training = guess, measure how wrong, nudge the knobs, repeat."}, {"q": "In <code>y = w·x + b</code>, what are <code>w</code> and <code>b</code>?", "options": ["The input data", "The knobs the model learns", "The loss"], "answer": 1, "explain": "They're the two adjustable numbers (parameters) gradient descent tunes."}, {"q": "What does the <em>loss</em> tell you?", "options": ["How fast the code runs", "How many knobs there are", "How wrong the guesses are right now"], "answer": 2, "explain": "Loss is one number measuring wrongness. Training drives it down."}]);});</script>
 
 <div class="pagination">
   <a href="index.html">
@@ -338,5 +342,6 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 })();
 </script>
 
+<script src="course.js"></script>
 </body>
 </html>

@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -135,6 +136,9 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
   </ol>
 </div>
 
+<div id="quiz-l2"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l2",[{"q": "Two word-vectors have a BIG dot product. That means…", "options": ["The words are similar", "The words are opposites", "One word is longer"], "answer": 0, "explain": "Big dot product = the lists agree on their slots = similar meaning."}, {"q": "Who decides what each embedding slot 'means'?", "options": ["The programmer names them", "Nobody — it emerges during training", "They're fixed by the dictionary"], "answer": 1, "explain": "The slots get their meaning automatically as training nudges similar words together."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_01_5.html">
     <span class="dir">← Previous</span>
@@ -230,5 +234,6 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 })();
 </script>
 
+<script src="course.js"></script>
 </body>
 </html>

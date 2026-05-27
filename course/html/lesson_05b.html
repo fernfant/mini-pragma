@@ -24,6 +24,7 @@
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html" class="current">L5b</a>
     <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
   </div>
 </nav>
 
@@ -182,6 +183,9 @@ class ChurnHead(nn.Module):
 
 <p>This is PRAGMA, just smaller. Same architecture choices. Same pre-training objective. Same downstream-adaptation strategy.</p>
 
+<div id="quiz-l5b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5b",[{"q": "90% of users are engaged. Which metric matters most?", "options": ["Overall accuracy", "Recall (fraction of real churners caught)", "Code speed"], "answer": 1, "explain": "A lazy 'everyone stays' model gets 90% accuracy but catches 0 churners. Recall exposes that."}, {"q": "When does pre-training STOP giving an edge?", "options": ["When you already have plenty of labels", "Never", "When the model is small"], "answer": 0, "explain": "At 1000 labels both reach 100% — pre-training's edge is biggest when labels are few."}]);});</script>
+
 <div class="pagination">
   <a href="lesson_05.html">
     <span class="dir">← Previous</span>
@@ -194,5 +198,6 @@ class ChurnHead(nn.Module):
 </div>
 
 </div>
+<script src="course.js"></script>
 </body>
 </html>
