@@ -83,6 +83,14 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
 
 <p>When you BOTH score high on a thing, the product is big (strong agreement → boost). When one scores high and the other low, the product is small (disagreement → no boost). Total = "how much do you agree?"</p>
 
+<div id="chk-l2dot"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l2dot",{
+  q:"Two kids: A = [9, 1, 8] and B = [8, 0, 9]. Roughly, is their dot product big or small?",
+  options:["Big — they agree on most slots","Small — they disagree","Exactly zero"],
+  answer:0,
+  explain:"9×8 + 1×0 + 8×9 = 72 + 0 + 72 = 144. Big, because they both score high on slots 1 and 3 — similar tastes."
+});});</script>
+
 <h2 class="step" id="widget"><span class="step-num">Words</span> Words work the exact same way</h2>
 
 <p>Every word in the vocabulary gets a list of numbers. The computer pretends each word is a "person" being described by secret features.</p>
@@ -132,7 +140,17 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 
 <h2 class="step" id="train"><span class="step-num">Play</span> 🎬 Watch the embeddings actually learn</h2>
 
-<p>Everything above said "training nudges similar words together" — now <em>watch it happen</em>. Six words start scattered at random. Their secret partners are <strong>dog↔bark</strong>, <strong>cat↔meow</strong>, <strong>fish↔swim</strong>. Press <strong>Train</strong> and the loop pulls each word toward its partner. Watch the <code>dog·bark</code> similarity climb while <code>dog·meow</code> stays low.</p>
+<p>Everything above said "training nudges similar words together" — now <em>watch it happen</em>. Six words start scattered at random. Their secret partners are <strong>dog↔bark</strong>, <strong>cat↔meow</strong>, <strong>fish↔swim</strong>.</p>
+
+<div id="pred-l2"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l2",{
+  q:"Right now the embeddings are random, so dog·bark ≈ 0. After we train (partners pulled together), what happens to dog·bark?",
+  options:["It climbs to a big positive number","It drops far below zero","It stays near 0 forever"],
+  correct:0,
+  reveal:"Training pulls dog and bark to point the same way, so their dot product climbs (to roughly +9 in the notebook). Meanwhile dog·meow — not partners — stays low. Press Train below and watch the numbers."
+});});</script>
+
+<p>Press <strong>Train</strong> and the loop pulls each word toward its partner. Watch the <code>dog·bark</code> similarity climb while <code>dog·meow</code> stays low.</p>
 
 <div class="widget">
   <div class="widget-row two">

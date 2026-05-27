@@ -553,6 +553,100 @@ figure.figure-wide svg, figure.figure-wide img {
 }
 .mission .go:hover { background: #f0f0ff; }
 
+/* PREDICT-BEFORE-REVEAL */
+.predict {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-left: 4px solid var(--warn);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 24px 0;
+}
+.predict .p-head { font-weight: 700; margin-bottom: 4px; }
+.predict .p-head::before { content: "🔮 Predict first: "; }
+.predict .p-q { margin: 4px 0 12px; }
+.predict .p-opt {
+  display: block; width: 100%; text-align: left;
+  background: #fff; border: 1.5px solid #fde68a; border-radius: 8px;
+  padding: 9px 13px; margin: 5px 0; font-size: 14px; font-weight: 500;
+  color: var(--text); cursor: pointer;
+}
+.predict .p-opt:hover:not(:disabled) { border-color: var(--warn); }
+.predict .p-opt:disabled { cursor: default; opacity: 0.85; }
+.predict .p-opt.chosen { border-color: var(--accent-strong); border-width: 2px; }
+.predict .p-opt.correct { background: #dcfce7; border-color: var(--good); }
+.predict .p-reveal {
+  display: none; margin-top: 10px; padding: 11px 14px;
+  background: #fff; border-radius: 8px; font-size: 14px;
+}
+.predict .p-reveal.show { display: block; }
+.predict .p-reveal .verdict { font-weight: 700; }
+.predict .p-reveal .verdict.hit { color: var(--good); }
+.predict .p-reveal .verdict.miss { color: var(--warn); }
+
+/* INLINE CHECKPOINT — slim "your turn" mid-lesson */
+.check {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 22px 0;
+}
+.check .c-q { font-weight: 600; margin-bottom: 8px; }
+.check .c-q::before { content: "🧩 Your turn: "; color: var(--accent-strong); }
+.check .c-opt {
+  display: block; width: 100%; text-align: left;
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 8px 12px; margin: 5px 0; font-size: 14px; color: var(--text); cursor: pointer;
+}
+.check .c-opt:hover:not(:disabled) { border-color: var(--accent); background: #fff; }
+.check .c-opt:disabled { cursor: default; }
+.check .c-opt.correct { background: #dcfce7; border-color: var(--good); color: #065f46; }
+.check .c-opt.wrong   { background: #fee2e2; border-color: var(--bad);  color: #991b1b; }
+.check .c-ex { display: none; margin-top: 8px; font-size: 13.5px; color: var(--text-dim); }
+.check .c-ex.show { display: block; }
+
+/* GO-DEEPER expander */
+details.go-deeper {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  margin: 18px 0;
+}
+details.go-deeper > summary {
+  cursor: pointer; font-weight: 600; color: var(--accent-strong); list-style: none;
+}
+details.go-deeper > summary::-webkit-details-marker { display: none; }
+details.go-deeper > summary::before { content: "🔬 "; }
+details.go-deeper[open] > summary { margin-bottom: 10px; }
+details.go-deeper > summary::after { content: "  ▸ show"; color: var(--text-faint); font-weight: 400; font-size: 13px; }
+details.go-deeper[open] > summary::after { content: "  ▾ hide"; }
+
+/* RECAP card (end of a roadmap Part) */
+.recap {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin: 6px 0 26px;
+}
+.recap .r-title { font-weight: 700; color: #047857; margin-bottom: 6px; }
+.recap ul { margin: 6px 0 0; }
+.recap li { margin: 3px 0; }
+
+/* LANDING DEMO (index top-down hook) */
+.landing-demo {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  margin: 24px 0;
+  box-shadow: var(--shadow);
+}
+.landing-demo h3 { margin-top: 0; }
+
 /* SIDE-QUEST callout (optional lessons) */
 .sidequest {
   background: #faf5ff;

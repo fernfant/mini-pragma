@@ -154,5 +154,57 @@
     });
   };
 
+  // --- Predict-before-reveal ---
+  // predict(id, { q, options:[...], correct:<idx>, reveal:"..." })
+  window.predict = function (id, cfg) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.classList.add("predict");
+    box.innerHTML =
+      `<div class="p-head"></div><div class="p-q">${cfg.q}</div>` +
+      cfg.options.map((o, i) => `<button class="p-opt" data-i="${i}">${o}</button>`).join("") +
+      `<div class="p-reveal" id="${id}-rev"></div>`;
+    box.querySelectorAll(".p-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = +btn.dataset.i;
+        box.querySelectorAll(".p-opt").forEach((b, j) => {
+          b.disabled = true;
+          if (j === cfg.correct) b.classList.add("correct");
+        });
+        btn.classList.add("chosen");
+        const hit = i === cfg.correct;
+        const rev = document.getElementById(`${id}-rev`);
+        rev.className = "p-reveal show";
+        rev.innerHTML =
+          `<span class="verdict ${hit ? "hit" : "miss"}">${hit ? "🎯 You called it!" : "🤔 Good guess — here's what actually happens:"}</span> ` +
+          cfg.reveal;
+      });
+    });
+  };
+
+  // --- Inline checkpoint (slim single MCQ) ---
+  // check(id, { q, options:[...], answer:<idx>, explain:"..." })
+  window.check = function (id, cfg) {
+    const box = document.getElementById(id);
+    if (!box) return;
+    box.classList.add("check");
+    box.innerHTML =
+      `<div class="c-q">${cfg.q}</div>` +
+      cfg.options.map((o, i) => `<button class="c-opt" data-i="${i}">${o}</button>`).join("") +
+      `<div class="c-ex" id="${id}-ex"></div>`;
+    box.querySelectorAll(".c-opt").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const i = +btn.dataset.i;
+        const opts = box.querySelectorAll(".c-opt");
+        opts.forEach(b => { b.disabled = true; });
+        const ex = document.getElementById(`${id}-ex`);
+        if (i === cfg.answer) { btn.classList.add("correct"); }
+        else { btn.classList.add("wrong"); opts[cfg.answer].classList.add("correct"); }
+        ex.className = "c-ex show";
+        ex.textContent = (i === cfg.answer ? "✓ " : "✗ ") + (cfg.explain || "");
+      });
+    });
+  };
+
   document.addEventListener("DOMContentLoaded", linkGlossary);
 })();

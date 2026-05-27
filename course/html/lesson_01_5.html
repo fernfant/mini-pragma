@@ -93,11 +93,27 @@
 
 <h2 class="step" id="step-1"><span class="step-num">Step 1</span> A new dataset: this one is a curve</h2>
 
+<div id="pred-s1"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s1",{
+  q:"The secret rule this time bends into a U-shape (a parabola). Which kind of model do you think can trace a U?",
+  options:["Something bendy / curvy","A plain straight line","Neither can ever fit it"],
+  correct:0,
+  reveal:"A curve needs something that can bend. A straight line is stuck going one direction the whole way — that limitation is the whole point of this lesson."
+});});</script>
+
 <p>L1's data was <code>y = 2x + 1</code>, a straight line. Linear regression nailed it because a line is exactly what linear regression can fit.</p>
 
 <p>This time the secret rule is a <strong>parabola</strong>: <code>y = x² − 4x + 3</code> plus a little noise. The y values go down and then up — no straight line can fit that.</p>
 
 <h2 class="step" id="step-2"><span class="step-num">Step 2</span> Try linear regression — it fails</h2>
+
+<div id="pred-s2"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s2",{
+  q:"Linear regression can only draw STRAIGHT lines. How well will it fit the U-shaped data?",
+  options:["Perfectly — lines fit anything","Badly — no straight line follows a U","Only if we train longer"],
+  correct:1,
+  reveal:"A straight line goes up the whole way or down the whole way — it can't bend to follow a U. The loss gets stuck around 25 no matter how long we train. That's the wall a neural network breaks through."
+});});</script>
 
 <p>Same model as L1: <code>y = w*x + b</code>. Two parameters. After 1000 steps the loss settles near <strong>25</strong> (compare to L1's <code>0.0001</code> on its straight-line data). No straight line can pass through a U-shape.</p>
 
@@ -112,6 +128,14 @@ for _ in range(1000):
 
 <h2 class="step" id="step-3"><span class="step-num">Step 3</span> Trick: give linear regression more features</h2>
 
+<div id="pred-s3"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s3",{
+  q:"We hand the SAME linear-regression loop one extra input: x². Can it fit the U-curve now?",
+  options:["Yes — it can finally bend","No, still stuck on straight lines","Only the middle part"],
+  correct:0,
+  reveal:"Yes! Adding x² as a feature lets a 'linear' model produce a curve — it recovers y ≈ x² − 4x + 3 almost perfectly. It's still linear regression; we just fed it a smarter input. (The catch: how would you KNOW to add x²?)"
+});});</script>
+
 <p>Key insight that confuses everyone: <strong>"linear regression" doesn't mean "fits a line in x"</strong>. It means "linear in the parameters". We can give it any transformation of x as a feature.</p>
 
 <p>Add <code>x²</code> as a feature and the model becomes:</p>
@@ -123,6 +147,14 @@ for _ in range(1000):
 <p>🤔 <strong>The catch.</strong> How would you know to add <code>x²</code>? What if the relationship were <code>sin(x)</code> or something more complex? For simple data you can guess; for complex data (text, images, banking events) there are too many possible features to enumerate. That's where neural networks come in.</p>
 
 <h2 class="step" id="step-4"><span class="step-num">Step 4</span> Enter the neural network</h2>
+
+<div id="pred-s4"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s4",{
+  q:"A neural net is Linear → ReLU → Linear. What does the ReLU (the 'bend') let it do that plain Linear → Linear can't?",
+  options:["Bend into curves","Run faster","Use less memory"],
+  correct:0,
+  reveal:"The ReLU is the nonlinearity. Without it, two stacked Linears just collapse back into ONE straight line. With it, the network can fold and bend — fitting curves on its own, no handcrafted x² required."
+});});</script>
 
 <p>A neural network is a <strong>stack of linear transformations with nonlinear activations in between</strong>. The simplest one (a Multilayer Perceptron, or MLP) for our problem:</p>
 
@@ -145,6 +177,12 @@ Linear  ──► 1 output number (the prediction)</pre>
   <strong>Universal approximation theorem (no math).</strong> With enough hidden units, an MLP can approximate ANY smooth function. You don't have to handcraft features like <code>x²</code> — the network learns them automatically.
 </div>
 
+<details class="go-deeper">
+  <summary>Go deeper: <em>why</em> does the ReLU bend let it fit any curve?</summary>
+  <p>Each hidden unit computes <code>ReLU(w·x + b)</code> — a flat zero until <code>x</code> passes a threshold, then a straight ramp. That's a single "hockey-stick" bend. One bend isn't much, but if you <strong>add up many hockey-sticks</strong> with different thresholds and slopes, you can trace any wiggly curve as closely as you like — like building a smooth shape out of lots of tiny straight LEGO pieces.</p>
+  <p>That's all the universal approximation theorem says: enough bends → any shape. The network <em>learns</em> where to put each bend (the <code>w</code> and <code>b</code>) by gradient descent. Without the ReLU there are no bends, so stacking layers just gives you one straight line again.</p>
+</details>
+
 <pre><code>class MLP(nn.Module):
     def __init__(self, hidden=8):
         super().__init__()
@@ -157,11 +195,27 @@ Linear  ──► 1 output number (the prediction)</pre>
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Train the MLP on the SAME parabola data</h2>
 
+<div id="pred-s5"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s5",{
+  q:"We train the MLP with the SAME 5-line loop — but we never tell it to add x². Will it still fit the parabola?",
+  options:["Yes — it learns the bend by itself","No, it needs the x² hint","It only fits half the curve"],
+  correct:0,
+  reveal:"Yes — it discovers the curve on its own. Each hidden unit becomes a little 'bend detector'; added together they trace the U. That's the magic: the network learns its OWN features."
+});});</script>
+
 <p>Same training loop. Same MSE loss. Same Adam optimiser. Only the model class changed.</p>
 
 <p>The notebook shows Karpathy-style snapshots at steps 0 / 100 / 500 / 1000 / 2000 — you can SEE each hidden unit's "knee" sliding into place over training. By step 2000 the 8 knees cover different slices of x and sum (weighted by layer 2) to recreate the parabola.</p>
 
 <h2 class="step" id="step-6"><span class="step-num">Step 6</span> Side-by-side comparison</h2>
+
+<div id="pred-s6"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s6",{
+  q:"The polynomial fits this curve with 3 numbers; the neural net needs ~25 for the same job. So why ever use the bigger neural net?",
+  options:["For complex data where you can't guess the right feature","It's always more accurate","It uses less memory"],
+  correct:0,
+  reveal:"On this toy curve the polynomial wins on simplicity. But for text, images, or banking data you can't just guess 'add x²' — there are too many possible features. A neural net LEARNS the right features for you. That's why it scales to hard problems."
+});});</script>
 
 <table class="compact">
   <thead><tr><th>Model</th><th>Params</th><th>Final MSE</th></tr></thead>
@@ -175,6 +229,14 @@ Linear  ──► 1 output number (the prediction)</pre>
 <p>The polynomial uses 3 parameters; the neural net uses 25. The neural net has extra capacity it didn't strictly need for this simple problem. So why ever use a neural network? Because for <strong>complex data</strong> you can't say "add <code>x²</code>" — the data is too complex for that intuition to apply. A neural network with enough capacity figures out the features for you.</p>
 
 <h2 class="step" id="step-75"><span class="step-num">Step 7.5</span> Heads-up — you just built the MLP that lives inside every Transformer</h2>
+
+<div id="pred-s75"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s75",{
+  q:"That little MLP (Linear → ReLU → Linear) you just trained shows up inside every Transformer. What is it called there?",
+  options:["The feed-forward sub-layer (FFN)","The embedding","The optimiser"],
+  correct:0,
+  reveal:"It's the feed-forward sub-layer — 'FFN' and 'MLP block' mean the same thing. Same architecture you just built, just bigger and with GELU instead of ReLU. You've already built one of the three Transformer pieces!"
+});});</script>
 
 <p>The MLP you trained — <code>Linear → ReLU → Linear</code> — has a fancy name when it shows up inside a Transformer: the <strong>feed-forward sub-layer</strong> (or "FFN", or "MLP block"). They all mean the same thing.</p>
 
@@ -200,6 +262,14 @@ Linear(2048, 512)</code></pre>
 <p>So when you read "feed-forward layer" in any Transformer paper, picture the small MLP you trained on the parabola. Same architecture, scaled up.</p>
 
 <h2 class="step" id="step-76"><span class="step-num">Step 7.6</span> What does "stacking layers" mean? Why does BERT use 18?</h2>
+
+<div id="pred-s76"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s76",{
+  q:"A Transformer stacks 18 blocks of (attention + feed-forward). In how many of those blocks does attention actually happen?",
+  options:["All 18 of them","Just the first block","Just the last block"],
+  correct:0,
+  reveal:"Attention runs in EVERY block — the whole (attention + feed-forward) pair is duplicated 18 times. The embedding happens once at the bottom, the output head once at the top; everything in between repeats. The diagram below shows it."
+});});</script>
 
 <p>You've trained an MLP with one hidden layer. BERT stacks <strong>18 blocks</strong>, where each block is (attention + feed-forward). Common confusion:</p>
 
@@ -304,6 +374,14 @@ Linear(2048, 512)</code></pre>
 
 <h2 class="step" id="step-77"><span class="step-num">Step 7.7</span> Embeddings &amp; attention work in BOTH frameworks</h2>
 
+<div id="pred-s77"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s77",{
+  q:"Is 'attention' a whole kind of model on its own, or a building block you can drop into different models?",
+  options:["A reusable building block","A complete model by itself","Just another name for linear regression"],
+  correct:0,
+  reveal:"It's a building block. You can plug an embedding or an attention layer into a plain linear head OR a neural-net head — the four demos below prove it. 'Linear vs neural' is a SEPARATE choice from which building blocks you use."
+});});</script>
+
 <p>Before L2 and L3 — a subtle point. So far we've sorted models into two camps:</p>
 
 <ul>
@@ -337,6 +415,14 @@ Linear(2048, 512)</code></pre>
 <p><strong>Key insight:</strong> <em>embedding</em> and <em>attention</em> are reusable building blocks. The "linear vs neural" decision is a separate axis — it's about whether the head that consumes their output has a nonlinearity. A real Transformer block uses the MLP option (Demo D), and stacks 18 copies of it.</p>
 
 <h2 class="step" id="step-8"><span class="step-num">Step 8</span> The big reveal — what IS BERT, then?</h2>
+
+<div id="pred-s8"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s8",{
+  q:"Final reveal — is BERT basically souped-up linear regression, or a different kind of model?",
+  options:["A neural network (a Transformer)","Fancy linear regression","A giant lookup database"],
+  correct:0,
+  reveal:"BERT, GPT and PRAGMA are neural networks — Transformers made of embedding + attention + feed-forward, stacked. The 5-line training loop is SHARED with linear regression, but the model in the middle is a completely different beast."
+});});</script>
 
 <p><strong>BERT, GPT, PRAGMA — they are NEURAL NETWORKS.</strong> Specifically a kind called Transformers. And a Transformer is built out of three pieces, all of which you now know:</p>
 

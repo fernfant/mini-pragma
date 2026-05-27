@@ -68,6 +68,14 @@
 
 <p><strong>Attention</strong> lets the model do the same thing: every word looks at every other word and decides which ones are important for understanding itself.</p>
 
+<div id="pred-l3"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l3",{
+  q:"Sentence: \"the dog chased cat\". Both dog and cat are animals (similar vectors). Besides itself, which word will 'dog' pay the MOST attention to?",
+  options:["cat — the other animal","chased — the action","the — the filler word"],
+  correct:0,
+  reveal:"Attention is driven by similarity (the dot product). dog and cat have alike vectors (both animal-ish), so dog leans on cat. You'll see exactly this in the heatmap and the step-by-step panel below."
+});});</script>
+
 <h2 class="step" id="worked"><span class="step-num">Example</span> A 2-word worked example</h2>
 
 <p>Let's strip it to 2 words and 2-dim embeddings so we can do every step on paper. Sentence: <strong>"the cat"</strong>. Embeddings (made up):</p>
@@ -101,6 +109,14 @@ cat · cat  =  (2×2) + (3×3)  =  13</code></pre>
     <tr><th>cat</th><td>0.00</td><td>1.00</td></tr>
   </tbody>
 </table>
+
+<div id="chk-l3soft"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l3soft",{
+  q:"A word's softmax attention row is [0.27, 0.73]. What must these always add up to?",
+  options:["1.00 (100% — it's a budget)","2.00","Whatever the scores were"],
+  answer:0,
+  explain:"Softmax turns scores into a 100% budget — every row sums to 1.0. Here 'the' spends 27% on itself and 73% on 'cat'."
+});});</script>
 
 <h3 id="step-3">Step 3 — Mix (weighted blend of word vectors)</h3>
 <pre><code>new "the" = 0.27 × [1, 0] + 0.73 × [2, 3] = [1.73, 2.19]   ← absorbed cat-flavor
@@ -176,6 +192,12 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
 </ul>
 
 <p>The three matrices are trainable knobs nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Q/K/V give the model more flexibility — each word can ask different questions of others than what it offers in return.</p>
+
+<details class="go-deeper">
+  <summary>Go deeper: what's the <code>√d</code> for?</summary>
+  <p>Before softmax we divide the scores by <code>√d</code> (the square root of the vector size). Here's why: as vectors get longer (more features), their dot products grow bigger and bigger. Feed huge numbers into softmax and it becomes <strong>too spiky</strong> — one word grabs ~100% of the attention and everyone else gets ~0%, so the model stops blending information.</p>
+  <p>See it on plain numbers: <code>softmax([2, 1, 0]) ≈ [0.66, 0.24, 0.09]</code> (nicely shared) but <code>softmax([20, 10, 0]) ≈ [1.00, 0.00, 0.00]</code> (one word hogs everything). Dividing by <code>√d</code> keeps the scores in the gentle range. It's a small stabiliser, not a deep idea — but it matters in practice.</p>
+</details>
 
 <h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>
 

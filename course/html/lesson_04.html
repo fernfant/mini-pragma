@@ -82,6 +82,14 @@
 
 <p><strong>Free training data!</strong> This is why BERT (and PRAGMA) can be trained on the whole internet without humans labelling anything. The fancy name is <em>masked language modelling</em> (MLM).</p>
 
+<div id="pred-l4"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l4",{
+  q:"A model was trained on the rule dog↔bark. We show it \"dog ___\" with the second word hidden. What's its top guess?",
+  options:["bark — it learned the pairing","meow — a random animal sound","it has no idea"],
+  correct:0,
+  reveal:"It guesses bark. Fill-in-the-blank training taught it that dog and bark go together, so the masked slot lights up on bark. Try the live demo below with full sentences."
+});});</script>
+
 <div class="widget">
   <h3>🎮 Interactive: mask a word, see what the model would predict</h3>
   <p>This demo uses pre-baked predictions for example sentences (no actual model in your browser). Click any word to mask it.</p>

@@ -43,10 +43,57 @@
   <a href="lesson_01.html" class="go">▶ Start the mission — Lesson 1</a>
 </div>
 
+<div class="landing-demo">
+  <h3>🔮 See it work first</h3>
+  <p>This is the <em>fill-in-the-blank</em> trick behind ChatGPT — and the thing you'll build. A word is hidden;
+  the AI guesses it from the rest of the sentence. Click the button.</p>
+  <div id="ld-sentence" style="font-size:22px;line-height:1.7;text-align:center;margin:18px 0;"></div>
+  <div style="text-align:center;">
+    <button id="ld-ask">🔮 Ask the model</button>
+    <button class="alt" id="ld-next">↻ Another sentence</button>
+  </div>
+  <div id="ld-pred" style="margin-top:14px;"></div>
+  <p style="margin:16px 0 0;color:var(--text-dim);">🤔 <strong>How does a pile of numbers learn to do that?</strong>
+  That's the whole course. <a href="lesson_01.html"><strong>Start with Lesson 1 →</strong></a></p>
+</div>
+
 <div class="callout info">
   <strong>New word? Don't panic.</strong> Any <span class="term" data-def="See? Hover a dotted word for a one-line definition. Click it for the full glossary.">dotted word</span>
   like that one has a definition — hover it, or open the <a href="glossary.html">📖 glossary</a> any time.
 </div>
+
+<script>
+(() => {
+  const S = [
+    { words:["the","dog","goes","___"], answer:"woof", preds:[["woof",0.88],["meow",0.06],["moo",0.04]] },
+    { words:["I","poured","milk","on","my","___"], answer:"cereal", preds:[["cereal",0.79],["plate",0.11],["shoes",0.06]] },
+    { words:["she","kicked","the","___","into","the","goal"], answer:"ball", preds:[["ball",0.91],["box",0.05],["cat",0.02]] },
+  ];
+  let cur = 0;
+  const elS = document.getElementById('ld-sentence');
+  const elP = document.getElementById('ld-pred');
+  function render(reveal) {
+    const s = S[cur];
+    elS.innerHTML = s.words.map(w => w === "___"
+      ? `<span style="display:inline-block;min-width:64px;padding:2px 10px;border-bottom:3px solid ${reveal?'#10b981':'#a855f7'};color:${reveal?'#047857':'#a855f7'};font-weight:700;">${reveal?s.answer:'?'}</span>`
+      : `<span style="margin:0 3px;">${w}</span>`).join('');
+    if (!reveal) { elP.innerHTML = ''; return; }
+    let h = '<div style="max-width:380px;margin:0 auto;display:flex;flex-direction:column;gap:6px;">';
+    for (const [w,p] of s.preds) {
+      const top = w === s.answer;
+      h += `<div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:70px;text-align:right;font-family:ui-monospace,monospace;font-weight:600;color:${top?'#047857':'#555'};">${w}</div>
+        <div style="flex:1;background:var(--code-bg);border-radius:4px;height:20px;"><div style="width:${p*100}%;height:100%;background:${top?'#10b981':'#3b82f6'};border-radius:4px;"></div></div>
+        <div style="width:42px;font-family:ui-monospace,monospace;font-size:13px;color:#555;">${(p*100).toFixed(0)}%</div></div>`;
+    }
+    h += '</div>';
+    elP.innerHTML = h;
+  }
+  document.getElementById('ld-ask').addEventListener('click', () => render(true));
+  document.getElementById('ld-next').addEventListener('click', () => { cur = (cur+1)%S.length; render(false); });
+  render(false);
+})();
+</script>
 
 <h2>🗺 The roadmap</h2>
 <p class="subtitle" style="margin-top:0;">Do the blue ones in order. The purple "side-quests" are optional — skip them on the first pass and come back when something feels hand-wavy.</p>
@@ -93,6 +140,14 @@
     </a>
   </div>
 
+  <div class="recap">
+    <div class="r-title">✅ After Part 1 you can say…</div>
+    <ul>
+      <li>"Training = nudging numbers to make guesses less wrong, using the same 5-line loop every time."</li>
+      <li>"BERT isn't fancy linear regression — it's a <em>neural network</em>; only the model in the middle changed."</li>
+    </ul>
+  </div>
+
   <div class="rm-group">
     <h3>Part 2 · The building blocks</h3>
 
@@ -122,6 +177,15 @@
       </span>
       <span class="rm-meta"><span class="rm-time">⏱ 10 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
     </a>
+  </div>
+
+  <div class="recap">
+    <div class="r-title">✅ After Part 2 you know the 3 pieces of a Transformer…</div>
+    <ul>
+      <li><strong>Embedding</strong> — turn each word into a list of numbers.</li>
+      <li><strong>Attention</strong> — let every word look at every other word and blend in the ones that matter.</li>
+      <li><strong>Feed-forward</strong> — a little neural net that thinks about each word on its own.</li>
+    </ul>
   </div>
 
   <div class="rm-group">
@@ -162,6 +226,14 @@
       </span>
       <span class="rm-meta"><span class="rm-time">⏱ 25 min</span><span class="diff"><span class="on">●●●</span></span></span>
     </a>
+  </div>
+
+  <div class="recap">
+    <div class="r-title">✅ After Part 3 you've seen the whole recipe…</div>
+    <ul>
+      <li>Stack those 3 pieces, <strong>pre-train</strong> with fill-in-the-blank (no labels), then <strong>adapt</strong> to a real task with a tiny head.</li>
+      <li>That's exactly what PRAGMA does — just bigger. You're ready to build your own.</li>
+    </ul>
   </div>
 
   <div class="rm-group">

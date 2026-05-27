@@ -103,6 +103,14 @@
   </div>
 </div>
 
+<div id="pred-l1"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l1",{
+  q:"You just watched Auto-train. If we keep nudging w and b to shrink the error, over and over, what happens to the loss?",
+  options:["It steadily drops toward ~0","It stays about the same","It keeps growing"],
+  correct:0,
+  reveal:"Each nudge makes the guesses a little less wrong, so the loss slides downhill toward 0. That downhill walk is the whole game — and it's the same for a 2-knob line or a billion-knob Transformer."
+});});</script>
+
 <h2 class="step" id="loop"><span class="step-num">Step 5</span> The 5 lines that ARE machine learning</h2>
 
 <p>Behind that "Auto-train" button is exactly this loop (in PyTorch). It is identical for <em>any</em> model — a linear regression, an embedding, a Transformer, anything with trainable knobs.</p>
@@ -138,6 +146,12 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 <div class="callout">
   <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.
 </div>
+
+<details class="go-deeper">
+  <summary>Go deeper: why not just use the plain error, or its absolute value?</summary>
+  <p><strong>Plain error</strong> won't work: a +5 miss and a −5 miss would cancel to 0, telling you the model is perfect when it isn't. You need every miss to count as positive.</p>
+  <p><strong>Absolute value</strong> (<code>|error|</code>) does make everything positive and is sometimes used. But squaring has a bonus: it has a smooth, clean slope everywhere (great for gradient descent) and it leans hard on big mistakes — a miss of 10 hurts 100×, not 10×, so training rushes to fix the worst errors first.</p>
+</details>
 
 <h3 id="magic">The three magic lines (Step 4)</h3>
 <ul>
