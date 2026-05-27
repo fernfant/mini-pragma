@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 1.5 — From linear regression to neural networks</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html" class="current">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 1.5 — From linear regression to neural networks</h1>
+<p class="subtitle">Bridge between L1's two-knob model and L4's tiny BERT. Same training loop. Different model in the middle.</p>
+
+<div class="lesson-links">
+  <a href="../notebooks/lesson_01_5_from_linear_to_neural.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="lesson_01.html"><span class="ico">←</span> L1 prerequisite</a>
+  <a href="lesson_04.html"><span class="ico">→</span> L4 (where it all lands)</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson (matches the notebook)</summary>
+  <ol>
+    <li><a href="#step-1">Step 1 — A new dataset: a curve</a></li>
+    <li><a href="#step-2">Step 2 — Try linear regression (it fails)</a></li>
+    <li><a href="#step-3">Step 3 — Add an x² feature (polynomial regression)</a></li>
+    <li><a href="#step-4">Step 4 — Enter the neural network</a></li>
+    <li><a href="#step-5">Step 5 — Train the MLP on the same data</a></li>
+    <li><a href="#step-6">Step 6 — Side-by-side comparison</a></li>
+    <li><a href="#step-75">Step 7.5 — The MLP IS the Transformer's feed-forward</a></li>
+    <li><a href="#step-76">Step 7.6 — Stacking layers: why BERT uses 18</a></li>
+    <li><a href="#step-77">Step 7.7 — Embeddings &amp; attention work in BOTH frameworks</a></li>
+    <li><a href="#step-8">Step 8 — The big reveal: what BERT actually is</a></li>
+  </ol>
+</details>
+
+<h2>The two questions this lesson answers</h2>
+
+<ol>
+  <li><strong>Is BERT just linear regression with more knobs? Or is it a different kind of model?</strong></li>
+  <li><strong>When do you need a neural network instead of linear regression?</strong></li>
+</ol>
+
+<p>One dataset, four models, same training loop:</p>
+
+<table>
+  <thead><tr><th>Approach</th><th>Parameters</th><th>Can it fit a curve?</th></tr></thead>
+  <tbody>
+    <tr><td>Linear regression (L1: <code>y = w*x + b</code>)</td><td>2</td><td>❌ No</td></tr>
+    <tr><td>Polynomial regression (handcrafted <code>x²</code> feature)</td><td>3</td><td>✅ Yes</td></tr>
+    <tr><td>Neural net (Linear → ReLU → Linear)</td><td>~30</td><td>✅ Yes (no handcrafting)</td></tr>
+    <tr><td>Transformer (BERT, PRAGMA)</td><td>thousands–billions</td><td>✅ Yes, on sequences</td></tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+  <strong>The big takeaway.</strong> The 5-line training loop is the same for all four. What changes is the <strong>model in the middle</strong>. BERT and PRAGMA are NEURAL NETWORKS — specifically a kind called Transformers — NOT linear regression. The training recipe is shared; the model architecture is different.
+</div>
+
+<h2 class="step" id="step-1"><span class="step-num">Step 1</span> A new dataset: this one is a curve</h2>
+
+<p>L1's data was <code>y = 2x + 1</code>, a straight line. Linear regression nailed it because a line is exactly what linear regression can fit.</p>
+
+<p>This time the secret rule is a <strong>parabola</strong>: <code>y = x² − 4x + 3</code> plus a little noise. The y values go down and then up — no straight line can fit that.</p>
+
+<h2 class="step" id="step-2"><span class="step-num">Step 2</span> Try linear regression — it fails</h2>
+
+<p>Same model as L1: <code>y = w*x + b</code>. Two parameters. After 1000 steps the loss settles near <strong>25</strong> (compare to L1's <code>0.0001</code> on its straight-line data). No straight line can pass through a U-shape.</p>
+
+<pre><code>w = torch.tensor(0.0, requires_grad=True)
+b = torch.tensor(0.0, requires_grad=True)
+opt = torch.optim.SGD([w, b], lr=0.001)
+
+for _ in range(1000):
+    y_pred = w * x_data + b
+    loss = ((y_pred - y_true) ** 2).mean()
+    opt.zero_grad(); loss.backward(); opt.step()</code></pre>
+
+<h2 class="step" id="step-3"><span class="step-num">Step 3</span> Trick: give linear regression more features</h2>
+
+<p>Key insight that confuses everyone: <strong>"linear regression" doesn't mean "fits a line in x"</strong>. It means "linear in the parameters". We can give it any transformation of x as a feature.</p>
+
+<p>Add <code>x²</code> as a feature and the model becomes:</p>
+
+<pre><code>y = w₁ · x + w₂ · x² + b</code></pre>
+
+<p>Still linear regression (3 parameters). But now it can fit a parabola. After 2000 steps the loss drops to near zero and the recovered coefficients almost exactly match the true rule.</p>
+
+<p>🤔 <strong>The catch.</strong> How would you know to add <code>x²</code>? What if the relationship were <code>sin(x)</code> or something more complex? For simple data you can guess; for complex data (text, images, banking events) there are too many possible features to enumerate. That's where neural networks come in.</p>
+
+<h2 class="step" id="step-4"><span class="step-num">Step 4</span> Enter the neural network</h2>
+
+<p>A neural network is a <strong>stack of linear transformations with nonlinear activations in between</strong>. The simplest one (a Multilayer Perceptron, or MLP) for our problem:</p>
+
+<figure>
+  <pre style="text-align:left;display:inline-block;">input x
+   │
+   ▼
+Linear  ──► 8 hidden numbers
+   │
+   ▼
+ReLU    ──► same 8 numbers, but negatives clipped to 0
+   │
+   ▼
+Linear  ──► 1 output number (the prediction)</pre>
+</figure>
+
+<p>The <strong>ReLU activation</strong> is the magic. Without it, two stacked Linears would produce a single linear function (composing linears gives a linear). With ReLU in between, the network can model curves, kinks, and arbitrarily complex patterns.</p>
+
+<div class="callout">
+  <strong>Universal approximation theorem (no math).</strong> With enough hidden units, an MLP can approximate ANY smooth function. You don't have to handcraft features like <code>x²</code> — the network learns them automatically.
+</div>
+
+<pre><code>class MLP(nn.Module):
+    def __init__(self, hidden=8):
+        super().__init__()
+        self.layer1 = nn.Linear(1, hidden)      # 16 trainable knobs
+        self.layer2 = nn.Linear(hidden, 1)      # 9 more knobs
+    def forward(self, x):
+        h = self.layer1(x)
+        h = F.relu(h)
+        return self.layer2(h)</code></pre>
+
+<h2 class="step" id="step-5"><span class="step-num">Step 5</span> Train the MLP on the SAME parabola data</h2>
+
+<p>Same training loop. Same MSE loss. Same Adam optimiser. Only the model class changed.</p>
+
+<p>The notebook shows Karpathy-style snapshots at steps 0 / 100 / 500 / 1000 / 2000 — you can SEE each hidden unit's "knee" sliding into place over training. By step 2000 the 8 knees cover different slices of x and sum (weighted by layer 2) to recreate the parabola.</p>
+
+<h2 class="step" id="step-6"><span class="step-num">Step 6</span> Side-by-side comparison</h2>
+
+<table class="compact">
+  <thead><tr><th>Model</th><th>Params</th><th>Final MSE</th></tr></thead>
+  <tbody>
+    <tr><td>Linear regression</td><td>2</td><td>~25 ❌</td></tr>
+    <tr><td>Polynomial regression</td><td>3</td><td>~0.25 ✅</td></tr>
+    <tr><td>Neural network</td><td>25</td><td>~0.25 ✅</td></tr>
+  </tbody>
+</table>
+
+<p>The polynomial uses 3 parameters; the neural net uses 25. The neural net has extra capacity it didn't strictly need for this simple problem. So why ever use a neural network? Because for <strong>complex data</strong> you can't say "add <code>x²</code>" — the data is too complex for that intuition to apply. A neural network with enough capacity figures out the features for you.</p>
+
+<h2 class="step" id="step-75"><span class="step-num">Step 7.5</span> Heads-up — you just built the MLP that lives inside every Transformer</h2>
+
+<p>The MLP you trained — <code>Linear → ReLU → Linear</code> — has a fancy name when it shows up inside a Transformer: the <strong>feed-forward sub-layer</strong> (or "FFN", or "MLP block"). They all mean the same thing.</p>
+
+<p>Two tiny differences between your MLP and BERT's feed-forward:</p>
+
+<div class="compare-two">
+  <div>
+    <h4>Your MLP (L1.5)</h4>
+    <pre><code>Linear(1, 8)
+ReLU
+Linear(8, 1)</code></pre>
+    <p style="font-size:13px;color:var(--text-dim);margin:8px 0 0;">25 parameters total.</p>
+  </div>
+  <div>
+    <h4>BERT feed-forward</h4>
+    <pre><code>Linear(512, 2048)
+GELU
+Linear(2048, 512)</code></pre>
+    <p style="font-size:13px;color:var(--text-dim);margin:8px 0 0;">~2 million parameters per layer. Same shape, bigger.</p>
+  </div>
+</div>
+
+<p>So when you read "feed-forward layer" in any Transformer paper, picture the small MLP you trained on the parabola. Same architecture, scaled up.</p>
+
+<h2 class="step" id="step-76"><span class="step-num">Step 7.6</span> What does "stacking layers" mean? Why does BERT use 18?</h2>
+
+<p>You've trained an MLP with one hidden layer. BERT stacks <strong>18 blocks</strong>, where each block is (attention + feed-forward). Common confusion:</p>
+
+<div class="callout info">
+  <strong>Does attention happen only in the first layer, or in every layer?</strong><br>
+  Attention happens in <strong>EVERY single layer</strong>. The WHOLE block (attention + FFN) is duplicated 18 times — not just the FFN, not just the attention. The embedding only happens once (at the bottom). The output head only happens once (at the top). Everything in between repeats.
+</div>
+
+<figure class="figure-wide">
+<svg viewBox="0 0 720 640" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .label { font: 600 13px ui-monospace, monospace; fill: #1a1a1a; }
+    .sublabel { font: 12px ui-monospace, monospace; fill: #555; }
+    .group   { font: italic 13px sans-serif; fill: #555; }
+    .arrow   { stroke: #888; stroke-width: 1.5; fill: none; }
+    .emb-box  { fill: #fef3c7; stroke: #f59e0b; }
+    .attn-box { fill: #eff6ff; stroke: #3b82f6; }
+    .ffn-box  { fill: #f0fdf4; stroke: #10b981; }
+    .head-box { fill: #fce7f3; stroke: #a855f7; }
+  </style>
+
+  <!-- Input -->
+  <text x="220" y="30" class="label">input tokens</text>
+  <line x1="220" y1="42" x2="220" y2="62" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Embedding -->
+  <rect x="120" y="65" width="200" height="40" rx="6" class="emb-box" stroke-width="2"/>
+  <text x="220" y="90" class="label" text-anchor="middle">Embedding (L2)</text>
+  <text x="450" y="90" class="group">← happens ONCE</text>
+  <line x1="220" y1="105" x2="220" y2="125" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Block 1 -->
+  <rect x="120" y="130" width="200" height="40" rx="6" class="attn-box" stroke-width="2"/>
+  <text x="220" y="155" class="label" text-anchor="middle">Attention (L3)</text>
+  <line x1="220" y1="170" x2="220" y2="185" class="arrow"/>
+  <rect x="120" y="185" width="200" height="40" rx="6" class="ffn-box" stroke-width="2"/>
+  <text x="220" y="210" class="label" text-anchor="middle">Feed-forward (L1.5)</text>
+  <rect x="115" y="125" width="210" height="105" rx="8" fill="none" stroke="#aaa" stroke-dasharray="4 3"/>
+  <text x="360" y="180" class="group">BLOCK 1</text>
+  <line x1="220" y1="230" x2="220" y2="250" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Block 2 -->
+  <rect x="120" y="255" width="200" height="40" rx="6" class="attn-box" stroke-width="2"/>
+  <text x="220" y="280" class="label" text-anchor="middle">Attention</text>
+  <line x1="220" y1="295" x2="220" y2="310" class="arrow"/>
+  <rect x="120" y="310" width="200" height="40" rx="6" class="ffn-box" stroke-width="2"/>
+  <text x="220" y="335" class="label" text-anchor="middle">Feed-forward</text>
+  <rect x="115" y="250" width="210" height="105" rx="8" fill="none" stroke="#aaa" stroke-dasharray="4 3"/>
+  <text x="360" y="305" class="group">BLOCK 2</text>
+  <line x1="220" y1="355" x2="220" y2="375" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- ... -->
+  <text x="220" y="395" class="sublabel" text-anchor="middle">⋮  (16 more blocks)  ⋮</text>
+  <line x1="220" y1="405" x2="220" y2="425" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Block 18 -->
+  <rect x="120" y="430" width="200" height="40" rx="6" class="attn-box" stroke-width="2"/>
+  <text x="220" y="455" class="label" text-anchor="middle">Attention</text>
+  <line x1="220" y1="470" x2="220" y2="485" class="arrow"/>
+  <rect x="120" y="485" width="200" height="40" rx="6" class="ffn-box" stroke-width="2"/>
+  <text x="220" y="510" class="label" text-anchor="middle">Feed-forward</text>
+  <rect x="115" y="425" width="210" height="105" rx="8" fill="none" stroke="#aaa" stroke-dasharray="4 3"/>
+  <text x="360" y="480" class="group">BLOCK 18</text>
+  <line x1="220" y1="530" x2="220" y2="550" class="arrow" marker-end="url(#arrow)"/>
+
+  <!-- Output head -->
+  <rect x="120" y="555" width="200" height="40" rx="6" class="head-box" stroke-width="2"/>
+  <text x="220" y="580" class="label" text-anchor="middle">Output head</text>
+  <text x="450" y="580" class="group">← happens ONCE</text>
+
+  <!-- Right-side legend -->
+  <g transform="translate(540, 130)">
+    <text x="0" y="0" class="label">Legend</text>
+    <rect x="0" y="14" width="18" height="14" class="emb-box" stroke-width="1.5"/>
+    <text x="26" y="25" class="sublabel">Embedding</text>
+    <rect x="0" y="38" width="18" height="14" class="attn-box" stroke-width="1.5"/>
+    <text x="26" y="49" class="sublabel">Attention</text>
+    <rect x="0" y="62" width="18" height="14" class="ffn-box" stroke-width="1.5"/>
+    <text x="26" y="73" class="sublabel">Feed-forward</text>
+    <rect x="0" y="86" width="18" height="14" class="head-box" stroke-width="1.5"/>
+    <text x="26" y="97" class="sublabel">Output head</text>
+  </g>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+</svg>
+<figcaption>A 18-layer Transformer. Each of the 18 blocks contains its own attention step. Stacking = duplicating the whole (attention + FFN) block.</figcaption>
+</figure>
+
+<p><strong>Why depth matters intuitively.</strong> Each block builds on the previous block's output:</p>
+
+<ul>
+  <li><strong>Block 1</strong> — each token looks at its neighbours and absorbs simple context.</li>
+  <li><strong>Block 2</strong> — each token (now context-aware) looks at OTHER context-aware tokens. So it sees <em>neighbours-of-neighbours</em>.</li>
+  <li><strong>Block 18</strong> — 18 successive rounds of attention have stacked up. The vector now encodes very long-range, hierarchical patterns.</li>
+</ul>
+
+<p>The notebook runs an empirical depth test on a sine wave: depth 1 → loss 0.10, depth 2 → 0.0016, depth 4 → 0.0009. Deeper models build hierarchical features that shallow models can't.</p>
+
+<h2 class="step" id="step-77"><span class="step-num">Step 7.7</span> Embeddings &amp; attention work in BOTH frameworks</h2>
+
+<p>Before L2 and L3 — a subtle point. So far we've sorted models into two camps:</p>
+
+<ul>
+  <li><strong>Linear regression / polynomial regression</strong> — no nonlinearity. Just <code>y = Σ wᵢ · feature_i + b</code>.</li>
+  <li><strong>Neural networks</strong> — at least one nonlinearity (ReLU, GELU, softmax).</li>
+</ul>
+
+<p><strong>Embeddings and attention are NOT model classes.</strong> They're building blocks that plug into either kind of model. You can use an embedding inside a linear-regression-style head, or inside a neural-net head. Same for attention.</p>
+
+<table class="compact">
+  <thead><tr><th>Block</th><th>Adds nonlinearity?</th><th>What it adds</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Embedding</strong></td><td>No (pure lookup)</td><td>Trainable vector per discrete input</td></tr>
+    <tr><td><strong>Attention</strong></td><td>Yes (softmax inside)</td><td>Cross-token mixing</td></tr>
+    <tr><td><strong>Feed-forward</strong></td><td>Yes (GELU inside)</td><td>Per-token nonlinear capacity</td></tr>
+  </tbody>
+</table>
+
+<p>The notebook trains four small models — same data, mix-and-match — to drive this home:</p>
+
+<table>
+  <thead><tr><th>Demo</th><th>Building block</th><th>Head</th><th>Worked?</th></tr></thead>
+  <tbody>
+    <tr><td>A</td><td>Embedding</td><td>Linear (regression style)</td><td>✅</td></tr>
+    <tr><td>B</td><td>Embedding</td><td>MLP (neural-net style)</td><td>✅</td></tr>
+    <tr><td>C</td><td>Attention</td><td>Linear (regression style)</td><td>✅</td></tr>
+    <tr><td>D</td><td>Attention</td><td>MLP (neural-net style)</td><td>✅</td></tr>
+  </tbody>
+</table>
+
+<p><strong>Key insight:</strong> <em>embedding</em> and <em>attention</em> are reusable building blocks. The "linear vs neural" decision is a separate axis — it's about whether the head that consumes their output has a nonlinearity. A real Transformer block uses the MLP option (Demo D), and stacks 18 copies of it.</p>
+
+<h2 class="step" id="step-8"><span class="step-num">Step 8</span> The big reveal — what IS BERT, then?</h2>
+
+<p><strong>BERT, GPT, PRAGMA — they are NEURAL NETWORKS.</strong> Specifically a kind called Transformers. And a Transformer is built out of three pieces, all of which you now know:</p>
+
+<div class="stack-diagram">
+  <div class="block emb">Embedding — L2 (token → vector, linear lookup)</div>
+  <div class="arrow">▼</div>
+  <div class="block attn">Attention — L3 (Q/K/V + softmax, mixes tokens)</div>
+  <div class="arrow">▼</div>
+  <div class="block ffn">Feed-forward — L1.5 (Linear → GELU → Linear)</div>
+  <div class="repeat">↓ (repeat attention + feed-forward 17 more times)</div>
+  <div class="arrow">▼</div>
+  <div class="block head">Output head — predict the masked token</div>
+</div>
+
+<p>The "trick" of the Transformer is just <strong>interleaving attention and feed-forward many times</strong>. Attention mixes information ACROSS tokens; feed-forward processes information WITHIN each token. Together they give the model enough capacity to learn rich patterns from sequences.</p>
+
+<div class="callout good">
+  <strong>What's the same across L1 and BERT:</strong>
+  <ul>
+    <li>The 5-line training loop (predict → loss → backward → step)</li>
+    <li>Gradient descent (Adam or SGD)</li>
+    <li>Trainable parameters (just lots more in BERT)</li>
+  </ul>
+  <strong>What's different:</strong> the middle. Linear regression has <code>w*x + b</code>; BERT has 18 stacks of attention + feed-forward.
+</div>
+
+<div class="pagination">
+  <a href="lesson_01c.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L1c — Inside gradient descent</span>
+  </a>
+  <a href="lesson_02.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L2 — Tokens &amp; embeddings</span>
+  </a>
+</div>
+
+</div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+</body>
+</html>
