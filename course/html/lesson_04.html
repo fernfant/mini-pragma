@@ -354,13 +354,41 @@ ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
 
 <h2 class="step" id="step-4"><span class="step-num">Step 4</span> Cross-entropy loss, by hand</h2>
 
-<p>Cross-entropy is the loss every classification model in the world uses — including BERT, GPT, PRAGMA. It's worth doing properly. Let's actually do it by hand for one prediction so you see every step.</p>
+<h3>First — why do we need a new loss at all?</h3>
 
-<p>The journey from the model's raw outputs to a single loss number happens in <strong>three stages</strong>. We'll walk through each on the same example: the masked sentence is <code>"the dog ___"</code> and the right answer is <code>bark</code> (id 5 in our 8-word vocab).</p>
+<p>Back in <a href="lesson_01.html">Lesson 1</a> the model predicted a <em>single number</em> (<code>y_pred</code>), and we measured wrongness with <strong>MSE</strong> — the squared distance from the truth. That worked because the prediction was a number, and "how far off" was a sensible question.</p>
 
-<h3>Stage A — Raw scores ("logits")</h3>
+<p>Here in Lesson 4, the model isn't predicting a number — it's <strong>picking a word from a list of 8</strong>. Asking "how far off" doesn't make sense: id 2 (<code>dog</code>) isn't "closer" to id 3 (<code>cat</code>) than to id 7 (<code>swim</code>); the ids are just arbitrary labels. We need a different kind of loss — one that works on <em>picking from a list of choices</em>.</p>
 
-<p>The model produces <strong>one number per vocab word</strong> at the masked position. These are called <strong>logits</strong> — they can be any real number, positive or negative. They're not probabilities yet; they're "raw votes". Suppose for our example the model outputs:</p>
+<p>That loss is <strong>cross-entropy</strong>. It's what every classification model in the world uses, including BERT, GPT and PRAGMA. We'll do it by hand on one example.</p>
+
+<h3>Where do the "scores" even come from?</h3>
+
+<p>Before we can compute a loss, we need to know what the model is <em>outputting</em>. Let's peek at the architecture for a second (you'll see it in full in Step 5):</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;"><span style="color:#a1a1aa;">class</span> <span style="color:#7e22ce;">TinyMLM</span>(nn.Module):
+    <span style="color:#a1a1aa;">def</span> __init__(self):
+        self.emb  = nn.Embedding(V, 16)            <span style="color:#888;"># word → 16-dim vector  (L2)</span>
+        self.enc  = nn.TransformerEncoderLayer(...) <span style="color:#888;"># attention + FFN  (L3 + L1.5)</span>
+        self.head = <span style="color:#1d4ed8;font-weight:700;">nn.Linear(16, V)</span>            <span style="color:#888;"># 16 numbers → V scores  ← THIS!</span></code></pre>
+
+<p>The very last layer — <code>self.head</code> — is just a <strong>Linear layer</strong>, the same kind we built in <a href="lesson_01_5.html">L1.5</a>. It takes the 16-dim vector at each token's position and projects it to <strong>V = 8 numbers</strong>, one per vocab word. Each one is computed as <code>weight · vector + bias</code> — exactly the math from L1.5's MLP.</p>
+
+<p>Those V numbers are called <strong>logits</strong>. They're just <em>scores</em> — any real number, positive or negative. Big logit = the model leans toward that word. But they're not probabilities yet.</p>
+
+<div class="callout">
+  <strong>So the chain is:</strong>
+  <code>word → embedding → attention + FFN → 16-dim vector → <span style="color:#1d4ed8;font-weight:700;">Linear head</span> → 8 logits → softmax → 8 probabilities → cross-entropy → loss</code>
+  <p style="margin:6px 0 0;">Stages A/B/C below just walk through the last three boxes.</p>
+</div>
+
+<h3>The three stages, by hand</h3>
+
+<p>We'll use the same example throughout: the masked sentence is <code>"the dog ___"</code> and the right answer is <code>bark</code> (id 5 in our 8-word vocab).</p>
+
+<h3>Stage A — The 8 logits coming out of the head</h3>
+
+<p>Suppose the head's Linear layer produces these 8 numbers at the masked position:</p>
 
 <pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">vocab:    <span style="color:#888;">&lt;pad&gt;</span>  <span style="color:#888;">&lt;mask&gt;</span>  dog   cat   fish  <span style="color:#047857;font-weight:700;">bark</span>  meow  swim
 logits:    <span style="color:#888;">-1.0</span>   <span style="color:#888;">-0.5</span>   0.0   <span style="color:#1d4ed8;">-0.3</span>   <span style="color:#888;">-0.8</span>   <span style="color:#047857;font-weight:700;">+2.5</span>   <span style="color:#1d4ed8;">+0.5</span>   <span style="color:#888;">-0.5</span></code></pre>
@@ -422,7 +450,13 @@ prob:                  2%     3%    6%     4%    3%     <span style="color:#0478
 </table>
 
 <div class="callout">
-  <strong>Why not MSE?</strong> MSE asks "how far off is your guess?" — it works for numeric outputs. Here we're picking from a list of words, and the ids are just labels (id 2 isn't "closer" to id 3 than to id 7 — they're arbitrary). Cross-entropy ignores the labels entirely and asks "how confident were you in the truth?" — exactly the right question for classification.
+  <strong>Quick recap of why we did all that:</strong>
+  <ul style="margin:6px 0;">
+    <li>The model's <strong>head</strong> (a Linear layer) produces V real-number scores → logits.</li>
+    <li><strong>Softmax</strong> turns those logits into probabilities (exp → normalise → sum to 1).</li>
+    <li><strong>Cross-entropy</strong> grabs the probability the model gave the <em>right answer</em> and takes its <code>−log</code>.</li>
+  </ul>
+  Three little operations — but PyTorch's <code>F.cross_entropy(logits, target)</code> does all three for you in one call. It accepts raw logits directly (no need to softmax first) because the math is numerically more stable that way.
 </div>
 
 <!-- ─────────── L4 CROSS-ENTROPY PLAYGROUND ─────────── -->
