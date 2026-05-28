@@ -67,29 +67,85 @@
 <h2 class="step" id="headline"><span class="step-num">Result</span> The headline result</h2>
 
 <div class="widget">
-  <h3>📊 Pre-trained vs baseline at different label counts</h3>
-  <table style="margin-top:14px;">
-    <thead>
-      <tr><th>labels</th><th>pretrained accuracy</th><th>pretrained <strong>recall</strong></th><th>baseline accuracy</th><th>baseline <strong>recall</strong></th></tr>
-    </thead>
-    <tbody>
-      <tr><td>20</td><td>0.91</td><td>0.00</td><td>0.91</td><td>0.00</td></tr>
-      <tr style="background:#dcfce7"><td>50</td><td><strong>1.00</strong></td><td><strong>1.00</strong></td><td>0.97</td><td>0.63</td></tr>
-      <tr style="background:#dcfce7"><td>200</td><td><strong>1.00</strong></td><td><strong>1.00</strong></td><td>0.98</td><td>0.79</td></tr>
-      <tr><td>1000</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:13px;color:var(--text-dim);margin-top:14px;">
-    <strong>Recall</strong> = "what % of actual churners did we catch?" This is the metric that matters most when 90% of users are engaged.
-  </p>
+  <h3>📊 Pre-trained vs baseline — drag the labels slider</h3>
+  <p style="font-size:13.5px;color:var(--text-dim);">How many <strong>labelled</strong> users (people we paid to tag "churned" or "stayed") does each model get to learn from? Drag the slider and watch <strong>recall</strong> — the % of real churners caught.</p>
+
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0;">
+    <span style="font-family:ui-sans-serif,system-ui;">labelled users:</span>
+    <input id="l5b-slider" type="range" min="0" max="3" step="1" value="1" style="flex:1;min-width:200px;">
+    <span id="l5b-labels" style="font-family:ui-monospace,monospace;font-weight:700;font-size:18px;min-width:60px;text-align:right;color:var(--accent-strong);">50</span>
+  </div>
+
+  <canvas id="l5b-canvas" width="720" height="200" style="max-width:100%;"></canvas>
+
+  <div id="l5b-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
 </div>
 
-<p>Things to notice:</p>
+<script>
+(() => {
+  const DATA = [
+    { labels: 20,   pre: 0.00, base: 0.00,
+      msg: "<strong>20 labels: both fail.</strong> Too few churner examples for EITHER model to catch any. Pre-training can't conjure signal from almost no labels." },
+    { labels: 50,   pre: 1.00, base: 0.63,
+      msg: "<strong>50 labels: pre-training wins big.</strong> The frozen pre-trained encoder already 'understands' user behaviour, so the tiny head catches <strong>100%</strong> of churners. The baseline — learning from scratch — only catches 63%." },
+    { labels: 200,  pre: 1.00, base: 0.79,
+      msg: "<strong>200 labels: pre-training still ahead</strong> (100% vs 79%). The gap is shrinking as the baseline gets more to learn from." },
+    { labels: 1000, pre: 1.00, base: 1.00,
+      msg: "<strong>1000 labels: they tie.</strong> With plenty of labels, even a from-scratch model learns the pattern. Pre-training's edge is biggest exactly when labels are SCARCE — which, in the real world, they almost always are." },
+  ];
+  const cv = document.getElementById('l5b-canvas');
+  const ctx = cv.getContext('2d');
+  const slider = document.getElementById('l5b-slider');
+
+  function bar(x, y, w, hMax, frac, color, label, pct) {
+    const h = hMax * frac;
+    ctx.fillStyle = '#eef2f7';
+    ctx.fillRect(x, y - hMax, w, hMax);
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y - h, w, h);
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'bold 16px ui-sans-serif,system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText(pct, x + w/2, y - h - 8);
+    ctx.font = '13px ui-sans-serif,system-ui';
+    ctx.fillStyle = '#555';
+    ctx.fillText(label, x + w/2, y + 20);
+  }
+
+  function render() {
+    const d = DATA[+slider.value];
+    document.getElementById('l5b-labels').textContent = d.labels;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const baseY = 150, hMax = 120;
+    // y-axis label
+    ctx.save(); ctx.translate(16, 90); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = '#888'; ctx.font = '12px ui-sans-serif,system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('recall (churners caught)', 0, 0); ctx.restore();
+    bar(140, baseY, 140, hMax, d.pre,  '#10b981', '🧠 pre-trained', (d.pre*100).toFixed(0) + '%');
+    bar(430, baseY, 140, hMax, d.base, '#94a3b8', '🎲 from scratch', (d.base*100).toFixed(0) + '%');
+    // gap annotation
+    if (d.pre > d.base + 0.01) {
+      ctx.strokeStyle = '#f59e0b'; ctx.setLineDash([4,3]); ctx.lineWidth = 1.5;
+      const yPre = baseY - hMax*d.pre, yBase = baseY - hMax*d.base;
+      ctx.beginPath(); ctx.moveTo(300, yPre); ctx.lineTo(300, yBase); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = '#b45309'; ctx.font = 'bold 12px ui-sans-serif,system-ui'; ctx.textAlign = 'left';
+      ctx.fillText(`+${((d.pre-d.base)*100).toFixed(0)}pt gap`, 308, (yPre+yBase)/2 + 4);
+    }
+    const t = document.getElementById('l5b-takeaway');
+    t.innerHTML = d.msg;
+    t.style.background = d.pre > d.base + 0.01 ? '#dcfce7' : '#f4f4f5';
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+</script>
+
+<p>Drag it across all four stops. The story:</p>
 <ul>
   <li><strong>20 labels: both fail.</strong> Too few examples of the rare class.</li>
-  <li><strong>50 labels: pre-training wins dramatically.</strong> Frozen probe catches <strong>100% of churners</strong>. Baseline only 63%.</li>
-  <li><strong>200 labels: pre-training still ahead.</strong> 100% vs 79%.</li>
-  <li><strong>1000 labels: they converge.</strong> Once you have enough labels, even a randomly-initialised model can learn the pattern.</li>
+  <li><strong>50 labels: pre-training wins dramatically.</strong> Frozen probe catches <strong>100% of churners</strong>; baseline only 63%.</li>
+  <li><strong>200 labels: pre-training still ahead.</strong> 100% vs 79% — gap shrinking.</li>
+  <li><strong>1000 labels: they converge.</strong> Enough labels and even a from-scratch model learns the pattern.</li>
 </ul>
 
 <div class="callout good">
@@ -187,9 +243,9 @@ class ChurnHead(nn.Module):
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5b",[{"q": "90% of users are engaged. Which metric matters most?", "options": ["Overall accuracy", "Recall (fraction of real churners caught)", "Code speed"], "answer": 1, "explain": "A lazy 'everyone stays' model gets 90% accuracy but catches 0 churners. Recall exposes that."}, {"q": "When does pre-training STOP giving an edge?", "options": ["When you already have plenty of labels", "Never", "When the model is small"], "answer": 0, "explain": "At 1000 labels both reach 100% — pre-training's edge is biggest when labels are few."}]);});</script>
 
 <div class="pagination">
-  <a href="lesson_05.html">
+  <a href="lesson_05a.html">
     <span class="dir">← Previous</span>
-    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+    <span class="ttl">L5a — House price predictor</span>
   </a>
   <a href="lesson_06.html" class="next">
     <span class="dir">Next →</span>

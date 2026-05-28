@@ -96,10 +96,10 @@
 b = torch.tensor(0.0, requires_grad=True)
 # training loop nudges w, b → 2 and 1</code></pre>
 
-<h3>Model B — Embedding + linear classifier (12 knobs)</h3>
+<h3>Model B — Embedding + linear classifier (15 knobs)</h3>
 <pre><code>emb  = nn.Embedding(3, 2)        # 3 animals × 2 dims = 6 knobs
-head = nn.Linear(2, 3)           # 2*3 + 3 = 9 knobs
-# training loop nudges EVERY one of those 15 knobs</code></pre>
+head = nn.Linear(2, 3)           # 2*3 weights + 3 biases = 9 knobs
+# training loop nudges EVERY one of those 6 + 9 = 15 knobs</code></pre>
 
 <h2 class="step" id="loop"><span class="step-num">Loop</span> The 5-line loop, identical for both</h2>
 
@@ -122,7 +122,7 @@ head = nn.Linear(2, 3)           # 2*3 + 3 = 9 knobs
   <thead><tr><th>Model</th><th>Architecture</th><th>Knobs</th><th>Loss</th></tr></thead>
   <tbody>
     <tr><td><strong>Model A</strong></td><td><code>y = w·x + b</code></td><td>2</td><td>MSE</td></tr>
-    <tr><td><strong>Model B</strong></td><td><code>id → emb → linear</code></td><td>12</td><td>Cross-entropy</td></tr>
+    <tr><td><strong>Model B</strong></td><td><code>id → emb → linear</code></td><td>15</td><td>Cross-entropy</td></tr>
     <tr><td><strong>Lesson 4 toy</strong></td><td><code>emb → attention → FFN → out</code></td><td>~5,000</td><td>Cross-entropy</td></tr>
     <tr><td><strong>PRAGMA-Large</strong></td><td>(same as above, much bigger)</td><td>1,000,000,000</td><td>Cross-entropy</td></tr>
   </tbody>

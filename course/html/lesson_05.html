@@ -127,6 +127,111 @@ V = len(vocab)</code></pre>
 
 <p>The fill-in-the-blank game from <a href="lesson_04.html">L4</a>. <code>labels[i] = -100</code> on unmasked positions tells the loss "don't score this position".</p>
 
+<!-- ─────────── L5 PLAYGROUND: build + mask an event ─────────── -->
+<div class="playground" id="pg-l5-event">
+  <div class="pg-head">🧪 Now you do it — encode &amp; mask a banking-style event</div>
+  <div class="pg-sub">Pick a pet, see its event become key-value token ids, then pick which VALUE to hide. Notice: the KEYS (field names) always stay visible — only values get masked, just like real PRAGMA.</div>
+
+  <pre class="pg-code">vocab = [<span class="pg-string">"&lt;pad&gt;"</span>,<span class="pg-string">"&lt;mask&gt;"</span>, <span class="pg-string">"pet"</span>,<span class="pg-string">"action"</span>,<span class="pg-string">"place"</span>, <span class="pg-string">"dog"</span>,<span class="pg-string">"cat"</span>,<span class="pg-string">"fish"</span>, <span class="pg-string">"eat"</span>,<span class="pg-string">"sleep"</span>,<span class="pg-string">"play"</span>, <span class="pg-string">"garden"</span>,<span class="pg-string">"couch"</span>,<span class="pg-string">"bowl"</span>]
+
+event = [(<span class="pg-string">"pet"</span>, <span id="pg-l5-pet-d" class="pg-string pg-live">"dog"</span>), (<span class="pg-string">"action"</span>, <span id="pg-l5-act-d" class="pg-string pg-live">"eat"</span>), (<span class="pg-string">"place"</span>, <span id="pg-l5-plc-d" class="pg-string pg-live">"garden"</span>)]
+ids   = encode(event)               <span class="pg-comment"># key, value, key, value, key, value</span>
+
+hide_value_of = <span id="pg-l5-mask-d" class="pg-string pg-live">"pet"</span>     <span class="pg-comment"># we only ever mask VALUES, never KEYS</span>
+ids, labels = mask_one(ids, hide_value_of)
+
+<span class="pg-keyword">print</span>(<span class="pg-string">f"ids:    {ids}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"labels: {labels}"</span>)</pre>
+
+  <div class="pg-controls">
+    <label>pet:
+      <select id="pg-l5-pet"><option>dog</option><option>cat</option><option>fish</option></select>
+    </label>
+    <label>hide value of:
+      <select id="pg-l5-mask"><option>pet</option><option>action</option><option>place</option></select>
+    </label>
+    <button class="pg-run" id="pg-l5-run">▶ Run</button>
+  </div>
+
+  <div class="pg-output" id="pg-l5-output">(pick a pet and a field to hide)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Pick <code>dog</code>, hide the <code>action</code> value. Which id becomes <code>&lt;mask&gt;</code> (id 1)?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>The event is <code>[(pet,dog),(action,eat),(place,garden)]</code> → ids <code>[2,5,3,8,4,11]</code>. Position 3 (the <code>eat</code> id, 8) becomes <code>&lt;mask&gt;</code> (1), and <code>labels[3] = 8</code>. The model must guess "eat" from "this is a dog whose place is garden". <em>The KEY token <code>action</code> (id 3) stays visible — the model always knows WHICH field is blank, just not its value.</em></p>
+        </details>
+      </li>
+      <li>Notice the ids alternate key, value, key, value. Why keep the keys visible?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Because a banking event is structured — "amount: 14.99" means something different from "merchant: 14". The key tells the model what KIND of thing the blank is. Hiding the value but keeping the key is like a fill-in-the-form quiz: "Pet's action: ____" — you know it's an action, you just have to guess which.</p>
+        </details>
+      </li>
+      <li>Pick <code>fish</code>. Its only valid place is <code>bowl</code>. If you hide the place value, how confident should the model be?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Very confident → <code>bowl</code>. In the secret <code>RULES</code>, fish only ever appears with <code>place: bowl</code>. After training, the model learns this rule and will predict bowl with near-100% probability whenever it sees a masked place value for a fish. <em>That's the model discovering structure we never told it directly.</em></p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 The real <code>encode()</code> and <code>mask()</code> are in <a href="../notebooks/lesson_05_pragma_mini.ipynb">lesson_05_pragma_mini.ipynb</a> — run them inside the training loop with torch.
+  </div>
+</div>
+
+<script>
+(() => {
+  const vocab = ["<pad>","<mask>","pet","action","place","dog","cat","fish","eat","sleep","play","garden","couch","bowl"];
+  const t2i = Object.fromEntries(vocab.map((w,i) => [w,i]));
+  // deterministic event per pet (first valid action/place from RULES)
+  const EVENTS = {
+    dog:  { action: "eat",   place: "garden" },
+    cat:  { action: "sleep", place: "couch" },
+    fish: { action: "eat",   place: "bowl" },
+  };
+  const $ = id => document.getElementById(id);
+  function run() {
+    const pet = $('pg-l5-pet').value;
+    const ev = EVENTS[pet];
+    const maskField = $('pg-l5-mask').value;
+    // build event: pet, action, place
+    const pairs = [["pet", pet], ["action", ev.action], ["place", ev.place]];
+    $('pg-l5-pet-d').textContent = `"${pet}"`;
+    $('pg-l5-act-d').textContent = `"${ev.action}"`;
+    $('pg-l5-plc-d').textContent = `"${ev.place}"`;
+    $('pg-l5-mask-d').textContent = `"${maskField}"`;
+    // encode: key, value, key, value, ...
+    const ids = [];
+    for (const [k,v] of pairs) { ids.push(t2i[k]); ids.push(t2i[v]); }
+    // mask the VALUE of the chosen field. value index = 2*fieldIndex + 1
+    const fieldIdx = ["pet","action","place"].indexOf(maskField);
+    const maskPos = 2*fieldIdx + 1;
+    const labels = ids.map(() => -100);
+    labels[maskPos] = ids[maskPos];
+    const masked = ids.slice();
+    masked[maskPos] = t2i["<mask>"];
+    // pretty token row
+    const tokRow = pairs.map(([k,v]) => `${k}=${v}`).join(", ");
+    const idsRow = '[' + masked.map((v,i) => i === maskPos ? `<span class="pg-mark">${v}</span>` : v).join(', ') + ']';
+    const labRow = '[' + labels.map((v,i) => i === maskPos ? `<span class="pg-ans">${v}</span>` : `<span class="pg-skip">${v}</span>`).join(', ') + ']';
+    const answer = pairs[fieldIdx][1];
+    $('pg-l5-output').innerHTML =
+`event:   ${tokRow}
+tokens:  pet  ${pet}  action  ${ev.action}  place  ${ev.place}
+ids:     ${idsRow}    <span class="pg-skip">← masked the ${maskField} value (was '${answer}', id ${t2i[answer]})</span>
+labels:  ${labRow}
+answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
+  }
+  $('pg-l5-pet').addEventListener('change', run);
+  $('pg-l5-mask').addEventListener('change', run);
+  $('pg-l5-run').addEventListener('click', run);
+  run();
+})();
+</script>
+<!-- ─────────────────── end L5 PLAYGROUND ─────────────────── -->
+
 <h2 class="step" id="arch"><span class="step-num">Sec 5</span> The architecture <span class="legend-chip">L1b</span> <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 
 <pre><code>class PragmaMini(nn.Module):
@@ -240,9 +345,9 @@ V = len(vocab)</code></pre>
     <span class="dir">← Previous</span>
     <span class="ttl">L4 — Training a tiny BERT</span>
   </a>
-  <a href="lesson_05b.html" class="next">
+  <a href="lesson_05a.html" class="next">
     <span class="dir">Next →</span>
-    <span class="ttl">L5b — Streaming churn predictor</span>
+    <span class="ttl">L5a — House price predictor</span>
   </a>
 </div>
 

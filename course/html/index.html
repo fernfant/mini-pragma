@@ -95,6 +95,50 @@
 })();
 </script>
 
+<h2>🧩 How the pieces fit together</h2>
+<p class="subtitle" style="margin-top:0;">The whole course in one picture. Everything is powered by one training loop (bottom); the three building blocks assemble into a tiny BERT, which scales into PRAGMA, which you rebuild yourself. Click any box to jump there.</p>
+
+<div class="concept-map">
+  <a class="cm-box capstone wide" href="lesson_06.html">
+    <span class="cm-id">L6</span><span class="cm-name">🏆 Build your own fraud detective</span>
+    <span class="cm-role">you assemble the whole recipe from scratch</span>
+  </a>
+  <div class="cm-arrow">▲ <span class="cm-lbl">rebuild it yourself</span></div>
+
+  <a class="cm-box pragma wide" href="lesson_05.html">
+    <span class="cm-id">L5 · L5a · L5b</span><span class="cm-name">🌊 The PRAGMA recipe, scaled up &amp; applied</span>
+    <span class="cm-role">pre-train → freeze → probe, on real-ish data (houses, churn)</span>
+  </a>
+  <div class="cm-arrow">▲ <span class="cm-lbl">scale up &amp; apply to real tasks</span></div>
+
+  <a class="cm-box bert wide" href="lesson_04.html">
+    <span class="cm-id">L4</span><span class="cm-name">🧱 Tiny BERT = the 3 blocks, trained together</span>
+    <span class="cm-role">embedding + attention + feed-forward, playing fill-in-the-blank</span>
+  </a>
+  <div class="cm-arrow">▲ <span class="cm-lbl">assemble the 3 building blocks</span></div>
+
+  <div class="cm-layer">
+    <a class="cm-box emb" href="lesson_02.html">
+      <span class="cm-id">L2</span><span class="cm-name">Embedding</span>
+      <span class="cm-role">word → vector</span>
+    </a>
+    <a class="cm-box attn" href="lesson_03.html">
+      <span class="cm-id">L3</span><span class="cm-name">Attention</span>
+      <span class="cm-role">words mix across</span>
+    </a>
+    <a class="cm-box ffn" href="lesson_01_5.html">
+      <span class="cm-id">L1.5</span><span class="cm-name">Feed-forward</span>
+      <span class="cm-role">think within each word</span>
+    </a>
+  </div>
+  <div class="cm-arrow">▲ <span class="cm-lbl">every block is trained by…</span></div>
+
+  <a class="cm-box engine wide" href="lesson_01.html">
+    <span class="cm-id">L1 · L1b · L1c</span><span class="cm-name">⚙️ The 5-line training loop</span>
+    <span class="cm-role">guess → measure loss → backward → nudge knobs → repeat. The engine under everything.</span>
+  </a>
+</div>
+
 <h2>🗺 The roadmap</h2>
 <p class="subtitle" style="margin-top:0;">Do the blue ones in order. The purple "side-quests" are optional — skip them on the first pass and come back when something feels hand-wavy.</p>
 

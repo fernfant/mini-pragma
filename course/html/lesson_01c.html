@@ -153,7 +153,7 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 
 <h2 class="step" id="general"><span class="step-num">Scale</span> How this generalises to a billion knobs</h2>
 
-<p>In Model A, PyTorch tracked <strong>2 gradients</strong>. In Model B, <strong>12</strong>. In Lesson 4's Transformer, <strong>thousands</strong>. In PRAGMA-Large, <strong>1,000,000,000</strong>. Same <code>loss.backward()</code>. Same <code>opt.step()</code>. Just more numbers.</p>
+<p>In Model A, PyTorch tracked <strong>2 gradients</strong>. In Model B, <strong>15</strong>. In Lesson 4's Transformer, <strong>thousands</strong>. In PRAGMA-Large, <strong>1,000,000,000</strong>. Same <code>loss.backward()</code>. Same <code>opt.step()</code>. Just more numbers.</p>
 
 <p>This is the magic of <strong>automatic differentiation</strong> (autograd): you write the forward computation (predict + loss), and PyTorch computes the backward gradients automatically using the chain rule. You never derive a single derivative.</p>
 

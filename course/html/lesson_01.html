@@ -150,7 +150,7 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 <p>SGD = <strong>Stochastic Gradient Descent</strong>. It just walks downhill on the loss landscape. The <code>lr</code> is the size of each step.</p>
 
 <h3 id="loss">The loss (Step 3)</h3>
-<p>For step 0 (with <code>w=0, b=0</code>), the model predicts all zeros. The truth is <code>[3, 5, 7, 9, 11, 13, 15, 17]</code>. The errors are <code>[-3, -5, -7, ...]</code>, squared: <code>[9, 25, 49, ...]</code>, averaged: <strong>62.5</strong>. (Slightly different from the 8-point widget here, which uses the first 5 points for simplicity.)</p>
+<p>The widget above (and the playground below) use the first <strong>5</strong> points <code>x = [1,2,3,4,5]</code>, so <code>y_true = [3, 5, 7, 9, 11]</code>. At step 0 (with <code>w=0, b=0</code>) the model predicts all zeros. The errors are <code>[-3, -5, -7, -9, -11]</code>, squared <code>[9, 25, 49, 81, 121]</code>, summed <code>285</code>, averaged <code>285 / 5 =</code> <strong>57</strong> — exactly the "loss" the widget shows at the start. (The full notebook uses all 8 points, which averages to 62.5 — same idea, a few more points.)</p>
 
 <div class="callout">
   <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.

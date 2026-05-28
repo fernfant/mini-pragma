@@ -306,20 +306,18 @@ AFTER MASKING (random 30%):
 <h2 class="step" id="step-9"><span class="step-num">Step 9</span> Results, interpreted</h2>
 
 <div class="widget">
-  <h3>📊 Pre-trained probe vs random-init baseline, across label counts</h3>
-  <table>
-    <thead><tr><th>labels</th><th>pretrained acc</th><th>pretrained recall</th><th>baseline acc</th><th>baseline recall</th></tr></thead>
-    <tbody>
-      <tr style="background:#dcfce7"><td>50</td><td><strong>0.66 ✓</strong></td><td>0.64</td><td>0.59</td><td>0.62</td></tr>
-      <tr><td>100</td><td>0.70 ✓</td><td>0.59</td><td>0.67</td><td>0.60</td></tr>
-      <tr style="background:#fef3c7"><td>500</td><td>0.72</td><td>0.61</td><td><strong>0.79 ✓</strong></td><td><strong>0.76 ✓</strong></td></tr>
-      <tr style="background:#fef3c7"><td>4000</td><td>0.73</td><td>0.61</td><td><strong>0.86 ✓</strong></td><td><strong>0.84 ✓</strong></td></tr>
-    </tbody>
-  </table>
-  <p style="font-size:13px;color:var(--text-dim);margin-top:14px;">
-    <span style="background:#dcfce7;padding:2px 6px;border-radius:4px;">Green</span> = pre-training wins.
-    <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;">Yellow</span> = baseline wins.
-  </p>
+  <h3>📊 Pre-trained probe vs baseline — drag the labels slider and watch the lead FLIP</h3>
+  <p style="font-size:13.5px;color:var(--text-dim);">How many labelled houses does each recipe learn the price head from? Watch <strong>accuracy</strong> as you slide — and notice who's winning at each end.</p>
+
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0;">
+    <span style="font-family:ui-sans-serif,system-ui;">labelled houses:</span>
+    <input id="l5a-slider" type="range" min="0" max="3" step="1" value="0" style="flex:1;min-width:200px;">
+    <span id="l5a-labels" style="font-family:ui-monospace,monospace;font-weight:700;font-size:18px;min-width:60px;text-align:right;color:var(--accent-strong);">50</span>
+  </div>
+
+  <canvas id="l5a-canvas" width="720" height="210" style="max-width:100%;"></canvas>
+
+  <div id="l5a-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
 </div>
 
 <h3>What the numbers say</h3>
@@ -363,6 +361,55 @@ AFTER MASKING (random 30%):
     <li>The recipe doesn't ALWAYS win. As you'll see in L5b, with richer sequential data it wins much more decisively — because there's much more structure for MLM to capture.</li>
   </ol>
 </div>
+
+<script>
+(() => {
+  const DATA = [
+    { labels: 50,   pre: 0.66, base: 0.59,
+      msg: "<strong>50 labels: pre-training wins (+7 pts).</strong> The frozen encoder already 'gets' house structure, so the tiny price head learns the mapping from very few examples." },
+    { labels: 100,  pre: 0.70, base: 0.67,
+      msg: "<strong>100 labels: pre-training still ahead</strong>, but only just (+3 pts). The baseline is catching up fast." },
+    { labels: 500,  pre: 0.72, base: 0.79,
+      msg: "<strong>500 labels: the lead FLIPS! 🔄</strong> The baseline (which can re-tune its whole encoder) overtakes the frozen probe. With enough labels, flexibility beats a warm start." },
+    { labels: 4000, pre: 0.73, base: 0.86,
+      msg: "<strong>4000 labels: baseline wins clearly (+13 pts).</strong> Tons of labels + a fully-tunable encoder dominates. Pre-training's frozen probe has hit its ceiling." },
+  ];
+  const cv = document.getElementById('l5a-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const slider = document.getElementById('l5a-slider');
+
+  function bar(x, y, w, hMax, frac, color, label, pct, winner) {
+    const h = hMax * frac;
+    ctx.fillStyle = '#eef2f7'; ctx.fillRect(x, y - hMax, w, hMax);
+    ctx.fillStyle = color; ctx.fillRect(x, y - h, w, h);
+    ctx.fillStyle = '#1a1a1a'; ctx.font = 'bold 16px ui-sans-serif,system-ui'; ctx.textAlign = 'center';
+    ctx.fillText(pct, x + w/2, y - h - 8);
+    ctx.font = '13px ui-sans-serif,system-ui'; ctx.fillStyle = '#555';
+    ctx.fillText(label, x + w/2, y + 20);
+    if (winner) { ctx.font = '18px ui-sans-serif,system-ui'; ctx.fillText('👑', x + w/2, y - h - 30); }
+  }
+  function render() {
+    const d = DATA[+slider.value];
+    document.getElementById('l5a-labels').textContent = d.labels;
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    const baseY = 160, hMax = 110;
+    ctx.save(); ctx.translate(16, 95); ctx.rotate(-Math.PI/2);
+    ctx.fillStyle = '#888'; ctx.font = '12px ui-sans-serif,system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('accuracy', 0, 0); ctx.restore();
+    const preWins = d.pre > d.base;
+    bar(140, baseY, 140, hMax, d.pre,  '#10b981', '🧠 pre-trained probe', (d.pre*100).toFixed(0) + '%', preWins);
+    bar(430, baseY, 140, hMax, d.base, '#f59e0b', '🎲 baseline (end-to-end)', (d.base*100).toFixed(0) + '%', !preWins);
+    const t = document.getElementById('l5a-takeaway');
+    t.innerHTML = d.msg;
+    t.style.background = preWins ? '#dcfce7' : '#fef3c7';
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+</script>
+
+<p style="margin-top:14px;"><span style="background:#dcfce7;padding:2px 6px;border-radius:4px;">Green 👑</span> = pre-training wins (few labels). <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;">Yellow 👑</span> = baseline wins (many labels). The crossover around 500 labels is the lesson: <strong>pre-training is a head-start, most valuable when you can't afford many labels.</strong></p>
 
 <div id="quiz-l5a"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5a",[{"q": "What does PRE-TRAINING use?", "options": ["Only labelled houses", "All houses, features only, no price labels", "Just the 3 example houses"], "answer": 1, "explain": "Pre-training plays fill-in-the-blank on features alone — no labels, all the data."}, {"q": "Why does pre-training help most when labels are scarce?", "options": ["It already learned the structure, so the head needs little labelled data", "It memorises the labels", "It makes training slower"], "answer": 0, "explain": "The frozen encoder brings knowledge for free; the tiny head learns from few labels."}]);});</script>
