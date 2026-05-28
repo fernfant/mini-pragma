@@ -52,6 +52,7 @@
     <li><a href="#emerge">The mind-blowing twist: the slots emerge</a></li>
     <li><a href="#train">🎬 What "training the embeddings" really means</a></li>
     <li><a href="#data">🔎 What data did we feed in? Is this BERT?</a></li>
+    <li><a href="#bert-style">🍱 Now try it BERT-style (CBOW on 20 sentences)</a></li>
     <li><a href="#why">Why this matters for the Transformer</a></li>
   </ol>
 </details>
@@ -298,6 +299,89 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 <p>Why the bigger setup? Because real sentences give the model <strong>context</strong> — not just the partner, but the <em>company a word keeps</em>. Words used in similar contexts (dog / puppy / hound) end up with similar embeddings, even though we never paired them by hand. BERT discovers those clusters from raw text.</p>
 
 <p>That's why our toy needed a list of partners but BERT just needs Wikipedia. <strong>Lesson 4 builds the small version of BERT</strong> — same fill-in-the-blank game, real (tiny) sentences, and now embedding + attention + feed-forward all training together.</p>
+
+<h2 class="step" id="bert-style"><span class="step-num">BERT-style</span> 🍱 OK now let's actually train BERT-style</h2>
+
+<p>The word2vec toy above used <em>pairs</em>. Let's do something <strong>closer to real BERT</strong>: feed the model <strong>20 sentences</strong>, randomly hide one word per training step, and have it guess the hidden word from <em>the rest of the sentence</em>. This is the <strong>pre-training</strong> step of BERT — but without attention yet, just embeddings.</p>
+
+<div class="callout info">
+  <strong>📍 Where this sits in the BERT pipeline:</strong> this is exactly <em>pre-training</em> — the first big phase of training a foundation model. We're using <strong>words only</strong>, no attention yet. Lesson 3 adds attention; Lesson 4 stacks them into a real tiny BERT. So this section is "BERT minus attention", training the very first piece on its own.
+</div>
+
+<h3>The 20 sentences (the entire "internet" for our toy)</h3>
+
+<pre><code>1.  the dog plays         11. bark is loud
+2.  the cat plays         12. meow is loud
+3.  the bird plays        13. tweet is loud
+4.  the fish plays        14. splash is loud
+5.  the dog runs          15. park is big
+6.  the cat runs          16. sofa is big
+7.  the bird runs         17. tree is big
+8.  the fish runs         18. tank is big
+9.  the dog says bark     19. the bird says tweet
+10. the cat says meow     20. the fish says splash</code></pre>
+
+<p>Notice the structure: animals all share "the X plays / runs" sentences. Sounds all share "X is loud". Places all share "X is big". Then each animal has one personal "says SOUND" sentence to give it individual identity.</p>
+
+<h3>The task (CBOW — "BERT minus attention")</h3>
+
+<p>Each training step:</p>
+
+<ol>
+  <li>Pick a random sentence — say <code>"the dog runs"</code>.</li>
+  <li>Pick a random position to hide — say position 1 (the word <code>dog</code>).</li>
+  <li>The model now sees the <em>context</em> = <code>[the, runs]</code>. Its job: <strong>guess the missing word</strong>.</li>
+  <li>To guess, it <strong>averages the context embeddings</strong> into one vector, then dot-products that average against every word in the vocab. Highest score = its guess.</li>
+  <li>Cross-entropy loss on the right answer; gradient descent nudges every embedding.</li>
+  <li>Repeat 3,000 times.</li>
+</ol>
+
+<div class="callout">
+  <strong>"Averaging the context" is the part attention will eventually replace.</strong> Right now every context word counts equally. Lesson 3's attention will let the model <em>weight</em> them differently ("for this blank, lean more on 'runs' than on 'the'"). That's the upgrade — but the rest of the recipe is already BERT.
+</div>
+
+<h3>What the model learned (real numbers from 3,000 training steps)</h3>
+
+<p>After training, I asked each word: "who are your nearest neighbours?" (highest cosine similarity). <strong>Bold</strong> = a neighbour from the same category — that's the kind of clustering we hoped to see emerge.</p>
+
+<table class="compact" style="max-width:560px;">
+  <thead><tr><th style="text-align:left;">Word</th><th style="text-align:left;">Top 3 most similar</th></tr></thead>
+  <tbody>
+    <tr style="background:#fef3c7;"><td colspan="2"><strong>🐾 Animals</strong> — partial clustering ✓</td></tr>
+    <tr><td><code>dog</code></td><td>runs, the, <strong>bird</strong></td></tr>
+    <tr><td><code>cat</code></td><td>plays, the, runs</td></tr>
+    <tr><td><code>bird</code></td><td>runs, the, <strong>fish</strong></td></tr>
+    <tr><td><code>fish</code></td><td>runs, <strong>bird</strong>, the</td></tr>
+    <tr style="background:#fef3c7;"><td colspan="2"><strong>🔊 Sounds</strong> — clean clustering ✅</td></tr>
+    <tr><td><code>bark</code></td><td>loud, <strong>meow</strong>, <strong>tweet</strong></td></tr>
+    <tr><td><code>meow</code></td><td>loud, <strong>bark</strong>, <strong>tweet</strong></td></tr>
+    <tr><td><code>tweet</code></td><td>loud, <strong>splash</strong>, <strong>meow</strong></td></tr>
+    <tr><td><code>splash</code></td><td><strong>tweet</strong>, loud, <strong>meow</strong></td></tr>
+    <tr style="background:#fef3c7;"><td colspan="2"><strong>🏞 Places</strong> — clean clustering ✅</td></tr>
+    <tr><td><code>park</code></td><td>big, <strong>sofa</strong>, <strong>tree</strong></td></tr>
+    <tr><td><code>sofa</code></td><td><strong>park</strong>, <strong>tank</strong>, big</td></tr>
+    <tr><td><code>tree</code></td><td><strong>sofa</strong>, <strong>park</strong>, big</td></tr>
+    <tr><td><code>tank</code></td><td><strong>sofa</strong>, <strong>park</strong>, big</td></tr>
+  </tbody>
+</table>
+
+<p>🎉 <strong>This is the magic.</strong> Nobody told the model what an "animal" is. We never wrote <code>category=animal</code> anywhere. The model just played fill-in-the-blank on 20 sentences — and the embeddings reorganised themselves so that <strong>sounds sit near sounds, places sit near places, and animals partially cluster too</strong>. That's "meaning" emerging from <em>context alone</em>.</p>
+
+<h3>Why animals only <em>partially</em> clustered (honest read)</h3>
+
+<p>Look at <code>cat → plays, the, runs</code>. Where are the other animals? Crowded out by the action verbs.</p>
+
+<p>Why? In our 20 sentences, animals appear in <strong>more varied contexts</strong> than sounds or places (each animal has its own personal "says SOUND" line), and each animal is the <em>target</em> in only a few sentences. With this much data, "dog" gets shaped <em>toward the words it co-occurs with</em> (runs, plays, the) as much as toward the other animals. There simply isn't enough signal yet.</p>
+
+<div class="callout good">
+  <strong>Two things fix this in real BERT:</strong>
+  <ol style="margin:8px 0;">
+    <li><strong>Scale.</strong> 20 sentences → fragile signal. Billions of sentences → "dog" appears in thousands of contexts that also feature "cat", "puppy", "animal", "tail", "bark"… the categorical signal becomes overwhelming.</li>
+    <li><strong>Attention.</strong> Instead of <em>averaging</em> the context words, attention <em>weights</em> them. To guess "dog" in "the ___ runs", the model can lean heavily on "runs" (a strong animal-cue) and ignore "the" (uninformative). That's the next lesson.</li>
+  </ol>
+</div>
+
+<p>So everything you just learned is real: <strong>pre-training shapes embeddings by playing fill-in-the-blank.</strong> Real BERT does <em>exactly</em> this — same training game, same gradient descent — just on billions of sentences and with attention layers on top so the model can be smarter about <em>which</em> context words matter for each blank. We'll see attention in <a href="lesson_03.html">Lesson 3</a> and the full tiny-BERT in <a href="lesson_04.html">Lesson 4</a>.</p>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this matters for the Transformer</h2>
 
