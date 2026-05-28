@@ -22,6 +22,7 @@
     <a href="lesson_04.html" class="current">L4</a>
     <a href="lesson_04f.html">L4f</a>
     <a href="lesson_04_code.html">L4·code</a>
+    <a href="lesson_04h.html">L4h</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -376,6 +377,8 @@ ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
         self.head = <span style="color:#1d4ed8;font-weight:700;">nn.Linear(16, V)</span>            <span style="color:#888;"># 16 numbers → V scores  ← THIS!</span></code></pre>
 
 <p>The very last layer — <code>self.head</code> — is just a <strong>Linear layer</strong>, the same kind we built in <a href="lesson_01_5.html">L1.5</a>. It takes the 16-dim vector at each token's position and projects it to <strong>V = 8 numbers</strong>, one per vocab word. Each one is computed as <code>weight · vector + bias</code> — exactly the math from L1.5's MLP.</p>
+
+<p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;">This "head" is the <strong>output head</strong> — a <em>different</em> thing from the <strong>attention heads</strong> in <a href="lesson_03.html#multi">Lesson 3</a>. Attention heads are the parallel question-askers inside a layer; the output head is the single final layer that turns the finished vector into word scores. Same word, different job.</p>
 
 <p>Those V numbers are called <strong>logits</strong>. They're just <em>scores</em> — any real number, positive or negative. Big logit = the model leans toward that word. But they're not probabilities yet.</p>
 

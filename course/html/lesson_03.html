@@ -22,6 +22,7 @@
     <a href="lesson_04.html">L4</a>
     <a href="lesson_04f.html">L4f</a>
     <a href="lesson_04_code.html">L4·code</a>
+    <a href="lesson_04h.html">L4h</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -330,6 +331,8 @@ cat         0.25    0.25    0.25    0.25</code></pre>
 <h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>
 
 <p>Instead of running the attention formula once, you run it several times in parallel with different Q/K/V matrices, then concatenate the outputs. Each "head" can specialise — one might learn grammar, another might learn subject-object pairing, another might learn nearby words. PRAGMA-L uses 16 attention heads in its history encoder.</p>
+
+<p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;"><strong>Heads-up on the word "head."</strong> An <strong>attention head</strong> is one of these parallel question-askers — that's the real industry term, straight from the 2017 paper <em>Attention Is All You Need</em>. Later (in <a href="lesson_04.html">Lesson 4</a>) you'll meet the <strong>output head</strong>: the final layer that turns vectors into word scores. Same word, completely different job — don't let them blur together.</p>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this is such a big deal</h2>
 
