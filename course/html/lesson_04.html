@@ -53,6 +53,7 @@
     <li><a href="#step-7">Step 7 — Train, with predictions at checkpoints</a></li>
     <li><a href="#step-9">Step 9 — Test the trained model on each rule</a></li>
     <li><a href="#step-10">Step 10 — What did the embeddings learn?</a></li>
+    <li><a href="#data-journey">🚀 The data journey — predict the next word, like ChatGPT</a></li>
     <li><a href="#whats-different">What's different in real PRAGMA?</a></li>
   </ol>
 </details>
@@ -654,6 +655,64 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   <p>Even at <strong>d=4</strong> with only <strong>208 parameters</strong>, the model nails the rule. For comparison, PRAGMA-Large has <strong>1,000,000,000</strong>. The big models aren't powerful because they're big — they're big because the <em>task</em> is enormous (modelling all banking activity). Right-sizing the model to the task is half the art.</p>
 </details>
 
+<!-- ════════════════════ THE DATA JOURNEY ════════════════════ -->
+<h2 id="data-journey">🚀 The data journey — predict the next word, like ChatGPT</h2>
+
+<p>In Lesson 1.5 you walked the word <code>dog</code> through 18 layers and watched its "knowledge bundle" fill up. Now let's do the same thing for a <strong>whole sentence you choose</strong> — and instead of filling in a blank, we'll do the trick that makes ChatGPT feel alive: <strong>predict the very next word</strong>, then add it, then predict again, then again… until the model has written a sentence on its own.</p>
+
+<div class="callout info">
+  <strong>Two flavours of the same machine.</strong> BERT (and our mini-BERT) usually plays <em>fill-in-the-blank</em> — it can peek at words on both sides of the gap. ChatGPT plays <em>predict-the-next-word</em> — it only sees the words <em>before</em> the gap, so it can keep going forever. <strong>The pipeline is identical</strong> (embed → attention → feed-forward → head → softmax). The only change is <em>where the blank is</em>: in the middle (BERT) or always at the end (ChatGPT). Below we run the next-word version so you can watch it write.
+</div>
+
+<p>Pick a starter, then press <strong>Next ▶</strong> to follow your words through every stage of the model. At the end you'll see its top guesses for the next word — and you can <strong>accept a word and let it keep writing</strong>.</p>
+
+<div class="widget" id="dj" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
+
+  <!-- context picker + running text -->
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+    <strong style="color:#fde047;font-size:13px;">✍️ Starter:</strong>
+    <select id="dj-start" style="padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;">
+      <option value="0">the cat sat on the</option>
+      <option value="1">the dog likes to</option>
+      <option value="2">she opened the</option>
+      <option value="3">i went to the</option>
+    </select>
+    <button id="dj-reset" style="margin-left:auto;padding:6px 12px;border-radius:6px;background:#334155;color:#e2e8f0;border:none;cursor:pointer;font-size:12.5px;">🔄 Start over</button>
+  </div>
+
+  <div style="margin:12px 0;padding:12px 14px;background:#020617;border:1px solid #1e293b;border-radius:8px;font-size:18px;line-height:1.7;min-height:32px;">
+    <span id="dj-text"></span><span id="dj-cursor" style="color:#fde047;animation:none;">▌</span>
+  </div>
+
+  <!-- stage stepper -->
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 10px;">
+    <button id="dj-back" style="padding:6px 14px;border-radius:6px;background:#334155;color:#e2e8f0;border:none;cursor:pointer;font-size:13px;">◀ Back</button>
+    <div style="flex:1;text-align:center;font-family:ui-monospace,monospace;font-weight:700;color:#fde047;font-size:13.5px;" id="dj-stage-label">Stage 0 — Your words</div>
+    <button id="dj-next" style="padding:6px 14px;border-radius:6px;background:#2563eb;color:#fff;border:none;cursor:pointer;font-size:13px;">Next ▶</button>
+  </div>
+
+  <!-- stage progress dots -->
+  <div id="dj-dots" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;"></div>
+
+  <!-- stage body -->
+  <div id="dj-body" style="font-family:ui-sans-serif,system-ui;font-size:13.5px;line-height:1.65;min-height:150px;"></div>
+
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);margin-top:10px;">The vectors, attention weights and scores above are <strong>illustrative</strong> — stable, believable numbers generated in your browser so the shapes and the flow are real, even though we can't run a billion-parameter model in a web page. The <em>next-word probabilities</em> behave like a tiny trained model: confident on common patterns, fuzzy on rare ones — exactly the texture you feel when ChatGPT is sometimes spot-on and sometimes makes things up.</p>
+
+<div class="callout good">
+  <strong>The big realisation.</strong> ChatGPT is <em>this loop</em>, run on a model a billion times bigger, trained on a big chunk of the internet: <strong>look at all the words so far → predict the most likely next word → add it → repeat</strong>. There's no plan, no sentence written in advance. It writes one word at a time, the same way you just did by clicking. PRAGMA does the exact same loop — except its "words" are <em>banking events</em>, and the next "word" it predicts is <em>what you're likely to do next</em>.
+</div>
+
+<div id="pred-l4-journey"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l4-journey",{
+  q:"ChatGPT writes a 200-word answer. How many times did it run the predict-next-word pipeline?",
+  options:["Once — it writes the whole thing in one go","About 200 times — one run per word, each time feeding back everything written so far","Twice — once to plan, once to write"],
+  correct:1,
+  reveal:"Once per word (roughly). Each new word is predicted from ALL the words so far, then added, then the loop runs again. A long answer is just this tiny loop repeated hundreds of times — exactly what you did by clicking 'add & continue'."
+});});</script>
+
 <h2 id="whats-different">What's different in real PRAGMA?</h2>
 
 <figure class="figure-wide">
@@ -794,6 +853,224 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   render();
 })();
 </script>
+
+<!-- ════════════ DATA JOURNEY widget script ════════════ -->
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  if (!$('dj')) return;
+
+  const STARTERS = [
+    "the cat sat on the",
+    "the dog likes to",
+    "she opened the",
+    "i went to the",
+  ];
+
+  // next-word distributions, keyed on the last word (a tiny "trained" model)
+  const NEXT = {
+    the:   [["mat",0.20],["park",0.16],["door",0.14],["floor",0.12],["dog",0.10],["store",0.09],["couch",0.07],["window",0.06],["beach",0.06]],
+    to:    [["play",0.26],["the",0.22],["run",0.16],["eat",0.12],["sleep",0.10],["school",0.08],["bed",0.06]],
+    on:    [["the",0.58],["top",0.14],["my",0.10],["a",0.09],["it",0.09]],
+    sat:   [["on",0.62],["down",0.16],["by",0.10],["near",0.07],["quietly",0.05]],
+    likes: [["to",0.56],["the",0.16],["his",0.12],["playing",0.10],["chasing",0.06]],
+    opened:[["the",0.52],["her",0.16],["a",0.14],["it",0.10],["his",0.08]],
+    went:  [["to",0.64],["home",0.12],["out",0.10],["back",0.08],["away",0.06]],
+    play:  [["with",0.34],["in",0.24],["fetch",0.16],["outside",0.14],["here",0.12]],
+    run:   [["in",0.30],["around",0.20],["away",0.18],["fast",0.16],["outside",0.16]],
+    mat:   [[".",0.40],["and",0.24],["near",0.14],["again",0.12],["quietly",0.10]],
+    park:  [[".",0.34],["and",0.26],["with",0.18],["today",0.12],["again",0.10]],
+    door:  [["and",0.34],[".",0.26],["slowly",0.20],["wide",0.12],["quietly",0.08]],
+    floor: [[".",0.40],["and",0.26],["near",0.16],["again",0.10],["quietly",0.08]],
+    dog:   [["barked",0.24],["ran",0.20],["likes",0.16],["sat",0.14],["and",0.14]],
+    cat:   [["sat",0.24],["ran",0.18],["slept",0.16],["likes",0.14],["and",0.14]],
+    couch: [[".",0.38],["and",0.26],["near",0.14],["again",0.12],["quietly",0.10]],
+    store: [[".",0.34],["and",0.26],["with",0.16],["today",0.14],["again",0.10]],
+    beach: [[".",0.34],["and",0.26],["with",0.16],["today",0.14],["again",0.10]],
+    window:[["and",0.32],[".",0.26],["slowly",0.20],["wide",0.12],["quietly",0.10]],
+    with:  [["the",0.40],["a",0.20],["me",0.16],["us",0.12],["her",0.12]],
+    in:    [["the",0.52],["a",0.20],["my",0.12],["our",0.08],["it",0.08]],
+    and:   [["the",0.30],["then",0.20],["she",0.14],["ran",0.12],["played",0.12]],
+    fetch: [["with",0.30],["in",0.24],["outside",0.20],["again",0.16],[".",0.10]],
+  };
+  const DEFAULT_NEXT = [["the",0.30],["and",0.18],[".",0.16],["a",0.14],["to",0.12]];
+  const STOP = new Set(["the","a","an","on","to","in","and","of","it","my","his","her","us","me"]);
+
+  // stable pseudo-hash so a word always gets the same id / vector
+  function hash(w) { let h = 0; for (const c of w) h = (h*31 + c.charCodeAt(0)) >>> 0; return h; }
+  function tokId(w) { return 100 + (hash(w) % 8900); }
+  function embDim(w, k) { const h = hash(w + ":" + k); return ((h % 1000)/1000*5 - 2.5); } // -2.5..+2.5
+
+  function nextDist(lastWord) {
+    const raw = NEXT[lastWord.toLowerCase()] || DEFAULT_NEXT;
+    const tot = raw.reduce((a,b)=>a+b[1],0);
+    return raw.map(([w,p]) => [w, p/tot]).sort((a,b)=>b[1]-a[1]);
+  }
+
+  // attention weights of the LAST position looking back at every token (illustrative, recency + content weighted)
+  function attnWeights(words) {
+    const n = words.length;
+    const raw = words.map((w,i) => {
+      const recency = (i+1)/n;               // later words count more
+      const content = STOP.has(w.toLowerCase()) ? 1.0 : 1.7;
+      return recency*recency*content;
+    });
+    const tot = raw.reduce((a,b)=>a+b,0);
+    return raw.map(r => r/tot);
+  }
+
+  const STAGE_NAMES = ["Your words","Tokenise","Embed","Attention","Feed-forward","Head → scores","Softmax → next word"];
+
+  let words = STARTERS[0].split(" ");
+  let stage = 0;
+
+  function bar(frac, color, w) {
+    const pct = Math.round(frac*100);
+    return `<div style="flex:1;background:#1e293b;border-radius:4px;height:18px;position:relative;">
+      <div style="background:${color};height:100%;width:${Math.max(2,pct)}%;border-radius:4px;"></div></div>`;
+  }
+
+  function renderText() {
+    $('dj-text').textContent = words.join(" ") + " ";
+  }
+
+  function renderDots() {
+    let h = "";
+    for (let i=0;i<STAGE_NAMES.length;i++) {
+      const on = i===stage;
+      h += `<div title="${STAGE_NAMES[i]}" style="width:${on?22:10}px;height:10px;border-radius:5px;background:${on?'#fde047':'#334155'};transition:all .15s;"></div>`;
+    }
+    $('dj-dots').innerHTML = h;
+  }
+
+  function chip(txt, bg, fg, extra="") {
+    return `<span style="display:inline-block;margin:2px;padding:3px 9px;border-radius:6px;background:${bg};color:${fg};font-weight:600;${extra}">${txt}</span>`;
+  }
+
+  function render() {
+    renderText();
+    renderDots();
+    $('dj-stage-label').textContent = `Stage ${stage} — ${STAGE_NAMES[stage]}`;
+    $('dj-back').disabled = stage===0;
+    $('dj-back').style.opacity = stage===0 ? 0.4 : 1;
+    $('dj-next').style.display = stage < STAGE_NAMES.length-1 ? "inline-block" : "none";
+
+    const last = words[words.length-1];
+    const body = $('dj-body');
+    let h = "";
+
+    if (stage === 0) {
+      h += `<p>The model reads your <strong>${words.length} words</strong> and its only job is to guess <strong>what word comes next</strong>. It can't see the future — only what you've typed so far.</p>`;
+      h += `<div style="margin:10px 0;">` + words.map(w => chip(w,"#1e293b","#93c5fd")).join("") +
+           chip("?","#7e22ce","#fff","border:2px dashed #c084fc;") + `</div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">That purple <strong>?</strong> is the slot we're about to fill. Press <strong>Next ▶</strong> to send the words into the machine.</p>`;
+    }
+
+    else if (stage === 1) {
+      h += `<p>First the model looks every word up in its dictionary and swaps it for an <strong>id number</strong> (a row number in the vocab table). Computers do maths on numbers, not letters.</p>`;
+      h += `<div style="font-family:ui-monospace,monospace;margin:10px 0;">`;
+      h += `<div style="margin-bottom:6px;">` + words.map(w => chip(w,"#1e293b","#93c5fd")).join("") + `</div>`;
+      h += `<div>` + words.map(w => chip(tokId(w),"#0b3d2e","#6ee7b7")).join("") + `</div>`;
+      h += `</div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">Same word → same id, every time. This is <code>tok2id</code> from Step 1, just with a bigger dictionary.</p>`;
+    }
+
+    else if (stage === 2) {
+      h += `<p>Each id becomes a <strong>vector</strong> — a little list of numbers describing the word's "meaning". Our mini-model uses 16 numbers; here are the first 4 for each word:</p>`;
+      h += `<table class="compact" style="margin:8px 0;color:#e2e8f0;font-family:ui-monospace,monospace;font-size:12.5px;">`;
+      h += `<thead><tr><th style="color:#93c5fd;">word</th><th>dim 0</th><th>dim 1</th><th>dim 2</th><th>dim 3</th><th style="color:#64748b;">… (12 more)</th></tr></thead><tbody>`;
+      for (const w of words) {
+        h += `<tr><td style="color:#93c5fd;font-weight:700;">${w}</td>`;
+        for (let k=0;k<4;k++) { const v = embDim(w,k); h += `<td style="color:${v>=0?'#6ee7b7':'#fca5a5'};">${v>=0?'+':''}${v.toFixed(2)}</td>`; }
+        h += `<td style="color:#64748b;">…</td></tr>`;
+      }
+      h += `</tbody></table>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">Nobody chose what these numbers mean — training arranged them so similar words (cat/dog) land near each other. This is the embedding table from <a href="lesson_02.html" style="color:#93c5fd;">L2</a>.</p>`;
+    }
+
+    else if (stage === 3) {
+      const w = attnWeights(words);
+      h += `<p>Now <strong>attention</strong>. To guess the next word, the model builds a summary from <em>all the words so far</em> — paying more attention to the ones that matter. Here's how much the prediction "looks at" each word:</p>`;
+      h += `<div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:ui-monospace,monospace;font-size:12.5px;">`;
+      for (let i=0;i<words.length;i++) {
+        h += `<div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:70px;color:#93c5fd;font-weight:600;">${words[i]}</div>
+          ${bar(w[i],"#3b82f6")}
+          <div style="width:42px;text-align:right;color:#94a3b8;">${(w[i]*100).toFixed(0)}%</div></div>`;
+      }
+      h += `</div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">Recent and "meaty" words win the most attention. The model squeezes all of this into <strong>one summary vector</strong> that says "given everything so far, here's the gist." That's <a href="lesson_03.html" style="color:#93c5fd;">L3</a>.</p>`;
+    }
+
+    else if (stage === 4) {
+      h += `<p>The summary vector passes through the <strong>feed-forward</strong> layers — <code>Linear → GELU → Linear</code> from <a href="lesson_01_5.html#step-75" style="color:#93c5fd;">L1.5</a>. This sharpens the gist into "what <em>kind</em> of word should come next here?"</p>`;
+      h += `<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0;font-family:ui-monospace,monospace;font-size:12.5px;">`;
+      const before=[embDim(last,0),embDim(last,1),embDim(last,2)], after=before.map((v,k)=>Math.max(0,v)*1.4 - embDim(last,k+5)*0.3);
+      h += `<div><div style="color:#64748b;margin-bottom:3px;">summary in</div>${before.map(v=>chip(v.toFixed(2),"#1e293b",v>=0?"#6ee7b7":"#fca5a5")).join("")}</div>`;
+      h += `<div style="color:#fde047;font-size:18px;">→</div>`;
+      h += `<div><div style="color:#64748b;margin-bottom:3px;">refined out</div>${after.map(v=>chip(v.toFixed(2),"#1e293b",v>=0?"#6ee7b7":"#fca5a5")).join("")}</div>`;
+      h += `</div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">GELU zeroes out the unhelpful directions (note how negatives got squashed) and amplifies the useful ones. In real PRAGMA, attention + feed-forward repeat <strong>18 times</strong> before the next step.</p>`;
+    }
+
+    else if (stage === 5) {
+      const dist = nextDist(last);
+      h += `<p>The <strong>head</strong> (a single <code>Linear</code> layer) turns the refined vector into one <strong>score per word in the vocab</strong> — these are the <em>logits</em>. Bigger score = more likely. Top of the list:</p>`;
+      h += `<div style="display:flex;flex-direction:column;gap:5px;margin:10px 0;font-family:ui-monospace,monospace;font-size:12.5px;">`;
+      const top = dist.slice(0,5);
+      top.forEach(([w,p],i) => {
+        const logit = (Math.log(p) + 4).toFixed(2);
+        h += `<div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:80px;color:#93c5fd;font-weight:600;">${w}</div>
+          <div style="width:60px;color:${i===0?'#fde047':'#94a3b8'};">${logit}</div>
+          ${bar(p, i===0?'#eab308':'#475569')}</div>`;
+      });
+      h += `</div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;">Raw scores, not probabilities yet — they don't add up to 100%. One more step fixes that.</p>`;
+    }
+
+    else if (stage === 6) {
+      const dist = nextDist(last).slice(0,5);
+      h += `<p><strong>Softmax</strong> turns the scores into <strong>probabilities</strong> (all positive, adding to 100%). The model's pick for the next word:</p>`;
+      h += `<div style="display:flex;flex-direction:column;gap:6px;margin:10px 0;">`;
+      dist.forEach(([w,p],i) => {
+        h += `<div style="display:flex;align-items:center;gap:10px;font-family:ui-monospace,monospace;font-size:13px;">
+          <div style="width:80px;color:${i===0?'#86efac':'#93c5fd'};font-weight:700;">${w}${i===0?' ★':''}</div>
+          ${bar(p, i===0?'#10b981':'#475569')}
+          <div style="width:46px;text-align:right;color:#94a3b8;">${(p*100).toFixed(0)}%</div></div>`;
+      });
+      h += `</div>`;
+      h += `<div style="margin-top:14px;padding:12px 14px;background:rgba(16,185,129,0.10);border-left:3px solid #10b981;border-radius:6px;">`;
+      h += `<strong style="color:#86efac;">Now do what ChatGPT does:</strong> add a word and predict the <em>next</em> next word.<br>`;
+      h += `<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">`;
+      dist.slice(0,3).forEach(([w,p]) => {
+        h += `<button class="dj-add" data-w="${w}" style="padding:6px 12px;border-radius:6px;background:${'#065f46'};color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:12.5px;font-family:ui-monospace,monospace;">➕ add "${w}"</button>`;
+      });
+      h += `</div></div>`;
+      h += `<p style="color:#94a3b8;font-style:italic;margin-top:10px;">Add one and the loop restarts from Stage 0 with the longer sentence — that's literally how the model writes a paragraph: one word at a time, feeding its own output back in.</p>`;
+      // wire up add buttons after insertion
+      setTimeout(() => {
+        document.querySelectorAll('.dj-add').forEach(b => b.onclick = () => {
+          const w = b.getAttribute('data-w');
+          if (w === ".") { words.push("."); } else { words.push(w); }
+          stage = 0; render();
+          $('dj').scrollIntoView({behavior:'smooth', block:'nearest'});
+        });
+      }, 0);
+    }
+
+    body.innerHTML = h;
+  }
+
+  $('dj-next').onclick = () => { if (stage < STAGE_NAMES.length-1) { stage++; render(); } };
+  $('dj-back').onclick = () => { if (stage > 0) { stage--; render(); } };
+  $('dj-start').onchange = e => { words = STARTERS[+e.target.value].split(" "); stage = 0; render(); };
+  $('dj-reset').onclick = () => { words = STARTERS[+$('dj-start').value].split(" "); stage = 0; render(); };
+
+  render();
+})();
+</script>
+<!-- ════════════ end DATA JOURNEY widget ════════════ -->
 
 <script src="course.js"></script>
 </body>
