@@ -171,7 +171,19 @@ ReLU    ──► same 8 numbers, but negatives clipped to 0
 Linear  ──► 1 output number (the prediction)</pre>
 </figure>
 
-<p>The <strong>ReLU activation</strong> is the magic. Without it, two stacked Linears would produce a single linear function (composing linears gives a linear). With ReLU in between, the network can model curves, kinks, and arbitrarily complex patterns.</p>
+<div class="callout">
+  <strong>So… what IS a ReLU?</strong> Don't let the name spook you. ReLU is one of the simplest rules in all of machine learning:
+  <ul style="margin:8px 0;">
+    <li>If the number is <strong>negative</strong> → turn it into <strong>0</strong>.</li>
+    <li>If the number is <strong>positive</strong> → leave it alone.</li>
+  </ul>
+  That's it. <code>ReLU(3) = 3</code>. <code>ReLU(−2) = 0</code>. <code>ReLU(0) = 0</code>.
+  <p style="margin:8px 0 0;">This kind of "do one little non-straight thing to each number" rule is called an <strong>activation function</strong>. Every neural network has one between its linear layers. ReLU is the most common one; GELU (in BERT/PRAGMA) is a smoother cousin. The standalone word "ReLU" comes from "Rectified Linear Unit" — fancy name, dumb-simple rule.</p>
+</div>
+
+<p>That tiny rule is where the bend comes from. <strong>ReLU(w·x + b)</strong> is flat zero until <code>x</code> is big enough to make the inside positive, then it's a straight ramp. One hockey-stick. Stack a few of those, add them up, and you get a curve (you'll see this in the next picture).</p>
+
+<p><strong>Without</strong> the activation, two stacked Linears would just produce another single straight line (composing linears gives a linear — go ahead and try it on paper). With ReLU in between, the network can model curves, kinks, and arbitrarily complex shapes.</p>
 
 <div class="callout">
   <strong>Universal approximation theorem (no math).</strong> With enough hidden units, an MLP can approximate ANY smooth function. You don't have to handcraft features like <code>x²</code> — the network learns them automatically.
@@ -206,15 +218,37 @@ Linear  ──► 1 output number (the prediction)</pre>
   <p>That's all the universal approximation theorem says: enough bends → any shape. The network <em>learns</em> where to put each bend (the <code>w</code> and <code>b</code>) by gradient descent. Without the ReLU there are no bends, so stacking layers just gives you one straight line again.</p>
 </details>
 
+<h3>Where do the knobs actually sit?</h3>
+
+<p>"25 parameters" sounds vague. Let's look at <em>where</em> each one lives. Picture the network as wires between three columns of dots — the input, the hidden units, the output. <strong>Every wire is one knob</strong>, and each unit has one extra knob (its bias).</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/mlp_knobs.svg" alt="MLP wiring: input x connects to 4 hidden units h1..h4, each with a bias b_i, each connecting to output y with a weight c_i, plus one final output bias">
+  <figcaption>The picture uses 4 hidden units so it's readable. Each hidden unit <strong>owns 3 knobs</strong>: one weight coming in (<span style="color:#3b82f6;font-weight:700">w<sub>i</sub></span>), one bias of its own (<span style="color:#92400e;font-weight:700">b<sub>i</sub></span>), one weight going out (<span style="color:#047857;font-weight:700">c<sub>i</sub></span>). Plus one final output bias.</figcaption>
+</figure>
+
+<div class="callout good">
+  <strong>The formula:</strong> for <code>H</code> hidden units, total knobs = <strong>3·H + 1</strong>.
+  <ul style="margin:6px 0;">
+    <li><code>H</code> input weights (one wire from <code>x</code> into each unit)</li>
+    <li><code>H</code> biases (one per unit — sets where the bend lives)</li>
+    <li><code>H</code> output weights (one wire out of each unit, weighting its contribution)</li>
+    <li>1 final output bias</li>
+  </ul>
+  Picture above: <strong>H = 4 → 13 knobs</strong>. The code below: <strong>H = 8 → 25 knobs</strong>.
+</div>
+
 <pre><code>class MLP(nn.Module):
     def __init__(self, hidden=8):
         super().__init__()
-        self.layer1 = nn.Linear(1, hidden)      # 16 trainable knobs
-        self.layer2 = nn.Linear(hidden, 1)      # 9 more knobs
+        self.layer1 = nn.Linear(1, hidden)      # 8 input weights + 8 biases = 16 knobs
+        self.layer2 = nn.Linear(hidden, 1)      # 8 output weights + 1 bias  =  9 knobs
     def forward(self, x):
         h = self.layer1(x)
         h = F.relu(h)
         return self.layer2(h)</code></pre>
+
+<p>So <code>layer1</code> holds <strong>2 knobs per unit</strong> (its w<sub>i</sub> and b<sub>i</sub>) and <code>layer2</code> holds the remaining 1 per unit (c<sub>i</sub>) plus the single output bias. <strong>16 + 9 = 25</strong>, which matches <strong>3×8 + 1</strong>. Now when you read "this Transformer has 100 million parameters", you know that just means 100 million little numbered wires + biases inside many such boxes stacked up.</p>
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Train the MLP on the SAME parabola data</h2>
 
