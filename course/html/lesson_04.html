@@ -96,6 +96,53 @@
   </ol>
 </div>
 
+<h3>What does "hide a word" actually do? (one full example)</h3>
+
+<p>The mechanics get hand-wavy fast. Let's walk through ONE training example end-to-end with the actual tensors the model sees. Take a sentence and pick one position to hide:</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">original sentence:   "the cat sat on the mat"
+positions:             0    1   2   3   4   5
+                              ↑
+                              we randomly pick this one</code></pre>
+
+<p>Two things happen at the same instant: we <strong>save</strong> the word at position 2 (that's our answer key), and we <strong>replace</strong> it with a special placeholder token called <code>&lt;mask&gt;</code>.</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">                       0     1     2          3    4     5
+input the model sees:  the   cat   <span style="background:#a855f7;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">&lt;mask&gt;</span>   on   the   mat
+saved as answer (label):                  <span style="background:#10b981;color:#fff;padding:1px 6px;border-radius:4px;font-weight:700;">sat</span>      ← we know this; we just hid it</code></pre>
+
+<p>The <code>&lt;mask&gt;</code> is a real word in our vocabulary (a placeholder we added on purpose — id <code>1</code> in our 8-word vocab). The model knows position 2 exists, sees the placeholder, and has to guess what was there using <strong>only the surrounding words</strong>. It never sees <code>sat</code> during the forward pass.</p>
+
+<p><strong>To answer Fernando's son's question directly:</strong></p>
+<ul>
+  <li><strong>Yes — the hidden word becomes the label (the y).</strong> We save it aside and grade the model against it. Exact same role as <code>y_true</code> in Lesson 1's regression.</li>
+  <li><strong>No — attention does not depend on the mask position in a special way.</strong> Attention always looks at every word's vector. The model produces a guess at <em>every</em> position; we only score it at the masked one.</li>
+</ul>
+
+<h3>How the model "guesses" only one position</h3>
+
+<p>Transformers produce one output per input token (every position gets a guess). But for this training example we only care about position 2. The way PyTorch is told that is with a <strong>labels array</strong> the same length as the input, where every position has either the true word id OR the magic value <code>-100</code> (which means "skip this one"):</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">                       0      1      2       3      4      5
+input ids:             [the]  [cat]  [<span style="color:#a855f7;font-weight:700;">mask</span>] [on]   [the]  [mat]
+labels:                <span style="color:#888;">-100</span>   <span style="color:#888;">-100</span>   <span style="color:#047857;font-weight:700;">sat</span>     <span style="color:#888;">-100</span>   <span style="color:#888;">-100</span>   <span style="color:#888;">-100</span>
+                                       ↑
+                                       only this position counts</code></pre>
+
+<p>Cross-entropy loss reads that array: "ignore the -100 positions; at position 2 the right answer is <code>sat</code> — grade me on whether I put high probability on <code>sat</code> there." The five <code>-100</code>s are why the model isn't penalised for being uncertain about the words it was <em>already shown</em>.</p>
+
+<div class="callout">
+  <strong>So the workflow per training example is exactly:</strong>
+  <ol style="margin:8px 0;">
+    <li>Pick a random sentence, pick a random position.</li>
+    <li>Save the word at that position → that becomes the label (y).</li>
+    <li>Replace the word in the sentence with <code>&lt;mask&gt;</code> → that becomes the input (x).</li>
+    <li>Run the model. It outputs a guess at every position (because that's how transformers work). We only look at the masked position.</li>
+    <li>Cross-entropy between the model's guess at the masked position and the saved label → loss → nudge.</li>
+  </ol>
+  Everything else in this lesson is just code that does these 5 steps in a loop.
+</div>
+
 <p>That's the <em>data</em> trick. But there's a deeper trick: <strong>to get good at this game, the model is FORCED to learn the structure of language</strong>.</p>
 
 <p>Think about what the model has to figure out to guess <code>sat</code> in <code>"The cat ___ on the mat"</code>:</p>
