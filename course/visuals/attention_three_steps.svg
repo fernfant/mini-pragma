@@ -1,0 +1,146 @@
+<svg viewBox="0 0 780 340" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="ats-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#666"/>
+    </marker>
+  </defs>
+  <text x="390" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">Attention in 3 transforms — every box is the data, every arrow does one thing.</text>
+
+  <!-- Input vectors -->
+  <g transform="translate(10, 60)">
+    <text x="100" y="-4" text-anchor="middle" font-size="12" font-weight="600" fill="#555">Input vectors  (4×2)</text>
+    <text x="100" y="12" text-anchor="middle" font-size="11" fill="#888">"the dog chased cat"</text>
+    <g font-family="ui-monospace,monospace" font-size="11.5">
+      <rect x="10" y="22" width="180" height="22" fill="#fff" stroke="#e5e5e5"/>
+      <text x="32" y="38" fill="#555">the</text><text x="120" y="38" fill="#1a1a1a">[0.2, 0.1]</text>
+      <rect x="10" y="44" width="180" height="22" fill="#fff" stroke="#e5e5e5"/>
+      <text x="32" y="60" fill="#555">dog</text><text x="120" y="60" fill="#1a1a1a">[1.0, 0.1]</text>
+      <rect x="10" y="66" width="180" height="22" fill="#fff" stroke="#e5e5e5"/>
+      <text x="32" y="82" fill="#555">chased</text><text x="120" y="82" fill="#1a1a1a">[0.1, 1.0]</text>
+      <rect x="10" y="88" width="180" height="22" fill="#fff" stroke="#e5e5e5"/>
+      <text x="32" y="104" fill="#555">cat</text><text x="120" y="104" fill="#1a1a1a">[0.9, 0.1]</text>
+    </g>
+  </g>
+
+  <!-- arrow 1 -->
+  <line x1="200" y1="120" x2="252" y2="120" stroke="#666" stroke-width="2" marker-end="url(#ats-arrow)"/>
+  <text x="226" y="108" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1a1a">1.</text>
+  <text x="226" y="138" text-anchor="middle" font-size="10.5" fill="#444">x · xᵀ</text>
+
+  <!-- Scores matrix -->
+  <g transform="translate(258, 60)">
+    <text x="100" y="-4" text-anchor="middle" font-size="12" font-weight="600" fill="#555">Scores  (4×4)</text>
+    <text x="100" y="12" text-anchor="middle" font-size="11" fill="#888">how alike are pairs?</text>
+    <g font-family="ui-monospace,monospace" font-size="10">
+      <!-- header row -->
+      <text x="44" y="34" text-anchor="middle" fill="#888">the</text>
+      <text x="86" y="34" text-anchor="middle" fill="#888">dog</text>
+      <text x="128" y="34" text-anchor="middle" fill="#888">chs</text>
+      <text x="170" y="34" text-anchor="middle" fill="#888">cat</text>
+      <!-- 4 rows -->
+      <g>
+        <rect x="22" y="38" width="170" height="22" fill="#fff" stroke="#e5e5e5"/>
+        <text x="2" y="54" font-size="10" fill="#888">the</text>
+        <text x="44" y="54" text-anchor="middle" fill="#555">.05</text>
+        <text x="86" y="54" text-anchor="middle" fill="#555">.21</text>
+        <text x="128" y="54" text-anchor="middle" fill="#555">.12</text>
+        <text x="170" y="54" text-anchor="middle" fill="#555">.19</text>
+      </g>
+      <g>
+        <rect x="22" y="60" width="170" height="22" fill="#fff" stroke="#e5e5e5"/>
+        <text x="2" y="76" font-size="10" fill="#888">dog</text>
+        <text x="44" y="76" text-anchor="middle" fill="#555">.21</text>
+        <text x="86" y="76" text-anchor="middle" font-weight="700" fill="#1a1a1a">1.01</text>
+        <text x="128" y="76" text-anchor="middle" fill="#555">.20</text>
+        <text x="170" y="76" text-anchor="middle" font-weight="700" fill="#1d4ed8">.91</text>
+      </g>
+      <g>
+        <rect x="22" y="82" width="170" height="22" fill="#fff" stroke="#e5e5e5"/>
+        <text x="2" y="98" font-size="10" fill="#888">chs</text>
+        <text x="44" y="98" text-anchor="middle" fill="#555">.12</text>
+        <text x="86" y="98" text-anchor="middle" fill="#555">.20</text>
+        <text x="128" y="98" text-anchor="middle" font-weight="700" fill="#1a1a1a">1.01</text>
+        <text x="170" y="98" text-anchor="middle" fill="#555">.19</text>
+      </g>
+      <g>
+        <rect x="22" y="104" width="170" height="22" fill="#fff" stroke="#e5e5e5"/>
+        <text x="2" y="120" font-size="10" fill="#888">cat</text>
+        <text x="44" y="120" text-anchor="middle" fill="#555">.19</text>
+        <text x="86" y="120" text-anchor="middle" font-weight="700" fill="#1d4ed8">.91</text>
+        <text x="128" y="120" text-anchor="middle" fill="#555">.19</text>
+        <text x="170" y="120" text-anchor="middle" font-weight="700" fill="#1a1a1a">.82</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- arrow 2 -->
+  <line x1="450" y1="120" x2="502" y2="120" stroke="#666" stroke-width="2" marker-end="url(#ats-arrow)"/>
+  <text x="476" y="108" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1a1a">2.</text>
+  <text x="476" y="138" text-anchor="middle" font-size="10.5" fill="#444">softmax (row)</text>
+
+  <!-- Attention matrix -->
+  <g transform="translate(508, 60)">
+    <text x="100" y="-4" text-anchor="middle" font-size="12" font-weight="600" fill="#555">Attention %  (4×4)</text>
+    <text x="100" y="12" text-anchor="middle" font-size="11" fill="#888">each row sums to 100%</text>
+    <g font-family="ui-monospace,monospace" font-size="10">
+      <text x="44" y="34" text-anchor="middle" fill="#888">the</text>
+      <text x="86" y="34" text-anchor="middle" fill="#888">dog</text>
+      <text x="128" y="34" text-anchor="middle" fill="#888">chs</text>
+      <text x="170" y="34" text-anchor="middle" fill="#888">cat</text>
+      <g>
+        <rect x="22" y="38" width="170" height="22" fill="#eff6ff" stroke="#bfdbfe"/>
+        <text x="2" y="54" font-size="10" fill="#888">the</text>
+        <text x="44" y="54" text-anchor="middle" fill="#555">23%</text>
+        <text x="86" y="54" text-anchor="middle" fill="#555">27%</text>
+        <text x="128" y="54" text-anchor="middle" fill="#555">24%</text>
+        <text x="170" y="54" text-anchor="middle" fill="#555">26%</text>
+      </g>
+      <g>
+        <rect x="22" y="60" width="170" height="22" fill="#eff6ff" stroke="#bfdbfe"/>
+        <text x="2" y="76" font-size="10" fill="#888">dog</text>
+        <text x="44" y="76" text-anchor="middle" fill="#555">16%</text>
+        <text x="86" y="76" text-anchor="middle" font-weight="700" fill="#1a1a1a">36%</text>
+        <text x="128" y="76" text-anchor="middle" fill="#555">16%</text>
+        <text x="170" y="76" text-anchor="middle" font-weight="700" fill="#1d4ed8">32%</text>
+      </g>
+      <g>
+        <rect x="22" y="82" width="170" height="22" fill="#eff6ff" stroke="#bfdbfe"/>
+        <text x="2" y="98" font-size="10" fill="#888">chs</text>
+        <text x="44" y="98" text-anchor="middle" fill="#555">18%</text>
+        <text x="86" y="98" text-anchor="middle" fill="#555">19%</text>
+        <text x="128" y="98" text-anchor="middle" font-weight="700" fill="#1a1a1a">44%</text>
+        <text x="170" y="98" text-anchor="middle" fill="#555">19%</text>
+      </g>
+      <g>
+        <rect x="22" y="104" width="170" height="22" fill="#eff6ff" stroke="#bfdbfe"/>
+        <text x="2" y="120" font-size="10" fill="#888">cat</text>
+        <text x="44" y="120" text-anchor="middle" fill="#555">17%</text>
+        <text x="86" y="120" text-anchor="middle" font-weight="700" fill="#1d4ed8">35%</text>
+        <text x="128" y="120" text-anchor="middle" fill="#555">17%</text>
+        <text x="170" y="120" text-anchor="middle" font-weight="700" fill="#1a1a1a">32%</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- arrow 3 down -->
+  <line x1="608" y1="200" x2="608" y2="232" stroke="#666" stroke-width="2" marker-end="url(#ats-arrow)"/>
+  <text x="618" y="218" font-size="11" font-weight="600" fill="#1a1a1a">3.</text>
+  <text x="624" y="218" font-size="10.5" fill="#444"></text>
+  <text x="668" y="218" font-size="10.5" fill="#444">attention · x</text>
+
+  <!-- Output vectors -->
+  <g transform="translate(490, 240)">
+    <text x="100" y="-4" text-anchor="middle" font-size="12" font-weight="600" fill="#555">Blended output  (4×2)</text>
+    <g font-family="ui-monospace,monospace" font-size="11">
+      <rect x="10" y="6" width="200" height="20" fill="#fff" stroke="#e5e5e5"/>
+      <text x="34" y="20" fill="#555">the</text><text x="125" y="20" fill="#1a1a1a">[0.57, 0.32]</text>
+      <rect x="10" y="26" width="200" height="20" fill="#fff" stroke="#e5e5e5"/>
+      <text x="34" y="40" fill="#555">dog</text><text x="125" y="40" fill="#1d4ed8">[0.70, 0.24]</text>
+      <rect x="10" y="46" width="200" height="20" fill="#fff" stroke="#e5e5e5"/>
+      <text x="34" y="60" fill="#555">chased</text><text x="125" y="60" fill="#1a1a1a">[0.45, 0.49]</text>
+      <rect x="10" y="66" width="200" height="20" fill="#fff" stroke="#e5e5e5"/>
+      <text x="34" y="80" fill="#555">cat</text><text x="125" y="80" fill="#1d4ed8">[0.68, 0.25]</text>
+    </g>
+    <text x="100" y="106" text-anchor="middle" font-size="11" fill="#888">"dog" started [1.0, 0.1] — now blended with cat, it's [0.70, 0.24].</text>
+  </g>
+</svg>

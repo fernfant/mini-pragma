@@ -1,0 +1,75 @@
+<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="mb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">
+    A model is just a box with knobs.
+  </text>
+  <text x="360" y="42" text-anchor="middle" font-size="12" fill="#555">
+    More knobs = more shapes it can guess.
+  </text>
+
+  <!-- Panel 1: 0 knobs -->
+  <g transform="translate(20, 70)">
+    <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">0 knobs</text>
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">just guesses 0 every time</text>
+    <!-- input arrow -->
+    <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
+    <!-- box -->
+    <rect x="42" y="50" width="120" height="60" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
+    <text x="102" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#555">y = 0</text>
+    <!-- output arrow -->
+    <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
+    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">no knobs to turn —</text>
+    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">nothing to learn</text>
+  </g>
+
+  <!-- Panel 2: 1 knob -->
+  <g transform="translate(248, 70)">
+    <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">1 knob (w)</text>
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">lines through the origin</text>
+    <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
+    <rect x="42" y="50" width="120" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.8"/>
+    <!-- knob -->
+    <circle cx="102" cy="60" r="6" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+    <line x1="102" y1="58" x2="106" y2="54" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="116" y="64" font-size="10" fill="#3b82f6">w</text>
+    <text x="102" y="92" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">y = w·x</text>
+    <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
+    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">can tilt the line —</text>
+    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">but must pass through (0,0)</text>
+  </g>
+
+  <!-- Panel 3: 2 knobs -->
+  <g transform="translate(476, 70)">
+    <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">2 knobs (w, b)</text>
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">any straight line</text>
+    <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
+    <rect x="42" y="50" width="120" height="60" rx="8" fill="#dcfce7" stroke="#10b981" stroke-width="1.8"/>
+    <!-- knob 1 -->
+    <circle cx="76" cy="60" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
+    <line x1="76" y1="58" x2="80" y2="54" stroke="#10b981" stroke-width="1.8"/>
+    <text x="76" y="50" text-anchor="middle" font-size="10" fill="#10b981">w</text>
+    <!-- knob 2 -->
+    <circle cx="128" cy="60" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
+    <line x1="128" y1="58" x2="132" y2="55" stroke="#10b981" stroke-width="1.8"/>
+    <text x="128" y="50" text-anchor="middle" font-size="10" fill="#10b981">b</text>
+    <text x="102" y="92" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">y = w·x + b</text>
+    <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
+    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">tilt AND slide up/down —</text>
+    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">this is Lesson 1's model</text>
+  </g>
+
+  <text x="360" y="262" text-anchor="middle" font-size="11.5" fill="#555">
+    Training = turning the knobs until the box's <tspan font-style="italic">y</tspan> matches the truth as closely as possible.
+  </text>
+</svg>

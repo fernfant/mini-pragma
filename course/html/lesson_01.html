@@ -59,6 +59,15 @@
 <p>Training means: show it examples, see how wrong it is, nudge the numbers to be less wrong, repeat thousands of times. That's the whole game.</p>
 
 <h2 class="step" id="model"><span class="step-num">Model</span> The simplest model in the world</h2>
+
+<p>Before we jump to the formula, picture a model as a <strong>little box with knobs</strong>. An input goes in (we'll call it <code>x</code>); an answer comes out (we'll call it <code>y</code>). The knobs change what the box does. <em>More knobs = more shapes the box can guess.</em></p>
+
+<figure class="figure-wide">
+  <img src="../visuals/model_as_box.svg" alt="A model as a box with knobs: 0, 1, then 2 knobs">
+  <figcaption>Start small. A box with <strong>0 knobs</strong> always says the same thing. <strong>1 knob</strong> can tilt the line. <strong>2 knobs</strong> can tilt AND slide — that's Lesson 1's model.</figcaption>
+</figure>
+
+<p>Lesson 1's model is the rightmost box: <strong>two knobs</strong>, one rule — <code>y = w·x + b</code>. Training = nudging the two knobs until the box's guesses match the truth as closely as possible.</p>
 <p>Two knobs (<code>w</code> and <code>b</code>), one rule: <code>y = w · x + b</code>.</p>
 <p>The data below comes from a <em>secret rule</em> — <code>y = 2x + 1</code> — that the model doesn't know. Its job is to figure that rule out by looking at example pairs.</p>
 
@@ -161,6 +170,22 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 </ul>
 
 <p>For more on <em>why</em> this works, see <a href="lesson_01c.html">Lesson 1c</a>, where we open up gradient descent and compute the gradients by hand.</p>
+
+<details class="go-deeper">
+  <summary>Go deeper: how many steps until the model is "done"?</summary>
+  <p>Watching the slider, you might wonder how long training really takes. I trained this exact 2-knob model with <code>lr=0.01</code> and logged the loss every order of magnitude:</p>
+  <table class="compact" style="max-width:380px;">
+    <thead><tr><th>step</th><th>loss</th><th>w</th><th>b</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>121.0</td><td>1.110</td><td>0.200</td></tr>
+      <tr><td>10</td><td>0.075</td><td>2.106</td><td>0.400</td></tr>
+      <tr><td>100</td><td>0.036</td><td>2.074</td><td>0.581</td></tr>
+      <tr><td>1000</td><td>0.00003</td><td>2.002</td><td>0.989</td></tr>
+      <tr><td>10000</td><td>~0</td><td>2.000</td><td>1.000</td></tr>
+    </tbody>
+  </table>
+  <p>Two things jump out: by step <strong>10</strong> the loss is already tiny (the model basically nails the slope). The remaining 990 steps are just sliding <code>b</code> the last bit toward 1.0. Big models on hard problems need <em>millions</em> of steps; tiny problems need almost none.</p>
+</details>
 
 <h2 class="step" id="takeaway"><span class="step-num">Takeaway</span> The big takeaway</h2>
 

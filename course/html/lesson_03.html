@@ -44,6 +44,7 @@
   <summary>Steps in this lesson (matches the notebook)</summary>
   <ol>
     <li><a href="#intuition">The intuition</a></li>
+    <li><a href="#overview">🗺 The whole thing on one page</a></li>
     <li><a href="#worked">A 2-word worked example</a></li>
     <li><a href="#step-1">Step 1 — Scores (dot products)</a></li>
     <li><a href="#step-2">Step 2 — Softmax (100% attention budget)</a></li>
@@ -75,6 +76,15 @@
   correct:0,
   reveal:"Attention is driven by similarity (the dot product). dog and cat have alike vectors (both animal-ish), so dog leans on cat. You'll see exactly this in the heatmap and the step-by-step panel below."
 });});</script>
+
+<h2 class="step" id="overview"><span class="step-num">Map</span> The whole thing on one page</h2>
+
+<p>Attention is three transforms in a row. Every step rearranges the same data; the shapes tell the story. Look at this once before we work through the example — then everything below is just zooming in on each arrow.</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/attention_three_steps.svg" alt="Attention as three transforms: scores then softmax then mix">
+  <figcaption>Input vectors → <strong>scores</strong> (every pair scored by dot product) → <strong>softmax</strong> (turned into a 100% attention budget per row) → <strong>mix</strong> (each word's new vector = weighted blend of all the inputs). Same data, three rearrangements.</figcaption>
+</figure>
 
 <h2 class="step" id="worked"><span class="step-num">Example</span> A 2-word worked example</h2>
 
@@ -197,6 +207,17 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <summary>Go deeper: what's the <code>√d</code> for?</summary>
   <p>Before softmax we divide the scores by <code>√d</code> (the square root of the vector size). Here's why: as vectors get longer (more features), their dot products grow bigger and bigger. Feed huge numbers into softmax and it becomes <strong>too spiky</strong> — one word grabs ~100% of the attention and everyone else gets ~0%, so the model stops blending information.</p>
   <p>See it on plain numbers: <code>softmax([2, 1, 0]) ≈ [0.66, 0.24, 0.09]</code> (nicely shared) but <code>softmax([20, 10, 0]) ≈ [1.00, 0.00, 0.00]</code> (one word hogs everything). Dividing by <code>√d</code> keeps the scores in the gentle range. It's a small stabiliser, not a deep idea — but it matters in practice.</p>
+</details>
+
+<details class="go-deeper">
+  <summary>Go deeper: what if every word has the IDENTICAL vector?</summary>
+  <p>A useful thought experiment. If every word in the sentence had the exact same embedding, what would attention do? I set all four word vectors to <code>[0.5, 0.3]</code> and computed the attention matrix:</p>
+  <pre style="max-width:380px;"><code>             the     dog     chs     cat
+the         0.25    0.25    0.25    0.25
+dog         0.25    0.25    0.25    0.25
+chased      0.25    0.25    0.25    0.25
+cat         0.25    0.25    0.25    0.25</code></pre>
+  <p><strong>Perfectly uniform</strong> — every word splits 25% across the 4 tokens. Attention can't tell anyone apart, so it spreads evenly. <em>The whole power of attention depends on words having different vectors in the first place.</em> This is also why embeddings have to be trained first — random embeddings give almost-uniform attention; trained embeddings give sharp, meaningful attention.</p>
 </details>
 
 <h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>

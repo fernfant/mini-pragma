@@ -1,0 +1,84 @@
+<svg viewBox="0 0 760 300" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="tm-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#666"/>
+    </marker>
+  </defs>
+
+  <text x="380" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">
+    One masked sentence travelling through TinyMLM
+  </text>
+  <text x="380" y="42" text-anchor="middle" font-size="11.5" fill="#666">
+    Watch the shape <tspan font-family="ui-monospace,monospace">(rows × cols)</tspan> change at every step.
+  </text>
+
+  <!-- stage 1: input -->
+  <g transform="translate(20, 76)">
+    <rect x="0" y="0" width="116" height="62" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="58" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Input</text>
+    <text x="58" y="44" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11.5" fill="#1a1a1a">"dog ___"</text>
+    <text x="58" y="56" text-anchor="middle" font-size="10" fill="#92722a">word + mask</text>
+    <text x="58" y="84" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#555">2 tokens</text>
+  </g>
+  <line x1="140" y1="107" x2="174" y2="107" stroke="#666" stroke-width="2" marker-end="url(#tm-arrow)"/>
+
+  <!-- stage 2: ids -->
+  <g transform="translate(176, 76)">
+    <rect x="0" y="0" width="116" height="62" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.6"/>
+    <text x="58" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Tokenise</text>
+    <text x="58" y="44" text-anchor="middle" font-family="ui-monospace,monospace" font-size="12" fill="#1a1a1a">[2, 1]</text>
+    <text x="58" y="58" text-anchor="middle" font-size="10" fill="#555">dog→2, mask→1</text>
+    <text x="58" y="84" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#555">(2,)</text>
+  </g>
+  <line x1="296" y1="107" x2="330" y2="107" stroke="#666" stroke-width="2" marker-end="url(#tm-arrow)"/>
+
+  <!-- stage 3: embeddings -->
+  <g transform="translate(332, 76)">
+    <rect x="0" y="0" width="116" height="62" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.6"/>
+    <text x="58" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Embed</text>
+    <text x="58" y="42" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#1a1a1a">[…16 nums…]</text>
+    <text x="58" y="56" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#1a1a1a">[…16 nums…]</text>
+    <text x="58" y="84" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#555">(2, 16)</text>
+  </g>
+  <line x1="452" y1="107" x2="486" y2="107" stroke="#666" stroke-width="2" marker-end="url(#tm-arrow)"/>
+
+  <!-- stage 4: encoder layer (attention + ffn) -->
+  <g transform="translate(488, 76)">
+    <rect x="0" y="0" width="140" height="62" rx="8" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6"/>
+    <text x="70" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Encoder layer</text>
+    <text x="70" y="38" text-anchor="middle" font-size="10.5" fill="#1d4ed8">attention → FFN</text>
+    <text x="70" y="52" text-anchor="middle" font-size="9.5" fill="#888">mask absorbs "dog"</text>
+    <text x="70" y="84" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#555">(2, 16) — same shape</text>
+  </g>
+  <line x1="632" y1="107" x2="666" y2="107" stroke="#666" stroke-width="2" marker-end="url(#tm-arrow)"/>
+
+  <!-- stage 5: head -->
+  <g transform="translate(668, 76)">
+    <rect x="0" y="0" width="84" height="62" rx="8" fill="#fce7f3" stroke="#a855f7" stroke-width="1.6"/>
+    <text x="42" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Head</text>
+    <text x="42" y="40" text-anchor="middle" font-size="10.5" fill="#7e22ce">vocab scores</text>
+    <text x="42" y="84" text-anchor="middle" font-family="ui-monospace,monospace" font-size="10.5" fill="#555">(2, 8)</text>
+  </g>
+
+  <!-- Vertical down to prediction -->
+  <line x1="710" y1="148" x2="710" y2="200" stroke="#666" stroke-width="2" marker-end="url(#tm-arrow)"/>
+  <text x="720" y="180" font-size="10.5" fill="#444">argmax on mask row</text>
+
+  <!-- Final guess -->
+  <g transform="translate(540, 210)">
+    <rect x="0" y="0" width="200" height="60" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
+    <text x="100" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">Guess for ___</text>
+    <text x="100" y="44" text-anchor="middle" font-family="ui-monospace,monospace" font-size="14" font-weight="700" fill="#047857">"bark" ✓</text>
+  </g>
+
+  <!-- Lesson chips under each stage -->
+  <text x="78"  y="170" text-anchor="middle" font-size="10" fill="#a1a1aa">—</text>
+  <text x="234" y="170" text-anchor="middle" font-size="10" fill="#a1a1aa">L2</text>
+  <text x="390" y="170" text-anchor="middle" font-size="10" fill="#a1a1aa">L2</text>
+  <text x="558" y="170" text-anchor="middle" font-size="10" fill="#a1a1aa">L3 + L1.5</text>
+  <text x="710" y="170" text-anchor="middle" font-size="10" fill="#a1a1aa">MLM head</text>
+
+  <text x="380" y="290" text-anchor="middle" font-size="11.5" fill="#555">
+    Same flow on the inside as PRAGMA — just smaller and with 1 encoder layer instead of 18.
+  </text>
+</svg>

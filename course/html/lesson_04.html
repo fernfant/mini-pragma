@@ -159,7 +159,14 @@ ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Build the tiny model</h2>
 
-<p>The entire architecture is three lines. You've seen each piece in earlier lessons.</p>
+<p>Before the code: here's <strong>one masked sentence flowing all the way through</strong>. Each box transforms the data — the shape tells you what changed.</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/tinymlm_flow.svg" alt="One masked sentence flowing through TinyMLM: input, tokenise, embed, encoder layer, head, guess bark">
+  <figcaption><code>"dog ___"</code> → 2 ids → a (2×16) block of embeddings → encoder mixes them and the mask absorbs "dog" → head turns each row into vocab scores → argmax on the mask row → <strong>"bark" ✓</strong>.</figcaption>
+</figure>
+
+<p>The entire architecture is three lines of code. You've seen each piece in earlier lessons.</p>
 
 <pre><code>class TinyMLM(nn.Module):
     def __init__(self):
@@ -225,6 +232,21 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   <img src="../visuals/embedding_evolution.svg" alt="Embedding vectors at init vs after training — related words cluster">
   <figcaption>Embedding evolution: at random init (left), all words scattered; after training (right), each (animal, sound) pair has drifted together.</figcaption>
 </figure>
+
+<details class="go-deeper">
+  <summary>Go deeper: what's the smallest TinyMLM that still learns dog↔bark?</summary>
+  <p>I ran TinyMLM at four embedding sizes <code>d</code> on the dog↔bark / cat↔meow / fish↔swim rules (400 steps each):</p>
+  <table class="compact" style="max-width:380px;">
+    <thead><tr><th>d (embed dim)</th><th>total params</th><th>final loss</th></tr></thead>
+    <tbody>
+      <tr style="background:#dcfce7"><td>4</td><td>208</td><td>0.004 ✅</td></tr>
+      <tr><td>8</td><td>600</td><td>0.001 ✅</td></tr>
+      <tr><td>16</td><td>1,960</td><td>0.0004 ✅</td></tr>
+      <tr><td>32</td><td>6,984</td><td>0.0001 ✅</td></tr>
+    </tbody>
+  </table>
+  <p>Even at <strong>d=4</strong> with only <strong>208 parameters</strong>, the model nails the rule. For comparison, PRAGMA-Large has <strong>1,000,000,000</strong>. The big models aren't powerful because they're big — they're big because the <em>task</em> is enormous (modelling all banking activity). Right-sizing the model to the task is half the art.</p>
+</details>
 
 <h2 id="whats-different">What's different in real PRAGMA?</h2>
 

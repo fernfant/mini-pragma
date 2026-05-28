@@ -1,0 +1,122 @@
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="et-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#a855f7"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">
+    From a word, to a number, to a row of numbers
+  </text>
+
+  <!-- (1) word -->
+  <g transform="translate(20, 145)">
+    <rect x="0" y="0" width="100" height="46" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="50" y="29" text-anchor="middle" font-size="18" font-weight="700" fill="#1a1a1a">"dog"</text>
+    <text x="50" y="62" text-anchor="middle" font-size="11" fill="#888">a word</text>
+  </g>
+
+  <!-- arrow 1 -->
+  <line x1="126" y1="168" x2="170" y2="168" stroke="#a855f7" stroke-width="2.2" marker-end="url(#et-arrow)"/>
+  <text x="148" y="158" text-anchor="middle" font-size="10" fill="#a855f7">tokenise</text>
+  <text x="148" y="184" text-anchor="middle" font-size="9.5" fill="#666">look up id</text>
+
+  <!-- (2) integer id -->
+  <g transform="translate(178, 145)">
+    <rect x="0" y="0" width="78" height="46" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.8"/>
+    <text x="39" y="30" text-anchor="middle" font-size="20" font-weight="700" fill="#1a1a1a">2</text>
+    <text x="39" y="62" text-anchor="middle" font-size="11" fill="#888">an integer id</text>
+  </g>
+
+  <!-- arrow 2 -->
+  <line x1="262" y1="168" x2="312" y2="168" stroke="#a855f7" stroke-width="2.2" marker-end="url(#et-arrow)"/>
+  <text x="287" y="158" text-anchor="middle" font-size="10" fill="#a855f7">embed</text>
+  <text x="287" y="184" text-anchor="middle" font-size="9.5" fill="#666">grab row 2</text>
+
+  <!-- (3) the table -->
+  <g transform="translate(320, 60)">
+    <text x="100" y="-6" text-anchor="middle" font-size="12" font-weight="600" fill="#555">embedding table (8 rows × 4 numbers)</text>
+    <!-- header row of column indices -->
+    <text x="40" y="20" text-anchor="middle" font-size="9.5" fill="#888">id</text>
+    <text x="80" y="20" text-anchor="middle" font-size="9.5" fill="#888">d0</text>
+    <text x="120" y="20" text-anchor="middle" font-size="9.5" fill="#888">d1</text>
+    <text x="160" y="20" text-anchor="middle" font-size="9.5" fill="#888">d2</text>
+    <text x="200" y="20" text-anchor="middle" font-size="9.5" fill="#888">d3</text>
+
+    <!-- 8 rows; row 2 (dog) highlighted -->
+    <g font-family="ui-monospace,monospace" font-size="11.5">
+      <!-- row 0 -->
+      <rect x="22" y="26" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="42" text-anchor="middle" fill="#888">0</text>
+      <text x="80" y="42" text-anchor="middle" fill="#888">−0.71</text>
+      <text x="120" y="42" text-anchor="middle" fill="#888">+0.04</text>
+      <text x="160" y="42" text-anchor="middle" fill="#888">+1.13</text>
+      <text x="200" y="42" text-anchor="middle" fill="#888">−0.55</text>
+      <!-- row 1 -->
+      <rect x="22" y="50" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="66" text-anchor="middle" fill="#888">1</text>
+      <text x="80" y="66" text-anchor="middle" fill="#888">+0.21</text>
+      <text x="120" y="66" text-anchor="middle" fill="#888">−1.40</text>
+      <text x="160" y="66" text-anchor="middle" fill="#888">+0.82</text>
+      <text x="200" y="66" text-anchor="middle" fill="#888">+0.09</text>
+      <!-- row 2 HIGHLIGHTED -->
+      <rect x="22" y="74" width="216" height="22" rx="3" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
+      <text x="40" y="90" text-anchor="middle" font-weight="700" fill="#1d4ed8">2</text>
+      <text x="80" y="90" text-anchor="middle" font-weight="700" fill="#1a1a1a">+0.32</text>
+      <text x="120" y="90" text-anchor="middle" font-weight="700" fill="#1a1a1a">−1.26</text>
+      <text x="160" y="90" text-anchor="middle" font-weight="700" fill="#1a1a1a">+0.35</text>
+      <text x="200" y="90" text-anchor="middle" font-weight="700" fill="#1a1a1a">+0.31</text>
+      <!-- row 3..7 -->
+      <rect x="22" y="98" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="114" text-anchor="middle" fill="#888">3</text>
+      <text x="80" y="114" text-anchor="middle" fill="#888">+0.12</text>
+      <text x="120" y="114" text-anchor="middle" fill="#888">+1.24</text>
+      <text x="160" y="114" text-anchor="middle" fill="#888">+1.12</text>
+      <text x="200" y="114" text-anchor="middle" fill="#888">−0.25</text>
+
+      <rect x="22" y="122" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="138" text-anchor="middle" fill="#888">4</text>
+      <text x="80" y="138" text-anchor="middle" fill="#888">−1.35</text>
+      <text x="120" y="138" text-anchor="middle" fill="#888">−1.70</text>
+      <text x="160" y="138" text-anchor="middle" fill="#888">+0.57</text>
+      <text x="200" y="138" text-anchor="middle" fill="#888">+0.79</text>
+
+      <rect x="22" y="146" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="162" text-anchor="middle" fill="#888">5</text>
+      <text x="80" y="162" text-anchor="middle" fill="#888">+0.60</text>
+      <text x="120" y="162" text-anchor="middle" fill="#888">−1.56</text>
+      <text x="160" y="162" text-anchor="middle" fill="#888">−0.34</text>
+      <text x="200" y="162" text-anchor="middle" fill="#888">+1.85</text>
+
+      <rect x="22" y="170" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="186" text-anchor="middle" fill="#888">6</text>
+      <text x="80" y="186" text-anchor="middle" fill="#888">−0.39</text>
+      <text x="120" y="186" text-anchor="middle" fill="#888">+0.83</text>
+      <text x="160" y="186" text-anchor="middle" fill="#888">−0.07</text>
+      <text x="200" y="186" text-anchor="middle" fill="#888">+0.45</text>
+
+      <rect x="22" y="194" width="216" height="22" rx="3" fill="#fff" stroke="#e5e5e5"/>
+      <text x="40" y="210" text-anchor="middle" fill="#888">7</text>
+      <text x="80" y="210" text-anchor="middle" fill="#888">+1.05</text>
+      <text x="120" y="210" text-anchor="middle" fill="#888">−0.20</text>
+      <text x="160" y="210" text-anchor="middle" fill="#888">+0.61</text>
+      <text x="200" y="210" text-anchor="middle" fill="#888">−1.11</text>
+    </g>
+  </g>
+
+  <!-- arrow from highlighted row out -->
+  <line x1="558" y1="148" x2="600" y2="148" stroke="#3b82f6" stroke-width="2.2" marker-end="url(#et-arrow)"/>
+
+  <!-- output vector -->
+  <g transform="translate(606, 130)">
+    <rect x="0" y="0" width="100" height="40" rx="6" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="50" y="25" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" font-weight="700" fill="#1a1a1a">[0.32, −1.26,</text>
+    <text x="50" y="40" text-anchor="middle" font-family="ui-monospace,monospace" font-size="11" font-weight="700" fill="#1a1a1a"> 0.35, 0.31]</text>
+    <text x="50" y="60" text-anchor="middle" font-size="11" fill="#888">"dog" as 4 numbers</text>
+  </g>
+
+  <text x="360" y="335" text-anchor="middle" font-size="11.5" fill="#555">
+    The table is just a 2-D array of numbers. "Look up a word" = grab one row.
+    The numbers start <tspan font-style="italic">random</tspan>; training makes them meaningful.
+  </text>
+</svg>

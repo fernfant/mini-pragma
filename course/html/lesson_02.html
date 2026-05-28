@@ -122,7 +122,12 @@ ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]</code></pre>
 
 <h2 class="step" id="step-2"><span class="step-num">Step 2</span> Embed — integer → vector</h2>
 
-<p>Each ID is a row index in a learnable table of vectors:</p>
+<p>Picture this happening literally. The embedding "table" is a stack of rows — one per word. The word's id is just the row number. To embed a word, you grab its row. That's it.</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/embedding_table.svg" alt="From the word 'dog' to id 2 to row 2 to the 4-number vector">
+  <figcaption>"dog" → tokenise → id <code>2</code> → look up row 2 of the table → out comes <code>[0.32, −1.26, 0.35, 0.31]</code>. No math, just a memory lookup.</figcaption>
+</figure>
 
 <pre><code>emb = nn.Embedding(len(vocab), 4)            # 8 × 4 table of trainable knobs
 vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code></pre>
@@ -172,6 +177,20 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
     </div>
   </div>
 </div>
+
+<details class="go-deeper">
+  <summary>Go deeper: what if I train 10× longer? Does dog·bark keep climbing?</summary>
+  <p>I trained the L2 notebook's tiny embedding model at three durations and measured the trained <code>dog · bark</code> dot product. Real numbers:</p>
+  <table class="compact" style="max-width:360px;">
+    <thead><tr><th>steps</th><th>dog · bark</th><th>training loss</th></tr></thead>
+    <tbody>
+      <tr><td>40</td><td>+7.52</td><td>4.29</td></tr>
+      <tr><td>400</td><td>+9.44</td><td>4.16</td></tr>
+      <tr><td>4000</td><td>+12.37</td><td>4.16</td></tr>
+    </tbody>
+  </table>
+  <p>The <strong>loss plateaus around 4.16</strong> (the floor for this tiny vocab) — but <code>dog·bark</code> <strong>keeps growing</strong> because nothing stops the vectors from getting longer. The <em>direction</em> they point is already correct after ~400 steps; extra training just makes them bigger. That's why real models use tricks like LayerNorm and weight decay to keep magnitudes in check.</p>
+</details>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this matters for the Transformer</h2>
 

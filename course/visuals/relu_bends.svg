@@ -1,0 +1,61 @@
+<svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+  <defs>
+    <marker id="rb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M0 0 L10 5 L0 10 z" fill="#888"/>
+    </marker>
+  </defs>
+
+  <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">
+    How "bends" add up into curves — that's the whole magic.
+  </text>
+
+  <!-- Panel 1: a single ReLU bend -->
+  <g transform="translate(20, 50)">
+    <text x="100" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">1 hidden unit (ReLU)</text>
+    <text x="100" y="18" text-anchor="middle" font-size="11" fill="#888">one hockey-stick bend</text>
+    <!-- axes -->
+    <line x1="10" y1="220" x2="190" y2="220" stroke="#999" stroke-width="1.2"/>
+    <line x1="100" y1="40" x2="100" y2="220" stroke="#999" stroke-width="1.2"/>
+    <!-- the ReLU shape: flat then linear ramp, kink at (-1, 0) in unit coords -->
+    <polyline points="10,220 75,220 190,80" fill="none" stroke="#3b82f6" stroke-width="3"/>
+    <!-- kink marker -->
+    <circle cx="75" cy="220" r="3.5" fill="#3b82f6"/>
+    <text x="75" y="240" text-anchor="middle" font-size="10.5" fill="#3b82f6">kink at b/w</text>
+    <text x="160" y="74" font-size="10.5" fill="#3b82f6">slope = w</text>
+    <text x="100" y="280" text-anchor="middle" font-size="12" fill="#555">ReLU(w·x + b)</text>
+    <text x="100" y="296" text-anchor="middle" font-size="11" fill="#888">flat, then a ramp</text>
+  </g>
+
+  <text x="240" y="160" font-size="22" fill="#888">+</text>
+
+  <!-- Panel 2: three bends -->
+  <g transform="translate(260, 50)">
+    <text x="100" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">3 bends</text>
+    <text x="100" y="18" text-anchor="middle" font-size="11" fill="#888">different kink points + slopes</text>
+    <line x1="10" y1="220" x2="190" y2="220" stroke="#999" stroke-width="1.2"/>
+    <line x1="100" y1="40" x2="100" y2="220" stroke="#999" stroke-width="1.2"/>
+    <!-- unit A: gentle positive ramp from x=30 -->
+    <polyline points="10,220 50,220 190,140" fill="none" stroke="#3b82f6" stroke-width="2.5" opacity="0.85"/>
+    <!-- unit B: negative slope, kink to the right; we'll draw as flat then descending — but ReLU is non-negative, so use weighted version that contributes negatively -->
+    <polyline points="10,180 100,220 190,220" fill="none" stroke="#10b981" stroke-width="2.5" opacity="0.85"/>
+    <!-- unit C: steep positive ramp from far left -->
+    <polyline points="10,220 30,220 190,60" fill="none" stroke="#a855f7" stroke-width="2.5" opacity="0.85"/>
+    <text x="100" y="280" text-anchor="middle" font-size="12" fill="#555">3 separate ReLU units</text>
+    <text x="100" y="296" text-anchor="middle" font-size="11" fill="#888">each does its own bend</text>
+  </g>
+
+  <text x="480" y="160" font-size="22" fill="#888">=</text>
+
+  <!-- Panel 3: the sum -->
+  <g transform="translate(500, 50)">
+    <text x="100" y="0" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">…added up = a curve</text>
+    <text x="100" y="18" text-anchor="middle" font-size="11" fill="#888">the model's prediction</text>
+    <line x1="10" y1="220" x2="190" y2="220" stroke="#999" stroke-width="1.2"/>
+    <line x1="100" y1="40" x2="100" y2="220" stroke="#999" stroke-width="1.2"/>
+    <!-- a smooth wavy curve approximated by polyline -->
+    <polyline points="10,200 35,210 60,205 85,180 110,140 135,100 160,75 190,60"
+              fill="none" stroke="#ef4444" stroke-width="3.5"/>
+    <text x="100" y="280" text-anchor="middle" font-size="12" fill="#555">sum of the bends</text>
+    <text x="100" y="296" text-anchor="middle" font-size="11" fill="#888">a smooth, curvy shape</text>
+  </g>
+</svg>
