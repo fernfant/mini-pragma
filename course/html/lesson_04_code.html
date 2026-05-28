@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 4 · Code Walkthrough — reading the model line by line</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---- code-walkthrough scoped styles (cw-) ---- */
+.cw-intro { background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:14px 18px; margin:18px 0 26px; }
+.cw-cell { margin:26px 0 34px; border-top:1px dashed var(--border); padding-top:22px; }
+.cw-cell:first-of-type { border-top:none; }
+.cw-celltag { display:inline-block; font-family:ui-monospace,monospace; font-size:11px; font-weight:700;
+  color:#fff; background:#6366f1; border-radius:6px; padding:2px 8px; letter-spacing:.04em; margin-bottom:8px; }
+.cw-celltag.b { background:#0ea5e9; }
+.cw-h { font-size:18px; font-weight:700; margin:4px 0 8px; }
+.cw-say { color:var(--muted, #475569); margin:0 0 12px; }
+.cw-code { background:#0f172a; color:#e2e8f0; border-radius:10px; padding:14px 16px; overflow-x:auto;
+  font-family:ui-monospace,"SF Mono",Monaco,monospace; font-size:12.5px; line-height:1.55; border:1px solid #1e293b; }
+.cw-code .c { color:#7c8aa5; }
+.cw-out { margin-top:10px; }
+.cw-out-label { font-family:ui-monospace,monospace; font-size:11px; font-weight:700; color:#16a34a;
+  text-transform:uppercase; letter-spacing:.06em; }
+.cw-out pre { margin:4px 0 0; background:#f0fdf4; border:1px solid #bbf7d0; border-left:3px solid #22c55e;
+  border-radius:8px; padding:10px 14px; font-size:12.5px; line-height:1.5; color:#14532d; overflow-x:auto; white-space:pre; }
+.cw-viz { margin-top:14px; background:#fff; border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; box-shadow:var(--shadow); }
+.cw-viz h4 { margin:0 0 12px; font-size:14px; color:#6366f1; }
+.cw-viz h4::before { content:"🔍 "; }
+/* token / id boxes */
+.cw-boxes { display:flex; flex-wrap:wrap; gap:6px; align-items:flex-end; }
+.cw-box { text-align:center; }
+.cw-box .tok { display:block; min-width:30px; padding:6px 9px; background:#eef2ff; border:1px solid #c7d2fe;
+  border-radius:7px; font-family:ui-monospace,monospace; font-size:13px; font-weight:600; }
+.cw-box .tok.spc { background:#fef3c7; border-color:#fde68a; }
+.cw-box .id { display:block; font-family:ui-monospace,monospace; font-size:11px; color:#64748b; margin-top:3px; }
+.cw-chip { display:inline-flex; align-items:center; gap:5px; font-family:ui-monospace,monospace; font-size:12px;
+  background:#f4f4f5; border:1px solid var(--border); border-radius:20px; padding:3px 10px; margin:3px; }
+.cw-chip b { color:#6366f1; }
+.cw-chip.spec { background:#fef3c7; border-color:#fde68a; }
+/* bars */
+.cw-bar-row { display:flex; align-items:center; gap:8px; margin:5px 0; font-family:ui-monospace,monospace; font-size:12.5px; }
+.cw-bar-row .lab { width:64px; text-align:right; color:#334155; }
+.cw-bar { height:18px; border-radius:4px; background:#6366f1; min-width:2px; }
+.cw-bar.att { background:#0ea5e9; }
+.cw-bar.prob { background:#22c55e; }
+.cw-bar-row .pct { color:#64748b; font-size:11.5px; }
+/* causal mask grid */
+.cw-mask { border-collapse:collapse; font-family:ui-monospace,monospace; font-size:11px; }
+.cw-mask td, .cw-mask th { width:30px; height:26px; text-align:center; border:1px solid #e2e8f0; }
+.cw-mask th { color:#64748b; font-weight:600; background:#f8fafc; }
+.cw-mask td.see { background:#dcfce7; color:#16a34a; }
+.cw-mask td.no  { background:#fee2e2; color:#dc2626; }
+/* sliding window */
+.cw-stream { font-family:ui-monospace,monospace; font-size:14px; line-height:1.7; letter-spacing:1px;
+  background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:10px 12px; white-space:pre-wrap; word-break:break-all; }
+.cw-stream .win { background:#dbeafe; border-bottom:2px solid #3b82f6; }
+.cw-stream .nxt { background:#fce7f3; border-bottom:2px solid #ec4899; }
+.cw-stream .both { background:#e9d5ff; border-bottom:2px solid #a855f7; }
+/* spell slider */
+.cw-spell pre { background:#0f172a; color:#e2e8f0; border-radius:8px; padding:12px 14px; font-size:12.5px;
+  line-height:1.5; min-height:84px; white-space:pre-wrap; word-break:break-word; }
+.cw-spell .meta { display:flex; gap:18px; align-items:center; margin:8px 0; font-family:ui-monospace,monospace; font-size:13px; }
+.cw-spell .meta b { color:#6366f1; }
+.cw-spell input[type=range] { width:100%; }
+.cw-spell .note { color:#475569; font-size:13px; margin-top:6px; min-height:34px; }
+/* oov wall */
+.cw-oov { width:100%; border-collapse:collapse; font-size:13px; }
+.cw-oov th, .cw-oov td { padding:8px 10px; border-bottom:1px solid var(--border); text-align:left; vertical-align:middle; }
+.cw-oov th { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; }
+.cw-word { font-family:ui-monospace,monospace; font-weight:700; }
+.cw-no { display:inline-block; padding:3px 9px; border-radius:6px; background:#fee2e2; color:#dc2626; font-size:12px; font-weight:600; }
+.cw-yes { display:inline-block; padding:3px 9px; border-radius:6px; background:#dcfce7; color:#16a34a; font-size:12px; font-weight:600; }
+.cw-letters { display:inline-flex; gap:3px; }
+.cw-letters span { width:20px; height:22px; display:flex; align-items:center; justify-content:center;
+  background:#eef2ff; border:1px solid #c7d2fe; border-radius:4px; font-family:ui-monospace,monospace; font-size:12px; }
+/* part divider */
+.cw-part { margin:40px 0 8px; padding:14px 18px; border-radius:12px; color:#fff; }
+.cw-part.a { background:linear-gradient(90deg,#6366f1,#818cf8); }
+.cw-part.b { background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
+.cw-part .pt { font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.85; }
+.cw-part h2 { margin:2px 0 0; color:#fff; border:none; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04_code.html" class="current">L4·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 4 · Code Walkthrough</h1>
+<p class="subtitle">Reading the two models <strong>line by line</strong>. For every important cell you see the real code, the real output it printed when we ran it, and a picture of what is actually happening inside. We walk the whole journey: a model that knows <strong>whole words</strong> → a model that knows <strong>single letters</strong> and can therefore spell anything.</p>
+
+<div class="lesson-links">
+  <a href="http://localhost:8011/notebooks/lesson_04f_next_word.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run notebook A (next-word)</a>
+  <a href="http://localhost:8011/notebooks/lesson_04g_char_rhymes.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run notebook B (character)</a>
+  <a href="lesson_04f.html"><span class="ico">↩</span> Back to Lesson 4f</a>
+</div>
+
+<div class="cw-intro">
+  <strong>How to read this page.</strong> Each block is one cell from the notebook. The <span style="font-family:ui-monospace,monospace;background:#0f172a;color:#e2e8f0;padding:1px 6px;border-radius:4px;">dark box</span> is the code you'd type. The <span style="color:#16a34a;font-weight:700;">green box</span> is exactly what the computer printed back. The <span style="color:#6366f1;font-weight:700;">🔍 picture</span> shows what those lines do under the covers. Every number here is real — it came out of a model we actually trained.
+</div>
+
+<!-- ============================================================ -->
+<div class="cw-part a">
+  <div class="pt">Part A · notebook 04f</div>
+  <h2>The next-WORD model — it knows 31 whole words</h2>
+</div>
+<p>This little model has a dictionary of 31 words. You give it a few words, it predicts the next <em>word</em>. That's the exact loop ChatGPT runs — just much, much smaller.</p>
+
+<!-- A1 corpus -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · the corpus</span>
+  <div class="cw-h">1 · A tiny pile of sentences to learn from</div>
+  <p class="cw-say">A real model reads a big chunk of the internet. Ours reads ~30 short, kid-friendly sentences that overlap a lot on purpose ("the cat …", "the dog …", "went to the …") so a tiny model can spot the patterns.</p>
+  <pre class="cw-code">sentences = [
+    "the cat sat on the mat", "the cat sat on the couch", "the dog sat on the mat",
+    "the dog likes to run",  "the cat likes to sleep",  "the dog likes to play",
+    "she opened the door",   "she opened the box",      "he opened the door",
+    "i went to the park",    "we went to the store",    "the dog ran to the park",
+    <span class="c"># … 29 sentences in total …</span>
+]
+print(len(sentences), "sentences")</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>29 sentences</pre></div>
+</div>
+
+<!-- A2 vocab -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · vocabulary</span>
+  <div class="cw-h">2 · Give every word a number</div>
+  <p class="cw-say">The model can't do maths on the word "cat" — only on numbers. So every distinct word gets an id (a row number). We also add three helper tokens: <code>&lt;bos&gt;</code> marks the <em>beginning</em>, <code>&lt;eos&gt;</code> marks the <em>end</em> (it's how the model learns to stop), and <code>&lt;pad&gt;</code> is filler.</p>
+  <pre class="cw-code">words  = sorted({w for s in sentences for w in s.split()})
+vocab  = ["&lt;pad&gt;", "&lt;bos&gt;", "&lt;eos&gt;"] + words
+tok2id = {w: i for i, w in enumerate(vocab)}     <span class="c"># word -> id</span>
+V      = len(vocab)
+
+def encode(s):
+    return [BOS] + [tok2id[w] for w in s.split()] + [EOS]
+
+print("vocab size V =", V)
+print("encode('the cat sat') ->", encode("the cat sat"))</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>vocab size V = 31
+vocab: ['&lt;pad&gt;', '&lt;bos&gt;', '&lt;eos&gt;', 'box', 'boy', 'cat', 'couch', 'dog', 'door', 'girl', 'he', 'i', ...]
+encode('the cat sat') -> [1, 27, 5, 22, 2]</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: every word becomes a row number</h4>
+    <div style="margin-bottom:12px;">
+      <span class="cw-chip spec"><b>0</b> &lt;pad&gt;</span><span class="cw-chip spec"><b>1</b> &lt;bos&gt;</span><span class="cw-chip spec"><b>2</b> &lt;eos&gt;</span><span class="cw-chip"><b>5</b> cat</span><span class="cw-chip"><b>7</b> dog</span><span class="cw-chip"><b>22</b> sat</span><span class="cw-chip"><b>27</b> the</span> <span style="color:#94a3b8;">… 31 in total</span>
+    </div>
+    <p class="cw-say" style="margin:0 0 6px;">So the sentence <b>"the cat sat"</b> turns into a row of numbers, wrapped in start/end markers:</p>
+    <div class="cw-boxes">
+      <div class="cw-box"><span class="tok">&lt;bos&gt;</span><span class="id">1</span></div>
+      <div class="cw-box"><span class="tok">the</span><span class="id">27</span></div>
+      <div class="cw-box"><span class="tok">cat</span><span class="id">5</span></div>
+      <div class="cw-box"><span class="tok">sat</span><span class="id">22</span></div>
+      <div class="cw-box"><span class="tok">&lt;eos&gt;</span><span class="id">2</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- A3 model -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · the model</span>
+  <div class="cw-h">3 · The model — five lines you've already met</div>
+  <p class="cw-say">Each row number flows through the same pipeline you built in earlier lessons: turn the id into a <em>vector</em> (embedding), add a <em>position</em> vector so it knows word order, let the words <em>look at each other</em> (attention) and <em>think</em> (feed-forward), then score every possible next word (head).</p>
+  <pre class="cw-code">class NextWord(nn.Module):
+    def __init__(self, d=32):
+        self.tok  = nn.Embedding(V, d)        <span class="c"># word id  -> 32-number vector</span>
+        self.pos  = nn.Embedding(MAXLEN, d)   <span class="c"># position -> vector (word order)</span>
+        self.enc  = nn.TransformerEncoderLayer(d, nhead=4, dim_feedforward=64,
+                                               batch_first=True)  <span class="c"># attention + thinking</span>
+        self.head = nn.Linear(d, V)           <span class="c"># vector -> a score for each word</span>
+
+model = NextWord()
+print("parameters:", sum(p.numel() for p in model.parameters()))</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>parameters: 11071</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: the assembly line one word rides through</h4>
+    <svg viewBox="0 0 760 120" width="100%" style="max-width:720px;font-family:ui-monospace,monospace;font-size:11px;">
+      <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker></defs>
+      <g text-anchor="middle">
+        <rect x="6"   y="42" width="86" height="36" rx="7" fill="#eef2ff" stroke="#c7d2fe"/><text x="49" y="60">word id</text><text x="49" y="72" fill="#64748b">27 = "the"</text>
+        <rect x="128" y="42" width="100" height="36" rx="7" fill="#e0f2fe" stroke="#bae6fd"/><text x="178" y="58">embed +</text><text x="178" y="71">position</text>
+        <rect x="264" y="42" width="96" height="36" rx="7" fill="#fef9c3" stroke="#fde68a"/><text x="312" y="58">attention</text><text x="312" y="71" fill="#64748b">look around</text>
+        <rect x="396" y="42" width="110" height="36" rx="7" fill="#fce7f3" stroke="#fbcfe8"/><text x="451" y="58">feed-forward</text><text x="451" y="71" fill="#64748b">think</text>
+        <rect x="542" y="42" width="80" height="36" rx="7" fill="#dcfce7" stroke="#bbf7d0"/><text x="582" y="60">head</text><text x="582" y="72" fill="#64748b">31 scores</text>
+        <rect x="658" y="42" width="96" height="36" rx="7" fill="#ede9fe" stroke="#ddd6fe"/><text x="706" y="58">softmax</text><text x="706" y="71" fill="#64748b">next word</text>
+        <line x1="92"  y1="60" x2="126" y2="60" stroke="#94a3b8" marker-end="url(#ar)"/>
+        <line x1="228" y1="60" x2="262" y2="60" stroke="#94a3b8" marker-end="url(#ar)"/>
+        <line x1="360" y1="60" x2="394" y2="60" stroke="#94a3b8" marker-end="url(#ar)"/>
+        <line x1="506" y1="60" x2="540" y2="60" stroke="#94a3b8" marker-end="url(#ar)"/>
+        <line x1="622" y1="60" x2="656" y2="60" stroke="#94a3b8" marker-end="url(#ar)"/>
+        <text x="380" y="22" font-weight="700" fill="#6366f1">11,071 numbers ("parameters") fill these boxes — that's the whole brain</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<!-- A4 train -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · training</span>
+  <div class="cw-h">4 · Teach it: predict each word from the ones before</div>
+  <p class="cw-say">The trick for making practice questions is beautifully simple. Take a sentence, and slide it by one: the <b>input</b> is everything except the last word, the <b>target</b> is everything except the first. So at every spot the model must guess the <em>next</em> word.</p>
+  <pre class="cw-code">for step in range(800):
+    inp, tgt = X[:, :-1], X[:, 1:]            <span class="c"># shift by one: predict the NEXT word</span>
+    logits = model(inp)                        <span class="c"># 1. guess</span>
+    loss   = F.cross_entropy(...)              <span class="c"># 2. how wrong?</span>
+    opt.zero_grad(); loss.backward(); opt.step()  <span class="c"># 3-5. nudge the 11,071 numbers</span>
+    if step % 100 == 0: print(f"step {step:3d}  loss {loss.item():.3f}")</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>step   0   loss 3.612
+step 100   loss 0.616
+step 400   loss 0.542
+step 700   loss 0.552</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: input vs target are the same row, shifted by one</h4>
+    <div style="overflow-x:auto;">
+      <div class="cw-boxes" style="margin-bottom:4px;">
+        <div style="width:54px;font-size:11px;color:#64748b;align-self:center;">input</div>
+        <div class="cw-box"><span class="tok">&lt;bos&gt;</span></div>
+        <div class="cw-box"><span class="tok">the</span></div>
+        <div class="cw-box"><span class="tok">cat</span></div>
+        <div class="cw-box"><span class="tok">sat</span></div>
+        <div class="cw-box"><span class="tok">on</span></div>
+        <div class="cw-box"><span class="tok">the</span></div>
+      </div>
+      <div class="cw-boxes">
+        <div style="width:54px;font-size:11px;color:#64748b;align-self:center;">target</div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">the</span></div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">cat</span></div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">sat</span></div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">on</span></div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">the</span></div>
+        <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">mat</span></div>
+      </div>
+    </div>
+    <p class="cw-say" style="margin:12px 0 0;">Loss starts high (3.6 = wild guessing) and drops to ~0.5 fast. It <b>won't</b> reach zero — after "the" the next word is honestly uncertain (mat? couch? dog?), so a perfect score would mean it just memorised.</p>
+  </div>
+</div>
+
+<!-- A4b causal mask -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · the key trick</span>
+  <div class="cw-h">4½ · The "no peeking" rule (causal mask)</div>
+  <p class="cw-say">There's one rule that makes this a <em>writer</em> instead of a cheater: when guessing word #4, the model is only allowed to look at words #1–3. If it could peek at the answer, it would learn nothing useful. One line of code enforces it.</p>
+  <pre class="cw-code">mask = nn.Transformer.generate_square_subsequent_mask(T)   <span class="c"># block looking right</span></pre>
+  <div class="cw-viz">
+    <h4>Under the hood: each row may only look left (green = allowed)</h4>
+    <table class="cw-mask">
+      <tr><th></th><th>&lt;bos&gt;</th><th>the</th><th>cat</th><th>sat</th><th>on</th></tr>
+      <tr><th>&lt;bos&gt;</th><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>the</th><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>cat</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>sat</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td></tr>
+      <tr><th>on</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td></tr>
+    </table>
+    <p class="cw-say" style="margin:10px 0 0;">Read a row left to right: the word "cat" (row 3) can see <b>&lt;bos&gt;, the, cat</b> — but not "sat" or "on", which come later. No spoilers.</p>
+  </div>
+</div>
+
+<!-- A5 generate -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · generation</span>
+  <div class="cw-h">5 · The actual ChatGPT loop</div>
+  <p class="cw-say">Now the payoff. To write text: run the model, take its guess for the <em>next</em> word, stick it on the end, and run again — feeding the model its own words — until it says <code>&lt;eos&gt;</code>. That's how every chatbot writes: one word at a time.</p>
+  <pre class="cw-code">model.eval()   <span class="c"># clean, repeatable predictions</span>
+
+def generate(prompt, max_new=10):
+    ids = [BOS] + [tok2id[w] for w in prompt.split()]
+    for _ in range(max_new):
+        logits = model(torch.tensor([ids]))[0, -1]   <span class="c"># scores for the next word</span>
+        nxt = int(logits.argmax())                    <span class="c"># pick the top word</span>
+        if nxt in (PAD, EOS): break                   <span class="c"># model decided to stop</span>
+        ids.append(nxt)                                <span class="c"># add it, then loop</span>
+    return " ".join(id2tok[i] for i in ids[1:])
+
+for p in ["the cat", "the dog likes to", "she opened the", "i went to the"]:
+    print(f"  {p:22s} -> {generate(p)}")</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>  the cat                -> the cat sat on the couch
+  the dog likes to       -> the dog likes to play
+  she opened the         -> she opened the door
+  i went to the          -> i went to the park</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: predict → add → repeat</h4>
+    <div class="cw-boxes" style="gap:10px;align-items:center;">
+      <div class="cw-box"><span class="tok">the cat</span></div>
+      <span style="color:#94a3b8;">+couch?→</span>
+      <div class="cw-box"><span class="tok">the cat sat</span></div>
+      <span style="color:#94a3b8;">→</span>
+      <div class="cw-box"><span class="tok">the cat sat on</span></div>
+      <span style="color:#94a3b8;">→</span>
+      <div class="cw-box"><span class="tok">the cat sat on the</span></div>
+      <span style="color:#94a3b8;">→</span>
+      <div class="cw-box"><span class="tok" style="background:#dcfce7;border-color:#bbf7d0;">… couch</span></div>
+    </div>
+    <p class="cw-say" style="margin:10px 0 0;">Each new word is chosen using <b>everything written so far</b>. The model wrote those whole sentences itself, with only ~11,000 numbers. PRAGMA-Large has a <b>billion</b> — same loop, far more patterns.</p>
+  </div>
+</div>
+
+<!-- A6 journey -->
+<div class="cw-cell">
+  <span class="cw-celltag">cell · the data journey</span>
+  <div class="cw-h">6 · Watch one real prediction happen</div>
+  <p class="cw-say">This prints every stage for the prompt <b>"the cat sat on the"</b> — and asks: what should come next? All the numbers below are <em>real</em>, read straight out of the trained model.</p>
+  <pre class="cw-code">journey("the cat sat on the")</pre>
+  <div class="cw-out"><span class="cw-out-label">output (trimmed)</span><pre>Stage 3 — attention: how much the LAST word looks at each word
+   cat     22.9%  #######
+   on      73.7%  ########################
+Stages 4-5 — top next-word predictions
+   couch   66.9%  ======================
+   mat     32.9%  ==========</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: where "the" looks, and what it predicts</h4>
+    <p class="cw-say" style="margin:0 0 6px;">The last word <b>"the"</b> spreads its attention across the earlier words. It mostly stares at <b>on</b> and <b>cat</b> — the words that decide what comes next:</p>
+    <div class="cw-bar-row"><span class="lab">&lt;bos&gt;</span><div class="cw-bar att" style="width:1%"></div><span class="pct">0.3%</span></div>
+    <div class="cw-bar-row"><span class="lab">the</span><div class="cw-bar att" style="width:2%"></div><span class="pct">1.3%</span></div>
+    <div class="cw-bar-row"><span class="lab">cat</span><div class="cw-bar att" style="width:31%"></div><span class="pct">22.9%</span></div>
+    <div class="cw-bar-row"><span class="lab">sat</span><div class="cw-bar att" style="width:1%"></div><span class="pct">0.3%</span></div>
+    <div class="cw-bar-row"><span class="lab">on</span><div class="cw-bar att" style="width:99%"></div><span class="pct">73.7%</span></div>
+    <p class="cw-say" style="margin:14px 0 6px;">It bundles up what it saw and scores every possible next word. Two win — both make sense after "the cat sat on the":</p>
+    <div class="cw-bar-row"><span class="lab">couch</span><div class="cw-bar prob" style="width:90%"></div><span class="pct">66.9%</span></div>
+    <div class="cw-bar-row"><span class="lab">mat</span><div class="cw-bar prob" style="width:44%"></div><span class="pct">32.9%</span></div>
+    <div class="cw-bar-row"><span class="lab">store</span><div class="cw-bar prob" style="width:2px"></div><span class="pct">0.0%</span></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<div class="cw-part b">
+  <div class="pt">Part B · notebook 04g</div>
+  <h2>The next-CHARACTER model — it knows ~25 letters</h2>
+</div>
+<p>Same machine, one change: a token is now a single <strong>letter</strong>, not a whole word. With only ~25 letters it can spell <em>any</em> word — even ones it never saw. That open vocabulary is what "general purpose" really means.</p>
+
+<!-- B1 corpus -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · the corpus</span>
+  <div class="cw-h">1 · One long stream of text (not a word list)</div>
+  <p class="cw-say">A word model wants a list of sentences. A character model just wants <b>text</b> — one long string. We use 13 nursery rhymes (~1,900 characters) because they rhyme and repeat, so a tiny model can learn to spell and echo them.</p>
+  <pre class="cw-code">CORPUS = """twinkle twinkle little star
+how i wonder what you are
+...
+hey diddle diddle the cat and the fiddle
+the cow jumped over the moon"""
+
+print(f"{len(CORPUS)} characters, {CORPUS.count(chr(10))} lines")</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>1861 characters, 62 lines
+twinkle twinkle little star
+how i wonder what you are ...</pre></div>
+</div>
+
+<!-- B2 char vocab -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · vocabulary</span>
+  <div class="cw-h">2 · The dictionary is the alphabet</div>
+  <p class="cw-say">In Part A every distinct <em>word</em> got an id. Here every distinct <em>character</em> does — letters, the space, the newline. That's the whole dictionary: just 25 symbols. No start/end/pad tokens — we don't pad anything.</p>
+  <pre class="cw-code">chars = sorted(set(CORPUS))
+V     = len(chars)
+stoi  = {c: i for i, c in enumerate(chars)}      <span class="c"># char -> id</span>
+data  = torch.tensor([stoi[c] for c in CORPUS])  <span class="c"># the whole text as numbers</span>
+T     = 64                                        <span class="c"># how many chars it sees at once</span>
+
+print(f"V = {V} characters: {chars}")</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>V = 25 characters: ['\n', ' ', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+ 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'y']
+data tensor: (1861,)</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: 25 symbols, that's the whole alphabet</h4>
+    <div>
+      <span class="cw-chip spec"><b>0</b> ⏎</span><span class="cw-chip spec"><b>1</b> ␣</span>
+      <span class="cw-chip"><b>2</b> a</span><span class="cw-chip"><b>3</b> b</span><span class="cw-chip"><b>4</b> c</span><span class="cw-chip"><b>5</b> d</span><span class="cw-chip"><b>6</b> e</span><span class="cw-chip"><b>7</b> f</span><span class="cw-chip"><b>8</b> g</span><span class="cw-chip"><b>9</b> h</span><span class="cw-chip"><b>10</b> i</span><span class="cw-chip"><b>…</b></span><span class="cw-chip"><b>24</b> y</span>
+    </div>
+    <p class="cw-say" style="margin:10px 0 0;">Because the alphabet is tiny and closed over letters, the model can spell <b>any</b> word built from them — even one that never appears in the rhymes. That's the whole point.</p>
+  </div>
+</div>
+
+<!-- B3 model -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · the model</span>
+  <div class="cw-h">3 · The same model — now stackable</div>
+  <p class="cw-say">Almost identical to Part A's <code>NextWord</code>. Two small differences: the embedding table is 25 <em>characters</em> wide instead of 31 words, and we use <code>nn.TransformerEncoder(..., num_layers=n)</code> so we can <b>stack</b> layers later.</p>
+  <pre class="cw-code">class CharGPT(nn.Module):
+    def __init__(self, d=64, nhead=4, ff=128, nlayers=2):
+        self.tok = nn.Embedding(V, d)            <span class="c"># char id -> vector</span>
+        self.pos = nn.Embedding(T, d)
+        layer    = nn.TransformerEncoderLayer(d, nhead, ff, batch_first=True)
+        self.enc = nn.TransformerEncoder(layer, num_layers=nlayers)  <span class="c"># stack!</span>
+        self.head = nn.Linear(d, V)              <span class="c"># vector -> score per character</span></pre>
+</div>
+
+<!-- B4 sliding window -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · training data</span>
+  <div class="cw-h">4 · Slide a window, predict the next character</div>
+  <p class="cw-say">In Part A we padded each sentence. Here we just grab a random <b>window</b> of 64 characters as the input, and the <em>same window shifted by one</em> as the target. So the model learns <code>t→h</code>, <code>h→e</code>, <code>e→␣</code> … the next character, everywhere.</p>
+  <pre class="cw-code">def get_batch(bs=32):
+    ix = torch.randint(0, len(data) - T - 1, (bs,))
+    xb = torch.stack([data[i:i+T]     for i in ix])   <span class="c"># window</span>
+    yb = torch.stack([data[i+1:i+T+1] for i in ix])   <span class="c"># same window, shifted by 1</span>
+    return xb, yb</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>input : it followed her to school one day whi
+target:  t followed her to school one day whic</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: input and target are the stream, one step apart</h4>
+    <div class="cw-stream"><span class="both">the cat sat o</span>n the mat</div>
+    <div class="cw-stream" style="margin-top:8px;">t<span class="both">he cat sat on</span> the mat</div>
+    <p class="cw-say" style="margin:10px 0 0;"><span style="background:#e9d5ff;padding:1px 4px;border-radius:3px;">purple</span> is the window. The target (bottom) is the same window slid one letter to the right — so for every position the answer is simply "the next letter". The window then jumps to a random spot and does it again.</p>
+  </div>
+</div>
+
+<!-- B5 train + spell slider -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · training</span>
+  <div class="cw-h">5 · Train — and watch it learn to spell</div>
+  <p class="cw-say">This is the best part. We train for 4,000 steps and, at a few checkpoints, ask the half-trained model to write 110 characters starting from <code>"the "</code>. Drag the slider and watch the output climb: <b>noise → letter clumps → real words → whole rhymes.</b></p>
+  <pre class="cw-code">model, params, loss = train(nlayers=2, steps=4000, show=True)
+<span class="c"># at each checkpoint: print(sample(model, "the ")[:110])</span></pre>
+  <div class="cw-viz cw-spell">
+    <h4>Under the hood: drag to watch it learn to spell</h4>
+    <div class="meta">
+      <span>step <b id="sp-step">0</b></span>
+      <span>loss <b id="sp-loss">3.36</b></span>
+    </div>
+    <input id="sp-slider" type="range" min="0" max="5" value="0" step="1">
+    <pre id="sp-text">the …</pre>
+    <div class="note" id="sp-note"></div>
+  </div>
+</div>
+
+<!-- B6 generate -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · generation</span>
+  <div class="cw-h">6 · Give it the start of any rhyme</div>
+  <p class="cw-say">The ChatGPT loop again — but now one <em>character</em> at a time: predict next letter, append, repeat. Give it a seed and it finishes the rhyme.</p>
+  <pre class="cw-code">for seed in ['twinkle twinkle ', 'the cat ', 'humpty ']:
+    print(repr(seed), '->'); print(sample(model, seed, n=100))</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>'twinkle twinkle ' ->
+twinkle twinkle little star
+how i wonder what you are
+up above the world so high ...
+
+'the cat ' ->
+the cat and the fiddle
+the cow jumped over the moon
+the little dog laughed to see such sport ...
+
+'humpty ' ->
+humpty dumpty had a great fall
+all the kings horses and all the kings men ...</pre></div>
+</div>
+
+<!-- B7 oov wall -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · the big idea</span>
+  <div class="cw-h">7 · Why this is "general purpose": the out-of-vocabulary wall</div>
+  <p class="cw-say">Here's the difference made concrete. Part A's word model had a fixed 31-word dictionary. If a word isn't in it, there is literally <b>no id</b> for it — the model can't even read it. The character model spells the same word from letters it already knows.</p>
+  <pre class="cw-code">for w in ['cat', 'puppy', 'banana', 'dinosaur']:
+    a = 'OK' if w in word_vocab else 'CANT READ IT'
+    b = 'can spell it' if all(c in stoi for c in w) else 'missing a letter'
+    print(f'{w:9s}  whole-word: {a:14s}  character: {b}')</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>cat        whole-word: OK              character: can spell it
+puppy      whole-word: CANT READ IT    character: can spell it
+banana     whole-word: CANT READ IT    character: can spell it
+dinosaur   whole-word: CANT READ IT    character: can spell it</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: a missing word has no box — but letters always work</h4>
+    <table class="cw-oov">
+      <tr><th>word</th><th>31-word model</th><th>character model</th></tr>
+      <tr><td class="cw-word">cat</td><td><span class="cw-yes">has a box ✓</span></td><td><span class="cw-letters"><span>c</span><span>a</span><span>t</span></span></td></tr>
+      <tr><td class="cw-word">puppy</td><td><span class="cw-no">no box ✕</span></td><td><span class="cw-letters"><span>p</span><span>u</span><span>p</span><span>p</span><span>y</span></span></td></tr>
+      <tr><td class="cw-word">banana</td><td><span class="cw-no">no box ✕</span></td><td><span class="cw-letters"><span>b</span><span>a</span><span>n</span><span>a</span><span>n</span><span>a</span></span></td></tr>
+      <tr><td class="cw-word">dinosaur</td><td><span class="cw-no">no box ✕</span></td><td><span class="cw-letters"><span>d</span><span>i</span><span>n</span><span>o</span><span>s</span><span>a</span><span>u</span><span>r</span></span></td></tr>
+    </table>
+    <p class="cw-say" style="margin:12px 0 0;">Real GPTs use a clever middle ground called <b>subword</b> pieces: common words stay whole, rare ones get split into chunks (<code>dino</code> + <code>saur</code>), right down to single letters if needed. Best of both — short to read, but still able to spell anything.</p>
+  </div>
+</div>
+
+<!-- B8 depth -->
+<div class="cw-cell">
+  <span class="cw-celltag b">cell · depth experiment</span>
+  <div class="cw-h">8 · Now stacking a 2nd layer finally helps</div>
+  <p class="cw-say">On Part A's easy toy, a 2nd layer did nothing. Spelling real rhymes from letters is genuinely harder, so depth now pays off. Same experiment, real result:</p>
+  <pre class="cw-code">m1, p1, l1 = train(nlayers=1, steps=4000)
+print(f'1 layer : {p1:,} params, final loss {l1:.3f}')
+print(f'2 layers: {p2:,} params, final loss {l2:.3f}')</pre>
+  <div class="cw-out"><span class="cw-out-label">output</span><pre>1 layer : 40,793 params, final loss 0.157
+2 layers: 74,265 params, final loss 0.104
+-> more params AND lower loss: depth helps when the task is hard enough.</pre></div>
+  <div class="cw-viz">
+    <h4>Under the hood: lower loss = better speller (shorter bar is better)</h4>
+    <div class="cw-bar-row"><span class="lab">1 layer</span><div class="cw-bar" style="width:75%;background:#f59e0b;"></div><span class="pct">loss 0.157 · 40,793 params</span></div>
+    <div class="cw-bar-row"><span class="lab">2 layers</span><div class="cw-bar" style="width:50%;background:#22c55e;"></div><span class="pct">loss 0.104 · 74,265 params</span></div>
+    <p class="cw-say" style="margin:10px 0 0;">The 2-layer model is <b>34% better</b>. The lesson: throwing more brain at a problem only helps when the problem is hard enough to need it.</p>
+  </div>
+</div>
+
+<div class="callout good">
+  <strong>The whole journey in one sentence.</strong> Both models run the <em>same</em> pipeline — embed → attention → think → score → pick. Shrinking a token from a whole <b>word</b> to a single <b>letter</b> is the one change that turns a 31-word memoriser into something that can read and write <em>any</em> word. That open vocabulary is the seed of "general purpose".
+</div>
+
+<div class="lesson-links">
+  <a href="http://localhost:8011/notebooks/lesson_04f_next_word.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run notebook A yourself</a>
+  <a href="http://localhost:8011/notebooks/lesson_04g_char_rhymes.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run notebook B yourself</a>
+  <a href="lesson_04f.html"><span class="ico">↩</span> Back to Lesson 4f</a>
+</div>
+
+</div>
+
+<script>
+(() => {
+  const steps = [0, 150, 400, 1000, 2500, 4000];
+  const loss  = [3.36, 1.85, 0.80, 0.34, 0.19, 0.17];
+  const gen = [
+    "the jtrnuyrilvpkfmeyhbockubplgtrkhwujmtu\nk gsjhcbpeuthciiflb iyi\neoyjhhrrf\nwpyugyeryedijhwp kraacbvauejinefpe",
+    "the ma wint\n\nup tchithittd aithain w are the le t t che sankoon sst tlithee fe spiche l\n\ntry pitttstt piditts",
+    "the a moo moo there\nhere a a moo moo here and and the laughed and and plle to the din\n\nawin the the the lane",
+    "the clock struck one the mouse ran down\nhickory dickory dock\nthe itsy bitsy spider climbed up the water spout",
+    "the sun and dried up all the rain\nand the itsy bitsy spider climbed up the water spout\ndown came the rain and",
+    "the sun and dried up all the rain\nand the itsy bitsy spider climbed up the water spout\ndown came the rain and",
+  ];
+  const notes = [
+    "Pure noise — the model knows nothing yet. Just random letters.",
+    "Letter clumps that look word-ish. It learned which letters tend to follow which.",
+    "Real words appear (moo, here, the, lane) with mistakes. It can almost spell.",
+    "Whole correct lines from the rhymes. It can spell and copy structure.",
+    "Clean, correct verses with proper line breaks.",
+    "Fluent — give it 'the ' and it writes a whole rhyme, one letter at a time.",
+  ];
+  const $ = id => document.getElementById(id);
+  const sl = $('sp-slider');
+  const draw = () => {
+    const i = +sl.value;
+    $('sp-step').textContent = steps[i].toLocaleString();
+    $('sp-loss').textContent = loss[i].toFixed(2);
+    $('sp-text').textContent = gen[i];
+    $('sp-note').textContent = notes[i];
+  };
+  sl.addEventListener('input', draw);
+  draw();
+})();
+</script>
+<script src="course.js"></script>
+</body>
+</html>
