@@ -178,6 +178,101 @@ for _ in range(1000):
   <p style="margin:10px 0 0;">Notice how the shape <em>swells</em> from 1 to 8 in the first Linear, gets passed unchanged by ReLU (just zeroing negatives), then <em>collapses</em> back to 1 in the second Linear. Each Linear knows how to change a shape; ReLU just changes <em>values</em>.</p>
 </div>
 
+<!-- ─────────── L1.5 PLAYGROUND: feed your own x through ─────────── -->
+<div class="playground" id="pg-l15-fwd">
+  <div class="pg-head">🧪 Now you do it — feed your own number through</div>
+  <div class="pg-sub">Pick any <code>x</code> and watch every stage of the MLP compute live. The weights are fixed; only your <code>x</code> changes. Notice how many of the hidden values get zeroed by ReLU.</div>
+
+  <pre class="pg-code"><span class="pg-comment"># Weights are fixed for this playground (same MLP for everyone)</span>
+w1 = [0.6, -0.7,  1.0, -0.3,  0.45, -1.05, 0.85, 0.15]   <span class="pg-comment"># 8 input weights</span>
+b1 = [0.0,  0.0,  0.0,  0.0,  0.0,   0.0,   0.0,  0.0]   <span class="pg-comment"># 8 biases  (try b1 != 0 in the notebook!)</span>
+w2 = [0.5,  0.3,  0.7, -0.2,  0.6,   0.1,   0.8, -0.5]   <span class="pg-comment"># 8 output weights</span>
+b2 = 0.0                                                  <span class="pg-comment"># final bias</span>
+
+x = <span id="pg-l15-x-disp" class="pg-num pg-live">2.0</span>
+
+<span class="pg-comment"># Layer 1 — multiply by w1, add b1 → 8 hidden numbers</span>
+h_raw  = [w1[i]*x + b1[i] <span class="pg-keyword">for</span> i <span class="pg-keyword">in</span> range(8)]
+
+<span class="pg-comment"># ReLU — clip negatives to 0 (the bend)</span>
+h_relu = [max(0, h) <span class="pg-keyword">for</span> h <span class="pg-keyword">in</span> h_raw]
+
+<span class="pg-comment"># Layer 2 — weighted sum + b2 → final y</span>
+y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-keyword">in</span> range(8)) + b2
+
+<span class="pg-keyword">print</span>(<span class="pg-string">f"h_raw  = {h_raw}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"h_relu = {h_relu}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"y = {y}"</span>)</pre>
+
+  <div class="pg-controls">
+    <label>x:
+      <input id="pg-l15-x" type="range" min="-3" max="5" step="0.1" value="2.0" style="width:200px;">
+      <span id="pg-l15-x-val" style="font-family:ui-monospace,monospace;min-width:40px;text-align:center;">2.0</span>
+    </label>
+    <label><input type="checkbox" id="pg-l15-relu" checked> use ReLU</label>
+    <button class="pg-run" id="pg-l15-run">▶ Run</button>
+  </div>
+
+  <div class="pg-output" id="pg-l15-output">(slide x or click Run)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Slide <code>x</code> to <strong>0</strong>. What's <code>y</code>? Why isn't it 0? (Hint: look at all the biases.)</li>
+      <li>Slide <code>x</code> to <strong>-2</strong> or <strong>-3</strong>. Count how many entries in <code>h_relu</code> are <code>0</code> — they're <em>more</em> than at positive x. Why?</li>
+      <li>Untick <strong>use ReLU</strong>. Now <code>h_relu = h_raw</code>. Slide <code>x</code> around — what happens to <code>y</code>? (You should be able to fit only a STRAIGHT LINE in <code>y</code> vs <code>x</code> — that's why we need the bend.)</li>
+      <li>Re-tick ReLU. Notice that some hidden units stay at 0 across a whole range of <code>x</code> — those units have "given up" on that part of x.</li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 The same forward pass lives in <code>MLP.forward()</code> of <a href="../notebooks/lesson_01_5_from_linear_to_neural.ipynb">lesson_01_5_from_linear_to_neural.ipynb</a> — running with torch handles 25 knobs and gradients automatically.
+  </div>
+</div>
+
+<script>
+(() => {
+  const W1 = [0.6, -0.7, 1.0, -0.3, 0.45, -1.05, 0.85, 0.15];
+  const B1 = [0,0,0,0,0,0,0,0];
+  const W2 = [0.5, 0.3, 0.7, -0.2, 0.6, 0.1, 0.8, -0.5];
+  const B2 = 0.0;
+  const $ = id => document.getElementById(id);
+
+  function run() {
+    const x = parseFloat($('pg-l15-x').value);
+    const useReLU = $('pg-l15-relu').checked;
+    const h_raw = W1.map((w, i) => +(w * x + B1[i]).toFixed(2));
+    const h_relu = useReLU ? h_raw.map(h => Math.max(0, h)) : h_raw.slice();
+    const y = W2.reduce((s, w, i) => s + w * h_relu[i], B2);
+    $('pg-l15-x-val').textContent = x.toFixed(1);
+    $('pg-l15-x-disp').textContent = x.toFixed(1);
+    const fmtArr = (arr, hl) =>
+      '[' + arr.map((v, i) => {
+        const s = v >= 0 ? `+${v.toFixed(2)}` : v.toFixed(2);
+        if (hl === 'pos' && v > 0)       return `<span style="color:#86efac;">${s}</span>`;
+        if (hl === 'neg' && v < 0)       return `<span style="color:#fca5a5;">${s}</span>`;
+        if (hl === 'zero' && Math.abs(v) < 0.001) return `<span class="pg-skip">${s}</span>`;
+        return s;
+      }).join(', ') + ']';
+    // Color: raw — negatives red, positives green; relu — zeros muted, positives green
+    let html = `x = ${x.toFixed(1)}\n\n`;
+    html += `h_raw  = ${fmtArr(h_raw, 'neg')}\n`;
+    html += `         ${useReLU ? '↓ ReLU clips negatives' : '↓ ReLU disabled — h_relu = h_raw'}\n`;
+    html += `h_relu = ${fmtArr(h_relu, 'zero')}\n\n`;
+    html += `y = <span class="pg-ans">${y.toFixed(2)}</span>`;
+    const killed = useReLU ? h_raw.filter(h => h < 0).length : 0;
+    if (useReLU) html += `\n\n<span class="pg-skip">${killed} of 8 hidden units got zeroed by ReLU at x=${x.toFixed(1)}</span>`;
+    else html += `\n\n<span class="pg-skip">ReLU off — y is a plain straight line of x (no bend)</span>`;
+    $('pg-l15-output').innerHTML = html;
+  }
+  $('pg-l15-x').addEventListener('input', run);
+  $('pg-l15-relu').addEventListener('change', run);
+  $('pg-l15-run').addEventListener('click', run);
+  run();
+})();
+</script>
+<!-- ─────────────────── end L1.5 PLAYGROUND ─────────────────── -->
+
 <div class="callout">
   <strong>So… what IS a ReLU?</strong> Don't let the name spook you. ReLU is one of the simplest rules in all of machine learning:
   <ul style="margin:8px 0;">

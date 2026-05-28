@@ -156,6 +156,89 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
   <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.
 </div>
 
+<!-- ─────────── L1 PLAYGROUND: compute the loss yourself ─────────── -->
+<div class="playground" id="pg-l1-loss">
+  <div class="pg-head">🧪 Now you do it — compute the loss yourself</div>
+  <div class="pg-sub">Set <code>w</code> and <code>b</code> with the sliders below, and watch the loss math compute live. The slider widget above shows the same thing graphically; this shows the actual <em>arithmetic</em> the model runs.</div>
+
+  <pre class="pg-code">x      = [1, 2, 3, 4, 5]
+y_true = [3, 5, 7, 9, 11]   <span class="pg-comment"># the rule: y = 2x + 1</span>
+
+w = <span id="pg-l1-w-disp" class="pg-num pg-live">0.0</span>
+b = <span id="pg-l1-b-disp" class="pg-num pg-live">0.0</span>
+
+<span class="pg-comment"># Predict and measure how wrong, for each example</span>
+y_pred = [w*xi + b <span class="pg-keyword">for</span> xi <span class="pg-keyword">in</span> x]
+errors = [y_pred[i] - y_true[i] <span class="pg-keyword">for</span> i <span class="pg-keyword">in</span> range(5)]
+sq     = [e*e <span class="pg-keyword">for</span> e <span class="pg-keyword">in</span> errors]
+
+loss = sum(sq) / 5          <span class="pg-comment"># Mean Squared Error</span>
+<span class="pg-keyword">print</span>(<span class="pg-string">f"loss = {loss:.2f}"</span>)</pre>
+
+  <div class="pg-controls">
+    <label>w:
+      <input id="pg-l1-w" type="range" min="-2" max="4" step="0.1" value="0">
+      <span id="pg-l1-w-val" style="font-family:ui-monospace,monospace;min-width:40px;text-align:center;">0.0</span>
+    </label>
+    <label>b:
+      <input id="pg-l1-b" type="range" min="-3" max="5" step="0.1" value="0">
+      <span id="pg-l1-b-val" style="font-family:ui-monospace,monospace;min-width:40px;text-align:center;">0.0</span>
+    </label>
+    <button class="pg-run" id="pg-l1-run">▶ Run</button>
+  </div>
+
+  <div class="pg-output" id="pg-l1-output">(move w, b to see the loss compute)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Set <code>w=2.0, b=1.0</code>. What's the loss? (Hint: those are the secret values — should be near 0.)</li>
+      <li>Set <code>w=0, b=0</code>. The loss should be huge — that's where training starts. Look at the squared errors — each one is enormous because we're guessing 0 for everything.</li>
+      <li>Set <code>w=2, b=0</code>. Loss is small but NOT zero. Why? (The slope is right but the line passes through the origin, not <code>(0, 1)</code>.)</li>
+      <li>Try to find <code>(w, b)</code> that gives loss less than 0.1 by hand. Gradient descent does this <em>much</em> faster.</li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 Same code in <a href="../notebooks/lesson_01_linear_regression.ipynb">lesson_01_linear_regression.ipynb</a> — there torch's autograd computes the gradient of this loss for you.
+  </div>
+</div>
+
+<script>
+(() => {
+  const xs = [1,2,3,4,5], yt = [3,5,7,9,11];
+  const $ = id => document.getElementById(id);
+  function run() {
+    const w = parseFloat($('pg-l1-w').value);
+    const b = parseFloat($('pg-l1-b').value);
+    $('pg-l1-w-val').textContent = w.toFixed(1);
+    $('pg-l1-b-val').textContent = b.toFixed(1);
+    $('pg-l1-w-disp').textContent = w.toFixed(1);
+    $('pg-l1-b-disp').textContent = b.toFixed(1);
+    const yp = xs.map(x => w*x + b);
+    const er = yp.map((p, i) => p - yt[i]);
+    const sq = er.map(e => e * e);
+    const loss = sq.reduce((a,c) => a+c, 0) / xs.length;
+    const fmt = a => '[' + a.map(v => (v >= 0 ? '+' : '') + v.toFixed(2)).join(', ') + ']';
+    const lossColor = loss < 0.5 ? '#86efac' : loss < 5 ? '#fde047' : '#fca5a5';
+    $('pg-l1-output').innerHTML =
+`x       = [1, 2, 3, 4, 5]
+y_true  = [3, 5, 7, 9, 11]
+
+y_pred  = ${fmt(yp)}
+errors  = ${fmt(er)}
+squared = ${fmt(sq)}
+
+loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${loss.toFixed(2)}</span>`;
+  }
+  $('pg-l1-w').addEventListener('input', run);
+  $('pg-l1-b').addEventListener('input', run);
+  $('pg-l1-run').addEventListener('click', run);
+  run();
+})();
+</script>
+<!-- ─────────────────── end L1 PLAYGROUND ─────────────────── -->
+
 <details class="go-deeper">
   <summary>Go deeper: why not just use the plain error, or its absolute value?</summary>
   <p><strong>Plain error</strong> won't work: a +5 miss and a −5 miss would cancel to 0, telling you the model is perfect when it isn't. You need every miss to count as positive.</p>

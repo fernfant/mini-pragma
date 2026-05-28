@@ -136,6 +136,95 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <strong>"the" got smarter.</strong> It started as <code>[1, 0]</code> (bland — could mean anything). After attention, it's much closer to cat's vector. It now means "the <em>cat</em>", not just "the".
 </div>
 
+<!-- ─────────── L3 PLAYGROUND: run attention by hand ─────────── -->
+<div class="playground" id="pg-l3-attn">
+  <div class="pg-head">🧪 Now you do it — run attention on your own vectors</div>
+  <div class="pg-sub">3 words in a sentence, each described by 2 features (animal-ness, action-ness). Move the sliders to change the vectors, watch scores → softmax → mix update live. Then notice what blend the chosen word ends up with.</div>
+
+  <pre class="pg-code"><span class="pg-comment"># 3 words, 2 features each: [animal-ness, action-ness]</span>
+x = [
+  [<span id="pg-l3-a0" class="pg-num pg-live">0.2</span>, <span id="pg-l3-a1" class="pg-num pg-live">0.1</span>],   <span class="pg-comment"># the</span>
+  [<span id="pg-l3-b0" class="pg-num pg-live">1.0</span>, <span id="pg-l3-b1" class="pg-num pg-live">0.1</span>],   <span class="pg-comment"># dog</span>
+  [<span id="pg-l3-c0" class="pg-num pg-live">0.1</span>, <span id="pg-l3-c1" class="pg-num pg-live">1.0</span>],   <span class="pg-comment"># chased</span>
+]
+
+scores    = x @ x.T                       <span class="pg-comment"># every pair's dot product</span>
+attention = softmax(scores, dim=-1)       <span class="pg-comment"># each row sums to 1.0</span>
+new_x     = attention @ x                 <span class="pg-comment"># weighted blend</span>
+
+<span class="pg-keyword">print</span>(<span class="pg-string">"scores ="</span>, scores)
+<span class="pg-keyword">print</span>(<span class="pg-string">"attention ="</span>, attention)
+<span class="pg-keyword">print</span>(<span class="pg-string">"new_x ="</span>, new_x)</pre>
+
+  <div class="pg-controls">
+    <label>the animal: <input id="pg-l3-a0-r" type="range" min="0" max="2" step="0.1" value="0.2" style="width:90px;"></label>
+    <label>the action: <input id="pg-l3-a1-r" type="range" min="0" max="2" step="0.1" value="0.1" style="width:90px;"></label>
+    <label>dog animal: <input id="pg-l3-b0-r" type="range" min="0" max="2" step="0.1" value="1.0" style="width:90px;"></label>
+    <label>dog action: <input id="pg-l3-b1-r" type="range" min="0" max="2" step="0.1" value="0.1" style="width:90px;"></label>
+    <label>chased animal: <input id="pg-l3-c0-r" type="range" min="0" max="2" step="0.1" value="0.1" style="width:90px;"></label>
+    <label>chased action: <input id="pg-l3-c1-r" type="range" min="0" max="2" step="0.1" value="1.0" style="width:90px;"></label>
+    <button class="pg-run" id="pg-l3-run">▶ Run</button>
+  </div>
+
+  <div class="pg-output" id="pg-l3-output">(slide vectors to run attention)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Defaults: "the" is bland, "dog" is animal-ish, "chased" is action-ish. Look at the <strong>dog</strong> row of attention — who does dog attend to most besides itself? Why?</li>
+      <li>Make <strong>the</strong> very animal-ish (set its first slider to 2.0). What happens to dog's attention row? It now attends to "the" more — because they look alike.</li>
+      <li>Make all 3 words identical (e.g., all <code>[1.0, 1.0]</code>). Look at attention — every row is <strong>0.33, 0.33, 0.33</strong>. Attention can't distinguish words that are the same.</li>
+      <li><strong>Bonus:</strong> set chased to be VERY action-ish (<code>[0, 2]</code>). Its row should attend mostly to itself (the only action word). The bigger one word's score over the rest, the sharper softmax gets.</li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 Run the same math (with real torch) in <a href="../notebooks/lesson_03_attention.ipynb">lesson_03_attention.ipynb</a> — it does this with a 4-word sentence and full Q/K/V projections.
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const slIds = ['a0','a1','b0','b1','c0','c1'];
+  function softmax(a){ const m=Math.max(...a); const e=a.map(v=>Math.exp(v-m)); const s=e.reduce((x,y)=>x+y,0); return e.map(v=>v/s); }
+  function dot(a, b){ return a[0]*b[0] + a[1]*b[1]; }
+  function fmt(v){ return (v >= 0 ? '+' : '') + v.toFixed(2); }
+  function run() {
+    const vals = slIds.map(id => parseFloat($('pg-l3-' + id + '-r').value));
+    slIds.forEach((id, i) => { $('pg-l3-' + id).textContent = vals[i].toFixed(1); });
+    const x = [[vals[0],vals[1]], [vals[2],vals[3]], [vals[4],vals[5]]];
+    const words = ['the   ', 'dog   ', 'chased'];
+    const scores = x.map(a => x.map(b => dot(a, b)));
+    const attn   = scores.map(r => softmax(r));
+    const nx     = attn.map(row => [0,1].map(k => row.reduce((s, w, j) => s + w * x[j][k], 0)));
+    const rowFmt = (arr, fn) => arr.map(fn).join('  ');
+    let html = `              the     dog     chased
+scores:`;
+    for (let i = 0; i < 3; i++) {
+      html += `\n  ${words[i]}   ${rowFmt(scores[i], fmt)}`;
+    }
+    html += `\n\nattention (each row sums to 1.00):`;
+    for (let i = 0; i < 3; i++) {
+      const big = Math.max(...attn[i]);
+      html += `\n  ${words[i]}   ` + attn[i].map(v => {
+        const s = v.toFixed(2);
+        return v === big ? `<span class="pg-ans">${s}</span>` : s;
+      }).join('   ');
+    }
+    html += `\n\nnew_x (blended output):`;
+    for (let i = 0; i < 3; i++) {
+      html += `\n  ${words[i]}   [${nx[i].map(fmt).join(', ')}]`;
+    }
+    $('pg-l3-output').innerHTML = html;
+  }
+  slIds.forEach(id => $('pg-l3-' + id + '-r').addEventListener('input', run));
+  $('pg-l3-run').addEventListener('click', run);
+  run();
+})();
+</script>
+<!-- ─────────────────── end L3 PLAYGROUND ─────────────────── -->
+
 <h2 class="step" id="widget"><span class="step-num">Play</span> 🎮 Interactive: build an attention matrix word by word</h2>
 
 <p>Pick a few words below. Each gets a random 2-dim "embedding" (you can rerandomise). We'll compute the full attention matrix and show how each word ends up "mixing" with the others.</p>
