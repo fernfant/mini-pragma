@@ -649,6 +649,215 @@ Linear(2048, 512)</code></pre>
   <strong>What's different:</strong> the middle. Linear regression has <code>w·x + b</code>; BERT has 18 stacks of <em>attention</em> + <em>feed-forward</em> — one for cross-token mixing, one for per-token thinking, repeating.
 </div>
 
+<details class="go-deeper">
+  <summary>Go REALLY deep: walk a sentence through all 18 layers and watch <code>dog</code> wake up</summary>
+
+  <h4>The big intuition first</h4>
+
+  <p>Every layer produces, at each token's position, <strong>one vector</strong> — say 16 numbers (or 1024 in PRAGMA). That vector is a kind of <em>"knowledge bundle"</em>: a compressed summary of <em>everything the model has figured out about this token, in this specific sentence, so far</em>. It starts shallow and gets richer with each block. The key intuition:</p>
+
+  <ul>
+    <li><strong>The vector itself never "looks like" something we can read.</strong> It's just 16 (or 1024) numbers. Nobody designs what they mean.</li>
+    <li><strong>But during training, those numbers learn to encode useful "directions"</strong> — gradient descent forces them into shapes that help the model predict masked words.</li>
+    <li><strong>The features we describe below (like "animal-ness" or "subject role") are interpretations</strong> — the model never literally says "dim 4 = subject role". It just learns combinations of dimensions that, taken together, do the job.</li>
+    <li>Think of each layer as adding one more "lens" to the vector — making it sharper at a different kind of pattern. Shallow layers handle surface stuff (grammar, neighbours); deep layers handle abstract stuff (themes, intent, task-readiness).</li>
+  </ul>
+
+  <p>The widget below walks <code>dog</code> through a real 18-block Transformer. Drag the slider and watch dog's "knowledge bundle" fill up.</p>
+
+  <div class="widget" style="background:#1e293b;color:#f1f5f9;border-radius:12px;padding:18px 22px;border:1px solid #334155;">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:14px;">
+      <strong style="color:#fef3c7;font-size:14px;">🔬 Slide through 18 blocks</strong>
+      <input id="dw-slider" type="range" min="0" max="9" value="0" style="flex:1;min-width:200px;">
+      <span id="dw-stage" style="font-family:ui-monospace,monospace;color:#fde047;font-weight:700;min-width:160px;text-align:right;font-size:13px;">Embedding (no block yet)</span>
+    </div>
+
+    <!-- attention bars -->
+    <div id="dw-attn-row" style="margin:14px 0;">
+      <div style="font-family:ui-sans-serif,system-ui;font-size:12.5px;font-weight:700;color:#93c5fd;margin-bottom:6px;">🎯 What <code style="background:rgba(255,255,255,0.1);color:#fff;padding:1px 5px;border-radius:3px;">dog</code> attends to in this block:</div>
+      <div id="dw-attn-bars" style="font-family:ui-monospace,monospace;font-size:13px;line-height:1.7;color:#cbd5e1;"></div>
+    </div>
+
+    <!-- FFN extraction -->
+    <div id="dw-ffn-row" style="margin:14px 0;padding:10px 14px;background:rgba(16,185,129,0.12);border-left:3px solid #10b981;border-radius:6px;font-family:ui-sans-serif,system-ui;font-size:13px;">
+      <strong style="color:#86efac;">🧠 What the FFN extracts here:</strong>
+      <span id="dw-ffn" style="color:#dcfce7;"></span>
+    </div>
+
+    <!-- accumulated knowledge -->
+    <div style="margin:14px 0;font-family:ui-sans-serif,system-ui;">
+      <strong style="color:#fef3c7;font-size:13px;">📋 What <code style="background:rgba(255,255,255,0.1);color:#fff;padding:1px 5px;border-radius:3px;">dog</code>'s vector now carries (cumulative):</strong>
+      <ul id="dw-knowledge" style="margin:8px 0 0 22px;padding:0;color:#e2e8f0;font-size:13px;line-height:1.6;"></ul>
+    </div>
+
+    <div id="dw-narrative" style="margin-top:14px;padding:10px 14px;background:rgba(255,255,255,0.05);border-radius:6px;font-family:ui-sans-serif,system-ui;font-size:13px;color:#94a3b8;font-style:italic;"></div>
+  </div>
+
+  <h4 style="margin-top:24px;">Reading the widget: a few notes</h4>
+  <ul>
+    <li><strong>The attention bars are illustrative.</strong> Real attention weights at each layer are not directly interpretable — but the SHAPE (e.g. self-loop dominant early, neighbours later) is real. Researchers do find layer-by-layer patterns like this in trained Transformers.</li>
+    <li><strong>The features are aspirational.</strong> No one knows the exact "meaning" of dim 7 in layer 5. But papers (like "BERTology" surveys) show that <em>roughly</em>: early layers learn surface/grammar, middle layers learn semantics, late layers specialise for the task. The widget shows that shape.</li>
+    <li><strong>The vector is always the same size.</strong> "More knowledge" doesn't mean the vector gets bigger — it means the 16 numbers get arranged into a more sophisticated combination. Like how a 16-pixel image of a person and a 16-pixel image of a car use the same 16 pixels, just in different patterns.</li>
+  </ul>
+
+  <h4>Why does this work? The gradient story</h4>
+
+  <p>Nobody hand-codes "layer 5 = subject role". So how do these features emerge? <strong>Gradient descent figures it out</strong>. Here's the magic:</p>
+
+  <ol>
+    <li>The model is trained to predict masked words. If it can't, loss is high.</li>
+    <li>Loss flows backward through every block, every attention head, every FFN.</li>
+    <li>Each parameter (knob) gets a tiny nudge in the direction that <em>reduces the loss next time</em>.</li>
+    <li>Over millions of training examples, the knobs in <em>each block</em> drift into configurations that solve a useful sub-problem — because solving that sub-problem helps predict masked words.</li>
+    <li>The model never "decides" what each layer should do. The training data and the optimiser <em>force</em> the layers to specialise — because that's the path of least loss.</li>
+  </ol>
+
+  <div class="callout good" style="margin:14px 0;">
+    <strong>The ultimate intuition:</strong> A trained Transformer is a stack of automatically-discovered <em>"feature extractors"</em>, layered like an onion. Each layer can only do one of two things — attention (mix across tokens) or FFN (process within a token) — but stacked 18 deep, they can encode almost anything useful for predicting language. It's not a "smart" algorithm; it's a tower of dumb-simple operations that, together, are forced into being smart by gradient descent + a lot of data. That's the core trick of all modern AI.
+  </div>
+</details>
+
+<script>
+// --- L1.5 "walk dog through 18 layers" widget ---
+(() => {
+  const slider = document.getElementById('dw-slider');
+  if (!slider) return;
+
+  // 10 cards: embedding, blocks 1, 2, 3, "blocks 4-6", "blocks 7-10", "blocks 11-14", "blocks 15-17", block 18 (final), head
+  const STAGES = [
+    { stage: "Embedding (no block yet)",
+      sub: "Just dictionary lookup. dog is in isolation.",
+      attn: null,
+      ffn: "No block yet — this is the raw embedding table row.",
+      newK: [["dictionary meaning", "encodes raw 'dog-ness' — animal, noun, makes a sound, four legs"]],
+      narrative: "dog hasn't met any other word yet. It just IS dog." },
+
+    { stage: "Block 1 — Round 1 of mixing",
+      sub: "Attention starts cross-mixing with immediate neighbours.",
+      attn: [["the", 0.18], ["dog (self)", 0.27], ["says", 0.32], ["bark", 0.23]],
+      ffn: "refines 'I'm a noun in a subject position'",
+      newK: [["immediate neighbours", "'the' (determiner before me), 'says' (verb after), 'bark' (sound nearby)"]],
+      narrative: "dog now has a SENSE of its neighbours — it knows what surrounds it, surface-level." },
+
+    { stage: "Block 2 — Neighbours-of-neighbours",
+      sub: "Attention now reads context-aware versions of others.",
+      attn: [["the", 0.10], ["dog (self)", 0.20], ["says", 0.45], ["bark", 0.25]],
+      ffn: "refines 'subject performing the verb action'",
+      newK: [["grammatical role", "I AM the SUBJECT of the verb 'says' — confirmed by attention focus"]],
+      narrative: "Crucially, 'says' is now also context-aware — it knows what's around it. When dog attends to says here, it gets the contextualised says. That's the depth idea." },
+
+    { stage: "Block 3 — Wider context binding",
+      sub: "Attention shifts to longer-range relationships.",
+      attn: [["the", 0.07], ["dog (self)", 0.18], ["says", 0.33], ["bark", 0.42]],
+      ffn: "extracts 'animal that produces this sound'",
+      newK: [["semantic link", "the sound 'bark' is associated with me — I produce it"]],
+      narrative: "By block 3, dog has bound to bark across the sentence. It now 'knows' bark is its sound." },
+
+    { stage: "Blocks 4–6 — Refining category",
+      sub: "FFNs squeeze out higher-level patterns.",
+      attn: null,
+      ffn: "extracts 'pet-class noun' and 'animate subject'",
+      newK: [["category", "I'm a pet-class entity (not wild animal, not object)"],
+             ["animacy", "I'm an agent that can DO things, not just be acted upon"]],
+      narrative: "Around mid-stack, features get more abstract. The model is no longer thinking 'word' but 'concept'." },
+
+    { stage: "Blocks 7–10 — Semantic abstraction",
+      sub: "Sentence-level patterns emerge.",
+      attn: null,
+      ffn: "extracts 'animal–sound mapping context'",
+      newK: [["sentence theme", "this sentence teaches a dog↔bark association"],
+             ["distinction", "I'm specifically 'dog' — not 'cat' (meow) or 'fish' (splash)"]],
+      narrative: "These layers stop being about THIS sentence and start being about a CLASS of sentences (pet-sound mappings). Abstraction." },
+
+    { stage: "Blocks 11–14 — Cross-sentence patterns",
+      sub: "The model 'thinks in templates'.",
+      attn: null,
+      ffn: "extracts abstract template-level roles",
+      newK: [["template", "I fit the [animal] says [sound] pattern; I'm the [animal] slot"],
+             ["generalisation", "I'd be a high-confidence signal if 'bark' were ever masked elsewhere"]],
+      narrative: "Higher layers compress dog into 'a pet-sound-template subject slot'. This is what makes the model GENERALISE." },
+
+    { stage: "Blocks 15–17 — Task specialisation",
+      sub: "Features align with the prediction head.",
+      attn: null,
+      ffn: "aligns vector with the MLM head's expectations",
+      newK: [["task-readiness", "my vector is now arranged so the head can read 'dog' off it cleanly"],
+             ["head-aligned", "if I were masked, the head would re-emerge 'dog' with high confidence"]],
+      narrative: "The last few layers do less 'learning' and more 'preparing' — making sure the vector is in the right shape for whatever task is on top." },
+
+    { stage: "Block 18 — Final layer",
+      sub: "Full contextual representation.",
+      attn: null,
+      ffn: "final polish",
+      newK: [["complete bundle", "dog's vector now FULLY encodes its meaning + role + context + task-readiness — all 16 numbers used efficiently"]],
+      narrative: "After 18 rounds, this single 16-number vector is more informative than the dictionary entry it started as." },
+
+    { stage: "Output head — Predict",
+      sub: "Read the vector, project to vocab probabilities.",
+      attn: null,
+      ffn: "head = nn.Linear(d, V) — final projection",
+      newK: [["the payoff", "if 'bark' were masked, the head reads bark's final vector and predicts 'bark' with ~99% confidence"]],
+      narrative: "The 18 blocks built a vector so context-rich that a single Linear layer can read the answer right off it. That's the whole game." }
+  ];
+
+  // Cumulative knowledge accumulator
+  function accumulatedKnowledge(idx) {
+    const items = [];
+    for (let i = 0; i <= idx; i++) {
+      for (const [label, detail] of STAGES[i].newK) {
+        items.push({ label, detail, isNew: (i === idx) });
+      }
+    }
+    return items;
+  }
+
+  function render() {
+    const i = +slider.value;
+    const s = STAGES[i];
+    document.getElementById('dw-stage').textContent = s.stage;
+
+    // attention bars
+    const attnBox = document.getElementById('dw-attn-bars');
+    const attnRow = document.getElementById('dw-attn-row');
+    if (s.attn) {
+      attnRow.style.display = 'block';
+      let html = '';
+      const max = Math.max(...s.attn.map(p => p[1]));
+      for (const [word, weight] of s.attn) {
+        const pct = (weight * 100).toFixed(0) + '%';
+        const filled = Math.round((weight / 0.5) * 30);  // bar width
+        const bar = '█'.repeat(Math.min(filled, 30)) + '░'.repeat(Math.max(0, 30 - Math.min(filled, 30)));
+        const isMax = weight === max;
+        const color = isMax ? '#fde047' : '#cbd5e1';
+        html += `<div><span style="display:inline-block;width:90px;color:${color};font-weight:${isMax?700:400};">${word}</span> <span style="color:${color};">${bar}</span> <span style="color:${color};">${pct}</span>${isMax?' <span style="color:#fde047;">←</span>':''}</div>`;
+      }
+      attnBox.innerHTML = html;
+    } else {
+      attnRow.style.display = 'block';
+      attnBox.innerHTML = `<span style="color:#94a3b8;font-style:italic;font-family:ui-sans-serif,system-ui;">attention patterns at this depth become diffuse — multiple heads, longer-range, harder to summarise simply</span>`;
+    }
+
+    // FFN
+    document.getElementById('dw-ffn').textContent = ' ' + s.ffn;
+
+    // accumulated knowledge
+    const ulHtml = accumulatedKnowledge(i).map(k => {
+      const style = k.isNew
+        ? 'background:rgba(253,224,71,0.18);padding:3px 8px;border-radius:4px;'
+        : '';
+      const newTag = k.isNew ? ' <span style="color:#fde047;font-size:11px;font-weight:700;">← NEW</span>' : '';
+      return `<li style="margin:4px 0;${style}"><strong style="color:#fef3c7;">${k.label}:</strong> ${k.detail}${newTag}</li>`;
+    }).join('');
+    document.getElementById('dw-knowledge').innerHTML = ulHtml;
+
+    document.getElementById('dw-narrative').textContent = s.narrative;
+  }
+
+  slider.addEventListener('input', render);
+  render();
+})();
+</script>
+
 <div id="quiz-l15"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l15",[{"q": "Why can't plain linear regression fit a parabola?", "options": ["It runs out of memory", "A straight line can't bend into a U-shape", "It needs more data"], "answer": 1, "explain": "Linear regression only draws straight lines. A curve needs something bendy."}, {"q": "What gives a neural network its power to fit curves?", "options": ["More data", "The nonlinearity (ReLU/GELU) between linear layers", "A bigger learning rate"], "answer": 1, "explain": "Without the nonlinearity, stacked Linears collapse back into one straight line."}, {"q": "In an 18-layer Transformer, attention happens in…", "options": ["Only the first layer", "Only the last layer", "Every single layer"], "answer": 2, "explain": "Each of the 18 blocks runs its OWN attention + feed-forward. The whole block repeats."}]);});</script>
 
