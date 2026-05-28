@@ -13,17 +13,17 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html" class="current">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html">L4h</a>
-    <a href="lesson_04h_code.html">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -31,6 +31,13 @@
     <a href="glossary.html">📖</a>
   </div>
 </nav>
+
+<div class="spinebar">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Part 1 · How learning works</span>
+  <span class="sb-track"><span class="sb-fill" style="width:9%"></span></span>
+  <span class="sb-step">Step 1 of 11</span>
+</div>
 
 <div class="wrap">
 
@@ -312,6 +319,15 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
   </ul>
 </div>
 
+<div class="detour">
+  <span class="dt-ico">🧭</span>
+  <div>
+    <strong>Optional side-quests.</strong> Curious <em>why</em> the knob-nudging works, or how a trained model differs from its blueprint? Take a detour through
+    <a href="lesson_01b.html">L1b — Architecture vs. training</a> and
+    <a href="lesson_01c.html">L1c — Inside gradient descent</a>. <em>Safe to skip — Next jumps straight to L1.5.</em>
+  </div>
+</div>
+
 <div id="quiz-l1"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1",[{"q": "What does it mean to <em>train</em> a model?", "options": ["Nudge its numbers until its guesses get less wrong", "Write more code", "Give it the right answer formula"], "answer": 0, "explain": "Training = guess, measure how wrong, nudge the knobs, repeat."}, {"q": "In <code>y = w·x + b</code>, what are <code>w</code> and <code>b</code>?", "options": ["The input data", "The knobs the model learns", "The loss"], "answer": 1, "explain": "They're the two adjustable numbers (parameters) gradient descent tunes."}, {"q": "What does the <em>loss</em> tell you?", "options": ["How fast the code runs", "How many knobs there are", "How wrong the guesses are right now"], "answer": 2, "explain": "Loss is one number measuring wrongness. Training drives it down."}]);});</script>
 
@@ -320,9 +336,9 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
     <span class="dir">← Back to</span>
     <span class="ttl">Index</span>
   </a>
-  <a href="lesson_01b.html" class="next">
+  <a href="lesson_01_5.html" class="next">
     <span class="dir">Next →</span>
-    <span class="ttl">L1b — Architecture vs. training</span>
+    <span class="ttl">L1.5 — From linear regression to neural nets</span>
   </a>
 </div>
 

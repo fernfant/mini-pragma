@@ -69,17 +69,17 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html">L4h</a>
-    <a href="lesson_04h_code.html" class="current">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep current">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -88,10 +88,16 @@
   </div>
 </nav>
 
+<div class="spinebar deep">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Deep dive · after L4h</span>
+  <span class="sb-step">Code walkthrough</span>
+</div>
+
 <div class="wrap">
 
 <h1>Lesson 4h · Code Walkthrough</h1>
-<p class="subtitle">The <strong>minigpt</strong> capstone, read <strong>file by file</strong>. This is the real, runnable code in <code>course/minigpt/</code> — the same GPT-3 architecture, sized for a Mac. Four small files: <span class="cw-file">model.py</span> (the network), <span class="cw-file">data.py</span> (text → tokens), <span class="cw-file">train.py</span> (the loop), <span class="cw-file">sample.py</span> (generate). Every output below is from a real run on an M4.</p>
+<p class="subtitle">The <strong>minigpt</strong> build, read <strong>file by file</strong>. This is the real, runnable code in <code>course/minigpt/</code> — the same GPT-3 architecture, sized for a Mac. Four small files: <span class="cw-file">model.py</span> (the network), <span class="cw-file">data.py</span> (text → tokens), <span class="cw-file">train.py</span> (the loop), <span class="cw-file">sample.py</span> (generate). Every output below is from a real run on an M4.</p>
 
 <div class="lesson-links">
   <a href="http://localhost:8011/notebooks/lesson_04h_minigpt.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run the notebook</a>
@@ -419,7 +425,7 @@ That he is my name is it were a king's royal oath.</pre>
 </div>
 
 <div class="recap">
-  <div class="r-title">✅ The whole capstone in four files</div>
+  <div class="r-title">✅ The whole minigpt in four files</div>
   <ul>
     <li><span class="cw-file">model.py</span> — config dials + attention + MLP/Block + GPT + presets. The GPT-3 architecture; size lives entirely in the config.</li>
     <li><span class="cw-file">data.py</span> — corpus → BPE ids → <code>uint16</code> <code>train.bin</code>/<code>val.bin</code>.</li>
@@ -439,11 +445,11 @@ That he is my name is it were a king's royal oath.</pre>
 <div class="pagination">
   <a href="lesson_04h.html">
     <span class="dir">← Previous</span>
-    <span class="ttl">L4h — scaling up to a real GPT</span>
+    <span class="ttl">L4h — Scaling up to a real GPT</span>
   </a>
   <a href="lesson_05.html" class="next">
-    <span class="dir">Next →</span>
-    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+    <span class="dir">↩ Back to the path</span>
+    <span class="ttl">L5 — pragma_mini.py line by line</span>
   </a>
 </div>
 

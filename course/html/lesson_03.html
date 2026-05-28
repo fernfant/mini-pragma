@@ -13,17 +13,17 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html" class="current">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html">L4h</a>
-    <a href="lesson_04h_code.html">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -31,6 +31,13 @@
     <a href="glossary.html">📖</a>
   </div>
 </nav>
+
+<div class="spinebar">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Part 2 · The building blocks</span>
+  <span class="sb-track"><span class="sb-fill" style="width:36%"></span></span>
+  <span class="sb-step">Step 4 of 11</span>
+</div>
 
 <div class="wrap">
 
@@ -341,7 +348,13 @@ cat         0.25    0.25    0.25    0.25</code></pre>
 
 <p>Attention solved this: <strong>every word can look at every other word in parallel, directly</strong>. No fuzzy memory. No left-to-right bottleneck. Long-range information is as accessible as short-range.</p>
 
-<p>For the full "why Transformers won" story, see <a href="lesson_03b.html">Lesson 3b</a>.</p>
+<div class="detour">
+  <span class="dt-ico">🧭</span>
+  <div>
+    <strong>Optional side-quest.</strong> Want the full "why Transformers won" story — speed, memory, scale, and the old models they beat? Take a detour through
+    <a href="lesson_03b.html">L3b — Why Transformers won</a>. <em>Safe to skip — Next continues to L4.</em>
+  </div>
+</div>
 
 <div class="callout good">
   <strong>The three steps that are the heart of every modern AI model:</strong>
@@ -369,9 +382,9 @@ cat         0.25    0.25    0.25    0.25</code></pre>
     <span class="dir">← Previous</span>
     <span class="ttl">L2 — Tokens &amp; embeddings</span>
   </a>
-  <a href="lesson_03b.html" class="next">
+  <a href="lesson_04.html" class="next">
     <span class="dir">Next →</span>
-    <span class="ttl">L3b — Why Transformers won</span>
+    <span class="ttl">L4 — Training a tiny BERT</span>
   </a>
 </div>
 

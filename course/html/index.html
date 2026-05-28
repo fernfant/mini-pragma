@@ -13,17 +13,17 @@
   <div class="lesson-pills">
     <a href="index.html" class="current">Index</a>
     <a href="lesson_01.html">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html">L4h</a>
-    <a href="lesson_04h_code.html">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -144,7 +144,7 @@
 </div>
 
 <h2>🗺 The roadmap</h2>
-<p class="subtitle" style="margin-top:0;">Do the blue ones in order. The purple "side-quests" are optional — skip them on the first pass and come back when something feels hand-wavy.</p>
+<p class="subtitle" style="margin-top:0;">Just follow the <strong>Next →</strong> button — it walks you down the 11-step main path in order. The purple <em>side-quests</em> and the dashed <em>deep-dive code</em> cards are optional branches: skip them on the first pass and come back when you're curious.</p>
 
 <div class="roadmap">
 
@@ -248,13 +248,40 @@
       <span class="rm-meta"><span class="rm-time">⏱ 18 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
     </a>
 
+    <a class="rm-card deep" href="lesson_04_code.html">
+      <span class="rm-num">L4·code</span>
+      <span class="rm-body">
+        <span class="rm-title">Code walkthrough <span class="rm-tag deep">deep dive</span></span>
+        <span class="rm-desc">Read the BERT &amp; next-word models line by line. Optional — pick it up when curious.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 20 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
+    <a class="rm-card" href="lesson_04f.html">
+      <span class="rm-num">L4f</span>
+      <span class="rm-body">
+        <span class="rm-title">Predict the next word <span class="rm-tag play">play</span></span>
+        <span class="rm-desc">How ChatGPT writes: same model, one word at a time. The GPT side of the family.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 18 min</span><span class="diff"><span class="on">●●</span><span class="off">●</span></span></span>
+    </a>
+
     <a class="rm-card" href="lesson_04h.html">
       <span class="rm-num">L4h</span>
       <span class="rm-body">
-        <span class="rm-title">Scale up to a real GPT <span class="rm-tag play">capstone</span></span>
+        <span class="rm-title">Scale up to a real GPT <span class="rm-tag boss">big build</span></span>
         <span class="rm-desc">Same recipe, GPT-3 dials. Train one from scratch on your own Mac.</span>
       </span>
       <span class="rm-meta"><span class="rm-time">⏱ 30 min</span><span class="diff"><span class="on">●●●</span></span></span>
+    </a>
+
+    <a class="rm-card deep" href="lesson_04h_code.html">
+      <span class="rm-num">L4h·code</span>
+      <span class="rm-body">
+        <span class="rm-title">minigpt, file by file <span class="rm-tag deep">deep dive</span></span>
+        <span class="rm-desc">Every file of the real GPT trainer, explained. Optional companion to L4h.</span>
+      </span>
+      <span class="rm-meta"><span class="rm-time">⏱ 25 min</span><span class="diff"><span class="on">●●●</span></span></span>
     </a>
 
     <a class="rm-card" href="lesson_05.html">

@@ -59,17 +59,17 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html" class="current">L4h</a>
-    <a href="lesson_04h_code.html">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -78,10 +78,17 @@
   </div>
 </nav>
 
+<div class="spinebar">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Part 3 · Putting it together</span>
+  <span class="sb-track"><span class="sb-fill" style="width:64%"></span></span>
+  <span class="sb-step">Step 7 of 11</span>
+</div>
+
 <div class="wrap">
 
 <h1>Lesson 4h · Scaling up to a <em>real</em> GPT</h1>
-<p class="subtitle">The capstone. In 4g a <strong>character</strong> model learned to spell anything from 25 letters. Now we take the <strong>same machine</strong>, bolt on the grown-up <strong>GPT-3 recipe</strong>, and train it from scratch — on this Mac. Architecturally it <em>is</em> a GPT-3, just the baby of the family.</p>
+<p class="subtitle">The big build of Part 3. In 4g a <strong>character</strong> model learned to spell anything from 25 letters. Now we take the <strong>same machine</strong>, bolt on the grown-up <strong>GPT-3 recipe</strong>, and train it from scratch — on this Mac. Architecturally it <em>is</em> a GPT-3, just the baby of the family.</p>
 
 <div class="lesson-links">
   <a href="http://localhost:8011/notebooks/lesson_04h_minigpt.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook (runnable)</a>
@@ -316,13 +323,13 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
 ]);});</script>
 
 <div class="pagination">
-  <a href="lesson_04_code.html">
+  <a href="lesson_04f.html">
     <span class="dir">← Previous</span>
-    <span class="ttl">L4 · code walkthrough</span>
+    <span class="ttl">L4f — Predict the next word</span>
   </a>
-  <a href="lesson_04h_code.html" class="next">
+  <a href="lesson_05.html" class="next">
     <span class="dir">Next →</span>
-    <span class="ttl">L4h · code — the minigpt files</span>
+    <span class="ttl">L5 — pragma_mini.py line by line</span>
   </a>
 </div>
 

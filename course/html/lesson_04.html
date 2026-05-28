@@ -13,17 +13,17 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html">L1</a>
-    <a href="lesson_01b.html">L1b</a>
-    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_03.html">L3</a>
-    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html" class="current">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
-    <a href="lesson_04_code.html">L4·code</a>
     <a href="lesson_04h.html">L4h</a>
-    <a href="lesson_04h_code.html">L4h·code</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -31,6 +31,13 @@
     <a href="glossary.html">📖</a>
   </div>
 </nav>
+
+<div class="spinebar">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Part 3 · Putting it together</span>
+  <span class="sb-track"><span class="sb-fill" style="width:45%"></span></span>
+  <span class="sb-step">Step 5 of 11</span>
+</div>
 
 <div class="wrap">
 
@@ -764,17 +771,25 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   </ul>
 </div>
 
+<div class="detour deep">
+  <span class="dt-ico">🔬</span>
+  <div>
+    <strong>Deep dive (optional).</strong> Want to read the actual model code, line by line — every layer, the masking, the training loop? Open
+    <a href="lesson_04_code.html">L4 · Code Walkthrough</a>. <em>Otherwise just hit Next — the path continues to L4f.</em>
+  </div>
+</div>
+
 <div id="quiz-l4"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4",[{"q": "In fill-in-the-blank training, where does the 'right answer' come from?", "options": ["A human labels every example", "The word we hid — it's free", "A separate answer file"], "answer": 1, "explain": "That's the magic of MLM: the hidden word IS the label. No manual labelling needed."}, {"q": "TinyMLM is: embedding → ??? → linear head. What's in the middle?", "options": ["Another embedding", "Attention + feed-forward (the encoder layer)", "Just a bigger embedding"], "answer": 1, "explain": "The TransformerEncoderLayer = attention (L3) + feed-forward (L1.5)."}]);});</script>
 
 <div class="pagination">
-  <a href="lesson_03b.html">
+  <a href="lesson_03.html">
     <span class="dir">← Previous</span>
-    <span class="ttl">L3b — Why Transformers won</span>
+    <span class="ttl">L3 — Attention</span>
   </a>
-  <a href="lesson_05.html" class="next">
+  <a href="lesson_04f.html" class="next">
     <span class="dir">Next →</span>
-    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+    <span class="ttl">L4f — Predict the next word</span>
   </a>
 </div>
 
