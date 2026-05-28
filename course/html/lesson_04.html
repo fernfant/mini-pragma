@@ -43,6 +43,7 @@
   <summary>Steps in this lesson (matches the notebook)</summary>
   <ol>
     <li><a href="#big-idea">The fill-in-the-blank game</a></li>
+    <li><a href="#why-mask">So what is masking actually FOR?</a></li>
     <li><a href="#step-1">Step 1 — Vocabulary and the secret rules</a></li>
     <li><a href="#step-2">Step 2 — Build one training example</a></li>
     <li><a href="#step-3">Step 3 — A function that makes random examples</a></li>
@@ -81,6 +82,35 @@
 </table>
 
 <p><strong>Free training data!</strong> This is why BERT (and PRAGMA) can be trained on the whole internet without humans labelling anything. The fancy name is <em>masked language modelling</em> (MLM).</p>
+
+<h2 id="why-mask"><span style="background:var(--code-bg);color:var(--accent);padding:2px 8px;border-radius:4px;font-family:ui-monospace,monospace;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;">Why?</span> So what is masking actually FOR?</h2>
+
+<p>This is the question that trips everyone up. We're not masking <em>because</em> we want to fill in blanks — we're masking <strong>to manufacture a training task out of regular text</strong>. Look at the chain:</p>
+
+<div class="callout good">
+  <ol style="margin:8px 0;">
+    <li>We have a pile of plain text — Wikipedia, books, banking events — with <strong>no labels</strong>.</li>
+    <li>We can't train without a "right answer" to grade against. Where do we get one?</li>
+    <li><strong>Trick:</strong> hide a word ourselves. Now we have a training example: input = the sentence with a blank, answer = the word we hid. <em>The model never sees the hidden word during the guess.</em></li>
+    <li>That gives us as many training examples as we want, from any text, automatically.</li>
+  </ol>
+</div>
+
+<p>That's the <em>data</em> trick. But there's a deeper trick: <strong>to get good at this game, the model is FORCED to learn the structure of language</strong>.</p>
+
+<p>Think about what the model has to figure out to guess <code>sat</code> in <code>"The cat ___ on the mat"</code>:</p>
+
+<ul>
+  <li>The word "cat" should mean something animal-ish (so the model knows we're talking about a creature) → that pushes the <a href="lesson_02.html"><strong>embedding</strong></a> for "cat" to live near other animal embeddings.</li>
+  <li>The blank should pay attention to "cat" and "mat" (the words around it) → that pushes <a href="lesson_03.html"><strong>attention</strong></a> to focus where it matters.</li>
+  <li>The model needs some sense of grammar ("cat ___ on" is a verb spot) → that gets baked into the <a href="lesson_01_5.html#step-75"><strong>feed-forward</strong></a> layers.</li>
+</ul>
+
+<p>So masking isn't really about filling in blanks. It's <strong>a scoreable task that secretly forces the model to learn everything we wanted it to learn</strong> — meaningful embeddings, useful attention patterns, grammatical structure. All as a <em>side effect</em> of winning the game.</p>
+
+<div class="callout info">
+  <strong>That's the foundation-model idea.</strong> Train on fill-in-the-blank with billions of sentences and you end up with a model that "understands language" enough to be reused for anything: sentiment analysis, summarisation, churn prediction (L5b), fraud detection (L6). One game shapes a model; one model serves many tasks.
+</div>
 
 <div id="pred-l4"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l4",{

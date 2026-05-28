@@ -50,7 +50,8 @@
     <li><a href="#why-embed">Why isn't the ID enough?</a></li>
     <li><a href="#step-2">Step 2 — Embed (integer → vector)</a></li>
     <li><a href="#emerge">The mind-blowing twist: the slots emerge</a></li>
-    <li><a href="#train">🎬 Watch the embeddings learn</a></li>
+    <li><a href="#train">🎬 What "training the embeddings" really means</a></li>
+    <li><a href="#data">🔎 What data did we feed in? Is this BERT?</a></li>
     <li><a href="#why">Why this matters for the Transformer</a></li>
   </ol>
 </details>
@@ -252,6 +253,51 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
   </table>
   <p>The <strong>loss plateaus around 4.16</strong> (the floor for this tiny vocab) — but <code>dog·bark</code> <strong>keeps growing</strong> because nothing stops the vectors from getting longer. The <em>direction</em> they point is already correct after ~400 steps; extra training just makes them bigger. That's why real models use tricks like LayerNorm and weight decay to keep magnitudes in check.</p>
 </details>
+
+<h2 class="step" id="data"><span class="step-num">Data</span> 🔎 What did we actually FEED into the model?</h2>
+
+<p>Pause and look at what just trained those embeddings. The "training data" for the demo above is a tiny hand-built list. <strong>That's the entire training set</strong>:</p>
+
+<pre><code>train_pairs = [
+    ("dog",  "bark"),   ("bark", "dog"),
+    ("cat",  "meow"),   ("meow", "cat"),
+    ("fish", "swim"),   ("swim", "fish"),
+]</code></pre>
+
+<p>Each round of training, the model picks one row and asks: "given this input word, can I score its partner highest?" If yes, score; if no, nudge every embedding number a hair. Repeat thousands of times — the partners drift together.</p>
+
+<div class="callout">
+  <strong>This style of game is called <em>skip-gram</em> (or word2vec).</strong> Just pairs of words. No sentences, no surrounding context. Simple to grasp, but limited — to teach the model that "dog" is related to "puppy" we'd have to write that pair down ourselves. With a vocabulary of 30,000 words, that's a non-starter.
+</div>
+
+<h3>Is this what BERT does?</h3>
+
+<p><strong>Close cousin, not the same.</strong> Both train embeddings by playing fill-in-the-blank, but the <em>shape of the training data</em> is different.</p>
+
+<div class="compare-two">
+  <div>
+    <h4>Toy (skip-gram / word2vec)</h4>
+    <p style="margin:6px 0;">Training data = <strong>pairs of words</strong>:</p>
+    <pre style="font-size:12.5px;"><code>("dog",  "bark")
+("cat",  "meow")
+("fish", "swim")
+ ... (6 pairs total)</code></pre>
+    <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim);">Each example: one input word, guess its partner. Hand-built. Tiny.</p>
+  </div>
+  <div>
+    <h4>Real BERT (masked language modelling)</h4>
+    <p style="margin:6px 0;">Training data = <strong>sentences from the internet</strong> with one word hidden:</p>
+    <pre style="font-size:12.5px;"><code>"the ___ barked loudly"      → dog
+"she ate an ___ for lunch"   → apple
+"the cat sat on the ___"     → mat
+ ... (billions more)</code></pre>
+    <p style="margin:8px 0 0;font-size:13px;color:var(--text-dim);">Real text. Hide 15% randomly. The hidden word IS the label — zero human labelling.</p>
+  </div>
+</div>
+
+<p>Why the bigger setup? Because real sentences give the model <strong>context</strong> — not just the partner, but the <em>company a word keeps</em>. Words used in similar contexts (dog / puppy / hound) end up with similar embeddings, even though we never paired them by hand. BERT discovers those clusters from raw text.</p>
+
+<p>That's why our toy needed a list of partners but BERT just needs Wikipedia. <strong>Lesson 4 builds the small version of BERT</strong> — same fill-in-the-blank game, real (tiny) sentences, and now embedding + attention + feed-forward all training together.</p>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this matters for the Transformer</h2>
 
