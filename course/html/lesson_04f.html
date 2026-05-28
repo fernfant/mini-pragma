@@ -41,7 +41,7 @@
 </div>
 
 <div class="callout info">
-  <strong>Every number on this page is real.</strong> We trained the tiny model in the notebook (just <strong>11,071 knobs</strong>, a few seconds on a laptop), then dumped its actual embeddings, attention weights, predictions and loss curve into this page. The widgets read those — so the attention bars, probabilities and generated sentences are exactly what the model produces, not made up.
+  <strong>Every number on this page is real.</strong> We trained the tiny model in the notebook (just <strong>11,071 parameters</strong>, a few seconds on a laptop), then dumped its actual embeddings, attention weights, predictions and loss curve into this page. The widgets read those — so the attention bars, probabilities and generated sentences are exactly what the model produces, not made up.
 </div>
 
 <details class="lesson-toc" open>
@@ -305,7 +305,7 @@ ids = [BOS] + [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-k
 </table>
 
 <details class="go-deeper">
-  <summary>Go deeper: where are all 11,071 knobs? (exact breakdown)</summary>
+  <summary>Go deeper: where are all 11,071 parameters? (exact breakdown)</summary>
   <p>People are often surprised the count is "hard to reach by hand" — because the biggest chunk isn't the part you'd guess (the feed-forward), it's attention's Q/K/V projection. Here's every parameter:</p>
   <table class="compact" style="max-width:460px;">
     <thead><tr><th>Part</th><th>Shape</th><th>Knobs</th></tr></thead>
@@ -487,7 +487,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     <tr><td>32-dim vectors</td><td>embed + position</td><td>thousands of dims</td></tr>
     <tr><td>1 encoder layer</td><td>attention + feed-forward</td><td>dozens–100+ layers</td></tr>
     <tr><td>causal mask</td><td><strong>identical idea</strong></td><td>causal mask</td></tr>
-    <tr><td>11,071 knobs</td><td>cross-entropy on shifted labels</td><td>billions–trillions</td></tr>
+    <tr><td>11,071 parameters</td><td>cross-entropy on shifted labels</td><td>billions–trillions</td></tr>
     <tr><td>predict→append→repeat</td><td><strong>identical loop</strong></td><td>predict→append→repeat</td></tr>
   </tbody>
 </table>
@@ -499,23 +499,27 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <!-- ──────────────────────────────────────────────────────────── -->
 <h2 id="anatomy">🔬 Bonus — the whole brain, drawn to scale</h2>
 
-<p>We keep saying "32 numbers", "4 heads", "64 neurons". But how big is that, really? Below is the <strong>actual</strong> network that wrote those sentences — every box sized to its real count, so you can <em>see</em> where the 11,071 knobs live and feel how it compares to ChatGPT. Every number here is the true spec of the model on this page.</p>
+<p>We keep saying "32 numbers", "4 heads", "64 neurons". But how big is that, really? Below is the <strong>actual</strong> network that wrote those sentences — every box sized to its real count, so you can <em>see</em> where the 11,071 parameters live and feel how it compares to ChatGPT. Every number here is the true spec of the model on this page.</p>
 
-<h3 style="margin-bottom:4px;">① How wide is one word? — 32 numbers</h3>
-<p style="margin-top:4px;">Each word becomes a row of <strong>32 numbers</strong> (a vector). That's the "thickness" of every pipe in the network. Here are all 32, to scale:</p>
+<h3 style="margin-bottom:4px;">① How wide is one word? — 32 dimensions</h3>
+<p style="margin-top:4px;">Each word becomes a <strong>vector</strong>: a list of <strong>32 numbers</strong>. Each number is one <strong>dimension</strong> — a separate little dial the model uses to record some shade of meaning. So we say this model has an <strong>embedding dimension of 32</strong> (written <code>d = 32</code>). That number is the "thickness" of every pipe in the network — every vector flowing through it is 32 dimensions wide. Here are all 32 dimensions of one word, to scale:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
   <div id="anat-vec" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
-  <div style="color:#94a3b8;font-size:12.5px;margin-top:10px;font-style:italic;">32 boxes = one word's meaning. ChatGPT-3 uses <strong style="color:#fca5a5;">12,288</strong> — that row would be ~25× wider than your screen.</div>
+  <div style="color:#94a3b8;font-size:12.5px;margin-top:10px;font-style:italic;">32 boxes = 32 dimensions = one word's meaning. ChatGPT-3 gives each word <strong style="color:#fca5a5;">12,288 dimensions</strong> — that row would be ~25× wider than your screen.</div>
 </div>
 
 <h3 style="margin-bottom:4px;margin-top:22px;">② Inside the one encoder layer — to scale</h3>
-<p style="margin-top:4px;">Our model has exactly <strong>one</strong> of these blocks. Watch the data get split across <strong>4 attention heads</strong>, then bulge out to <strong>64</strong> feed-forward neurons and back. The bulge is the "think harder" step — and it's why the layer has more knobs than you'd guess.</p>
+<p style="margin-top:4px;">Think of this one block as a <strong>room where the words do their work</strong>. Our model has just one room (big models stack dozens). Inside, every word goes through two stops:</p>
+<ul style="margin-top:6px;line-height:1.6;">
+  <li><strong>Stop 1 — the looking-around table (attention).</strong> Here the words get to <em>read each other</em> and decide who matters. We split the work across <strong>4 attention heads</strong> — like 4 friends each looking for a different kind of clue (one tracks "who did it?", another "where?", another "what comes next?"). Each friend only needs <strong>8 of the 32 dimensions</strong> to do their job (4 × 8 = 32), then they share notes.</li>
+  <li><strong>Stop 2 — the thinking booth (feed-forward).</strong> Now each word goes off <em>alone</em> to think hard about what it just heard. To get more room to think, its 32 numbers spread out onto a bigger scratchpad of <strong>64 neurons</strong>, then squeeze back down to 32. That "puff out, then shrink" is the <em>think-harder</em> step — and it's where a surprising chunk of the model's <strong>parameters</strong> live.</li>
+</ul>
 
 <div class="widget" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
 
     <div style="text-align:center;">
-      <div style="color:#93c5fd;font-size:12px;margin-bottom:6px;font-weight:700;">in: 32</div>
+      <div style="color:#93c5fd;font-size:12px;margin-bottom:6px;font-weight:700;">in: 32 dimensions</div>
       <div id="anat-in" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;justify-content:center;"></div>
     </div>
 
@@ -529,7 +533,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
         <div style="background:#1e3a5f;border-radius:6px;padding:5px 7px;font-size:10.5px;color:#bae6fd;">head 3<br><span style="color:#7dd3fc;">8 dims</span></div>
         <div style="background:#1e3a5f;border-radius:6px;padding:5px 7px;font-size:10.5px;color:#bae6fd;">head 4<br><span style="color:#7dd3fc;">8 dims</span></div>
       </div>
-      <div style="color:#64748b;font-size:11px;margin-top:6px;">32 ÷ 4 = 8 numbers each.<br>Each head watches a different kind of link.</div>
+      <div style="color:#64748b;font-size:11px;margin-top:6px;">32 dimensions ÷ 4 heads = 8 dimensions each.<br>Each head watches a different kind of link.</div>
     </div>
 
     <div style="align-self:center;color:#fde047;font-size:20px;">→</div>
@@ -537,11 +541,11 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     <div style="text-align:center;background:#052e16;border:1px solid #15803d;border-radius:10px;padding:10px;">
       <div style="color:#86efac;font-size:12px;margin-bottom:6px;font-weight:700;">feed-forward bulge</div>
       <div style="display:flex;gap:10px;align-items:flex-start;justify-content:center;">
-        <div><div style="color:#64748b;font-size:10.5px;margin-bottom:4px;">32</div><div id="anat-ffn-in" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
+        <div><div style="color:#64748b;font-size:10.5px;margin-bottom:4px;">32 dims</div><div id="anat-ffn-in" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
         <div style="align-self:center;color:#86efac;">→</div>
-        <div><div style="color:#86efac;font-size:10.5px;margin-bottom:4px;font-weight:700;">64</div><div id="anat-ffn-hid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
+        <div><div style="color:#86efac;font-size:10.5px;margin-bottom:4px;font-weight:700;">64 neurons</div><div id="anat-ffn-hid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
         <div style="align-self:center;color:#86efac;">→</div>
-        <div><div style="color:#64748b;font-size:10.5px;margin-bottom:4px;">32</div><div id="anat-ffn-out" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
+        <div><div style="color:#64748b;font-size:10.5px;margin-bottom:4px;">32 dims</div><div id="anat-ffn-out" style="display:grid;grid-template-columns:repeat(4,1fr);gap:3px;"></div></div>
       </div>
     </div>
 
@@ -556,11 +560,11 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   </div>
 </div>
 
-<h3 style="margin-bottom:4px;margin-top:22px;">③ Where do the 11,071 knobs actually live?</h3>
-<p style="margin-top:4px;">Every box above is made of adjustable knobs (weights). Here's the real split — the surprise is that <strong>attention's Q/K/V</strong>, not the feed-forward, is the single biggest piece:</p>
+<h3 style="margin-bottom:4px;margin-top:22px;">③ Where do the 11,071 parameters actually live?</h3>
+<p style="margin-top:4px;"><strong>Parameter</strong> is the official word for one adjustable number the model learns (you'll also hear <strong>weight</strong>). Every box above is made of these. Here's the real split — with a plain-English example of what each group <em>does</em> — and the surprise is that <strong>attention's Q/K/V</strong>, not the feed-forward, is the single biggest piece:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
   <div id="anat-bar" style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid #334155;"></div>
-  <div id="anat-legend" style="display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:14px;font-size:12.5px;"></div>
+  <div id="anat-legend" style="display:flex;flex-direction:column;gap:11px;margin-top:14px;font-size:12.5px;"></div>
 </div>
 
 <h3 style="margin-bottom:4px;margin-top:22px;">④ Now scale it up — same shape, more of everything</h3>
@@ -573,7 +577,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     <tr><td>feed-forward neurons</td><td>64</td><td>49,152</td><td>~770×</td></tr>
     <tr><td>encoder/decoder layers</td><td>1</td><td>96</td><td>96×</td></tr>
     <tr><td>vocabulary</td><td>31</td><td>~50,257</td><td>~1,600×</td></tr>
-    <tr style="background:#dcfce7"><td><strong>total knobs</strong></td><td><strong>11,071</strong></td><td><strong>175,000,000,000</strong></td><td><strong>~16,000,000×</strong></td></tr>
+    <tr style="background:#dcfce7"><td><strong>total parameters</strong></td><td><strong>11,071</strong></td><td><strong>175,000,000,000</strong></td><td><strong>~16,000,000×</strong></td></tr>
   </tbody>
 </table>
 
@@ -925,24 +929,27 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     dots($('anat-head'), 31, '#f87171');
 
     const parts = [
-      ['attention Q/K/V', 3168, '#3b82f6'],
-      ['feed-forward (64)', 4192, '#22c55e'],
-      ['attention out', 1056, '#60a5fa'],
-      ['word embedding', 992, '#a78bfa'],
-      ['head', 1023, '#f87171'],
-      ['position embedding', 512, '#c084fc'],
-      ['2× LayerNorm', 128, '#94a3b8'],
+      ['attention Q/K/V', 3168, '#3b82f6', 'lets each word ask "which earlier words matter to me?" — e.g. the final <code>the</code> leaning hard on <code>sat&nbsp;on</code> so the next word is furniture'],
+      ['feed-forward (64)', 4192, '#22c55e', 'the "think harder" step — reshapes each word\'s vector on its own, nudging <code>sat on the ___</code> toward <em>couch / mat</em>'],
+      ['attention out', 1056, '#60a5fa', 'blends what the 4 heads each found back into one 32-dimension vector'],
+      ['word embedding', 992, '#a78bfa', 'the dictionary: word id → its 32-number meaning vector, so <code>cat</code> and <code>dog</code> land near each other'],
+      ['head', 1023, '#f87171', 'turns the final vector into 31 scores — one vote per vocab word — before softmax picks a winner'],
+      ['position embedding', 512, '#c084fc', 'stamps each slot (1st word, 2nd word…) so <code>cat sat</code> ≠ <code>sat cat</code>'],
+      ['2× LayerNorm', 128, '#94a3b8', 'two small scale + shift parameters that keep the numbers from blowing up or vanishing as they flow through'],
     ];
     const total = 11071;
     $('anat-bar').innerHTML = parts.map(([lab,n,c]) =>
       `<div title="${lab}: ${n}" style="width:${(n/total*100).toFixed(2)}%;background:${c};"></div>`).join('');
-    $('anat-legend').innerHTML = parts.map(([lab,n,c]) =>
-      `<div style="display:flex;align-items:center;gap:6px;">
-        <span style="width:11px;height:11px;border-radius:3px;background:${c};display:inline-block;"></span>
-        <span style="color:#cbd5e1;">${lab}</span>
-        <span style="color:#64748b;font-family:ui-monospace,monospace;">${n.toLocaleString()} · ${(n/total*100).toFixed(0)}%</span>
+    $('anat-legend').innerHTML = parts.map(([lab,n,c,ex]) =>
+      `<div style="display:flex;gap:8px;align-items:flex-start;">
+        <span style="width:11px;height:11px;border-radius:3px;background:${c};display:inline-block;flex:none;margin-top:4px;"></span>
+        <div>
+          <span style="color:#cbd5e1;font-weight:600;">${lab}</span>
+          <span style="color:#64748b;font-family:ui-monospace,monospace;"> — ${n.toLocaleString()} params · ${(n/total*100).toFixed(0)}%</span>
+          <div style="color:#94a3b8;font-size:11.5px;margin-top:2px;line-height:1.45;">${ex}</div>
+        </div>
       </div>`).join('') +
-      `<div style="color:#fde047;font-weight:700;font-family:ui-monospace,monospace;">= ${total.toLocaleString()} total</div>`;
+      `<div style="color:#fde047;font-weight:700;font-family:ui-monospace,monospace;width:100%;">= ${total.toLocaleString()} parameters total</div>`;
   })();
 
 })();
