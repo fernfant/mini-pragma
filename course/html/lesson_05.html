@@ -36,7 +36,7 @@
 <p class="subtitle">Re-read every line of the toy with full understanding. Each line tagged with the lesson concept it uses.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_05_pragma_mini.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_05_pragma_mini.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../../pragma_mini.py"><span class="ico">🐍</span> pragma_mini.py</a>
   <a href="../05_putting_it_together.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
@@ -179,7 +179,7 @@ ids, labels = mask_one(ids, hide_value_of)
   </div>
 
   <div class="pg-notebook">
-    📓 The real <code>encode()</code> and <code>mask()</code> are in <a href="../notebooks/lesson_05_pragma_mini.ipynb">lesson_05_pragma_mini.ipynb</a> — run them inside the training loop with torch.
+    📓 The real <code>encode()</code> and <code>mask()</code> are in <a href="http://localhost:8011/notebooks/lesson_05_pragma_mini.ipynb" target="_blank" rel="noopener">lesson_05_pragma_mini.ipynb</a> — run them inside the training loop with torch.
   </div>
 </div>
 
@@ -338,6 +338,15 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 </div>
 
 <p>Next: see one more realistic worked example before the capstone.</p>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Banking events become <em>key+value</em> tokens so structure and magnitude survive.</li>
+    <li>It's the same pipeline you built: embed → attention → head, trained by masking.</li>
+  </ul>
+</div>
 
 <div id="quiz-l5"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5",[{"q": "Why key-value tokenisation instead of plain text for banking data?", "options": ["It's shorter to type", "It keeps each field's structure and magnitude", "It uses fewer GPUs"], "answer": 1, "explain": "Plain text shatters '14.99' into pieces and loses magnitude. Key+value keeps structure."}, {"q": "What does the final linear head do?", "options": ["Projects each vector to a score per vocab word", "Adds up all the vectors", "Picks a random word"], "answer": 0, "explain": "The head turns context vectors into vocab scores so it can predict the masked token."}]);});</script>

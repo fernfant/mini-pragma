@@ -131,6 +131,15 @@
   </ol>
 </div>
 
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>RNNs read one word at a time (slow) and forget early words (short memory).</li>
+    <li>Attention reads everything at once and looks back directly — that's what unlocked huge models.</li>
+  </ul>
+</div>
+
 <div id="quiz-l3b"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3b",[{"q": "Why are RNNs slow on long sentences?", "options": ["They use too much memory", "They process one word at a time, in order", "They have too many knobs"], "answer": 1, "explain": "RNNs are sequential — word 100 must wait for word 99. Attention does all at once."}, {"q": "The 'single index card' analogy describes which RNN weakness?", "options": ["Losing long-range memory", "Being too accurate", "Using too little power"], "answer": 0, "explain": "Early words fade as the one card gets rewritten each step. Attention looks back directly."}]);});</script>
 

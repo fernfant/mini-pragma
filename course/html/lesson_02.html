@@ -36,10 +36,10 @@
 <p class="subtitle">How a computer turns the word "dog" into a list of numbers it can do math on.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_02_tokens_embeddings.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_02_tokens_embeddings.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../02_tokens_and_embeddings.py"><span class="ico">🐍</span> 02_tokens_and_embeddings.py</a>
   <a href="../02_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
-  <a href="../notebooks/lesson_02c_embedding_from_scratch.ipynb"><span class="ico">🛠</span> L2c from-scratch</a>
+  <a href="http://localhost:8011/notebooks/lesson_02c_embedding_from_scratch.ipynb" target="_blank" rel="noopener"><span class="ico">🛠</span> L2c from-scratch</a>
 </div>
 
 <details class="lesson-toc" open>
@@ -263,7 +263,7 @@ sim = sum(emb[tok2id[a]][i] * emb[tok2id[b]][i] <span class="pg-keyword">for</sp
   </div>
 
   <div class="pg-notebook">
-    📓 Same idea in <a href="../notebooks/lesson_02_tokens_embeddings.ipynb">lesson_02_tokens_embeddings.ipynb</a> Step 4 — except there you can re-train and watch the numbers change in real time.
+    📓 Same idea in <a href="http://localhost:8011/notebooks/lesson_02_tokens_embeddings.ipynb" target="_blank" rel="noopener">lesson_02_tokens_embeddings.ipynb</a> Step 4 — except there you can re-train and watch the numbers change in real time.
   </div>
 </div>
 
@@ -977,6 +977,15 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
     <li>Step 1 — tokenise: every word gets an ID number.</li>
     <li>Step 2 — embed: every ID becomes a list of numbers (coordinates on a learned map).</li>
   </ol>
+</div>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Computers compare things by turning them into vectors and taking <em>dot products</em>.</li>
+    <li>Embeddings are <em>learned</em> vectors — no human assigns the meanings, training does.</li>
+  </ul>
 </div>
 
 <div id="quiz-l2"></div>

@@ -149,6 +149,15 @@
   Send me what you make. — <a href="https://github.com/fernfant">@fernfant</a>
 </div>
 
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Pre-training is label-free; the fraud labels are only for the final head.</li>
+    <li>For rare fraud, report <em>recall</em> — and you now know every piece needed to build it.</li>
+  </ul>
+</div>
+
 <div id="quiz-l6"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l6",[{"q": "During pre-training your fraud detector, should you use the fraud labels?", "options": ["Yes, always", "No — ignore them; pre-training is label-free", "Only the fraud ones"], "answer": 1, "explain": "Pre-training learns event structure with fill-in-the-blank. Labels come later, for the head."}, {"q": "With very few fraudsters, the headline metric to report is…", "options": ["Recall on fraud", "Total accuracy", "Number of users"], "answer": 0, "explain": "Same lesson as L5b — with a rare class, recall is what actually matters."}]);});</script>
 

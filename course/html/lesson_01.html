@@ -36,7 +36,7 @@
 <p class="subtitle">Before transformers, before any of the fancy stuff: what does "learning" actually mean?</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_01_linear_regression.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_01_linear_regression.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../01_how_models_learn.py"><span class="ico">🐍</span> 01_how_models_learn.py</a>
   <a href="../01_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
@@ -218,7 +218,7 @@ loss = sum(sq) / 5          <span class="pg-comment"># Mean Squared Error</span>
   </div>
 
   <div class="pg-notebook">
-    📓 Same code in <a href="../notebooks/lesson_01_linear_regression.ipynb">lesson_01_linear_regression.ipynb</a> — there torch's autograd computes the gradient of this loss for you.
+    📓 Same code in <a href="http://localhost:8011/notebooks/lesson_01_linear_regression.ipynb" target="_blank" rel="noopener">lesson_01_linear_regression.ipynb</a> — there torch's autograd computes the gradient of this loss for you.
   </div>
 </div>
 
@@ -300,6 +300,15 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
 </div>
 
 <p>That's it. Everything else in this course is decoration.</p>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>A model is just a bag of numbers (like <code>w</code> and <code>b</code>) that turns an input into a guess.</li>
+    <li>Training = guess → measure the loss → nudge the numbers → repeat. Five lines of code, every time.</li>
+  </ul>
+</div>
 
 <div id="quiz-l1"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1",[{"q": "What does it mean to <em>train</em> a model?", "options": ["Nudge its numbers until its guesses get less wrong", "Write more code", "Give it the right answer formula"], "answer": 0, "explain": "Training = guess, measure how wrong, nudge the knobs, repeat."}, {"q": "In <code>y = w·x + b</code>, what are <code>w</code> and <code>b</code>?", "options": ["The input data", "The knobs the model learns", "The loss"], "answer": 1, "explain": "They're the two adjustable numbers (parameters) gradient descent tunes."}, {"q": "What does the <em>loss</em> tell you?", "options": ["How fast the code runs", "How many knobs there are", "How wrong the guesses are right now"], "answer": 2, "explain": "Loss is one number measuring wrongness. Training drives it down."}]);});</script>

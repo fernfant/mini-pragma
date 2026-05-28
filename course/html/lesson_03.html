@@ -36,10 +36,10 @@
 <p class="subtitle">The big idea of the Transformer. Once you understand this, every modern AI model — GPT, BERT, PRAGMA — uses some variation of it.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_03_attention.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_03_attention.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../03_attention.py"><span class="ico">🐍</span> 03_attention.py</a>
   <a href="../03_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
-  <a href="../notebooks/lesson_03c_attention_from_scratch.ipynb"><span class="ico">🛠</span> L3c from-scratch</a>
+  <a href="http://localhost:8011/notebooks/lesson_03c_attention_from_scratch.ipynb" target="_blank" rel="noopener"><span class="ico">🛠</span> L3c from-scratch</a>
 </div>
 
 <details class="lesson-toc" open>
@@ -197,7 +197,7 @@ new_x     = attention @ x                 <span class="pg-comment"># weighted bl
   </div>
 
   <div class="pg-notebook">
-    📓 Run the same math (with real torch) in <a href="../notebooks/lesson_03_attention.ipynb">lesson_03_attention.ipynb</a> — it does this with a 4-word sentence and full Q/K/V projections.
+    📓 Run the same math (with real torch) in <a href="http://localhost:8011/notebooks/lesson_03_attention.ipynb" target="_blank" rel="noopener">lesson_03_attention.ipynb</a> — it does this with a 4-word sentence and full Q/K/V projections.
   </div>
 </div>
 
@@ -280,7 +280,7 @@ scores:`;
 
 <h2 class="step" id="transform"><span class="step-num">Trace</span> 🔬 One word, step by step</h2>
 
-<p>Let's follow a single word through all three steps with <strong>meaningful</strong> vectors (the same ones the <a href="../notebooks/lesson_03_attention.ipynb">notebook</a> uses). Each word is described by two readable features — how <strong>animal-ish</strong> and how <strong>action-ish</strong> it is. Pick a word and watch its vector turn into scores, then percentages, then a new blended vector.</p>
+<p>Let's follow a single word through all three steps with <strong>meaningful</strong> vectors (the same ones the <a href="http://localhost:8011/notebooks/lesson_03_attention.ipynb" target="_blank" rel="noopener">notebook</a> uses). Each word is described by two readable features — how <strong>animal-ish</strong> and how <strong>action-ish</strong> it is. Pick a word and watch its vector turn into scores, then percentages, then a new blended vector.</p>
 
 <div class="widget">
   <div style="margin-bottom:14px;">
@@ -346,6 +346,15 @@ cat         0.25    0.25    0.25    0.25</code></pre>
     <li><strong>Softmax</strong> turns scores into a 100% attention budget.</li>
     <li><strong>Mix</strong> word vectors using those weights. Each word now carries context.</li>
   </ol>
+</div>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Attention = score every word pair → softmax the scores → mix the values. That's the whole trick.</li>
+    <li>Query/Key/Value let each word ask "who matters to me?" and pull in their information.</li>
+  </ul>
 </div>
 
 <div id="quiz-l3"></div>

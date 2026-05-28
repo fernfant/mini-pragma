@@ -36,7 +36,7 @@
 <p class="subtitle">The PRAGMA recipe on tabular data, step by step. First we look at the data, then build intuition, then run two experiments and compare.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_05a_house_predictor.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_05a_house_predictor.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../05a_house_predictor.py"><span class="ico">🐍</span> 05a_house_predictor.py</a>
   <a href="../05a_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
@@ -412,6 +412,15 @@ AFTER MASKING (random 30%):
 </script>
 
 <p style="margin-top:14px;"><span style="background:#dcfce7;padding:2px 6px;border-radius:4px;">Green 👑</span> = pre-training wins (few labels). <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;">Yellow 👑</span> = baseline wins (many labels). The crossover around 500 labels is the lesson: <strong>pre-training is a head-start, most valuable when you can't afford many labels.</strong></p>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Pre-training plays fill-in-the-blank on features alone — no price labels needed.</li>
+    <li>A frozen pre-trained encoder + a tiny head wins most when labelled data is scarce.</li>
+  </ul>
+</div>
 
 <div id="quiz-l5a"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5a",[{"q": "What does PRE-TRAINING use?", "options": ["Only labelled houses", "All houses, features only, no price labels", "Just the 3 example houses"], "answer": 1, "explain": "Pre-training plays fill-in-the-blank on features alone — no labels, all the data."}, {"q": "Why does pre-training help most when labels are scarce?", "options": ["It already learned the structure, so the head needs little labelled data", "It memorises the labels", "It makes training slower"], "answer": 0, "explain": "The frozen encoder brings knowledge for free; the tiny head learns from few labels."}]);});</script>

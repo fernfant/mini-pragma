@@ -143,6 +143,15 @@ head = nn.Linear(2, 3)           # 2*3 weights + 3 biases = 9 knobs
   </ul>
 </div>
 
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li><em>Architecture</em> is WHAT a model computes; the training recipe is HOW it learns — and that recipe never changes.</li>
+    <li>Embeddings start out random and become meaningful because the same loop nudges them too.</li>
+  </ul>
+</div>
+
 <div id="quiz-l1b"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1b",[{"q": "The embedding numbers start out random. Why do they end up meaningful?", "options": ["A human types them in", "The training loop nudges them", "They're copied from a dictionary"], "answer": 1, "explain": "Embeddings are LEARNED — the same loop that tunes w and b tunes them too."}, {"q": "What stays the SAME between a 2-knob model and a billion-knob Transformer?", "options": ["The number of knobs", "The 5-line training loop", "The architecture"], "answer": 1, "explain": "Architecture changes; the train recipe (guess → loss → backward → step) does not."}]);});</script>
 

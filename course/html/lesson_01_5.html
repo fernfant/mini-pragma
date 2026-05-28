@@ -36,7 +36,7 @@
 <p class="subtitle">Bridge between L1's two-knob model and L4's tiny BERT. Same training loop. Different model in the middle.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_01_5_from_linear_to_neural.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_01_5_from_linear_to_neural.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="lesson_01.html"><span class="ico">←</span> L1 prerequisite</a>
   <a href="lesson_04.html"><span class="ico">→</span> L4 (where it all lands)</a>
 </div>
@@ -244,7 +244,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   </div>
 
   <div class="pg-notebook">
-    📓 The same forward pass lives in <code>MLP.forward()</code> of <a href="../notebooks/lesson_01_5_from_linear_to_neural.ipynb">lesson_01_5_from_linear_to_neural.ipynb</a> — running with torch handles 25 knobs and gradients automatically.
+    📓 The same forward pass lives in <code>MLP.forward()</code> of <a href="http://localhost:8011/notebooks/lesson_01_5_from_linear_to_neural.ipynb" target="_blank" rel="noopener">lesson_01_5_from_linear_to_neural.ipynb</a> — running with torch handles 25 knobs and gradients automatically.
   </div>
 </div>
 
@@ -859,6 +859,15 @@ Linear(2048, 512)</code></pre>
   render();
 })();
 </script>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>A straight line can't fit a curve — but stacking linear layers with a ReLU <em>bend</em> between them can fit almost anything.</li>
+    <li>That bend-and-combine machine (the MLP) is the feed-forward block inside every Transformer.</li>
+  </ul>
+</div>
 
 <div id="quiz-l15"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l15",[{"q": "Why can't plain linear regression fit a parabola?", "options": ["It runs out of memory", "A straight line can't bend into a U-shape", "It needs more data"], "answer": 1, "explain": "Linear regression only draws straight lines. A curve needs something bendy."}, {"q": "What gives a neural network its power to fit curves?", "options": ["More data", "The nonlinearity (ReLU/GELU) between linear layers", "A bigger learning rate"], "answer": 1, "explain": "Without the nonlinearity, stacked Linears collapse back into one straight line."}, {"q": "In an 18-layer Transformer, attention happens in…", "options": ["Only the first layer", "Only the last layer", "Every single layer"], "answer": 2, "explain": "Each of the 18 blocks runs its OWN attention + feed-forward. The whole block repeats."}]);});</script>

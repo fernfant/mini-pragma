@@ -36,7 +36,7 @@
 <p class="subtitle">Combine embeddings (L2) + attention (L3) + the feed-forward MLP (L1.5) + the 5-line training loop (L1). Play fill-in-the-blank.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_04_tiny_bert.ipynb"><span class="ico">📓</span> Open the notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../04_transformer_and_mlm.py"><span class="ico">🐍</span> 04_transformer_and_mlm.py</a>
   <a href="../04_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
@@ -214,7 +214,7 @@ ids[hide_pos] = tok2id[<span class="pg-string">"&lt;mask&gt;"</span>]    <span c
   </div>
 
   <div class="pg-notebook">
-    📓 The real version of this code lives in <a href="../notebooks/lesson_04_tiny_bert.ipynb">lesson_04_tiny_bert.ipynb</a> as the <code>make_example()</code> function — open it to run with the actual torch training loop wrapped around it.
+    📓 The real version of this code lives in <a href="http://localhost:8011/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener">lesson_04_tiny_bert.ipynb</a> as the <code>make_example()</code> function — open it to run with the actual torch training loop wrapped around it.
   </div>
 </div>
 
@@ -669,7 +669,7 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 <p>Pick a starter, then press <strong>Next ▶</strong> to follow your words through every stage of the model. At the end you'll see its top guesses for the next word — and you can <strong>accept a word and let it keep writing</strong>.</p>
 
 <div class="lesson-links">
-  <a href="../notebooks/lesson_04f_next_word.ipynb"><span class="ico">📓</span> Run this for real — next-word notebook</a>
+  <a href="http://localhost:8011/notebooks/lesson_04f_next_word.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run this for real — next-word notebook</a>
   <a href="../04f_next_word.py"><span class="ico">🐍</span> 04f_next_word.py</a>
 </div>
 
@@ -750,6 +750,15 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 </table>
 
 <p><strong>Same five-line training loop. Same gradient descent. Same five-stage pipeline</strong> (embed → attention → feed-forward → head → softmax). Whether it fills a blank (TinyMLM, BERT) or predicts the next word (the cousin, ChatGPT), PRAGMA is just this — scaled up, with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Fill-in-the-blank makes its own labels: hide a word, predict it — no humans needed.</li>
+    <li>TinyMLM is embed → attention → head, trained with cross-entropy. ChatGPT is this same loop, far bigger.</li>
+  </ul>
+</div>
 
 <div id="quiz-l4"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4",[{"q": "In fill-in-the-blank training, where does the 'right answer' come from?", "options": ["A human labels every example", "The word we hid — it's free", "A separate answer file"], "answer": 1, "explain": "That's the magic of MLM: the hidden word IS the label. No manual labelling needed."}, {"q": "TinyMLM is: embedding → ??? → linear head. What's in the middle?", "options": ["Another embedding", "Attention + feed-forward (the encoder layer)", "Just a bigger embedding"], "answer": 1, "explain": "The TransformerEncoderLayer = attention (L3) + feed-forward (L1.5)."}]);});</script>
