@@ -171,10 +171,26 @@ new_x     = attention @ x                 <span class="pg-comment"># weighted bl
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
     <ol>
-      <li>Defaults: "the" is bland, "dog" is animal-ish, "chased" is action-ish. Look at the <strong>dog</strong> row of attention — who does dog attend to most besides itself? Why?</li>
-      <li>Make <strong>the</strong> very animal-ish (set its first slider to 2.0). What happens to dog's attention row? It now attends to "the" more — because they look alike.</li>
-      <li>Make all 3 words identical (e.g., all <code>[1.0, 1.0]</code>). Look at attention — every row is <strong>0.33, 0.33, 0.33</strong>. Attention can't distinguish words that are the same.</li>
-      <li><strong>Bonus:</strong> set chased to be VERY action-ish (<code>[0, 2]</code>). Its row should attend mostly to itself (the only action word). The bigger one word's score over the rest, the sharper softmax gets.</li>
+      <li>Defaults: "the" bland, "dog" animal-ish, "chased" action-ish. In <strong>dog</strong>'s attention row, who does it attend to most <em>besides itself</em>?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>dog attends to "the" slightly more than to "chased".</strong> Scores: <code>dog·the = 1.0·0.2 + 0.1·0.1 = 0.21</code>; <code>dog·chased = 1.0·0.1 + 0.1·1.0 = 0.20</code>. The "animal" dimension of dog (1.0) lines up a tiny bit with "the"'s animal value (0.2), more than with "chased"'s tiny animal value (0.1). <em>Attention is similarity-driven — words look at words they're directionally aligned with.</em></p>
+        </details>
+      </li>
+      <li>Make <strong>the</strong> very animal-ish (animal slider → 2.0). What changes for dog's attention row?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>dog now attends mostly to "the".</strong> <code>dog·the = 1.0·2.0 + 0.1·0.1 ≈ 2.01</code> — biggest score in the row, even bigger than self-attention (<code>dog·dog = 1.01</code>). Softmax concentrates the attention budget on "the". <em>Making two words point the same direction makes them strongly attend to each other. This is how attention learns to bind related words (like a pronoun to its antecedent).</em></p>
+        </details>
+      </li>
+      <li>Make all 3 words identical (e.g., set every slider to <strong>1.0</strong>). What does the attention matrix look like?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>Every row is exactly <code>[0.33, 0.33, 0.33]</code>.</strong> All pairwise dot products are equal (same vectors), so softmax over a row of equal scores gives a uniform distribution. <em>Attention has nothing to work with — the model can't say "this word is more relevant than that one" because every word looks the same. That's why the embeddings <strong>have to be trained first</strong> (Lesson 2) before attention can do anything useful.</em></p>
+        </details>
+      </li>
+      <li><strong>Bonus:</strong> set chased to <code>[0.0, 2.0]</code> (very action-ish). What happens in chased's row?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>chased attends almost entirely to itself (≈ 1.00).</strong> chased·chased = <code>0² + 2² = 4</code>. chased·other words ≈ 0.0–0.2. With such a big gap, softmax concentrates virtually all the budget on the winner. <em>The bigger the gap between the top score and the rest, the SHARPER softmax becomes — almost a one-hot pick. Small gap → spread; big gap → focus.</em></p>
+        </details>
+      </li>
     </ol>
   </div>
 

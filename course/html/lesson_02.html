@@ -237,10 +237,26 @@ sim = sum(emb[tok2id[a]][i] * emb[tok2id[b]][i] <span class="pg-keyword">for</sp
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
     <ol>
-      <li>Compare <code>dog</code> vs <code>bark</code>. Big number, right? Now compare <code>dog</code> vs <code>meow</code>. Smaller. The embeddings learned that.</li>
-      <li>Compare <code>cat</code> vs <code>cat</code>. What do you get and why? (Hint: dot product of a vector with itself = its squared length.)</li>
-      <li>Try the long sentence "dog cat fish bark meow swim". What does the <code>ids</code> list look like?</li>
-      <li><strong>Bonus:</strong> Find the pair with the LOWEST similarity. Is it the pair you expected?</li>
+      <li>Compare <code>dog</code> vs <code>bark</code>, then <code>dog</code> vs <code>meow</code>. Big vs small?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>dog · bark ≈ +1.71</strong> (their partner — big positive). <strong>dog · meow ≈ +0.10</strong> (not partners — close to zero). The training pulled <code>dog</code> and <code>bark</code> to point the same way in embedding space, so their dot product comes out big. <code>meow</code> belongs to the cat cluster, pointing a different direction → dot product near zero. <em>Similar meaning = similar direction = big dot product.</em></p>
+        </details>
+      </li>
+      <li>Compare <code>cat</code> vs <code>cat</code>. What number? Why?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>cat · cat ≈ 1.36.</strong> Dot product of a vector with itself = <code>0.40² + 0.78² + 0.62² + 0.51² ≈ 1.36</code> — that's just the sum of squares of its components (the squared length of the vector). <em>It tells you how "big" the vector is, but nothing about other words. That's why we usually look at cross-pair similarities, not self-similarity.</em></p>
+        </details>
+      </li>
+      <li>Try the long sentence "dog cat fish bark meow swim". What does <code>ids</code> look like?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong><code>ids = [2, 3, 4, 5, 6, 7]</code></strong> — a clean run because those words happen to sit in positions 2–7 of the vocab. <em>Tokenise is just lookup: each word's id is wherever the word lives in the <code>vocab</code> list. Change the order of <code>vocab</code> and the ids change too. The ids carry no meaning on their own — they're just labels for rows.</em></p>
+        </details>
+      </li>
+      <li><strong>Bonus:</strong> Find the pair with the lowest similarity. Is it the pair you expected?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>dog · swim ≈ −0.71</strong> (or similar — strongly <em>negative</em>). They aren't partners, AND they belong to different clusters (dog↔bark vs fish↔swim). The trained embeddings put them in opposite directions. <em>A negative dot product means "anti-aligned" — even more opposite than just "unrelated". The training game pushed clearly-different words apart.</em></p>
+        </details>
+      </li>
     </ol>
   </div>
 

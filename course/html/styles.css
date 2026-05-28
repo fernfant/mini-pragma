@@ -770,6 +770,33 @@ details.go-deeper[open] > summary::after { content: "  ▾ hide"; }
 }
 .playground .pg-notebook a { color: #93c5fd; }
 
+/* Per-challenge answer reveal inside .pg-try */
+.playground .pg-try details.pg-answer {
+  margin-top: 6px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  border-left: 2px solid #fde047;
+  font-size: 13px;
+  color: #cbd5e1;
+}
+.playground .pg-try details.pg-answer summary {
+  cursor: pointer;
+  color: #fde047;
+  font-weight: 600;
+  font-size: 12.5px;
+  list-style: none;
+  padding: 1px 0;
+}
+.playground .pg-try details.pg-answer summary::-webkit-details-marker { display: none; }
+.playground .pg-try details.pg-answer summary::before { content: "💡 "; }
+.playground .pg-try details.pg-answer summary::after { content: "  ▸ click to reveal"; color: #94a3b8; font-weight: 400; font-size: 11.5px; }
+.playground .pg-try details.pg-answer[open] summary::after { content: "  ▾ hide"; }
+.playground .pg-try details.pg-answer[open] summary { margin-bottom: 8px; }
+.playground .pg-try details.pg-answer p { margin: 6px 0; line-height: 1.55; }
+.playground .pg-try details.pg-answer strong { color: #fef3c7; }
+.playground .pg-try details.pg-answer code { background: rgba(0,0,0,0.25); color: #fde047; padding: 1px 5px; border-radius: 3px; font-size: 12.5px; }
+
 /* FOOTER */
 footer.site {
   margin-top: 60px;

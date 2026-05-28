@@ -218,10 +218,26 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
     <ol>
-      <li>Slide <code>x</code> to <strong>0</strong>. What's <code>y</code>? Why isn't it 0? (Hint: look at all the biases.)</li>
-      <li>Slide <code>x</code> to <strong>-2</strong> or <strong>-3</strong>. Count how many entries in <code>h_relu</code> are <code>0</code> — they're <em>more</em> than at positive x. Why?</li>
-      <li>Untick <strong>use ReLU</strong>. Now <code>h_relu = h_raw</code>. Slide <code>x</code> around — what happens to <code>y</code>? (You should be able to fit only a STRAIGHT LINE in <code>y</code> vs <code>x</code> — that's why we need the bend.)</li>
-      <li>Re-tick ReLU. Notice that some hidden units stay at 0 across a whole range of <code>x</code> — those units have "given up" on that part of x.</li>
+      <li>Slide <code>x</code> to <strong>0</strong>. What's <code>y</code>? Why?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>y = 0.00.</strong> Because in this playground all the biases (<code>b1</code> and <code>b2</code>) are zero. With <code>x = 0</code>: every <code>h_raw[i] = w1[i]·0 + 0 = 0</code>; ReLU of zero is zero; <code>y = sum(w2 · 0) + 0 = 0</code>. <em>In a real trained MLP, the biases would be non-zero, so each hidden unit's "kink point" would land at <code>x = -b/w</code> instead of all at 0 — and y at x=0 would be non-zero.</em></p>
+        </details>
+      </li>
+      <li>Slide <code>x</code> to <strong>-2</strong>. Count how many entries in <code>h_relu</code> are <code>0</code>.
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>At <code>x = -2</code>, <strong>5 of 8</strong> hidden units get zeroed (vs only 3 at <code>x = +2</code>). Why? <code>w1</code> has a mix of positive and negative weights. With positive <code>x</code>, the <em>negative-weight</em> units produce negative <code>h_raw</code> values (which ReLU kills). With negative <code>x</code>, it flips — now the <em>positive-weight</em> units go negative and get killed. <em>A different set of units survives at each value of x. That's how the MLP carves the input range into pieces.</em></p>
+        </details>
+      </li>
+      <li>Untick <strong>use ReLU</strong> — now <code>h_relu = h_raw</code>. Slide <code>x</code> around. What happens to <code>y</code>?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>y becomes a perfect straight line of x.</strong> Without the ReLU bend, you can do the algebra: <code>y = sum(w2[i] · (w1[i]·x + b1[i])) + b2</code> simplifies to <code>(sum w2·w1) · x + constant</code> — i.e. one slope, one intercept. <em>Two stacked Linears collapse into one. That's the whole reason ReLU exists — to stop them from collapsing.</em></p>
+        </details>
+      </li>
+      <li>Re-tick ReLU. Notice some hidden units stay at 0 across a wide range of <code>x</code> — they've "given up" on that part of x.
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Each unit is alive only when <code>w1[i]·x + b1[i] &gt; 0</code>. With biases at 0 here, that means each unit is alive on exactly <em>one side</em> of <code>x = 0</code>: positive-w units fire only when x &gt; 0, negative-w units fire only when x &lt; 0. <em>In a real network, biases shift these "kink points" all over the x-axis so different units cover different regions — together they tile the input range and let the network bend any way it needs.</em></p>
+        </details>
+      </li>
     </ol>
   </div>
 

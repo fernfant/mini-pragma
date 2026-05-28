@@ -192,10 +192,26 @@ loss = sum(sq) / 5          <span class="pg-comment"># Mean Squared Error</span>
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
     <ol>
-      <li>Set <code>w=2.0, b=1.0</code>. What's the loss? (Hint: those are the secret values — should be near 0.)</li>
-      <li>Set <code>w=0, b=0</code>. The loss should be huge — that's where training starts. Look at the squared errors — each one is enormous because we're guessing 0 for everything.</li>
-      <li>Set <code>w=2, b=0</code>. Loss is small but NOT zero. Why? (The slope is right but the line passes through the origin, not <code>(0, 1)</code>.)</li>
-      <li>Try to find <code>(w, b)</code> that gives loss less than 0.1 by hand. Gradient descent does this <em>much</em> faster.</li>
+      <li>Set <code>w=2.0, b=1.0</code>. What's the loss?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>Loss ≈ 0.00.</strong> The secret rule is <code>y = 2x + 1</code> — exactly what our model is when <code>w=2, b=1</code>. So every prediction matches every truth perfectly; every error is 0; the mean of zeros is 0. <em>You just found the answer training is searching for.</em></p>
+        </details>
+      </li>
+      <li>Set <code>w=0, b=0</code>. The loss should be huge.
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>Loss = 57.</strong> With <code>w=b=0</code>, the model predicts 0 for every input. The errors are <code>[-3, -5, -7, -9, -11]</code>; squared they become <code>[9, 25, 49, 81, 121]</code>; their sum is 285; divided by 5 gives 57. <em>This is where training starts — at the worst possible loss, then climbs down.</em></p>
+        </details>
+      </li>
+      <li>Set <code>w=2, b=0</code>. Loss is small but NOT zero. Why?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>Loss = 1.0.</strong> The <em>slope</em> is right (2) but the <em>intercept</em> is wrong (0 instead of 1). So <code>y_pred</code> is always exactly 1 unit below <code>y_true</code>. Each error is <code>-1</code>; squared is <code>1</code>; mean is <code>1</code>. <em>Right shape, wrong offset.</em></p>
+        </details>
+      </li>
+      <li>Find <code>(w, b)</code> that gives loss less than 0.1 by hand.
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Anything near <code>(2.0, 1.0)</code> works — try <code>(1.95, 1.1)</code> or <code>(2.05, 0.9)</code>. The loss landscape is a smooth bowl with its minimum at the secret values; anywhere close, the loss is tiny. <em>This is what gradient descent does automatically — except in ~10 steps instead of by hand.</em></p>
+        </details>
+      </li>
     </ol>
   </div>
 

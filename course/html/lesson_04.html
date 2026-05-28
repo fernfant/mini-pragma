@@ -187,10 +187,26 @@ ids[hide_pos] = tok2id[<span class="pg-string">"&lt;mask&gt;"</span>]    <span c
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
     <ol>
-      <li>Set <code>hide_pos</code> to <strong>0</strong>. What word becomes the answer? What does it become in <code>input ids</code>?</li>
-      <li>Pick "the dog barked at the squirrel" and hide position <strong>4</strong>. What's in <code>labels</code>?</li>
-      <li>Pick "she ate an apple in the park" and slide <code>hide_pos</code> all the way to the end. Does the mask move with you?</li>
-      <li><strong>Bonus:</strong> count the <code>-100</code>s in <code>labels</code>. Why is there exactly one number that ISN'T -100?</li>
+      <li>Set <code>hide_pos</code> to <strong>0</strong>. What word becomes the answer? What does it become in <code>input ids</code>?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>The <strong>first word</strong> of the sentence becomes the answer — e.g. for "the cat sat on the mat", the answer is <code>"the"</code>. In <code>input ids</code>, position 0 changes from "the"'s id (2) to the mask token's id (<strong>1</strong>). <em>The code is symmetric in position: <code>ids[hide_pos] = MASK</code> works just as well at position 0 as at position 4. Nothing special about the start.</em></p>
+        </details>
+      </li>
+      <li>Pick "the dog barked at the squirrel" and hide position <strong>4</strong>. What's in <code>labels</code>?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Position 4 of that sentence is <code>"the"</code> (id 2). So <code>labels = [-100, -100, -100, -100, 2, -100]</code> — five <code>-100</code>s and one real id at position 4. <em>The <code>-100</code> is PyTorch's "skip this position" marker for cross-entropy. Only the masked position has a real target; everywhere else, we already showed the model the answer, so there's nothing to grade.</em></p>
+        </details>
+      </li>
+      <li>Pick "she ate an apple in the park" and slide <code>hide_pos</code> to the end. Does the mask move?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p><strong>Yes — the mask is exactly where you put it.</strong> A 7-word sentence has positions 0–6, and the slider now reaches all 7. Hide position 6 → <code>"park"</code> becomes the answer, position 6 becomes <code>&lt;mask&gt;</code>. <em>The model treats every position the same — first word, last word, middle — same code, same gradients. Transformers don't have a "left-to-right" bias the way old models did.</em></p>
+        </details>
+      </li>
+      <li><strong>Bonus:</strong> count the <code>-100</code>s in <code>labels</code>. Why exactly one number ISN'T -100?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>For a sentence of length N, there are <strong>N − 1</strong> <code>-100</code>s and <strong>exactly one</strong> real id (at <code>hide_pos</code>). Why? Because we masked exactly one word per training example. Only that one position has a target to predict; everywhere else, the model can already see the answer in the input. <em>Real BERT masks ~15% of tokens (so multiple positions might be non-<code>-100</code> in a single example) but the principle is identical: cross-entropy only grades the positions you hid.</em></p>
+        </details>
+      </li>
     </ol>
   </div>
 
