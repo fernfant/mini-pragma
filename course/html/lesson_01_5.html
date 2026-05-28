@@ -156,20 +156,27 @@ for _ in range(1000):
   reveal:"The ReLU is the nonlinearity. Without it, two stacked Linears just collapse back into ONE straight line. With it, the network can fold and bend — fitting curves on its own, no handcrafted x² required."
 });});</script>
 
-<p>A neural network is a <strong>stack of linear transformations with nonlinear activations in between</strong>. The simplest one (a Multilayer Perceptron, or MLP) for our problem:</p>
+<p>A neural network is best pictured as a <strong>pipeline that transforms numbers through layers</strong>. Each layer takes the previous stage's numbers, does one specific operation, and hands them on. The simplest version (a Multilayer Perceptron, or MLP) — and the one we'll use today — looks like this:</p>
 
-<figure>
-  <pre style="text-align:left;display:inline-block;">input x
-   │
-   ▼
-Linear  ──► 8 hidden numbers
-   │
-   ▼
-ReLU    ──► same 8 numbers, but negatives clipped to 0
-   │
-   ▼
-Linear  ──► 1 output number (the prediction)</pre>
+<figure class="figure-wide">
+  <img src="../visuals/mlp_pipeline.svg" alt="MLP pipeline: input x (shape 1) → Linear (+16 knobs) → hidden (shape 8) → ReLU (0 knobs) → still shape 8 → Linear (+9 knobs) → output y (shape 1). Total 25 knobs.">
+  <figcaption>The shape changes at every stage: <code>(1) → (8) → (8) → (1)</code>. <strong>Linear</strong> stages carry knobs (16 + 9 = 25). <strong>ReLU</strong> carries none — it's just a rule, not a layer with parameters.</figcaption>
 </figure>
+
+<div class="callout">
+  <strong>🔬 Watch one number flow through.</strong> Say we feed in <code>x = 2.0</code>. Here's what happens at each stage of the pipeline (these are the actual computations PyTorch will run):
+  <pre style="margin:10px 0 0;font-size:13px;line-height:1.55;background:#fff;padding:10px 14px;border-radius:6px;"><code>x = 2.0                                                  shape: (1)
+  │
+  ▼  Linear ①  — multiply by 8 weights, add 8 biases
+[ 1.2, -1.4,  2.0, -0.6,  0.9, -2.1,  1.7,  0.3 ]        shape: (8)   ← raw hidden values
+  │
+  ▼  ReLU  — clip every negative to 0 (the "bend")
+[ 1.2,  0.0,  2.0,  0.0,  0.9,  0.0,  1.7,  0.3 ]        shape: (8)   ← 3 negatives became 0
+  │
+  ▼  Linear ②  — multiply the 8 by 8 weights, sum, add 1 bias
+y = 3.8                                                  shape: (1)   ← final prediction</code></pre>
+  <p style="margin:10px 0 0;">Notice how the shape <em>swells</em> from 1 to 8 in the first Linear, gets passed unchanged by ReLU (just zeroing negatives), then <em>collapses</em> back to 1 in the second Linear. Each Linear knows how to change a shape; ReLU just changes <em>values</em>.</p>
+</div>
 
 <div class="callout">
   <strong>So… what IS a ReLU?</strong> Don't let the name spook you. ReLU is one of the simplest rules in all of machine learning:
