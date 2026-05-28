@@ -612,7 +612,32 @@ Linear(2048, 512)</code></pre>
   <div class="block head">Output head — predict the masked token</div>
 </div>
 
-<p>The "trick" of the Transformer is just <strong>interleaving attention and feed-forward many times</strong>. Attention mixes information ACROSS tokens; feed-forward processes information WITHIN each token. Together they give the model enough capacity to learn rich patterns from sequences.</p>
+<p>The "trick" of the Transformer is just <strong>interleaving attention and feed-forward many times</strong>. They do very different things — and that difference is what makes the whole thing work. Let's see it on an actual sentence.</p>
+
+<figure class="figure-wide">
+  <img src="../visuals/attn_vs_ffn.svg" alt="Side-by-side comparison: attention mixes vectors across tokens with crisscross arrows; feed-forward processes each token through its own little MLP with no cross-arrows">
+  <figcaption>Two operations, four tokens (<code>"the dog says bark"</code>). <strong>Attention</strong> (blue, left) connects every token to every other — the output vectors are <em>blends</em> of the inputs. <strong>Feed-forward</strong> (green, right) gives each token its own little MLP — the boxes never talk to each other. One mixes <em>across</em>; the other thinks <em>within</em>.</figcaption>
+</figure>
+
+<h3>Watch the sentence go through the stack</h3>
+
+<p>Same sentence, <code>"the dog says bark"</code>, walked through a real 18-layer encoder:</p>
+
+<table class="compact" style="max-width:740px;">
+  <thead><tr><th style="width:120px;">After…</th><th>What each word's vector now "knows"</th></tr></thead>
+  <tbody>
+    <tr><td><strong>Embedding</strong></td><td>Each word is just its own meaning, isolated. <code>"dog"</code> means "dog"; nothing about being followed by "says".</td></tr>
+    <tr style="background:#eff6ff;"><td><strong>Block 1 attn</strong></td><td><code>"dog"</code> has now blended in a bit of <em>"the"</em> (it knows there's a determiner before it) and <em>"says bark"</em> (it knows there's a verb-object pair after it). One round of cross-mixing.</td></tr>
+    <tr style="background:#f0fdf4;"><td><strong>Block 1 FFN</strong></td><td>Each blended vector gets refined by its own MLP — gradients squeeze useful patterns into each token (e.g. "I'm a noun in the subject position"). No cross-talk.</td></tr>
+    <tr style="background:#eff6ff;"><td><strong>Block 2 attn</strong></td><td><code>"dog"</code> attends again — but now to the <em>Block-1 outputs</em> of the other tokens, which already carry context. So <code>"dog"</code> is now seeing <em>"the (knows it's a determiner)"</em> and <em>"says (knows it precedes a sound)"</em>. <strong>Neighbours-of-neighbours.</strong></td></tr>
+    <tr><td><em>…blocks 3–17…</em></td><td>Each block adds one more "round" of cross-context, refining inside each token. After 5 layers, "dog" has rich grammatical context; after 10, semantic; after 18, deep abstract patterns.</td></tr>
+    <tr style="background:#fce7f3;"><td><strong>Output head</strong></td><td>Each token's vector is now a tiny summary of its role in the whole sentence. The head reads the masked position's vector and predicts a word.</td></tr>
+  </tbody>
+</table>
+
+<div class="callout good">
+  <strong>Why both?</strong> Attention <em>without</em> FFN would just keep mixing the same vectors around — no per-token thinking. FFN <em>without</em> attention would process each word in isolation — no context. <strong>Together</strong>: attention pulls relevant context into each token, FFN digests that context within the token, and stacking the pair gives the model layer-by-layer depth.
+</div>
 
 <div class="callout good">
   <strong>What's the same across L1 and BERT:</strong>
@@ -621,7 +646,7 @@ Linear(2048, 512)</code></pre>
     <li>Gradient descent (Adam or SGD)</li>
     <li>Trainable parameters (just lots more in BERT)</li>
   </ul>
-  <strong>What's different:</strong> the middle. Linear regression has <code>w*x + b</code>; BERT has 18 stacks of attention + feed-forward.
+  <strong>What's different:</strong> the middle. Linear regression has <code>w·x + b</code>; BERT has 18 stacks of <em>attention</em> + <em>feed-forward</em> — one for cross-token mixing, one for per-token thinking, repeating.
 </div>
 
 <div id="quiz-l15"></div>
