@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 4h · Scaling up to a real GPT — the GPT-3 recipe, on your Mac</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* scoped styles for this page (reuse the code-walkthrough look) */
+.gw-code { background:#0f172a; color:#e2e8f0; border-radius:10px; padding:14px 16px; overflow-x:auto;
+  font-family:ui-monospace,"SF Mono",Monaco,monospace; font-size:12.5px; line-height:1.55; border:1px solid #1e293b; }
+.gw-code .c { color:#7c8aa5; }
+.gw-out-label { font-family:ui-monospace,monospace; font-size:11px; font-weight:700; color:#16a34a;
+  text-transform:uppercase; letter-spacing:.06em; }
+.gw-out pre { margin:4px 0 0; background:#f0fdf4; border:1px solid #bbf7d0; border-left:3px solid #22c55e;
+  border-radius:8px; padding:10px 14px; font-size:12.5px; line-height:1.5; color:#14532d; overflow-x:auto; white-space:pre-wrap; }
+.gw-fam { width:100%; border-collapse:collapse; font-size:13px; margin:10px 0; }
+.gw-fam th, .gw-fam td { padding:7px 10px; border-bottom:1px solid var(--border); text-align:center; }
+.gw-fam th { font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#64748b; }
+.gw-fam td:first-child, .gw-fam th:first-child { text-align:left; }
+.gw-fam tr.you td { background:#eef2ff; font-weight:700; }
+.gw-fam tr.big td { color:#dc2626; font-weight:700; }
+/* the 4 dials */
+.gw-dials { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.gw-dial { flex:1; min-width:150px; background:#fff; border:1px solid var(--border); border-radius:12px;
+  padding:14px 16px; box-shadow:var(--shadow); }
+.gw-dial .n { font-size:22px; }
+.gw-dial .t { font-weight:700; margin:4px 0 6px; }
+.gw-dial .s { font-size:12.5px; color:#475569; }
+.gw-dial .scale { font-family:ui-monospace,monospace; font-size:12px; color:#6366f1; margin-top:8px; }
+.gw-aside { background:#eef2ff; border:1px solid #c7d2fe; border-left:4px solid #6366f1;
+  border-radius:10px; padding:12px 16px; margin:16px 0; font-size:14px; line-height:1.6; color:#1e293b; }
+/* part header */
+.gw-part { margin:34px 0 8px; padding:14px 18px; border-radius:12px; color:#fff;
+  background:linear-gradient(90deg,#6366f1,#818cf8); }
+.gw-part .pt { font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.85; }
+.gw-part h2 { margin:2px 0 0; color:#fff; border:none; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04_code.html">L4·code</a>
+    <a href="lesson_04h.html" class="current">L4h</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 4h · Scaling up to a <em>real</em> GPT</h1>
+<p class="subtitle">The capstone. In 4g a <strong>character</strong> model learned to spell anything from 25 letters. Now we take the <strong>same machine</strong>, bolt on the grown-up <strong>GPT-3 recipe</strong>, and train it from scratch — on this Mac. Architecturally it <em>is</em> a GPT-3, just the baby of the family.</p>
+
+<div class="lesson-links">
+  <a href="http://localhost:8011/notebooks/lesson_04h_minigpt.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook (runnable)</a>
+  <a href="lesson_04f.html#step-10"><span class="ico">↩</span> Back to 4f's "scaling up"</a>
+  <a href="lesson_04_code.html"><span class="ico">🔬</span> Code walkthrough (4f &amp; 4g)</a>
+</div>
+
+<div class="callout info">
+  <strong>Where we are.</strong> 4f built a 31-<em>word</em> model (could only ever use those 31 words). 4g switched to <em>characters</em> — out of ~25 letters it could spell <strong>any</strong> word, even ones it never saw. That open vocabulary is what "general purpose" means. The only thing left is to turn the dials: a richer tokenizer, more width, more depth, more data. That's this page — and it's the <strong>exact path</strong> from a toy to GPT-3.
+</div>
+
+<!-- ───────────────────────── Part 1 ───────────────────────── -->
+<div class="gw-part"><div class="pt">Part 1 · the big picture</div><h2>GPT-3 is a <em>family</em>, not one model</h2></div>
+
+<p>When people say "GPT-3" they picture the 175-billion-parameter giant that needed thousands of GPUs. But the GPT-3 paper (Table 2.1) actually defines <strong>8 sizes — from 125M to 175B — all with the identical recipe</strong>. The small ones are real, honest GPT-3s. The 125M is the baby of the same family, and the model we build here is its little sibling.</p>
+
+<table class="gw-fam">
+  <thead><tr><th>Model</th><th>Params</th><th>Layers</th><th>d_model</th><th>Heads</th><th>Context</th><th>One Mac?</th></tr></thead>
+  <tbody>
+    <tr class="you"><td>our minigpt (this page)</td><td>~11M</td><td>4</td><td>192</td><td>4</td><td>128</td><td>✅ minutes</td></tr>
+    <tr class="you"><td>minigpt "tinystories"</td><td>~30M</td><td>6</td><td>384</td><td>6</td><td>256</td><td>✅ overnight</td></tr>
+    <tr><td>GPT-3 Small</td><td>125M</td><td>12</td><td>768</td><td>12</td><td>2048</td><td>⚠️ cloud GPU</td></tr>
+    <tr><td>GPT-3 XL</td><td>1.3B</td><td>24</td><td>2048</td><td>24</td><td>2048</td><td>⚠️ run only</td></tr>
+    <tr class="big"><td>GPT-3 175B</td><td>175B</td><td>96</td><td>12288</td><td>96</td><td>2048</td><td>❌ never</td></tr>
+  </tbody>
+</table>
+
+<div class="gw-aside">
+  <p style="margin:0 0 6px;"><strong>Wait — what's a "head"?</strong> (the column above)</p>
+  <p style="margin:0;">Back in <a href="lesson_03.html#multi">Lesson 3</a>, each word looked at the others and asked <em>one</em> question — <em>which words matter to me right now?</em> An <strong>attention head</strong> is one of those question-askers. <strong>Multi-head attention</strong> just runs several side by side: head&nbsp;1 might learn to track <em>which noun a verb belongs to</em>, head&nbsp;2 <em>who the subject is</em>, head&nbsp;3 <em>nearby words</em> — each watching for a different kind of link, and their answers get stitched back together. More heads = more kinds of relationship the model can notice at once (our minigpt has <strong>4</strong>; GPT-3 175B has <strong>96</strong>). The term is real — it's exactly what the field calls it, straight from the 2017 paper <em>Attention Is All You Need</em>. <span style="opacity:.8;">(Heads-up: later on this page "<strong>output head</strong>" means something <em>different</em> — the final layer that turns vectors into word scores. Same word, unrelated job.)</span></p>
+</div>
+
+<p>Everything in this table runs the <strong>same code</strong>. The difference between your laptop model and the giant is which numbers you type into the config. Here are the four dials:</p>
+
+<div class="gw-dials">
+  <div class="gw-dial"><div class="n">✂️</div><div class="t">1. Tokenizer</div><div class="s">How text is chopped into pieces.</div><div class="scale">25 chars → 50,257 subwords</div></div>
+  <div class="gw-dial"><div class="n">📏</div><div class="t">2. Width <code>n_embd</code></div><div class="s">How many numbers describe each token.</div><div class="scale">192 → 768 → 12,288</div></div>
+  <div class="gw-dial"><div class="n">🏗️</div><div class="t">3. Depth <code>n_layer</code></div><div class="s">How many blocks stacked.</div><div class="scale">4 → 12 → 96</div></div>
+  <div class="gw-dial"><div class="n">📚</div><div class="t">4. Data</div><div class="s">How much text it reads.</div><div class="scale">1 MB → 100s of GB</div></div>
+</div>
+
+<div id="pred-fam"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-fam",{
+  q:"GPT-3 Small (125M) and GPT-3 175B — how different is their actual code?",
+  options:["Totally different architectures","Almost identical — just bigger numbers in the config","175B uses a secret training trick"],
+  correct:1,
+  reveal:"Same architecture, same recipe. The whole GPT-3 family is one block of code; the sizes differ only in n_layer, n_embd, n_head and how much data they see. That's why your laptop model is a real (tiny) GPT-3."
+});});</script>
+
+<!-- ───────────────────────── Part 2 ───────────────────────── -->
+<div class="gw-part"><div class="pt">Part 2 · the one real token change</div><h2>Characters → <em>subword</em> pieces (BPE)</h2></div>
+
+<p>4g read one <strong>character</strong> at a time (~25 ids). Real GPTs use a middle ground called <strong>BPE</strong> (byte-pair encoding): common words stay whole, rare words split into chunks, right down to single letters when needed. Best of both — short to read, but able to spell <em>anything</em>. We borrow GPT-2's exact tokenizer via <code>tiktoken</code> — a fixed vocabulary of <strong>50,257</strong> pieces, the same one OpenAI shipped.</p>
+
+<pre class="gw-code">enc = tiktoken.get_encoding("gpt2")   <span class="c"># GPT-2 / GPT-3 BPE, 50257 tokens</span>
+for s in ["the cat sat", "dinosaur", "antidisestablishmentarianism"]:
+    ids = enc.encode(s)
+    print(s, "->", ids, [enc.decode([i]) for i in ids])</pre>
+<div class="gw-out"><span class="gw-out-label">output</span><pre>'the cat sat'                  -> [1169, 3797, 3332]            ['the', ' cat', ' sat']
+'dinosaur'                     -> [67, 21317]                  ['d', 'inosaur']
+'antidisestablishmentarianism' -> [415, 29207, 44390, 3699, 1042]  ['ant', 'idis', 'establishment', 'arian', 'ism']</pre></div>
+
+<p><code>the</code>, <code>cat</code>, <code>sat</code> are each one common piece; <code>dinosaur</code> splits into two; the silly long word into five. But <strong>every</strong> string is representable — that's the open vocabulary that lets one model read the whole internet. This is the "subword middle ground" we mentioned back in 4g, now actually used.</p>
+
+<!-- ───────────────────────── Part 3 ───────────────────────── -->
+<div class="gw-part"><div class="pt">Part 3 · the architecture</div><h2>Same pipeline as 4g, grown-up recipe</h2></div>
+
+<p>It's still <strong>embed → attention → feed-forward → head → softmax</strong> with a causal mask — the exact pipeline from Lesson 4. Five small upgrades turn the toy into the GPT-3 architecture:</p>
+
+<table>
+  <thead><tr><th>Piece</th><th>4g CharGPT</th><th>here (GPT-3 recipe)</th></tr></thead>
+  <tbody>
+    <tr><td>token</td><td>single character</td><td><strong>BPE subword</strong> (50,257)</td></tr>
+    <tr><td>normalisation</td><td>encoder default</td><td><strong>pre-LayerNorm</strong> (LN <em>before</em> attention &amp; MLP)</td></tr>
+    <tr><td>activation</td><td>ReLU</td><td><strong>GELU</strong></td></tr>
+    <tr><td>output head</td><td>separate <code>Linear</code></td><td><strong>weight-tied</strong> to the embedding table</td></tr>
+    <tr><td>extras</td><td>—</td><td>dropout, scaled-residual init</td></tr>
+    <tr><td><strong>training loop</strong></td><td colspan="2"><strong>identical</strong> — predict → loss → backward → step → repeat (Lesson 1)</td></tr>
+  </tbody>
+</table>
+
+<p>The <strong>config</strong> is the GPT-3 family table as code — every dial in one place:</p>
+<pre class="gw-code">@dataclass
+class GPTConfig:
+    block_size: int = 128      <span class="c"># context length</span>
+    vocab_size: int = 50257    <span class="c"># tiktoken gpt2</span>
+    n_layer:   int = 4
+    n_head:    int = 4
+    n_embd:    int = 192       <span class="c"># d_model — width of every vector</span>
+    dropout: float = 0.1</pre>
+
+<p>The <strong>block</strong> wires the two jobs with pre-LayerNorm and residual add — every layer is just <code>x = x + sublayer(ln(x))</code>:</p>
+<pre class="gw-code">class Block(nn.Module):
+    def forward(self, x):
+        x = x + self.attn(self.ln_1(x))   <span class="c"># 1. look at neighbours (causal attention)</span>
+        x = x + self.mlp(self.ln_2(x))    <span class="c"># 2. think alone (GELU feed-forward)</span>
+        return x</pre>
+
+<p>And the head shares its weights with the token-embedding table — <strong>weight tying</strong>, one of the recipe's cheap wins:</p>
+<pre class="gw-code">self.lm_head = nn.Linear(n_embd, vocab_size, bias=False)
+self.tf.wte.weight = self.lm_head.weight   <span class="c"># same numbers do double duty</span></pre>
+
+<p>Build it and count the knobs — and feel how far it is from the giant:</p>
+<div class="gw-out"><span class="gw-out-label">output</span><pre>model: 4 layers, d_model=192, 4 heads
+parameters: 11.4M  (GPT-3 175B is ~15,312x bigger)</pre></div>
+
+<div id="chk-recipe"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-recipe",{
+  q:"Which part of the model is DIFFERENT from the Lesson 1 training loop?",
+  options:["The training loop changed a lot","Nothing — the loop is identical; only the model inside it grew","Cross-entropy was replaced"],
+  answer:1,
+  explain:"The loop never changes: predict → measure loss → backward → step → repeat. Going from 2 knobs in L1 to 11M here to 175B in GPT-3 is all about the model plugged into the same loop."
+});});</script>
+
+<!-- ───────────────────────── Part 4 ───────────────────────── -->
+<div class="gw-part"><div class="pt">Part 4 · train it &amp; watch</div><h2>From noise to Shakespeare, on an M4</h2></div>
+
+<p>We feed it ~1 MB of Shakespeare as one long stream of BPE tokens, and run the grown-up loop: <strong>AdamW</strong> + weight decay, a <strong>cosine learning-rate schedule with warmup</strong>, gradient clipping. The actual run from the notebook, on the Mac's GPU:</p>
+
+<pre class="gw-code">device = "mps" if torch.backends.mps.is_available() else "cpu"   <span class="c"># Apple GPU</span>
+for it in range(601):
+    lr = lr_at(it)                       <span class="c"># cosine warmup schedule</span>
+    x, y = get_batch(train_data)
+    _, loss = model(x, y)                <span class="c"># predict + measure</span>
+    loss.backward()                      <span class="c"># blame each knob</span>
+    clip_grad_norm_(model.parameters(), 1.0)
+    opt.step()                           <span class="c"># nudge them</span></pre>
+<div class="gw-out"><span class="gw-out-label">output (real run)</span><pre>1,115,394 chars -> 338,025 BPE tokens   (train 304,222 / val 33,803)
+iter    0 | val loss 10.836
+iter  150 | val loss  5.654
+iter  300 | val loss  5.230
+iter  450 | val loss  5.126
+iter  600 | val loss  5.040</pre></div>
+
+<p>Then ask it to write. After only 600 steps it's far from fluent — but watch what emerged from pure noise: real words, play formatting, and <strong>actual Shakespeare character names it was never told about</strong> (GLOUCESTER, SICINIUS, RICHARD II):</p>
+<div class="gw-out"><span class="gw-out-label">generated</span><pre>Second Citizen:
+Well, sir, good.
+What, worthy.
+
+GLOUCESTER: but I have not,
+I know their blood, I do you,
+And he comes the p'd sir.
+
+LADY YORK:
+What shall be not
+
+RICHARD II: what, thou hast thou know you are with death.</pre></div>
+
+<div class="callout good">
+  <strong>That's the whole course in one screen.</strong> The same five-line loop from Lesson 1, the same pipeline from Lesson 4, now with the GPT-3 recipe — turning random numbers into Shakespeare-shaped text on a fanless laptop. Turn the four dials up and feed it the internet, and this <em>is</em> GPT-3.
+</div>
+
+<!-- ───────────────────────── Part 5 ───────────────────────── -->
+<div class="gw-part"><div class="pt">Part 5 · do it yourself</div><h2>Run the real one on your Mac</h2></div>
+
+<p>The <code>course/minigpt/</code> folder has this exact model, sized for an overnight run on <strong>TinyStories</strong> — a dataset engineered so a ~30M model writes <em>coherent</em> little stories:</p>
+<pre class="gw-code"><span class="c"># from the course/minigpt folder</span>
+PY="../../.venv/bin/python"
+$PY data.py tinystories --mb 200            <span class="c"># download + BPE-tokenize ~200 MB</span>
+$PY train.py --preset tinystories --max_iters 12000
+$PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
+
+<div class="callout info">
+  <strong>What is "mps"?</strong> It's <strong>Metal Performance Shaders</strong> — Apple's GPU framework. In PyTorch, <code>device="mps"</code> means "do the math on the Mac's built-in GPU." It's the Apple equivalent of <code>"cuda"</code> on an NVIDIA card. On your M4 it's available, so training runs on the GPU, not the slower CPU.
+</div>
+
+<div class="callout warn">
+  <strong>Reality check — MacBook Air M4 (16 GB, fanless).</strong> Memory isn't the bottleneck (16 GB handles a 30M model easily). <strong>Heat is</strong> — the Air has no fan, so multi-hour runs throttle. Train overnight, keep it cool and plugged in. The true 125M <code>gpt3-small</code> preset is in <code>model.py</code> for reference, but that one really wants a cloud GPU. Want it faster on the Mac? Rewrite in Apple <strong>MLX</strong> (~2× quicker than PyTorch-MPS here).
+</div>
+
+<div class="recap">
+  <div class="r-title">✅ What you can now say you understand</div>
+  <ul>
+    <li><strong>GPT-3 is a family of 8 sizes</strong> (125M → 175B), all the same recipe — the small ones are real GPT-3s you can train.</li>
+    <li>The leap from a toy to GPT-3 is <strong>turning four dials</strong>: tokenizer, width, depth, data — not a new idea.</li>
+    <li><strong>BPE subword tokens</strong> (50,257 of them) are the practical middle ground between whole-word and single-character.</li>
+    <li>The GPT-3 architecture = your 4g pipeline + <strong>pre-LayerNorm, GELU, weight tying, dropout</strong>, trained with <strong>AdamW + cosine LR + grad clipping</strong>.</li>
+    <li>The <strong>training loop never changed</strong> since Lesson 1 — only the model plugged into it grew.</li>
+    <li>An <strong>11M-param GPT trained on a Mac</strong> turns noise into Shakespeare-shaped text; the giant is the same thing, bigger.</li>
+  </ul>
+</div>
+
+<div id="quiz-l4h"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4h",[
+  {"q":"What actually separates GPT-3 175B from the model on this page?","options":["A different, secret architecture","Just bigger config numbers + more data — same code","A special kind of attention"],"answer":1,"explain":"The whole GPT-3 family is one architecture. Bigger = more layers, wider vectors, more heads, more data. The code is the same."},
+  {"q":"Why use BPE subword tokens instead of single characters?","options":["They're easier to type","Common words stay short to read, but rare words still spell from pieces — best of both","Characters can't be embedded"],"answer":1,"explain":"BPE is the middle ground: frequent words are one piece (short sequences), rare words split into chunks down to letters, so nothing is unreadable."},
+  {"q":"What does device='mps' do on your Mac?","options":["Runs the math on the Apple GPU (Metal), like CUDA on NVIDIA","Downloads a model from Apple","Turns on multi-processing"],"answer":0,"explain":"MPS = Metal Performance Shaders, Apple's GPU backend for PyTorch. It runs tensors on the M-chip's GPU instead of the CPU."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_04_code.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L4 · code walkthrough</span>
+  </a>
+  <a href="lesson_05.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+  </a>
+</div>
+
+</div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+<script src="course.js"></script>
+</body>
+</html>
