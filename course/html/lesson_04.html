@@ -726,19 +726,21 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   <img src="../visuals/architecture_comparison.svg" alt="Architecture comparison: TinyMLM vs real PRAGMA">
 </figure>
 
+<p>You actually built <strong>two</strong> tiny models in this lesson: <strong>TinyMLM</strong> (Step 5 — the fill-in-the-blank / masked model) and its next-word cousin from the <a href="#data-journey">data journey</a>. They play different games but are almost the same size — and both sit a <em>long</em> way from real PRAGMA:</p>
+
 <table>
-  <thead><tr><th>Our TinyMLM</th><th>Real PRAGMA-Large</th></tr></thead>
+  <thead><tr><th>Our tiny models (TinyMLM &amp; the next-word cousin)</th><th>Real PRAGMA-Large</th></tr></thead>
   <tbody>
-    <tr><td>8 words in vocab</td><td>~28,000</td></tr>
-    <tr><td>2 tokens per example</td><td>Up to thousands</td></tr>
+    <tr><td>8–31 words in vocab</td><td>~28,000</td></tr>
+    <tr><td>2–8 tokens per example</td><td>Up to thousands</td></tr>
     <tr><td>1 encoder layer (1 attention + 1 FFN)</td><td>18 encoder layers (18 attention + 18 FFN)</td></tr>
-    <tr><td>~500 knobs total</td><td>1 billion</td></tr>
-    <tr><td>3 rules to memorise</td><td>Structure of real banking event streams</td></tr>
+    <tr><td>~2,000–11,000 knobs total</td><td>1 billion</td></tr>
+    <tr><td>A handful of toy patterns to memorise</td><td>Structure of real banking event streams</td></tr>
     <tr><td>Seconds on a laptop</td><td>2 weeks on 32× NVIDIA H100 GPUs</td></tr>
   </tbody>
 </table>
 
-<p><strong>Same five-line training loop. Same gradient descent.</strong> Just scaled up — and with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
+<p><strong>Same five-line training loop. Same gradient descent. Same five-stage pipeline</strong> (embed → attention → feed-forward → head → softmax). Whether it fills a blank (TinyMLM, BERT) or predicts the next word (the cousin, ChatGPT), PRAGMA is just this — scaled up, with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
 
 <div id="quiz-l4"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4",[{"q": "In fill-in-the-blank training, where does the 'right answer' come from?", "options": ["A human labels every example", "The word we hid — it's free", "A separate answer file"], "answer": 1, "explain": "That's the magic of MLM: the hidden word IS the label. No manual labelling needed."}, {"q": "TinyMLM is: embedding → ??? → linear head. What's in the middle?", "options": ["Another embedding", "Attention + feed-forward (the encoder layer)", "Just a bigger embedding"], "answer": 1, "explain": "The TransformerEncoderLayer = attention (L3) + feed-forward (L1.5)."}]);});</script>
