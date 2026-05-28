@@ -473,6 +473,68 @@ summary = [0.20, 0.55]</code></pre>
   <strong>That's pre-training BERT-style, with no attention yet.</strong> Lesson 3 adds attention so the model can <em>weight</em> the context in step ④ instead of just averaging. Lesson 4 stacks the whole pipeline (embed + attention + feed-forward + head) and trains it all at once. But the heart of it is what you just walked through.
 </div>
 
+<h3>⏱ Wait — what exactly is a "step"? (the bit Karpathy makes you understand)</h3>
+
+<p>This is the part that confuses everyone the first time. We've said things like "3,000 steps" or "5,000 steps" — but what does <em>one step</em> actually mean? And what's the relationship between a step and the 20 (or 48) sentences sitting in our dataset?</p>
+
+<div class="callout">
+  <strong>One STEP = ①→⑦ done once.</strong> Pick one sentence. Mask one position. Compute the guess. Score the loss. Nudge every embedding. That's it. One example, one tiny nudge.
+  <p style="margin:8px 0 0;">It is <strong>NOT</strong> "one full pass through all the sentences". Some courses call that an <em>epoch</em>, which is a different thing (see below).</p>
+</div>
+
+<h4>What does a real training log look like?</h4>
+
+<p>The sentences sit in a list. Each step the loop reaches in <strong>randomly</strong>, grabs ONE sentence, picks ONE position to mask, and runs steps ①–⑦. The next step reaches in randomly again. So 20 sentences might get visited in any order, multiple times, with different masks each visit. Here's a peek at the first 10 steps of an actual training run:</p>
+
+<pre><code>step    1 │ "the bird runs"        │ mask pos 2 (runs)    │ loss 6.20
+step    2 │ "splash is loud"       │ mask pos 0 (splash)  │ loss 4.85
+step    3 │ "the dog plays"        │ mask pos 1 (dog)     │ loss 5.41
+step    4 │ "the bird runs"        │ mask pos 1 (bird)    │ loss 3.92   ← same sentence as step 1, different mask!
+step    5 │ "park is big"          │ mask pos 2 (big)     │ loss 4.11
+step    6 │ "the cat says meow"    │ mask pos 3 (meow)    │ loss 3.50
+step    7 │ "the dog plays"        │ mask pos 2 (plays)   │ loss 4.20   ← same sentence as step 3, different mask
+step    8 │ "tank is big"          │ mask pos 0 (tank)    │ loss 2.95
+step    9 │ "splash is loud"       │ mask pos 2 (loud)    │ loss 3.80   ← same sentence as step 2, different mask
+step   10 │ "the fish runs"        │ mask pos 1 (fish)    │ loss 4.05
+   ...
+step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
+</code></pre>
+
+<p>Random picking is intentional — it means the gradient sees a different example each step, which keeps training stable. (Doing the same example over and over would make the model memorise that one and ignore the rest.)</p>
+
+<h4>So how many times does each sentence get seen?</h4>
+
+<p>Average it out. Over <strong>N steps</strong> with <strong>D sentences</strong> in the dataset, each sentence is picked on average <code>N / D</code> times — but with a <em>different mask</em> each time, so the model effectively sees <code>~N / D × (sentence length)</code> different (sentence, mask) pairs per sentence. Two concrete examples:</p>
+
+<table class="compact" style="max-width:560px;">
+  <thead><tr><th></th><th>Try 1 (above)</th><th>Try 2 (next widget)</th></tr></thead>
+  <tbody>
+    <tr><td>Dataset (D)</td><td>20 sentences</td><td>48 sentences</td></tr>
+    <tr><td>Training steps (N)</td><td>3,000</td><td>5,000</td></tr>
+    <tr><td>Each sentence seen ~</td><td>3,000 / 20 = <strong>150 times</strong></td><td>5,000 / 48 ≈ <strong>104 times</strong></td></tr>
+  </tbody>
+</table>
+
+<p>Notice the trade: Try 2 has <strong>more data</strong> but visits each sentence <em>fewer times</em>. That's usually a win — the model sees more <em>variety</em>, which is what really helps it generalise. (Try 1 saw "the dog plays" 150 times. Big deal — it can memorise the pattern but it sees no other patterns to draw on.)</p>
+
+<h4>What about "epochs"?</h4>
+
+<div class="callout">
+  <strong>One epoch = one full pass through all the sentences.</strong> If we have 48 sentences and we go through them all once in order, that's one epoch.
+  <p style="margin:8px 0 0;">In our code we don't do strict epochs — we just sample randomly. But you can <em>estimate</em>: 5,000 random samples from 48 sentences is roughly <strong>104 epochs of effective work</strong> (because each sentence ends up seen ~104 times on average).</p>
+  <p style="margin:8px 0 0;">Real BERT and PRAGMA use proper epochs and <strong>batches</strong> (process 256 sentences in parallel per step — same idea, just faster). At their scale: ~1,000,000 steps × batch of 256 = <strong>256 million examples seen</strong>. Same recipe, more iron.</p>
+</div>
+
+<div class="callout good">
+  <strong>3-second summary:</strong>
+  <ul style="margin:6px 0;">
+    <li><strong>Step</strong> — one example, one nudge.</li>
+    <li><strong>Epoch</strong> — one full pass through the whole dataset.</li>
+    <li><strong>Batch</strong> — handle B examples per step (not used in our toy).</li>
+    <li>"N steps" doesn't mean "N passes through the data" — it means N individual nudges, each on one (or one batch of) example(s).</li>
+  </ul>
+</div>
+
 <h3>What the model learned (real numbers from 3,000 training steps)</h3>
 
 <p>After training, I asked each word: "who are your nearest neighbours?" (highest cosine similarity). <strong>Bold</strong> = a neighbour from the same category — that's the kind of clustering we hoped to see emerge.</p>
