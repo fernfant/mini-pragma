@@ -500,6 +500,59 @@ summary = [0.20, 0.55]</code></pre>
 
 <p>🎉 <strong>This is the magic.</strong> Nobody told the model what an "animal" is. We never wrote <code>category=animal</code> anywhere. The model just played fill-in-the-blank on 20 sentences — and the embeddings reorganised themselves so that <strong>sounds sit near sounds, places sit near places, and animals partially cluster too</strong>. That's "meaning" emerging from <em>context alone</em>.</p>
 
+<h3>Same as before, now BERT-style: train, then ask the model 🍱</h3>
+
+<p>Same widget pattern as the word2vec demo above, but now with 19 words and the CBOW objective. Press <strong>Train</strong> — every word drifts from a random spot toward its final position, the loss drops, and once training settles the widget switches to <strong>inference</strong>: pick a masked sentence and watch the trained model guess.</p>
+
+<div class="widget">
+  <div id="cb-phase" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <span id="cb-phase-tag" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#dbeafe;color:#1d4ed8;">PHASE 1 · TRAINING</span>
+    <span id="cb-phase-msg" style="font-size:13px;color:var(--text-dim);">Words start at random spots. Watch the loss come down and the 3 colour-groups form.</span>
+  </div>
+
+  <div class="widget-row two">
+    <canvas id="cb-canvas" width="500" height="360"></canvas>
+    <div class="controls">
+      <div style="margin-bottom:12px;">
+        <button id="cb-train">▶ Train</button>
+        <button class="alt" id="cb-reset">🎲 Reset</button>
+      </div>
+      <table class="stats">
+        <tr><th>step</th><td id="cb-step">0</td></tr>
+        <tr><th>loss</th><td id="cb-loss">—</td></tr>
+      </table>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
+        <span style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
+        <span style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
+        <span style="color:#10b981;font-weight:700;">●</span> places &nbsp;
+        <span style="color:#94a3b8;font-weight:700;">●</span> function words
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;">
+      <strong style="font-size:13px;">📉 Loss over training (real numbers from a 3,000-step run)</strong>
+      <span style="font-size:12px;color:var(--text-dim);">Drops from ~7 to ~2 as embeddings reorganise.</span>
+    </div>
+    <canvas id="cb-loss-cv" width="780" height="100" style="margin-top:6px;"></canvas>
+  </div>
+
+  <div id="cb-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
+    <strong style="color:#047857;">🧠 Phase 2 · INFERENCE — fill in the blank</strong>
+    <p style="margin:8px 0;font-size:13.5px;">Pick a masked sentence. The model averages the visible word embeddings, scores every vocab word against that average, and returns the top guess.</p>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="color:var(--text-dim);">Sentence:</span>
+      <select id="cb-q" style="padding:5px 9px;font-size:14px;"></select>
+    </div>
+    <div id="cb-explain" style="margin-top:10px;font-size:13.5px;"></div>
+    <div id="cb-bars" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+<!-- inline data: vocab, embeddings, PCA projection, loss curve, demo sentences -->
+<script id="cb-data" type="application/json">{"vocab":["the","is","says","plays","runs","loud","big","dog","cat","bird","fish","bark","meow","tweet","splash","park","sofa","tree","tank"],"sentences":["the dog plays","the cat plays","the bird plays","the fish plays","the dog runs","the cat runs","the bird runs","the fish runs","bark is loud","meow is loud","tweet is loud","splash is loud","park is big","sofa is big","tree is big","tank is big","the dog says bark","the cat says meow","the bird says tweet","the fish says splash"],"embeddings":[[-0.0037,-0.0747,0.0447,-0.4141,-0.1029,-0.0809,-0.0763,-1.8629],[-0.8957,-0.0198,-0.0918,0.4327,0.1827,-0.045,0.1852,1.5507],[-0.7711,-0.0526,-0.0313,-0.5664,-0.2684,-0.2097,0.0296,-1.2947],[0.6026,0.0003,0.124,-0.4768,-0.383,-0.1661,-0.1052,-1.5465],[0.2781,-0.2697,-0.0532,-0.5136,-0.1377,0.0984,-0.0669,-2.1993],[-2.0368,0.3065,-0.1425,0.0599,0.2619,-0.3211,0.3158,1.2438],[0.0408,-0.1467,-0.0283,0.826,0.1458,0.1177,0.1285,1.8604],[0.1098,0.0698,-0.2522,-0.4745,0.338,0.1018,0.2543,-1.3832],[0.1908,0.089,0.2497,-0.767,-0.4274,-0.3223,-0.1797,-1.4186],[0.1992,-0.2082,0.0062,-0.0721,-0.0969,0.1316,-0.0927,-1.8067],[0.1996,-0.3532,0.097,-0.2272,-0.2294,0.12,-0.2718,-1.317],[-1.3939,0.3978,-0.4552,-0.3147,0.486,-0.2226,0.6021,0.4586],[-1.5306,0.3077,0.1826,-0.3509,-0.1249,-0.8172,0.1149,0.9013],[-1.6286,0.1894,0.0294,0.558,0.0005,0.0259,0.0077,0.3679],[-1.259,-0.3214,-0.0456,-0.1296,-0.1515,0.0404,-0.1355,0.0704],[0.2544,-0.1278,-0.104,0.8029,0.154,0.1213,0.143,1.5678],[0.4294,-0.0472,0.1297,0.6385,-0.2563,0.157,-0.1588,1.1323],[0.5362,0.2544,-0.2025,0.3362,-0.0766,-0.0249,0.1451,0.7133],[0.4152,-0.0629,0.4577,0.5552,-0.1196,-0.2105,-0.5119,1.0805]],"proj2":[[-1.834,0.125],[1.809,0.116],[-1.161,0.785],[-1.729,-0.475],[-2.258,-0.08],[1.75,1.418],[1.948,-0.956],[-1.373,0.042],[-1.587,-0.033],[-1.754,-0.213],[-1.373,-0.316],[0.806,1.169],[1.162,1.133],[0.916,0.929],[0.318,0.764],[1.622,-1.077],[1.083,-1.194],[0.646,-0.982],[1.01,-1.158]],"loss_curve":[7.775,4.417,2.447,4.017,2.509,1.807,1.401,1.846,2.501,2.005,1.619,1.853,1.738,2.77,2.611,2.414,1.314,1.616,1.379,2.85,3.593,2.64,2.674,1.883,1.069,1.953,1.984,0.832,2.714,2.493,1.32,1.476,1.573,3.359,1.94,2.111,2.127,1.972,1.285,3.682,2.692,2.818,1.661,2.77,1.543,2.19,2.97,2.136,4.276,1.832,1.167,1.323,2.106,2.358,2.774,2.312,1.75,4.137,2.275,4.029,2.948,1.169,1.962,3.77,1.757,2.116,1.814,3.76,1.812,2.402,1.679,3.023,1.703,1.621,2.255,1.547,1.686,2.654,1.62,1.436,2.499,2.252,1.655,2.185,0.814,2.1,1.568,3.871,3.033,1.795,1.244,4.493,2.213,3.043,3.368,1.84,1.857,2.892,1.592,2.313],"category":{"dog":"A","cat":"A","bird":"A","fish":"A","bark":"S","meow":"S","tweet":"S","splash":"S","park":"P","sofa":"P","tree":"P","tank":"P"},"demo_sentences":[{"text":"the dog says ___","ctx":["the","dog","says"],"answer":"bark"},{"text":"the cat says ___","ctx":["the","cat","says"],"answer":"meow"},{"text":"the bird says ___","ctx":["the","bird","says"],"answer":"tweet"},{"text":"the ___ says splash","ctx":["the","says","splash"],"answer":"fish"},{"text":"___ is loud","ctx":["is","loud"],"answer":"any sound"},{"text":"the dog ___ park","ctx":["the","dog","park"],"answer":"plays/runs"},{"text":"___ is big","ctx":["is","big"],"answer":"any place"}]}</script>
+
 <h3>Why animals only <em>partially</em> clustered (honest read)</h3>
 
 <p>Look at <code>cat → plays, the, runs</code>. Where are the other animals? Crowded out by the action verbs.</p>
@@ -738,6 +791,214 @@ summary = [0.20, 0.55]</code></pre>
   });
   document.getElementById('et-reset').addEventListener('click', reset);
   document.getElementById('et-q').addEventListener('change', renderInference);
+  reset();
+})();
+</script>
+
+<script>
+// --- BERT-style CBOW widget (uses real trained embeddings + loss curve) ---
+(() => {
+  const dataEl = document.getElementById('cb-data');
+  if (!dataEl) return;
+  const D = JSON.parse(dataEl.textContent);
+  const VOCAB = D.vocab, EMB = D.embeddings, PROJ = D.proj2;
+  const LOSS = D.loss_curve;
+  const CAT  = D.category;
+  const DEMOS = D.demo_sentences;
+  const t2i = Object.fromEntries(VOCAB.map((w,i) => [w,i]));
+  const COL = {A:'#3b82f6', S:'#f59e0b', P:'#10b981'};       // animals / sounds / places
+  const FALLBACK = '#94a3b8';                                  // function words
+
+  const cv     = document.getElementById('cb-canvas');
+  const ctx    = cv.getContext('2d');
+  const lossCv = document.getElementById('cb-loss-cv');
+  const lossCtx= lossCv.getContext('2d');
+  const STEPS_TOTAL = 300;        // animation steps
+  const W = cv.width, H = cv.height;
+
+  // PCA projection range -> canvas
+  const xs = PROJ.map(p => p[0]); const ys = PROJ.map(p => p[1]);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs);
+  const ymin = Math.min(...ys), ymax = Math.max(...ys);
+  const px = (x) => 30 + (x - xmin) / (xmax - xmin) * (W - 60);
+  const py = (y) => 30 + (1 - (y - ymin) / (ymax - ymin)) * (H - 60);
+
+  let step = 0, running = false, raf = null;
+  // start positions (random, seeded by index for reproducibility)
+  function rngSeed(i){ let x = Math.sin(i * 99173) * 10000; return x - Math.floor(x); }
+  const start = VOCAB.map((_,i) => [ rngSeed(i*2)*2-1, rngSeed(i*2+1)*2-1 ]);
+  // current positions (linear interp from start -> PROJ)
+  function curPos(i, t) {
+    // t in [0, 1]
+    return [ start[i][0]*(1-t) + PROJ[i][0]*t,
+             start[i][1]*(1-t) + PROJ[i][1]*t ];
+  }
+  function progress() { return Math.min(1, step / STEPS_TOTAL); }
+
+  function setPhase(phase) {
+    const tag = document.getElementById('cb-phase-tag');
+    const msg = document.getElementById('cb-phase-msg');
+    const inf = document.getElementById('cb-inference');
+    if (phase === 'train') {
+      tag.textContent = 'PHASE 1 · TRAINING';
+      tag.style.background = '#dbeafe'; tag.style.color = '#1d4ed8';
+      msg.textContent = 'Words start at random spots. Watch the loss come down and the 3 colour-groups form.';
+      inf.style.display = 'none';
+    } else if (phase === 'training-running') {
+      tag.textContent = 'PHASE 1 · TRAINING (running)';
+      tag.style.background = '#fef3c7'; tag.style.color = '#92400e';
+      msg.textContent = 'Animals → blue cluster · sounds → amber cluster · places → green cluster.';
+      inf.style.display = 'none';
+    } else {
+      tag.textContent = '✓ TRAINED → PHASE 2 · INFERENCE';
+      tag.style.background = '#dcfce7'; tag.style.color = '#047857';
+      msg.textContent = 'Loss has flattened — embeddings are shaped. Pick a masked sentence and watch the model guess.';
+      inf.style.display = 'block';
+      renderInference();
+    }
+  }
+
+  function draw() {
+    const t = progress();
+    ctx.clearRect(0,0,W,H);
+    // dots
+    for (let i = 0; i < VOCAB.length; i++) {
+      const w = VOCAB[i];
+      const [u,v] = curPos(i, t);
+      const x = px(u), y = py(v);
+      const color = COL[CAT[w]] || FALLBACK;
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x,y,5.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = (CAT[w] ? 'bold ' : '') + '12px ui-sans-serif,system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(w, x + 8, y + 4);
+    }
+    document.getElementById('cb-step').textContent = step;
+    // current loss = sampled from loss curve at this progress
+    const li = Math.min(LOSS.length - 1, Math.floor(t * (LOSS.length - 1)));
+    document.getElementById('cb-loss').textContent = LOSS[li].toFixed(2);
+  }
+
+  function drawLoss() {
+    const LW = lossCv.width, LH = lossCv.height, pad = 26;
+    lossCtx.clearRect(0,0,LW,LH);
+    lossCtx.strokeStyle = '#e5e5e5'; lossCtx.lineWidth = 1;
+    lossCtx.beginPath();
+    lossCtx.moveTo(pad, LH-pad); lossCtx.lineTo(LW-pad/2, LH-pad);
+    lossCtx.moveTo(pad, 4); lossCtx.lineTo(pad, LH-pad);
+    lossCtx.stroke();
+    lossCtx.fillStyle = '#888'; lossCtx.font = '10.5px ui-sans-serif,system-ui';
+    lossCtx.textAlign = 'right'; lossCtx.fillText('loss', pad-4, 12);
+    lossCtx.textAlign = 'left'; lossCtx.fillText('0', pad+2, LH-pad+12);
+    lossCtx.fillText('3000 steps', LW-pad-60, LH-pad+12);
+
+    const t = progress();
+    const visiblePts = Math.max(1, Math.floor(t * LOSS.length));
+    const ymax = Math.max(...LOSS, 1);
+    lossCtx.strokeStyle = '#3b82f6'; lossCtx.lineWidth = 2;
+    lossCtx.beginPath();
+    for (let i = 0; i < visiblePts; i++) {
+      const x = pad + (i / (LOSS.length - 1)) * (LW - pad*1.5);
+      const y = (LH-pad) - (LOSS[i] / ymax) * (LH - pad - 6);
+      if (i === 0) lossCtx.moveTo(x, y); else lossCtx.lineTo(x, y);
+    }
+    lossCtx.stroke();
+    if (visiblePts > 0) {
+      const i = visiblePts - 1;
+      const x = pad + (i / (LOSS.length - 1)) * (LW - pad*1.5);
+      const y = (LH-pad) - (LOSS[i] / ymax) * (LH - pad - 6);
+      lossCtx.fillStyle = '#1d4ed8';
+      lossCtx.beginPath(); lossCtx.arc(x,y,3.5,0,Math.PI*2); lossCtx.fill();
+    }
+  }
+
+  function reset() {
+    running = false; if (raf) cancelAnimationFrame(raf);
+    document.getElementById('cb-train').textContent = '▶ Train';
+    step = 0;
+    setPhase('train');
+    draw(); drawLoss();
+  }
+
+  function loop() {
+    if (!running) return;
+    step++;
+    draw(); drawLoss();
+    if (step >= STEPS_TOTAL) {
+      running = false;
+      document.getElementById('cb-train').textContent = '✓ Trained (reset to replay)';
+      setPhase('inference');
+      return;
+    }
+    raf = requestAnimationFrame(loop);
+  }
+
+  // --- inference panel ---
+  function fillDemos() {
+    const sel = document.getElementById('cb-q');
+    sel.innerHTML = '';
+    DEMOS.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = d.text;
+      sel.appendChild(opt);
+    });
+  }
+  function dot(a, b){ let s=0; for (let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+  function renderInference() {
+    const sel = document.getElementById('cb-q');
+    const idx = +sel.value;
+    const d = DEMOS[idx];
+    // context = avg of context word embeddings (the words in d.ctx)
+    const ce = new Array(EMB[0].length).fill(0);
+    for (const w of d.ctx) {
+      const v = EMB[t2i[w]];
+      for (let i=0;i<v.length;i++) ce[i] += v[i];
+    }
+    for (let i=0;i<ce.length;i++) ce[i] /= d.ctx.length;
+    // score every word
+    const scored = VOCAB.map((w,i) => ({w, s: dot(EMB[i], ce)}));
+    // exclude the words that are already in the context (they trivially match)
+    const filt = scored.filter(o => !d.ctx.includes(o.w));
+    filt.sort((a,b) => b.s - a.s);
+    const top5 = filt.slice(0, 5);
+    const topWord = top5[0].w;
+
+    // show context as visible-vs-blank
+    const ctxHtml = d.text.replace('___', `<span style="background:#a855f7;color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;">${topWord}</span>`);
+    let html = `<div style="font-size:15px;margin-bottom:6px;">Model fills it in: <span style="font-family:ui-monospace,monospace;">${ctxHtml}</span></div>`;
+    html += `<div style="color:var(--text-dim);font-size:13px;">Expected: <code>${d.answer}</code></div>`;
+    document.getElementById('cb-explain').innerHTML = html;
+
+    // bar chart of top 5 (positive bars only)
+    const maxS = Math.max(...top5.map(o => Math.abs(o.s)), 0.5);
+    let bars = '';
+    for (const {w, s} of top5) {
+      const isTop = w === topWord;
+      const frac = Math.max(0, s) / maxS;
+      const negFrac = Math.max(0, -s) / maxS;
+      bars += `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px;">
+        <div style="width:56px;text-align:right;font-family:ui-monospace,monospace;font-weight:${isTop?'700':'500'};color:${isTop?'#047857':'#444'};">${w}</div>
+        <div style="flex:1;background:#f4f4f5;border-radius:4px;height:16px;position:relative;">
+          <div style="position:absolute;left:50%;top:0;height:100%;width:${frac*48}%;background:${isTop?'#10b981':'#94a3b8'};border-radius:0 4px 4px 0;"></div>
+          <div style="position:absolute;right:50%;top:0;height:100%;width:${negFrac*48}%;background:#fca5a5;border-radius:4px 0 0 4px;"></div>
+          <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#cbd5e1;"></div>
+        </div>
+        <div style="width:54px;font-family:ui-monospace,monospace;font-size:12px;color:#666;">${s.toFixed(2)}</div></div>`;
+    }
+    document.getElementById('cb-bars').innerHTML = bars;
+  }
+
+  fillDemos();
+  document.getElementById('cb-train').addEventListener('click', () => {
+    if (step >= STEPS_TOTAL) { reset(); }
+    running = !running;
+    document.getElementById('cb-train').textContent = running ? '⏸ Pause' : '▶ Train';
+    setPhase(running ? 'training-running' : 'train');
+    if (running) loop();
+  });
+  document.getElementById('cb-reset').addEventListener('click', reset);
+  document.getElementById('cb-q').addEventListener('change', renderInference);
   reset();
 })();
 </script>
