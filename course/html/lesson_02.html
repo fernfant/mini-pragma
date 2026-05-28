@@ -218,11 +218,17 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
   reveal:"Training pulls dog and bark to point the same way, so their dot product climbs (to roughly +9 in the notebook). Meanwhile dog·meow — not partners — stays low. Press Train below and watch the numbers."
 });});</script>
 
-<p>Press <strong>Train</strong> and the loop pulls each word toward its partner. Watch the <code>dog·bark</code> similarity climb while <code>dog·meow</code> stays low.</p>
+<p>Press <strong>Train</strong> and the loop pulls each word toward its partner. Watch the <code>dog·bark</code> similarity climb while <code>dog·meow</code> stays low. Then, once the loss flattens out, the widget switches to <strong>inference</strong> — and you can ask the trained model questions.</p>
 
 <div class="widget">
+  <!-- Phase banner -->
+  <div id="et-phase" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <span id="et-phase-tag" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#dbeafe;color:#1d4ed8;">PHASE 1 · TRAINING</span>
+    <span id="et-phase-msg" style="font-size:13px;color:var(--text-dim);">Nudge every embedding until partners cluster. Loss should drop toward 0.</span>
+  </div>
+
   <div class="widget-row two">
-    <canvas id="emb-train" width="500" height="360"></canvas>
+    <canvas id="emb-train" width="500" height="320"></canvas>
     <div class="controls">
       <div style="margin-bottom:12px;">
         <button id="et-train">▶ Train</button>
@@ -230,15 +236,52 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
       </div>
       <table class="stats">
         <tr><th>step</th><td id="et-step">0</td></tr>
+        <tr><th>loss</th><td id="et-loss">—</td></tr>
         <tr><th style="color:var(--good)">dog · bark</th><td id="et-good">—</td></tr>
         <tr><th style="color:var(--warn)">dog · meow</th><td id="et-bad">—</td></tr>
       </table>
       <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
-        Partners share a colour. They start scattered (random embeddings) and drift together as the model trains —
-        exactly what the <a href="../notebooks/lesson_02_tokens_embeddings.ipynb">notebook</a> does in code.
+        Partners share a colour. They start scattered (random embeddings) and drift together as the model trains.
       </div>
     </div>
   </div>
+
+  <!-- Loss curve -->
+  <div style="margin-top:18px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;">
+      <strong style="font-size:13px;">📉 Loss over time</strong>
+      <span style="font-size:12px;color:var(--text-dim);">Average distance between partners. When it flattens, training's done.</span>
+    </div>
+    <canvas id="emb-loss" width="780" height="100" style="margin-top:6px;"></canvas>
+  </div>
+
+  <!-- Inference panel (hidden during training) -->
+  <div id="et-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
+    <strong style="color:#047857;">🧠 Phase 2 · INFERENCE — let's quiz the trained model</strong>
+    <p style="margin:8px 0;font-size:13.5px;">Pick a word. The model will return the <em>other</em> word whose embedding is most similar (highest dot product). If that word turns out to be the secret partner, the model got it right.</p>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="color:var(--text-dim);">Given:</span>
+      <select id="et-q" style="padding:5px 9px;font-size:14px;">
+        <option value="dog">dog</option>
+        <option value="bark">bark</option>
+        <option value="cat">cat</option>
+        <option value="meow">meow</option>
+        <option value="fish">fish</option>
+        <option value="swim">swim</option>
+      </select>
+      <span style="color:var(--text-dim);">→ closest word the model knows:</span>
+      <span id="et-ans" style="font-family:ui-monospace,monospace;font-weight:700;font-size:15px;"></span>
+      <span id="et-verdict" style="font-weight:700;"></span>
+    </div>
+    <div id="et-bars" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<div class="callout info" style="margin-top:18px;">
+  <strong>🛫 Segway to Lesson 3 — what attention adds.</strong>
+  <p style="margin:8px 0 0;">Notice what just happened. In the <strong>training</strong> phase we shaped the embeddings; in the <strong>inference</strong> phase we used them to answer questions. The model can ask <em>"which single word is most similar to dog?"</em> and get a sensible answer. That's already useful.</p>
+  <p style="margin:8px 0 0;">But our model can only relate words <strong>one to one</strong>. It can't yet handle a whole sentence like <em>"the dog barked at the cat near the tree"</em> — it has no way to ask <em>"which of the OTHER words in this sentence matter most for understanding 'dog' right now?"</em></p>
+  <p style="margin:8px 0 0;">That question is exactly what <strong><a href="lesson_03.html">attention</a></strong> answers. Instead of squishing every context word equally (as the CBOW walkthrough above did), attention learns to <em>weight</em> the context words — paying more attention to the ones that matter. Same training game, smarter model. That's where we go next.</p>
 </div>
 
 <details class="go-deeper">
@@ -508,31 +551,69 @@ summary = [0.20, 0.55]</code></pre>
   const cv = document.getElementById('emb-train');
   if (!cv) return;
   const ctx = cv.getContext('2d');
-  const W = cv.width, H = cv.height, cx = W/2, cy = H/2, S = 95;  // S = units->pixels
+  const W = cv.width, H = cv.height, cx = W/2, cy = H/2, S = 85;
 
   const WORDS = ['dog','bark','cat','meow','fish','swim'];
   const PARTNER = {dog:'bark', bark:'dog', cat:'meow', meow:'cat', fish:'swim', swim:'fish'};
   const COLOR = {dog:'#3b82f6', bark:'#3b82f6', cat:'#10b981', meow:'#10b981', fish:'#a855f7', swim:'#a855f7'};
-  let pos = {}, step = 0, running = false, raf = null;
+
+  const lossCv  = document.getElementById('emb-loss');
+  const lossCtx = lossCv.getContext('2d');
+
+  const TARGET_STEPS = 220;
+  let pos = {}, step = 0, running = false, raf = null, lossHist = [];
+
+  function setPhase(phase) {
+    const tag = document.getElementById('et-phase-tag');
+    const msg = document.getElementById('et-phase-msg');
+    const inf = document.getElementById('et-inference');
+    if (phase === 'train') {
+      tag.textContent = 'PHASE 1 · TRAINING';
+      tag.style.background = '#dbeafe'; tag.style.color = '#1d4ed8';
+      msg.textContent = 'Nudge every embedding until partners cluster. Loss should drop toward 0.';
+      inf.style.display = 'none';
+    } else if (phase === 'training-running') {
+      tag.textContent = 'PHASE 1 · TRAINING (running)';
+      tag.style.background = '#fef3c7'; tag.style.color = '#92400e';
+      msg.textContent = 'Watching the loss come down…';
+      inf.style.display = 'none';
+    } else { // inference
+      tag.textContent = '✓ TRAINED → PHASE 2 · INFERENCE';
+      tag.style.background = '#dcfce7'; tag.style.color = '#047857';
+      msg.textContent = "Loss flattened — partners cluster. Time to use the trained model.";
+      inf.style.display = 'block';
+      renderInference();
+    }
+  }
 
   function reset() {
     running = false; if (raf) cancelAnimationFrame(raf);
     document.getElementById('et-train').textContent = '▶ Train';
-    step = 0;
+    step = 0; lossHist = [];
     for (const w of WORDS) pos[w] = [(Math.random()*2-1)*1.3, (Math.random()*2-1)*1.3];
-    draw();
+    setPhase('train');
+    draw(); drawLoss();
   }
   function dot(a, b) { return pos[a][0]*pos[b][0] + pos[a][1]*pos[b][1]; }
+  function dist(a, b) {
+    const dx = pos[a][0]-pos[b][0], dy = pos[a][1]-pos[b][1];
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+  // "loss" = average distance between partner pairs (drops toward 0 as they cluster)
+  function computeLoss() {
+    const pairs = [['dog','bark'],['cat','meow'],['fish','swim']];
+    let s = 0;
+    for (const [a,b] of pairs) s += dist(a, b);
+    return s / pairs.length;
+  }
 
   function trainStep() {
-    // attraction: each word eases toward its partner
     const next = {}; for (const w of WORDS) next[w] = pos[w].slice();
     for (const w of WORDS) {
       const p = PARTNER[w];
       next[w][0] += 0.04 * (pos[p][0] - pos[w][0]);
       next[w][1] += 0.04 * (pos[p][1] - pos[w][1]);
     }
-    // repulsion: push non-partners apart so the three pairs don't pile up in the middle
     for (const a of WORDS) for (const b of WORDS) {
       if (a === b || PARTNER[a] === b) continue;
       let dx = pos[a][0]-pos[b][0], dy = pos[a][1]-pos[b][1];
@@ -541,14 +622,13 @@ summary = [0.20, 0.55]</code></pre>
       next[a][1] += 0.012 * dy / d2;
     }
     pos = next; step++;
+    lossHist.push(computeLoss());
   }
 
   function draw() {
     ctx.clearRect(0,0,W,H);
-    // faint axes
     ctx.strokeStyle = '#eee'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,H); ctx.moveTo(0,cy); ctx.lineTo(W,cy); ctx.stroke();
-    // partner link lines
     const drawn = new Set();
     for (const w of WORDS) {
       const p = PARTNER[w]; const key = [w,p].sort().join();
@@ -559,7 +639,6 @@ summary = [0.20, 0.55]</code></pre>
       ctx.lineTo(cx+pos[p][0]*S, cy-pos[p][1]*S);
       ctx.stroke();
     }
-    // dots + labels
     for (const w of WORDS) {
       const x = cx+pos[w][0]*S, y = cy-pos[w][1]*S;
       ctx.fillStyle = COLOR[w];
@@ -569,26 +648,96 @@ summary = [0.20, 0.55]</code></pre>
     }
     document.getElementById('et-step').textContent = step;
     const g = dot('dog','bark'), b = dot('dog','meow');
-    const eg = document.getElementById('et-good'), eb = document.getElementById('et-bad');
-    eg.textContent = g.toFixed(2); eg.style.color = g > 1 ? 'var(--good)' : 'var(--text)';
-    eb.textContent = b.toFixed(2);
+    document.getElementById('et-good').textContent = g.toFixed(2);
+    document.getElementById('et-bad').textContent = b.toFixed(2);
+    const lossEl = document.getElementById('et-loss');
+    lossEl.textContent = lossHist.length ? lossHist[lossHist.length-1].toFixed(3) : '—';
+  }
+
+  function drawLoss() {
+    const LW = lossCv.width, LH = lossCv.height, pad = 26;
+    lossCtx.clearRect(0,0,LW,LH);
+    // axis
+    lossCtx.strokeStyle = '#e5e5e5'; lossCtx.lineWidth = 1;
+    lossCtx.beginPath(); lossCtx.moveTo(pad, LH-pad); lossCtx.lineTo(LW-pad/2, LH-pad);
+                         lossCtx.moveTo(pad, 4); lossCtx.lineTo(pad, LH-pad); lossCtx.stroke();
+    lossCtx.fillStyle = '#888'; lossCtx.font = '10.5px ui-sans-serif,system-ui'; lossCtx.textAlign='right';
+    lossCtx.fillText('loss', pad-4, 12);
+    lossCtx.textAlign='left'; lossCtx.fillText('0', pad+2, LH-pad+12);
+    lossCtx.fillText('step ' + TARGET_STEPS, LW-pad-50, LH-pad+12);
+    if (!lossHist.length) return;
+    // y scale: max of history (sane lower bound)
+    const ymax = Math.max(...lossHist, 0.5);
+    lossCtx.strokeStyle = '#3b82f6'; lossCtx.lineWidth = 2;
+    lossCtx.beginPath();
+    for (let i = 0; i < lossHist.length; i++) {
+      const x = pad + (i / TARGET_STEPS) * (LW - pad*1.5);
+      const y = (LH-pad) - (lossHist[i] / ymax) * (LH - pad - 6);
+      if (i === 0) lossCtx.moveTo(x, y); else lossCtx.lineTo(x, y);
+    }
+    lossCtx.stroke();
+    // dot at the end
+    if (lossHist.length > 0) {
+      const i = lossHist.length - 1;
+      const x = pad + (i / TARGET_STEPS) * (LW - pad*1.5);
+      const y = (LH-pad) - (lossHist[i] / ymax) * (LH - pad - 6);
+      lossCtx.fillStyle = '#1d4ed8';
+      lossCtx.beginPath(); lossCtx.arc(x, y, 3.5, 0, Math.PI*2); lossCtx.fill();
+    }
+  }
+
+  function renderInference() {
+    const q = document.getElementById('et-q').value;
+    // similarity = dot product with every other word
+    const sims = WORDS.filter(w => w !== q).map(w => ({w, s: dot(q, w)}));
+    sims.sort((a, b) => b.s - a.s);
+    const top = sims[0];
+    document.getElementById('et-ans').textContent = top.w;
+    const isPartner = PARTNER[q] === top.w;
+    const verdict = document.getElementById('et-verdict');
+    verdict.textContent = isPartner ? '  ✅ correct — that\'s the partner!' : '  ❌ wrong (try training longer)';
+    verdict.style.color = isPartner ? 'var(--good)' : 'var(--bad)';
+    // bar chart of all 5 candidates
+    const maxAbs = Math.max(...sims.map(o => Math.abs(o.s)), 0.5);
+    let html = '';
+    for (const {w, s} of sims) {
+      const frac = Math.max(0, s) / maxAbs;          // positive part as bar
+      const negFrac = Math.max(0, -s) / maxAbs;     // negative as red sliver
+      const isTop = w === top.w;
+      html += `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px;">
+        <div style="width:54px;text-align:right;font-family:ui-monospace,monospace;font-weight:${isTop?'700':'500'};color:${isTop?'#047857':'#444'};">${w}</div>
+        <div style="flex:1;background:#f4f4f5;border-radius:4px;height:16px;position:relative;">
+          <div style="position:absolute;left:50%;top:0;height:100%;width:${frac*48}%;background:${isTop?'#10b981':'#94a3b8'};border-radius:0 4px 4px 0;"></div>
+          <div style="position:absolute;right:50%;top:0;height:100%;width:${negFrac*48}%;background:#fca5a5;border-radius:4px 0 0 4px;"></div>
+          <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#cbd5e1;"></div>
+        </div>
+        <div style="width:54px;font-family:ui-monospace,monospace;font-size:12px;color:#666;">${s.toFixed(2)}</div></div>`;
+    }
+    document.getElementById('et-bars').innerHTML = html;
   }
 
   function loop() {
     if (!running) return;
     for (let i=0;i<2;i++) trainStep();
-    draw();
-    if (step >= 220) { running = false; document.getElementById('et-train').textContent = '✓ Trained (reset to replay)'; return; }
+    draw(); drawLoss();
+    if (step >= TARGET_STEPS) {
+      running = false;
+      document.getElementById('et-train').textContent = '✓ Trained (reset to replay)';
+      setPhase('inference');
+      return;
+    }
     raf = requestAnimationFrame(loop);
   }
 
   document.getElementById('et-train').addEventListener('click', () => {
-    if (step >= 220) reset();
+    if (step >= TARGET_STEPS) reset();
     running = !running;
     document.getElementById('et-train').textContent = running ? '⏸ Pause' : '▶ Train';
+    setPhase(running ? 'training-running' : 'train');
     if (running) loop();
   });
   document.getElementById('et-reset').addEventListener('click', reset);
+  document.getElementById('et-q').addEventListener('change', renderInference);
   reset();
 })();
 </script>
