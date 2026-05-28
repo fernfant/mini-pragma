@@ -47,6 +47,7 @@
     <li><a href="#dot">Dot product = similarity</a></li>
     <li><a href="#widget">🎮 Interactive: dot product is similarity</a></li>
     <li><a href="#step-1">Step 1 — Tokenise (word → integer)</a></li>
+    <li><a href="#why-embed">Why isn't the ID enough?</a></li>
     <li><a href="#step-2">Step 2 — Embed (integer → vector)</a></li>
     <li><a href="#emerge">The mind-blowing twist: the slots emerge</a></li>
     <li><a href="#train">🎬 Watch the embeddings learn</a></li>
@@ -120,6 +121,26 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
 tok2id = {w: i for i, w in enumerate(vocab)}
 ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]</code></pre>
 
+<h2 class="step" id="why-embed"><span class="step-num">Why</span> Wait — why isn't the ID enough?</h2>
+
+<p>Fair question. We just turned <code>"dog"</code> into the number <code>2</code>. Why turn that number into <em>more</em> numbers? Why not just feed <code>2</code> to the model?</p>
+
+<div class="callout">
+  <strong>Because the ID is just a name tag.</strong> An ID number is like a kid's locker number — it labels them, but the number itself <em>tells you nothing about them</em>. You can't tell from "Kid #2" whether they like pizza, play soccer, or have a dog.
+  <p style="margin:8px 0 0;">Worse: the order is meaningless. We assigned <code>dog=2, cat=3, fish=4, bark=5</code> just because we put them in that order in our vocab list. The model has no reason to think dog (id 2) is more like cat (id 3) than swim (id 7). The numbers <strong>2 and 3</strong> being neighbours on the number line is a coincidence, not a meaning.</p>
+</div>
+
+<p>That's the problem an <strong>embedding</strong> solves. Instead of a single nameless number, it gives each word a small <em>card</em> with a list of scores on it — and <strong>the model is free to put meaning on those scores during training.</strong></p>
+
+<div class="callout good">
+  <strong>🧒 Kid analogy.</strong> Picture every kid in class given a tiny card with checkboxes:
+  <pre style="margin:8px 0 0;font-size:13px;line-height:1.5;background:#fff;padding:8px 12px;border-radius:6px;">
+Kid #2:   pizza ⭐⭐⭐    soccer ⭐⭐    dog-lover ⭐⭐⭐⭐⭐    quiet ⭐</pre>
+  <p style="margin:8px 0 0;">From just "Kid #2" you knew nothing. From the <em>card</em>, you can tell who's similar to whom — find kids with the same stars in the same boxes. That card is the embedding. The card's checkboxes are the embedding's numbers.</p>
+</div>
+
+<p><strong>One more thing.</strong> The card doesn't come with labels saying "pizza" and "soccer". Those columns just exist; the model decides during training what each slot ends up meaning (could be "animal-ness", could be "noisy-ness", could be something humans can't name). What matters is that <em>partners end up with similar cards</em>.</p>
+
 <h2 class="step" id="step-2"><span class="step-num">Step 2</span> Embed — integer → vector</h2>
 
 <p>Picture this happening literally. The embedding "table" is a stack of rows — one per word. The word's id is just the row number. To embed a word, you grab its row. That's it.</p>
@@ -132,7 +153,26 @@ ids = [tok2id[w] for w in ["dog", "bark"]]   # [2, 5]</code></pre>
 <pre><code>emb = nn.Embedding(len(vocab), 4)            # 8 × 4 table of trainable knobs
 vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code></pre>
 
-<p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally just indexing the table at its ID row. No math, just memory lookup.</p>
+<p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally indexing the table at its ID row. No math, just memory lookup.</p>
+
+<div class="callout info">
+  <strong>Why 4? Who picks the number of columns?</strong><br>
+  That <code>4</code> is a <em>choice</em> the person building the model makes. It's called the <strong>embedding dimension</strong> (or just <code>d</code>). Bigger isn't always better — it's a trade-off:
+  <ul style="margin:8px 0 4px;">
+    <li><strong>Small <code>d</code></strong> (2, 4, 8…) → not many checkboxes on each card. Fast and tiny, but words can't be very expressive.</li>
+    <li><strong>Big <code>d</code></strong> (768, 1024…) → lots of room for each word to be its own thing. More capacity, but slower and uses more memory.</li>
+  </ul>
+  Rough rule: <em>more words in the vocab → you need more room per word</em>. With only 8 words, 4 numbers is fine. With 30,000 words, you need hundreds. Real models pick by trial — what works for the task.
+  <table class="compact" style="margin:10px 0 0;max-width:380px;">
+    <thead><tr><th>Model</th><th>Vocab</th><th>Embedding dim <code>d</code></th></tr></thead>
+    <tbody>
+      <tr><td>This toy</td><td>8</td><td>4</td></tr>
+      <tr><td>BERT-base</td><td>~30,000</td><td>768</td></tr>
+      <tr><td>GPT-3</td><td>~50,000</td><td>12,288</td></tr>
+      <tr><td>PRAGMA-L</td><td>~28,000</td><td>1024</td></tr>
+    </tbody>
+  </table>
+</div>
 
 <figure class="figure-wide">
   <img src="../visuals/embedding_evolution.svg" alt="Embeddings drift during training">
@@ -143,9 +183,30 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
   <strong>The numbers in the embedding table start RANDOM.</strong> They become meaningful through training (see <a href="lesson_01b.html">Lesson 1b</a>). The training loop nudges them until similar words have similar rows. <em>Nobody designs the meaning — it emerges from the training game.</em>
 </div>
 
-<h2 class="step" id="train"><span class="step-num">Play</span> 🎬 Watch the embeddings actually learn</h2>
+<h2 class="step" id="train"><span class="step-num">Play</span> 🎬 What "training the embeddings" really means</h2>
 
-<p>Everything above said "training nudges similar words together" — now <em>watch it happen</em>. Six words start scattered at random. Their secret partners are <strong>dog↔bark</strong>, <strong>cat↔meow</strong>, <strong>fish↔swim</strong>.</p>
+<p>We keep saying "training nudges them" — but training <em>what</em>? Toward what? Embeddings don't shape themselves out of thin air. They only get shaped because we put them <strong>inside a game</strong>, and the game pushes them.</p>
+
+<div class="callout good">
+  <strong>The recipe for training embeddings:</strong>
+  <ol style="margin:8px 0;">
+    <li>Pick a game the model can play with the embeddings.</li>
+    <li>Score how well the model is doing (the loss).</li>
+    <li>Use gradient descent (L1c) to <strong>nudge every number in every embedding</strong> a tiny bit in the direction that scores better.</li>
+    <li>Repeat 1000 times.</li>
+  </ol>
+  Whatever pattern the game rewards, the embeddings end up showing.
+</div>
+
+<p><strong>The game for the demo below:</strong> "I'll point at a word, you guess its partner." The secret partners are <strong>dog↔bark</strong>, <strong>cat↔meow</strong>, <strong>fish↔swim</strong>. To win, the model has to make each word's vector <em>point toward its partner's</em> (because that's how their dot product comes out big — and big dot product = the model's confident guess).</p>
+
+<p>Over 200 rounds, the cards reshape themselves: dog's checkboxes drift to match bark's, cat's drift to match meow's. The <strong>game shapes the cards</strong>.</p>
+
+<div class="callout info">
+  <strong>BERT plays a different game.</strong> Real BERT/PRAGMA train embeddings inside the <em>fill-in-the-blank</em> game (Lesson 4). Words that appear in similar contexts (like "dog" and "puppy") end up with similar embeddings — that's the same idea, just with a richer task and a much bigger vocabulary.
+</div>
+
+<p>Six words start scattered at random. Press <strong>Train</strong> and watch their cards reshape themselves.</p>
 
 <div id="pred-l2"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l2",{
