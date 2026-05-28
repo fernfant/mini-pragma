@@ -66,6 +66,14 @@
 
 <p>This is exactly the foundation-model workflow PRAGMA runs at billion-event scale.</p>
 
+<div id="pred-l5b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5b",{
+  q:"90% of users are engaged. A lazy model that always says \u201cwon't churn\u201d scores 90% accuracy. Useful?",
+  options:["No \u2014 it never catches a single churner", "Yes, 90% is great", "Only on weekends"],
+  correct:0,
+  reveal:"Accuracy is fooled by the imbalance. What matters is <em>recall</em>: of the real churners, how many did we catch?"
+});});</script>
+
 <h2 class="step" id="headline"><span class="step-num">Result</span> The headline result</h2>
 
 <div class="widget">
@@ -223,6 +231,14 @@ class ChurnHead(nn.Module):
   <li><strong>Frozen encoder</strong> + classifier head only → <em>foundation-model recipe</em>.</li>
   <li><strong>Random-init encoder</strong>, train everything → <em>baseline, no pre-training</em>.</li>
 </ul>
+
+<div id="chk-l5b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l5b",{
+  q:"Pre-train the encoder, then keep its weights fixed while training a small classifier. That's called\u2026",
+  options:["Freeze + probe", "Fine-tuning everything", "Starting from scratch"],
+  answer:0,
+  explain:"Freeze the learned encoder, probe it with a tiny trainable head \u2014 cheap and label-efficient."
+});});</script>
 
 <h2 class="step" id="story"><span class="step-num">Story</span> The story, lesson by lesson</h2>
 

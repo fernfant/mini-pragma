@@ -90,6 +90,14 @@
 
 <p><strong>Success check:</strong> print sample sequences for a normal and a fraud user. Eyeball them — can you spot the difference?</p>
 
+<div id="pred-l6"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l6",{
+  q:"You have millions of events but only a few labelled as fraud. What can pre-training learn from the unlabelled millions?",
+  options:["The normal pattern of events, via fill-in-the-blank", "Nothing useful without labels", "Only the fraud cases"],
+  correct:0,
+  reveal:"Pre-training soaks up what normal behaviour looks like from all the data; the rare labels then teach a small head to spot the odd ones out."
+});});</script>
+
 <h2 class="step" id="stage-2"><span class="step-num">Stage 2</span> Pre-train the encoder</h2>
 
 <p>Create <code>capstone_pretrain.py</code>. Same masked-token training game from <a href="lesson_04.html">L4</a> / <a href="lesson_05.html">L5</a>.</p>
@@ -112,6 +120,14 @@
   <li><strong>Train</strong> just the head on the train set.</li>
   <li><strong>Evaluate</strong>: overall accuracy + <strong>recall on fraud</strong> (the metric that actually matters with class imbalance).</li>
 </ol>
+
+<div id="chk-l6"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l6",{
+  q:"Pre-train \u2192 freeze \u2192 ??? \u2014 what's the final step?",
+  options:["Train a small classifier head on the labels", "Throw the encoder away", "Relabel all the data by hand"],
+  answer:0,
+  explain:"The frozen encoder supplies features; a tiny head learns the actual fraud decision from the few labels."
+});});</script>
 
 <h2 class="step" id="stage-4"><span class="step-num">Stage 4</span> The crucial comparison</h2>
 

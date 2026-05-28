@@ -80,6 +80,14 @@
 </table>
 <p>Sum: <code>9 + 25 + 49 + 81 + 121 = 285</code>. Mean: <code>285 / 5 = 57</code>. ✓ matches the program's output: <code>step 0 ... loss = 57.000</code>.</p>
 
+<div id="chk-l1c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l1c",{
+  q:"The loss on a batch hits 0. What does that mean?",
+  options:["The guesses match the answers on that batch", "The model is broken", "The learning rate is too high"],
+  answer:0,
+  explain:"Loss is wrongness. Zero loss = no wrongness on those examples right now."
+});});</script>
+
 <h2 class="step" id="what-gd"><span class="step-num">GD</span> What "gradient descent" actually means</h2>
 
 <p>The loss is one number. Each knob is a separate number. So the loss is a <strong>function of all the knobs</strong>. Imagine it as a hill:</p>
@@ -152,6 +160,14 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 <div class="callout">
   <strong>The learning rate is the single most important hyperparameter in deep learning.</strong> Too small: training takes forever. Too big: the model oscillates or blows up. Real ML practitioners spend a lot of time tuning it.
 </div>
+
+<div id="pred-l1c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l1c",{
+  q:"Model A had 2 knobs. A real LLM has a billion. Does gradient descent still work the same way?",
+  options:["Yes \u2014 same downhill step, just on far more knobs", "No, billions need a brand-new method", "Only for small models"],
+  correct:0,
+  reveal:"Exactly the same idea: measure the slope, step downhill, repeat. More knobs = more numbers nudged at once, not a different recipe."
+});});</script>
 
 <h2 class="step" id="general"><span class="step-num">Scale</span> How this generalises to a billion knobs</h2>
 

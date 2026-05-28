@@ -201,6 +201,14 @@ ids:    [bedrooms_id, 2bed_id, bathrooms_id, 1bath_id, size_id, small_id, ...]
   🔑 <strong>The big PRAGMA bet:</strong> if Game 1 has taught the encoder something useful about house structure, Game 2 can be done with very few labels — because the encoder already knows the patterns. We just need a tiny "translator" layer (the price head) that maps encoder output → price class.
 </div>
 
+<div id="chk-l5a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l5a",{
+  q:"Pre-training (Game 1) uses which data?",
+  options:["All houses, features only, no price labels", "Only the labelled houses", "Just the price labels"],
+  answer:0,
+  explain:"Fill-in-the-blank needs no labels, so it can use every house."
+});});</script>
+
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Pre-training, walked through with one concrete house</h2>
 
 <p>Take the rural cottage. Encode it. Now randomly mask ~30% of the <em>value</em> tokens (never key tokens — those are the prompt telling the model what KIND of thing to predict):</p>
@@ -264,6 +272,14 @@ AFTER MASKING (random 30%):
 <p>Then train <em>only</em> this head on labelled houses, using the same 5-line loop. The encoder is frozen — <code>opt</code> only knows about the head's parameters.</p>
 
 <p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1.</p>
+
+<div id="pred-l5a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a",{
+  q:"You have 10,000 houses but only 50 have price labels. Which wins?",
+  options:["Pre-train on all 10,000, then probe with the 50", "Train only on the 50 labelled ones", "They tie"],
+  correct:0,
+  reveal:"Pre-training learns the structure of houses from all 10k for free; the tiny head then needs very few labels. That's the PRAGMA edge."
+});});</script>
 
 <h2 class="step" id="step-8"><span class="step-num">Step 8</span> The big experiment: PRE-TRAINING vs BASELINE</h2>
 

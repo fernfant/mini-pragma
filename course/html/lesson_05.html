@@ -103,6 +103,14 @@ V = len(vocab)</code></pre>
 
 <p>Plain Python — no ML yet. The model never sees <code>RULES</code>. It has to back the structure out of training examples.</p>
 
+<div id="pred-l5"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5",{
+  q:"A bank event has <code>amount = 14.99</code>. Why not just feed the model the raw text \u201c14.99\u201d?",
+  options:["Plain text shatters the number into digits and loses its magnitude", "It's too long to type", "Computers can't read digits at all"],
+  correct:0,
+  reveal:"Key+value tokenisation keeps each field's structure and size intact, so the model sees a real quantity, not a string of characters."
+});});</script>
+
 <h2 class="step" id="encode"><span class="step-num">Sec 3</span> Encoding an event <span class="legend-chip">L2</span></h2>
 
 <pre><code>def encode(event):
@@ -233,6 +241,14 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 })();
 </script>
 <!-- ─────────────────── end L5 PLAYGROUND ─────────────────── -->
+
+<div id="chk-l5"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l5",{
+  q:"Where do pragma_mini's training labels come from?",
+  options:["It hides a token and predicts it (masking) \u2014 no humans needed", "A person labels every event", "It copies the input straight through"],
+  answer:0,
+  explain:"Same fill-in-the-blank trick as Lesson 4: the data labels itself."
+});});</script>
 
 <h2 class="step" id="arch"><span class="step-num">Sec 5</span> The architecture <span class="legend-chip">L1b</span> <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 

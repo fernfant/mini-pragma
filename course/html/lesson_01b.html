@@ -87,6 +87,14 @@
 
 <p>In <a href="lesson_04.html">Lesson 4</a> we'll combine architecture (embedding + attention) with training (the 5-line loop). The training loop nudges <em>every</em> knob in the architecture — the embedding numbers, the attention matrices, the output layer — all at once.</p>
 
+<div id="pred-l1b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l1b",{
+  q:"Model A has 2 knobs, Model B has 15. They're different models \u2014 what do you think their <em>training code</em> looks like?",
+  options:["Nearly identical \u2014 the same 5-line loop", "Totally different for each", "Model A needs no training"],
+  correct:0,
+  reveal:"Same recipe! guess \u2192 loss \u2192 backward \u2192 step tunes <em>both</em>. Only the model in the middle changed."
+});});</script>
+
 <h2 class="step" id="side-by-side"><span class="step-num">Compare</span> Two tiny models, one training recipe</h2>
 
 <div class="callout info">
@@ -131,6 +139,14 @@ head = nn.Linear(2, 3)           # 2*3 weights + 3 biases = 9 knobs
 </table>
 
 <p>The training loop is identical for all four. <code>loss.backward()</code> computes gradients for every knob, no matter how many; <code>opt.step()</code> nudges them all.</p>
+
+<div id="chk-l1b"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l1b",{
+  q:"Which of these is the <em>architecture</em> \u2014 not the training recipe?",
+  options:["The embedding + linear layers in the middle", "guess \u2192 loss \u2192 backward \u2192 step", "Repeating for many steps"],
+  answer:0,
+  explain:"Architecture = WHAT is computed (the layers). The recipe = HOW it learns, and it never changes."
+});});</script>
 
 <h2 class="step" id="tldr"><span class="step-num">TL;DR</span> Three things to remember</h2>
 
