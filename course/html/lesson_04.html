@@ -143,6 +143,126 @@ labels:                <span style="color:#888;">-100</span>   <span style="colo
   Everything else in this lesson is just code that does these 5 steps in a loop.
 </div>
 
+<!-- ──────────────────────── CODE PLAYGROUND ──────────────────────── -->
+<div class="playground" id="pg-l4-mask">
+  <div class="pg-head">🧪 Now you do it</div>
+  <div class="pg-sub">Build a training example yourself. Pick a sentence and a position to hide — the code runs live every time you change a value. This is exactly what one training round does inside <code>make_example()</code> in the notebook.</div>
+
+  <pre class="pg-code"><span class="pg-comment"># Build ONE training example by hand</span>
+sentence = <span id="pg-l4-sent-disp" class="pg-string pg-live">"the cat sat on the mat"</span>
+hide_pos = <span id="pg-l4-pos-disp" class="pg-num pg-live">2</span>
+
+words  = sentence.split()
+ids    = [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-keyword">in</span> words]      <span class="pg-comment"># tokenise → list of integer ids</span>
+
+answer = words[hide_pos]                <span class="pg-comment"># save the truth — this is the LABEL (y)</span>
+labels = [-100] * len(ids)              <span class="pg-comment"># -100 = "don't grade this position"</span>
+labels[hide_pos] = ids[hide_pos]        <span class="pg-comment"># only the hidden position holds the answer</span>
+
+ids[hide_pos] = tok2id[<span class="pg-string">"&lt;mask&gt;"</span>]    <span class="pg-comment"># replace word with &lt;mask&gt; in the INPUT (x)</span>
+
+<span class="pg-keyword">print</span>(<span class="pg-string">f"input ids: {ids}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"labels:    {labels}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"answer:    {answer}"</span>)</pre>
+
+  <div class="pg-controls">
+    <label>
+      sentence:
+      <select id="pg-l4-sentence">
+        <option value="0">the cat sat on the mat</option>
+        <option value="1">the dog barked at the squirrel</option>
+        <option value="2">she ate an apple in the park</option>
+      </select>
+    </label>
+    <label>
+      hide_pos:
+      <input id="pg-l4-pos" type="range" min="0" max="5" value="2">
+      <span id="pg-l4-pos-val" style="font-family:ui-monospace,monospace;min-width:18px;text-align:center;">2</span>
+    </label>
+    <button class="pg-run" id="pg-l4-run">▶ Run</button>
+  </div>
+
+  <div class="pg-output" id="pg-l4-output">(click ▶ Run, or just move the slider)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Set <code>hide_pos</code> to <strong>0</strong>. What word becomes the answer? What does it become in <code>input ids</code>?</li>
+      <li>Pick "the dog barked at the squirrel" and hide position <strong>4</strong>. What's in <code>labels</code>?</li>
+      <li>Pick "she ate an apple in the park" and slide <code>hide_pos</code> all the way to the end. Does the mask move with you?</li>
+      <li><strong>Bonus:</strong> count the <code>-100</code>s in <code>labels</code>. Why is there exactly one number that ISN'T -100?</li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 The real version of this code lives in <a href="../notebooks/lesson_04_tiny_bert.ipynb">lesson_04_tiny_bert.ipynb</a> as the <code>make_example()</code> function — open it to run with the actual torch training loop wrapped around it.
+  </div>
+</div>
+
+<script>
+(() => {
+  const vocab = ["<pad>","<mask>","the","cat","sat","on","mat",
+                 "dog","barked","at","squirrel",
+                 "she","ate","an","apple","in","park"];
+  const tok2id = Object.fromEntries(vocab.map((w,i) => [w,i]));
+  const sentences = [
+    "the cat sat on the mat",
+    "the dog barked at the squirrel",
+    "she ate an apple in the park",
+  ];
+
+  const $ = id => document.getElementById(id);
+  const sentEl = $('pg-l4-sentence');
+  const posEl = $('pg-l4-pos');
+  const posValEl = $('pg-l4-pos-val');
+  const sentDisp = $('pg-l4-sent-disp');
+  const posDisp = $('pg-l4-pos-disp');
+  const output = $('pg-l4-output');
+
+  function clampPos() {
+    const words = sentences[+sentEl.value].split(' ');
+    posEl.max = words.length - 1;
+    if (+posEl.value > words.length - 1) posEl.value = words.length - 1;
+    posValEl.textContent = posEl.value;
+  }
+
+  function run() {
+    const idx = +sentEl.value;
+    const sentence = sentences[idx];
+    const hide_pos = +posEl.value;
+    const words = sentence.split(' ');
+    const ids = words.map(w => tok2id[w]);
+    const answer = words[hide_pos];
+    const labels = ids.map(() => -100);
+    labels[hide_pos] = ids[hide_pos];
+    const input_ids = [...ids];
+    input_ids[hide_pos] = tok2id["<mask>"];
+
+    sentDisp.textContent = `"${sentence}"`;
+    posDisp.textContent = String(hide_pos);
+
+    const wordsRow = `[${words.map(w => `'${w}'`).join(', ')}]`;
+    const inputRow = `[${input_ids.map((v,i) => i === hide_pos ? `<span class="pg-mark">${v}</span>` : v).join(', ')}]`;
+    const labelsRow = `[${labels.map((v,i) => i === hide_pos ? `<span class="pg-ans">${v}</span>` : `<span class="pg-skip">${v}</span>`).join(', ')}]`;
+
+    output.innerHTML =
+`sentence: "${sentence}"
+position: ${hide_pos}  (the word "${answer}")
+words:    ${wordsRow}
+
+input ids:  ${inputRow}    <span class="pg-skip">← position ${hide_pos} is now &lt;mask&gt; (id ${tok2id["<mask>"]})</span>
+labels:     ${labelsRow}
+answer:     <span class="pg-ans">${answer}</span>  (id ${tok2id[answer]})`;
+  }
+
+  sentEl.addEventListener('change', () => { clampPos(); run(); });
+  posEl.addEventListener('input', () => { posValEl.textContent = posEl.value; run(); });
+  document.getElementById('pg-l4-run').addEventListener('click', run);
+  clampPos(); run();
+})();
+</script>
+<!-- ───────────────────── end CODE PLAYGROUND ───────────────────── -->
+
 <p>That's the <em>data</em> trick. But there's a deeper trick: <strong>to get good at this game, the model is FORCED to learn the structure of language</strong>.</p>
 
 <p>Think about what the model has to figure out to guess <code>sat</code> in <code>"The cat ___ on the mat"</code>:</p>
