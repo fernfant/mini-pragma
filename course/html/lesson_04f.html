@@ -22,6 +22,7 @@
     <a href="lesson_04.html">L4</a>
     <a href="lesson_04f.html" class="current">L4f</a>
     <a href="lesson_04_code.html">L4·code</a>
+    <a href="lesson_04h.html">L4h</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -467,12 +468,14 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     <span id="dj-text"></span><span style="color:#7e22ce;">▌?</span>
   </div>
 
-  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0 10px;">
+  <div id="dj-dots" style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin:14px 0 12px;"></div>
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px;">
     <button id="dj-back" style="padding:6px 14px;border-radius:6px;background:#334155;color:#e2e8f0;border:none;cursor:pointer;font-size:13px;">◀ Back</button>
     <div style="flex:1;text-align:center;font-family:ui-monospace,monospace;font-weight:700;color:#fde047;font-size:13.5px;" id="dj-label"></div>
+    <button id="dj-play" style="padding:6px 14px;border-radius:6px;background:#065f46;color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:13px;">▶ Auto-play</button>
     <button id="dj-next" style="padding:6px 14px;border-radius:6px;background:#2563eb;color:#fff;border:none;cursor:pointer;font-size:13px;">Next ▶</button>
   </div>
-  <div id="dj-dots" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px;"></div>
+  <div id="dj-kid" style="margin:0 0 12px;padding:9px 13px;border-radius:8px;background:#1e1b4b;border:1px solid #4338ca;color:#c7d2fe;font-size:13px;line-height:1.5;"></div>
   <div id="dj-body" style="font-family:ui-sans-serif,system-ui;font-size:13.5px;line-height:1.65;min-height:150px;"></div>
 </div>
 
@@ -527,6 +530,8 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 </div>
 
 <p style="margin-top:16px;">And here's the <strong>whole layer with every part drawn to its true size</strong> — input, the 4 attention heads, the feed-forward bulge, and the output head:</p>
+
+<p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;"><strong>Two different "heads" in this one picture.</strong> The <strong>attention heads</strong> (4 of them, inside the blue box) are the parallel question-askers from <a href="lesson_03.html#multi">Lesson 3</a>, each watching for a different kind of link. The <strong>output head</strong> at the end is a single <code>Linear</code> layer that turns the finished vector into a score per vocab word. Same word, unrelated jobs — both are real industry terms.</p>
 
 <div class="widget" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:flex-start;justify-content:center;">
@@ -659,11 +664,14 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <p style="margin-top:4px;">We rebuilt the same Transformer, but now its alphabet is just <strong>25 characters</strong> (letters, space, newline) instead of 31 frozen words. It predicts the <strong>next character</strong>, one at a time. The magic: out of 25 letters it can spell <em>any</em> word — including ones never in its training. We trained it on <strong>13 nursery rhymes</strong> (~1,900 characters) for 4,000 steps. Watch it learn to <em>spell</em>, then <em>rhyme</em>:</p>
 <div class="widget" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:18px 20px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+    <button id="cev-play" style="padding:6px 13px;border-radius:6px;background:#065f46;color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:13px;white-space:nowrap;">▶ Watch it learn</button>
     <input id="cev-slider" type="range" min="0" max="5" value="0" step="1" style="flex:1;min-width:200px;">
     <div style="font-family:ui-monospace,monospace;font-size:13px;white-space:nowrap;">step <span id="cev-step" style="color:#fde047;font-weight:700;">0</span> · loss <span id="cev-loss" style="color:#86efac;font-weight:700;">—</span></div>
   </div>
-  <div style="color:#64748b;font-size:11.5px;margin-top:4px;">seed: <code>the </code> → the model writes the next ~110 characters</div>
+  <div style="color:#64748b;font-size:11.5px;margin-top:4px;">seed: <code>the </code> → the model writes the next ~110 characters · <span style="color:#86efac;">green</span> = a correctly-spelled real word</div>
   <pre id="cev-text" style="background:#0b1220;border:1px solid #1e293b;border-radius:8px;padding:12px;margin-top:10px;white-space:pre-wrap;word-break:break-word;font-size:13px;line-height:1.5;color:#cbd5e1;min-height:78px;"></pre>
+  <div style="height:8px;border-radius:5px;background:#1e293b;overflow:hidden;margin-top:8px;"><div id="cev-bar" style="height:100%;width:0;background:linear-gradient(90deg,#f87171,#fbbf24,#34d399);transition:width .3s;"></div></div>
+  <div id="cev-spellpct" style="color:#86efac;font-size:12px;margin-top:5px;font-family:ui-monospace,monospace;"></div>
   <div id="cev-note" style="color:#94a3b8;font-size:12px;margin-top:8px;"></div>
 </div>
 <p style="margin-top:10px;">Give it the start of any rhyme and it carries on — character by character, never storing a single whole word:</p>
@@ -869,9 +877,25 @@ the little dog laughed to see such sport</pre></div>
     if (!sel) return;
     Object.keys(J).forEach(p => { const o=document.createElement('option'); o.value=p; o.textContent=p+' …'; sel.appendChild(o); });
     const NAMES = ["Tokenise","Embed","Attention","Feed-forward","Head → scores","Softmax → next word"];
-    let prompt = sel.value, stage = 0;
+    const ICONS = ["✂️","🔢","👀","🧠","📊","🎯"];
+    const SHORT = ["Tokenise","Embed","Attention","Feed-fwd","Scores","Softmax"];
+    const KID = [
+      "First we chop the sentence into pieces and give each one a number — computers only understand numbers.",
+      "Each number becomes a little list of 32 numbers (a “vector”) that captures what the word means and where it sits.",
+      "Every word peeks at the words before it and decides which ones matter most for guessing what comes next.",
+      "The last word's summary gets polished by a tiny brain so the answer is easier to read off.",
+      "We give every possible next word a raw score — higher means “more likely”, but these aren't percentages yet.",
+      "We squash the scores into real percentages that add to 100%. The biggest one is the model's pick ⭐."
+    ];
+    let prompt = sel.value, stage = 0, playing = false, playTimer = null;
 
-    function dots(){ return NAMES.map((n,i)=>`<div title="${n}" style="width:${i===stage?22:10}px;height:10px;border-radius:5px;background:${i===stage?'#fde047':'#334155'};"></div>`).join(''); }
+    function dots(){ return NAMES.map((n,i)=>{
+      const on = i===stage, done = i<stage;
+      const bg = on?'#fde047':(done?'#1e3a5f':'#0b1220');
+      const fg = on?'#0f172a':(done?'#7dd3fc':'#475569');
+      const bd = on?'#fde047':(done?'#0369a1':'#1e293b');
+      return `<button class="dj-chip" data-stage="${i}" title="Jump to ${n}" style="display:flex;align-items:center;gap:5px;padding:5px 9px;border-radius:7px;border:1px solid ${bd};background:${bg};color:${fg};cursor:pointer;font-size:11.5px;font-weight:${on?700:600};white-space:nowrap;"><span>${ICONS[i]}</span><span>${i+1}. ${SHORT[i]}</span></button>`+(i<NAMES.length-1?`<span style="align-self:center;color:#334155;font-size:11px;">→</span>`:'');
+    }).join(''); }
     function chip(t,bg,fg,ex=''){ return `<span style="display:inline-block;margin:2px;padding:3px 9px;border-radius:6px;background:${bg};color:${fg};font-weight:600;${ex}">${t}</span>`; }
     function esc(w){ return w.replace('<','&lt;').replace('>','&gt;'); }
     function barRow(label,frac,col,pct){ return `<div style="display:flex;align-items:center;gap:10px;"><div style="width:70px;color:#93c5fd;font-weight:600;">${esc(label)}</div><div style="flex:1;background:#1e293b;border-radius:4px;height:18px;"><div style="background:${col};height:100%;width:${Math.max(2,frac*100)}%;border-radius:4px;"></div></div><div style="width:42px;text-align:right;color:#94a3b8;">${pct}</div></div>`; }
@@ -881,6 +905,8 @@ the little dog laughed to see such sport</pre></div>
       $('dj-text').textContent = j.prompt + ' ';
       $('dj-label').textContent = `Stage ${stage+1} — ${NAMES[stage]}`;
       $('dj-dots').innerHTML = dots();
+      $('dj-dots').querySelectorAll('.dj-chip').forEach(b=>b.addEventListener('click',()=>{ stopPlay(); stage=+b.dataset.stage; render(); }));
+      $('dj-kid').innerHTML = `<strong style="color:#a5b4fc;">${ICONS[stage]} In plain words:</strong> ${KID[stage]}`;
       $('dj-back').style.opacity = stage===0?0.4:1;
       $('dj-next').style.opacity = stage===NAMES.length-1?0.4:1;
       const toks = j.toks; let h='';
@@ -920,9 +946,12 @@ the little dog laughed to see such sport</pre></div>
       }
       $('dj-body').innerHTML = h;
     }
-    $('dj-next').addEventListener('click', ()=>{ if(stage<NAMES.length-1){stage++;render();} });
-    $('dj-back').addEventListener('click', ()=>{ if(stage>0){stage--;render();} });
-    sel.addEventListener('change', ()=>{ prompt=sel.value; stage=0; render(); });
+    function stopPlay(){ playing=false; if(playTimer){clearTimeout(playTimer);playTimer=null;} $('dj-play').textContent='▶ Auto-play'; }
+    function tick(){ if(!playing) return; if(stage<NAMES.length-1){ stage++; render(); playTimer=setTimeout(tick,1900);} else { stopPlay(); } }
+    $('dj-play').addEventListener('click', ()=>{ if(playing){stopPlay();return;} if(stage===NAMES.length-1)stage=0; playing=true; $('dj-play').textContent='⏸ Pause'; render(); playTimer=setTimeout(tick,1900); });
+    $('dj-next').addEventListener('click', ()=>{ stopPlay(); if(stage<NAMES.length-1){stage++;render();} });
+    $('dj-back').addEventListener('click', ()=>{ stopPlay(); if(stage>0){stage--;render();} });
+    sel.addEventListener('change', ()=>{ stopPlay(); prompt=sel.value; stage=0; render(); });
     render();
   })();
 
@@ -1176,14 +1205,40 @@ the little dog laughed to see such sport</pre></div>
       'Clean rhymes, correct spelling, blank lines between verses.',
       'Fluent: give it "the " and it writes a whole rhyme, character by character.',
     ];
+    const RHYME = new Set("a,above,after,again,against,all,along,and,another,any,are,as,at,away,baa,bags,beside,bitsy,black,boat,boy,broke,bus,but,came,cat,children,climbed,clock,come,could,cow,crown,curds,dame,day,diamond,dickory,diddle,dish,dock,dog,down,dream,dried,dumpty,eating,everywhere,fall,farm,fell,fetch,fiddle,fleece,followed,for,frightened,full,gently,go,great,had,have,he,her,here,hey,hickory,high,hill,his,horses,how,humpty,i,in,is,it,its,itsy,jack,jill,jumped,kings,lamb,lane,laugh,laughed,life,like,little,lives,macdonald,made,mary,master,men,merrily,miss,moo,moon,mouse,muffet,not,of,old,on,one,out,over,pail,play,put,rain,ran,round,row,rule,sat,school,see,sheep,sir,sky,snow,so,spider,spoon,sport,spout,star,stream,struck,such,sun,sure,that,the,there,three,through,to,together,town,tuffet,tumbling,twinkle,up,wall,want,was,washed,water,went,what,wheels,whey,which,white,who,with,wonder,wool,world,yes,you,your".split(","));
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const highlight = txt => {
+      let real=0, total=0;
+      const html = txt.split(/(\s+)/).map(tok => {
+        if (/^\s+$/.test(tok) || tok==='') return esc(tok);
+        total++;
+        if (RHYME.has(tok.replace(/[^a-z]/g,''))) { real++; return `<span style="color:#86efac;font-weight:600;">${esc(tok)}</span>`; }
+        return `<span style="color:#fca5a5;">${esc(tok)}</span>`;
+      }).join('');
+      return {html, pct: total ? Math.round(100*real/total) : 0};
+    };
     const draw = () => {
       const i = +sl.value;
       $('cev-step').textContent = ck[i].toLocaleString();
       $('cev-loss').textContent = lo[i];
-      $('cev-text').textContent = gen[i];
+      const {html, pct} = highlight(gen[i]);
+      $('cev-text').innerHTML = html;
+      $('cev-bar').style.width = pct + '%';
+      $('cev-spellpct').textContent = `${pct}% of the words are correctly spelled`;
       $('cev-note').textContent = notes[i];
     };
     sl.addEventListener('input', draw); draw();
+    const playBtn = $('cev-play'); let cevTimer=null;
+    const stopCev = () => { if(cevTimer){clearInterval(cevTimer);cevTimer=null;} playBtn.textContent='▶ Watch it learn'; };
+    playBtn.addEventListener('click', () => {
+      if (cevTimer) { stopCev(); return; }
+      if (+sl.value >= 5) sl.value = 0;
+      draw(); playBtn.textContent='⏸ Pause';
+      cevTimer = setInterval(() => {
+        if (+sl.value >= 5) { stopCev(); return; }
+        sl.value = +sl.value + 1; draw();
+      }, 1500);
+    });
   }
 })();
 </script>

@@ -98,6 +98,7 @@
     <a href="lesson_04.html">L4</a>
     <a href="lesson_04f.html">L4f</a>
     <a href="lesson_04_code.html" class="current">L4·code</a>
+    <a href="lesson_04h.html">L4h</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -436,11 +437,15 @@ target:  t followed her to school one day whic</pre></div>
   <div class="cw-viz cw-spell">
     <h4>Under the hood: drag to watch it learn to spell</h4>
     <div class="meta">
+      <button id="sp-play" style="padding:5px 11px;border-radius:6px;background:#065f46;color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:12.5px;">▶ Watch it learn</button>
       <span>step <b id="sp-step">0</b></span>
       <span>loss <b id="sp-loss">3.36</b></span>
+      <span style="color:#16a34a;">green = correctly-spelled word</span>
     </div>
     <input id="sp-slider" type="range" min="0" max="5" value="0" step="1">
     <pre id="sp-text">the …</pre>
+    <div style="height:7px;border-radius:5px;background:#e2e8f0;overflow:hidden;margin-top:8px;"><div id="sp-bar" style="height:100%;width:0;background:linear-gradient(90deg,#f87171,#fbbf24,#22c55e);transition:width .3s;"></div></div>
+    <div id="sp-pct" style="color:#16a34a;font-size:12px;margin-top:5px;font-family:ui-monospace,monospace;"></div>
     <div class="note" id="sp-note"></div>
   </div>
 </div>
@@ -544,17 +549,43 @@ print(f'2 layers: {p2:,} params, final loss {l2:.3f}')</pre>
     "Clean, correct verses with proper line breaks.",
     "Fluent — give it 'the ' and it writes a whole rhyme, one letter at a time.",
   ];
+  const RHYME = new Set("a,above,after,again,against,all,along,and,another,any,are,as,at,away,baa,bags,beside,bitsy,black,boat,boy,broke,bus,but,came,cat,children,climbed,clock,come,could,cow,crown,curds,dame,day,diamond,dickory,diddle,dish,dock,dog,down,dream,dried,dumpty,eating,everywhere,fall,farm,fell,fetch,fiddle,fleece,followed,for,frightened,full,gently,go,great,had,have,he,her,here,hey,hickory,high,hill,his,horses,how,humpty,i,in,is,it,its,itsy,jack,jill,jumped,kings,lamb,lane,laugh,laughed,life,like,little,lives,macdonald,made,mary,master,men,merrily,miss,moo,moon,mouse,muffet,not,of,old,on,one,out,over,pail,play,put,rain,ran,round,row,rule,sat,school,see,sheep,sir,sky,snow,so,spider,spoon,sport,spout,star,stream,struck,such,sun,sure,that,the,there,three,through,to,together,town,tuffet,tumbling,twinkle,up,wall,want,was,washed,water,went,what,wheels,whey,which,white,who,with,wonder,wool,world,yes,you,your".split(","));
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const highlight = txt => {
+    let real=0, total=0;
+    const html = txt.split(/(\s+)/).map(tok => {
+      if (/^\s+$/.test(tok) || tok==='') return esc(tok);
+      total++;
+      if (RHYME.has(tok.replace(/[^a-z]/g,''))) { real++; return `<span style="color:#86efac;font-weight:600;">${esc(tok)}</span>`; }
+      return `<span style="color:#fca5a5;">${esc(tok)}</span>`;
+    }).join('');
+    return {html, pct: total ? Math.round(100*real/total) : 0};
+  };
   const $ = id => document.getElementById(id);
   const sl = $('sp-slider');
   const draw = () => {
     const i = +sl.value;
     $('sp-step').textContent = steps[i].toLocaleString();
     $('sp-loss').textContent = loss[i].toFixed(2);
-    $('sp-text').textContent = gen[i];
+    const {html, pct} = highlight(gen[i]);
+    $('sp-text').innerHTML = html;
+    $('sp-bar').style.width = pct + '%';
+    $('sp-pct').textContent = `${pct}% of the words are correctly spelled`;
     $('sp-note').textContent = notes[i];
   };
   sl.addEventListener('input', draw);
   draw();
+  const playBtn = $('sp-play'); let spTimer=null;
+  const stopSp = () => { if(spTimer){clearInterval(spTimer);spTimer=null;} playBtn.textContent='▶ Watch it learn'; };
+  playBtn.addEventListener('click', () => {
+    if (spTimer) { stopSp(); return; }
+    if (+sl.value >= 5) sl.value = 0;
+    draw(); playBtn.textContent='⏸ Pause';
+    spTimer = setInterval(() => {
+      if (+sl.value >= 5) { stopSp(); return; }
+      sl.value = +sl.value + 1; draw();
+    }, 1500);
+  });
 })();
 </script>
 <script src="course.js"></script>
