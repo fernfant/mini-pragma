@@ -354,21 +354,180 @@ ids[hide]    = tok2id["&lt;mask&gt;"]      # hide it
 
 <h2 class="step" id="step-4"><span class="step-num">Step 4</span> Cross-entropy loss, by hand</h2>
 
-<p>Cross-entropy is the loss for when the model is <strong>picking from a list of choices</strong> (here: "which of the 8 vocab words?"). For each masked position the model outputs a score per word, softmaxes them to probabilities, and the loss is <code>−log(probability it gave the RIGHT answer)</code>. It looks <em>only</em> at how much probability landed on the truth.</p>
+<p>Cross-entropy is the loss every classification model in the world uses — including BERT, GPT, PRAGMA. It's worth doing properly. Let's actually do it by hand for one prediction so you see every step.</p>
 
-<div class="callout good">
-  <strong>Make it concrete.</strong> The hidden word is <code>bark</code>.
-  <ul>
-    <li>Model says bark is <strong>80%</strong> likely → loss = <code>−log(0.80) ≈ 0.22</code> &nbsp;😀 small</li>
-    <li>Model says bark is <strong>30%</strong> likely → loss = <code>−log(0.30) ≈ 1.20</code> &nbsp;😐 medium</li>
-    <li>Model says bark is <strong>2%</strong> likely → loss = <code>−log(0.02) ≈ 3.91</code> &nbsp;😖 big</li>
-  </ul>
-  So the loss is <strong>small when the model was confident and right</strong>, and <strong>blows up when it was sure of the wrong thing</strong>. Training pushes probability onto the true word.
-</div>
+<p>The journey from the model's raw outputs to a single loss number happens in <strong>three stages</strong>. We'll walk through each on the same example: the masked sentence is <code>"the dog ___"</code> and the right answer is <code>bark</code> (id 5 in our 8-word vocab).</p>
+
+<h3>Stage A — Raw scores ("logits")</h3>
+
+<p>The model produces <strong>one number per vocab word</strong> at the masked position. These are called <strong>logits</strong> — they can be any real number, positive or negative. They're not probabilities yet; they're "raw votes". Suppose for our example the model outputs:</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">vocab:    <span style="color:#888;">&lt;pad&gt;</span>  <span style="color:#888;">&lt;mask&gt;</span>  dog   cat   fish  <span style="color:#047857;font-weight:700;">bark</span>  meow  swim
+logits:    <span style="color:#888;">-1.0</span>   <span style="color:#888;">-0.5</span>   0.0   <span style="color:#1d4ed8;">-0.3</span>   <span style="color:#888;">-0.8</span>   <span style="color:#047857;font-weight:700;">+2.5</span>   <span style="color:#1d4ed8;">+0.5</span>   <span style="color:#888;">-0.5</span></code></pre>
+
+<p>Bigger logit = the model favours that word more. Here <code>bark</code> got the biggest logit (+2.5), so the model is leaning the right way. But we want a <em>probability</em>, not a score.</p>
+
+<h3>Stage B — Softmax: turn logits into probabilities</h3>
+
+<p><strong>Softmax</strong> turns any list of numbers into a probability distribution (everything ≥ 0, all summing to 1). It does this in two tiny moves:</p>
+
+<ol>
+  <li><strong>Exponentiate</strong> every logit: <code>e^logit</code>. This makes them all positive and amplifies differences (a small advantage in raw score becomes a big advantage in probability).</li>
+  <li><strong>Divide</strong> each by the total. Now they sum to 1.</li>
+</ol>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">logit                 -1.0   -0.5   0.0   -0.3   -0.8   <span style="color:#047857;font-weight:700;">+2.5</span>   +0.5   -0.5
+exp(logit)            0.37   0.61   1.00   0.74   0.45   <span style="color:#047857;font-weight:700;">12.18</span>   1.65   0.61
+                                                          <span style="color:#888;">^ enormous</span>
+
+sum of all exp(...) = 0.37 + 0.61 + 1.00 + 0.74 + 0.45 + 12.18 + 1.65 + 0.61 = <span style="color:#1d4ed8;font-weight:700;">17.60</span>
+
+probability = exp(logit) / 17.60
+prob:                  2%     3%    6%     4%    3%     <span style="color:#047857;font-weight:700;">69%</span>     9%     3%   ← sums to 100% ✓</code></pre>
+
+<p>Bark got <strong>69% probability</strong> — the biggest slice of the pie. The other 31% is spread across the seven wrong answers.</p>
+
+<h3>Stage C — Take −log of the right answer's probability</h3>
+
+<p>Cross-entropy looks at <strong>only one number</strong>: the probability the model gave the right answer (here, bark = 0.69). The loss is the negative natural log of that:</p>
+
+<pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.6;"><code style="color:#1a1a1a;">loss = -log(<span style="color:#047857;font-weight:700;">0.69</span>) = <span style="color:#047857;font-weight:700;">0.37</span></code></pre>
+
+<p>A small loss because the model was reasonably confident in the truth. The other 7 probabilities don't appear in the formula — we only grade against the right answer.</p>
+
+<h3>Why <code>−log</code>? (intuition behind the shape)</h3>
 
 <div class="callout">
-  <strong>Why not MSE?</strong> MSE is for predicting a <em>number</em> (how far off is the guess?). Here we're predicting a <em>word</em> — a discrete choice — so "how far off" makes no sense. Cross-entropy measures "how much did you believe the right answer?" instead.
+  Think of <code>−log(p)</code> as "<strong>how surprised should we be that the model was right?</strong>"
+  <ul style="margin:8px 0;">
+    <li>If the model gave the right answer <code>p = 1.00</code> (totally sure) → <code>−log(1.0) = 0</code>. <strong>No surprise → no loss.</strong></li>
+    <li>If <code>p = 0.50</code> → <code>−log(0.5) ≈ 0.69</code>. Mild surprise.</li>
+    <li>If <code>p = 0.10</code> → <code>−log(0.1) ≈ 2.30</code>. Big surprise.</li>
+    <li>If <code>p = 0.01</code> → <code>−log(0.01) ≈ 4.61</code>. Huge surprise — the model was almost sure the answer was something else and it wasn't.</li>
+    <li>If <code>p → 0</code> → <code>−log(p) → ∞</code>. The model gets infinitely punished for being absolutely wrong.</li>
+  </ul>
+  That asymmetry is the whole point: <strong>training pushes probability onto the truth, hard, especially when the model was confidently wrong.</strong>
 </div>
+
+<h3>Three quick comparison points (on the same example)</h3>
+
+<table class="compact" style="max-width:500px;">
+  <thead><tr><th>If model gave bark probability…</th><th>loss</th><th>verdict</th></tr></thead>
+  <tbody>
+    <tr><td><strong>80%</strong></td><td><code>−log(0.80) ≈ 0.22</code></td><td>😀 confident &amp; right</td></tr>
+    <tr><td><strong>69%</strong> (our worked example)</td><td><code>−log(0.69) ≈ 0.37</code></td><td>🙂 leaning right</td></tr>
+    <tr><td><strong>30%</strong></td><td><code>−log(0.30) ≈ 1.20</code></td><td>😐 unsure</td></tr>
+    <tr><td><strong>2%</strong></td><td><code>−log(0.02) ≈ 3.91</code></td><td>😖 sure of the wrong thing</td></tr>
+  </tbody>
+</table>
+
+<div class="callout">
+  <strong>Why not MSE?</strong> MSE asks "how far off is your guess?" — it works for numeric outputs. Here we're picking from a list of words, and the ids are just labels (id 2 isn't "closer" to id 3 than to id 7 — they're arbitrary). Cross-entropy ignores the labels entirely and asks "how confident were you in the truth?" — exactly the right question for classification.
+</div>
+
+<!-- ─────────── L4 CROSS-ENTROPY PLAYGROUND ─────────── -->
+<div class="playground" id="pg-l4-ce">
+  <div class="pg-head">🧪 Now you do it — softmax + cross-entropy by hand</div>
+  <div class="pg-sub">Move the sliders for each logit. Watch softmax turn them into probabilities, then watch −log(p_truth) give you the loss. The right answer is <strong>bark</strong>.</div>
+
+  <pre class="pg-code">vocab  = [<span class="pg-string">"&lt;pad&gt;"</span>,<span class="pg-string">"&lt;mask&gt;"</span>,<span class="pg-string">"dog"</span>,<span class="pg-string">"cat"</span>,<span class="pg-string">"fish"</span>,<span class="pg-string">"bark"</span>,<span class="pg-string">"meow"</span>,<span class="pg-string">"swim"</span>]
+target = <span class="pg-string">"bark"</span>   <span class="pg-comment"># the right answer (id 5)</span>
+
+logits = [<span id="pg-ce-l0" class="pg-num pg-live">-1.0</span>, <span id="pg-ce-l1" class="pg-num pg-live">-0.5</span>, <span id="pg-ce-l2" class="pg-num pg-live">0.0</span>, <span id="pg-ce-l3" class="pg-num pg-live">-0.3</span>, <span id="pg-ce-l4" class="pg-num pg-live">-0.8</span>, <span id="pg-ce-l5" class="pg-num pg-live">2.5</span>, <span id="pg-ce-l6" class="pg-num pg-live">0.5</span>, <span id="pg-ce-l7" class="pg-num pg-live">-0.5</span>]
+
+<span class="pg-comment"># Softmax: exp every logit, then divide each by the sum</span>
+exps  = [exp(z) <span class="pg-keyword">for</span> z <span class="pg-keyword">in</span> logits]
+total = sum(exps)
+probs = [e / total <span class="pg-keyword">for</span> e <span class="pg-keyword">in</span> exps]
+
+<span class="pg-comment"># Cross-entropy: −log of the probability of the right answer</span>
+p_truth = probs[5]              <span class="pg-comment"># 5 is bark's id</span>
+loss    = -log(p_truth)
+
+<span class="pg-keyword">print</span>(<span class="pg-string">f"p_truth = {p_truth:.3f}"</span>)
+<span class="pg-keyword">print</span>(<span class="pg-string">f"loss    = {loss:.3f}"</span>)</pre>
+
+  <div class="pg-controls" style="flex-direction:column;align-items:stretch;gap:6px;">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">&lt;pad&gt;<input id="pg-ce-r0" type="range" min="-3" max="5" step="0.1" value="-1.0"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">&lt;mask&gt;<input id="pg-ce-r1" type="range" min="-3" max="5" step="0.1" value="-0.5"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">dog<input id="pg-ce-r2" type="range" min="-3" max="5" step="0.1" value="0.0"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">cat<input id="pg-ce-r3" type="range" min="-3" max="5" step="0.1" value="-0.3"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">fish<input id="pg-ce-r4" type="range" min="-3" max="5" step="0.1" value="-0.8"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;color:#86efac;">bark ✓<input id="pg-ce-r5" type="range" min="-3" max="5" step="0.1" value="2.5"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">meow<input id="pg-ce-r6" type="range" min="-3" max="5" step="0.1" value="0.5"></label>
+      <label style="font-size:11.5px;display:flex;flex-direction:column;">swim<input id="pg-ce-r7" type="range" min="-3" max="5" step="0.1" value="-0.5"></label>
+    </div>
+  </div>
+
+  <div class="pg-output" id="pg-ce-output">(move the bark slider — what happens to the loss?)</div>
+
+  <div class="pg-try">
+    <strong>🎯 Try these:</strong>
+    <ol>
+      <li>Slide <strong>bark up</strong> to <code>+5.0</code> (and keep the others low). What's the loss?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>The loss drops to roughly <strong>0.01–0.05</strong> — almost zero. With bark's logit so dominant, softmax assigns it ~99% probability, and <code>−log(0.99) ≈ 0.01</code>. <em>That's a model that has learned the rule perfectly: full confidence in the truth → near-zero loss.</em></p>
+        </details>
+      </li>
+      <li>Set <strong>all logits equal</strong> (say all = 0). What's the loss? Why?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Each word gets <strong>1/8 = 0.125 probability</strong>. Loss = <code>−log(0.125) ≈ 2.08</code>. This is the "random guess" baseline for an 8-class problem — exactly what we'd expect from an untrained model that has no preference. <em>The number <code>log(N)</code> where N is the vocab size is the loss you'd get from a pure-random guesser. For BERT's 30,000-word vocab that's about <code>log(30000) ≈ 10.3</code> — every model starts there before learning anything.</em></p>
+        </details>
+      </li>
+      <li>Slide <strong>bark to −3</strong> and put a wrong word (say <strong>meow</strong>) at <strong>+5</strong>. What happens?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Bark's probability collapses to essentially 0 — the loss <strong>blows up</strong> (often above 8). <em>That's the asymmetry of cross-entropy: being confidently WRONG is punished much harder than being uncertain. The model wakes up with a huge gradient pulling bark back up. This is exactly why training works — the wrong moves get strong corrective signals.</em></p>
+        </details>
+      </li>
+      <li><strong>Bonus:</strong> Take the bark slider to <code>+2.5</code> (the value from the worked example). Check the printout — does it match the <code>loss ≈ 0.37</code> we computed by hand?
+        <details class="pg-answer"><summary>Show answer &amp; explanation</summary>
+          <p>Yes — to within rounding, you should see <code>p_truth ≈ 0.69</code> and <code>loss ≈ 0.37</code>. <em>The widget runs exactly the math from above — exp every logit, divide by the sum, then <code>−log</code> of the bark slot. Cross-entropy isn't magic; it's just these three little operations stacked together.</em></p>
+        </details>
+      </li>
+    </ol>
+  </div>
+
+  <div class="pg-notebook">
+    📓 In the L4 notebook, <code>F.cross_entropy(logits, target)</code> does this whole pipeline (softmax + −log) in one call. The function we wrote it as exists in PyTorch precisely to save us from typing exp/log every time.
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const N = 8;
+  const TARGET_IDX = 5; // bark
+  function run() {
+    const logits = Array.from({length: N}, (_, i) => parseFloat($('pg-ce-r' + i).value));
+    logits.forEach((v, i) => $('pg-ce-l' + i).textContent = v.toFixed(1));
+    const maxL = Math.max(...logits);
+    const exps = logits.map(z => Math.exp(z - maxL));   // numerical-stable softmax
+    const total = exps.reduce((a, b) => a + b, 0);
+    const probs = exps.map(e => e / total);
+    const pTruth = probs[TARGET_IDX];
+    const loss = -Math.log(Math.max(pTruth, 1e-12));
+    const names = ["&lt;pad&gt;","&lt;mask&gt;","dog","cat","fish","bark","meow","swim"];
+    const lossColor = loss < 0.3 ? '#86efac' : loss < 1.5 ? '#fde047' : '#fca5a5';
+    const lossMood = loss < 0.3 ? '😀 confident & right' : loss < 1.5 ? '😐 unsure' : '😖 wrong';
+    let html = '         ';
+    html += names.map(n => n.padStart(7, ' ')).join('');
+    html += '\nlogit:   ' + logits.map(v => (v >= 0 ? '+' : '') + v.toFixed(2).padStart(6, ' ')).join(' ');
+    html += '\nexp(z):  ' + exps.map(v => v.toFixed(2).padStart(6, ' ')).join(' ');
+    html += `\n\nsum of exp = ${total.toFixed(2)}\n`;
+    html += '\nprob:    ' + probs.map((v, i) => {
+      const pct = (v * 100).toFixed(1) + '%';
+      return i === TARGET_IDX ? `<span class="pg-ans">${pct.padStart(6, ' ')}</span>` : pct.padStart(6, ' ');
+    }).join(' ');
+    html += `\n\np_truth (bark) = <span class="pg-ans">${pTruth.toFixed(3)}</span>`;
+    html += `\nloss = -log(${pTruth.toFixed(3)}) = <span style="color:${lossColor};font-weight:700;">${loss.toFixed(3)}</span>  <span class="pg-skip">${lossMood}</span>`;
+    $('pg-ce-output').innerHTML = html;
+  }
+  for (let i = 0; i < N; i++) $('pg-ce-r' + i).addEventListener('input', run);
+  run();
+})();
+</script>
+<!-- ─────────── end L4 CROSS-ENTROPY PLAYGROUND ─────────── -->
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Build the tiny model</h2>
 
