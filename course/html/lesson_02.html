@@ -546,12 +546,85 @@ summary = [0.20, 0.55]</code></pre>
       <select id="cb-q" style="padding:5px 9px;font-size:14px;"></select>
     </div>
     <div id="cb-explain" style="margin-top:10px;font-size:13.5px;"></div>
+    <div id="cb-verdict" style="margin-top:6px;font-size:14px;font-weight:700;"></div>
     <div id="cb-bars" style="margin-top:8px;"></div>
   </div>
 </div>
 
 <!-- inline data: vocab, embeddings, PCA projection, loss curve, demo sentences -->
-<script id="cb-data" type="application/json">{"vocab":["the","is","says","plays","runs","loud","big","dog","cat","bird","fish","bark","meow","tweet","splash","park","sofa","tree","tank"],"sentences":["the dog plays","the cat plays","the bird plays","the fish plays","the dog runs","the cat runs","the bird runs","the fish runs","bark is loud","meow is loud","tweet is loud","splash is loud","park is big","sofa is big","tree is big","tank is big","the dog says bark","the cat says meow","the bird says tweet","the fish says splash"],"embeddings":[[-0.0037,-0.0747,0.0447,-0.4141,-0.1029,-0.0809,-0.0763,-1.8629],[-0.8957,-0.0198,-0.0918,0.4327,0.1827,-0.045,0.1852,1.5507],[-0.7711,-0.0526,-0.0313,-0.5664,-0.2684,-0.2097,0.0296,-1.2947],[0.6026,0.0003,0.124,-0.4768,-0.383,-0.1661,-0.1052,-1.5465],[0.2781,-0.2697,-0.0532,-0.5136,-0.1377,0.0984,-0.0669,-2.1993],[-2.0368,0.3065,-0.1425,0.0599,0.2619,-0.3211,0.3158,1.2438],[0.0408,-0.1467,-0.0283,0.826,0.1458,0.1177,0.1285,1.8604],[0.1098,0.0698,-0.2522,-0.4745,0.338,0.1018,0.2543,-1.3832],[0.1908,0.089,0.2497,-0.767,-0.4274,-0.3223,-0.1797,-1.4186],[0.1992,-0.2082,0.0062,-0.0721,-0.0969,0.1316,-0.0927,-1.8067],[0.1996,-0.3532,0.097,-0.2272,-0.2294,0.12,-0.2718,-1.317],[-1.3939,0.3978,-0.4552,-0.3147,0.486,-0.2226,0.6021,0.4586],[-1.5306,0.3077,0.1826,-0.3509,-0.1249,-0.8172,0.1149,0.9013],[-1.6286,0.1894,0.0294,0.558,0.0005,0.0259,0.0077,0.3679],[-1.259,-0.3214,-0.0456,-0.1296,-0.1515,0.0404,-0.1355,0.0704],[0.2544,-0.1278,-0.104,0.8029,0.154,0.1213,0.143,1.5678],[0.4294,-0.0472,0.1297,0.6385,-0.2563,0.157,-0.1588,1.1323],[0.5362,0.2544,-0.2025,0.3362,-0.0766,-0.0249,0.1451,0.7133],[0.4152,-0.0629,0.4577,0.5552,-0.1196,-0.2105,-0.5119,1.0805]],"proj2":[[-1.834,0.125],[1.809,0.116],[-1.161,0.785],[-1.729,-0.475],[-2.258,-0.08],[1.75,1.418],[1.948,-0.956],[-1.373,0.042],[-1.587,-0.033],[-1.754,-0.213],[-1.373,-0.316],[0.806,1.169],[1.162,1.133],[0.916,0.929],[0.318,0.764],[1.622,-1.077],[1.083,-1.194],[0.646,-0.982],[1.01,-1.158]],"loss_curve":[7.775,4.417,2.447,4.017,2.509,1.807,1.401,1.846,2.501,2.005,1.619,1.853,1.738,2.77,2.611,2.414,1.314,1.616,1.379,2.85,3.593,2.64,2.674,1.883,1.069,1.953,1.984,0.832,2.714,2.493,1.32,1.476,1.573,3.359,1.94,2.111,2.127,1.972,1.285,3.682,2.692,2.818,1.661,2.77,1.543,2.19,2.97,2.136,4.276,1.832,1.167,1.323,2.106,2.358,2.774,2.312,1.75,4.137,2.275,4.029,2.948,1.169,1.962,3.77,1.757,2.116,1.814,3.76,1.812,2.402,1.679,3.023,1.703,1.621,2.255,1.547,1.686,2.654,1.62,1.436,2.499,2.252,1.655,2.185,0.814,2.1,1.568,3.871,3.033,1.795,1.244,4.493,2.213,3.043,3.368,1.84,1.857,2.892,1.592,2.313],"category":{"dog":"A","cat":"A","bird":"A","fish":"A","bark":"S","meow":"S","tweet":"S","splash":"S","park":"P","sofa":"P","tree":"P","tank":"P"},"demo_sentences":[{"text":"the dog says ___","ctx":["the","dog","says"],"answer":"bark"},{"text":"the cat says ___","ctx":["the","cat","says"],"answer":"meow"},{"text":"the bird says ___","ctx":["the","bird","says"],"answer":"tweet"},{"text":"the ___ says splash","ctx":["the","says","splash"],"answer":"fish"},{"text":"___ is loud","ctx":["is","loud"],"answer":"any sound"},{"text":"the dog ___ park","ctx":["the","dog","park"],"answer":"plays/runs"},{"text":"___ is big","ctx":["is","big"],"answer":"any place"}]}</script>
+<script id="cb-data" type="application/json">{"vocab":["the","is","says","plays","runs","loud","big","dog","cat","bird","fish","bark","meow","tweet","splash","park","sofa","tree","tank"],"sentences":["the dog plays","the cat plays","the bird plays","the fish plays","the dog runs","the cat runs","the bird runs","the fish runs","bark is loud","meow is loud","tweet is loud","splash is loud","park is big","sofa is big","tree is big","tank is big","the dog says bark","the cat says meow","the bird says tweet","the fish says splash"],"embeddings":[[-0.0037,-0.0747,0.0447,-0.4141,-0.1029,-0.0809,-0.0763,-1.8629],[-0.8957,-0.0198,-0.0918,0.4327,0.1827,-0.045,0.1852,1.5507],[-0.7711,-0.0526,-0.0313,-0.5664,-0.2684,-0.2097,0.0296,-1.2947],[0.6026,0.0003,0.124,-0.4768,-0.383,-0.1661,-0.1052,-1.5465],[0.2781,-0.2697,-0.0532,-0.5136,-0.1377,0.0984,-0.0669,-2.1993],[-2.0368,0.3065,-0.1425,0.0599,0.2619,-0.3211,0.3158,1.2438],[0.0408,-0.1467,-0.0283,0.826,0.1458,0.1177,0.1285,1.8604],[0.1098,0.0698,-0.2522,-0.4745,0.338,0.1018,0.2543,-1.3832],[0.1908,0.089,0.2497,-0.767,-0.4274,-0.3223,-0.1797,-1.4186],[0.1992,-0.2082,0.0062,-0.0721,-0.0969,0.1316,-0.0927,-1.8067],[0.1996,-0.3532,0.097,-0.2272,-0.2294,0.12,-0.2718,-1.317],[-1.3939,0.3978,-0.4552,-0.3147,0.486,-0.2226,0.6021,0.4586],[-1.5306,0.3077,0.1826,-0.3509,-0.1249,-0.8172,0.1149,0.9013],[-1.6286,0.1894,0.0294,0.558,0.0005,0.0259,0.0077,0.3679],[-1.259,-0.3214,-0.0456,-0.1296,-0.1515,0.0404,-0.1355,0.0704],[0.2544,-0.1278,-0.104,0.8029,0.154,0.1213,0.143,1.5678],[0.4294,-0.0472,0.1297,0.6385,-0.2563,0.157,-0.1588,1.1323],[0.5362,0.2544,-0.2025,0.3362,-0.0766,-0.0249,0.1451,0.7133],[0.4152,-0.0629,0.4577,0.5552,-0.1196,-0.2105,-0.5119,1.0805]],"proj2":[[-1.834,0.125],[1.809,0.116],[-1.161,0.785],[-1.729,-0.475],[-2.258,-0.08],[1.75,1.418],[1.948,-0.956],[-1.373,0.042],[-1.587,-0.033],[-1.754,-0.213],[-1.373,-0.316],[0.806,1.169],[1.162,1.133],[0.916,0.929],[0.318,0.764],[1.622,-1.077],[1.083,-1.194],[0.646,-0.982],[1.01,-1.158]],"loss_curve":[7.775,4.417,2.447,4.017,2.509,1.807,1.401,1.846,2.501,2.005,1.619,1.853,1.738,2.77,2.611,2.414,1.314,1.616,1.379,2.85,3.593,2.64,2.674,1.883,1.069,1.953,1.984,0.832,2.714,2.493,1.32,1.476,1.573,3.359,1.94,2.111,2.127,1.972,1.285,3.682,2.692,2.818,1.661,2.77,1.543,2.19,2.97,2.136,4.276,1.832,1.167,1.323,2.106,2.358,2.774,2.312,1.75,4.137,2.275,4.029,2.948,1.169,1.962,3.77,1.757,2.116,1.814,3.76,1.812,2.402,1.679,3.023,1.703,1.621,2.255,1.547,1.686,2.654,1.62,1.436,2.499,2.252,1.655,2.185,0.814,2.1,1.568,3.871,3.033,1.795,1.244,4.493,2.213,3.043,3.368,1.84,1.857,2.892,1.592,2.313],"category":{"dog":"A","cat":"A","bird":"A","fish":"A","bark":"S","meow":"S","tweet":"S","splash":"S","park":"P","sofa":"P","tree":"P","tank":"P"},"demo_sentences":[{"text":"the dog says ___","ctx":["the","dog","says"],"answers":["bark"]},{"text":"the cat says ___","ctx":["the","cat","says"],"answers":["meow"]},{"text":"the bird says ___","ctx":["the","bird","says"],"answers":["tweet"]},{"text":"the ___ says splash","ctx":["the","says","splash"],"answers":["fish"]},{"text":"___ is loud","ctx":["is","loud"],"answers":["bark","meow","tweet","splash"]},{"text":"the dog ___ park","ctx":["the","dog","park"],"answers":["plays","runs"]},{"text":"___ is big","ctx":["is","big"],"answers":["park","sofa","tree","tank"]}],"n_sentences":20,"d":8,"total_steps":3000}</script>
+
+<h3 id="try2">🔬 Try 2 — what if we just throw more data at it?</h3>
+
+<p>You probably noticed the loss above never quite settled — it bounces around 2.0–3.0 even at step 3,000, and inference sometimes guesses wrong. That's a real symptom: <strong>20 sentences and 8 numbers per word just isn't enough signal</strong>. The model can almost learn the patterns, but not quite.</p>
+
+<p>What happens if we change <em>nothing</em> about the recipe and just feed the model <strong>more</strong>? Same CBOW objective, same 5-line training loop, same gradient descent. Only the dials change:</p>
+
+<table class="compact" style="max-width:520px;">
+  <thead><tr><th></th><th>Try 1 (above)</th><th>Try 2 (this widget)</th></tr></thead>
+  <tbody>
+    <tr><td>Sentences</td><td>20</td><td><strong>48</strong> (2.4× more)</td></tr>
+    <tr><td>Vocabulary</td><td>19 words</td><td><strong>26 words</strong> (more verbs + adjectives)</td></tr>
+    <tr><td>Embedding dim <code>d</code></td><td>8</td><td><strong>16</strong> (more "room" per word)</td></tr>
+    <tr><td>Training steps</td><td>3,000</td><td><strong>5,000</strong></td></tr>
+  </tbody>
+</table>
+
+<p>Press <strong>Train</strong> below and compare with the first widget. <em>Loss should drop further and stay there, and inference should be more accurate.</em></p>
+
+<div class="widget">
+  <div id="cb2-phase" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+    <span id="cb2-phase-tag" style="display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:700;background:#dbeafe;color:#1d4ed8;">PHASE 1 · TRAINING (Try 2)</span>
+    <span id="cb2-phase-msg" style="font-size:13px;color:var(--text-dim);">Same recipe — just more sentences, bigger vocabulary, bigger embeddings, longer training.</span>
+  </div>
+
+  <div class="widget-row two">
+    <canvas id="cb2-canvas" width="500" height="360"></canvas>
+    <div class="controls">
+      <div style="margin-bottom:12px;">
+        <button id="cb2-train">▶ Train</button>
+        <button class="alt" id="cb2-reset">🎲 Reset</button>
+      </div>
+      <table class="stats">
+        <tr><th>step</th><td id="cb2-step">0</td></tr>
+        <tr><th>loss</th><td id="cb2-loss">—</td></tr>
+      </table>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
+        <span style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
+        <span style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
+        <span style="color:#10b981;font-weight:700;">●</span> places &nbsp;
+        <span style="color:#94a3b8;font-weight:700;">●</span> rest
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px;">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;">
+      <strong style="font-size:13px;">📉 Loss over training (real numbers from a 5,000-step run)</strong>
+      <span style="font-size:12px;color:var(--text-dim);">Notice: now it actually flattens.</span>
+    </div>
+    <canvas id="cb2-loss-cv" width="780" height="100" style="margin-top:6px;"></canvas>
+  </div>
+
+  <div id="cb2-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
+    <strong style="color:#047857;">🧠 Phase 2 · INFERENCE — same dropdown, smarter model</strong>
+    <p style="margin:8px 0;font-size:13.5px;">Try the same masked sentences. The model now has more shaped embeddings to work with.</p>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+      <span style="color:var(--text-dim);">Sentence:</span>
+      <select id="cb2-q" style="padding:5px 9px;font-size:14px;"></select>
+    </div>
+    <div id="cb2-explain" style="margin-top:10px;font-size:13.5px;"></div>
+    <div id="cb2-verdict" style="margin-top:6px;font-size:14px;font-weight:700;"></div>
+    <div id="cb2-bars" style="margin-top:8px;"></div>
+  </div>
+</div>
+
+<script id="cb2-data" type="application/json">{"vocab":["the","is","says","plays","runs","eats","sleeps","jumps","cute","small","loud","soft","big","calm","dog","cat","bird","fish","bark","meow","tweet","splash","park","sofa","tree","tank"],"embeddings":[[0.3137,0.2421,-0.0338,0.2345,2.5163,-0.0066,0.1569,-0.19,-0.1632,0.2913,0.0359,-0.0591,0.01,-0.2495,-0.0156,-0.0036],[-0.1305,0.0293,0.0071,-0.2141,0.9426,-0.0112,0.0396,-0.0012,0.2174,2.2641,0.0081,-0.0442,-0.394,-0.0523,-0.1147,-0.067],[-0.3275,-0.1216,0.1188,0.0113,0.8712,-0.0402,-0.1689,0.169,-0.0356,0.075,-0.0926,0.0622,-1.032,0.2654,0.1667,0.0713],[-0.7779,-0.1231,0.0801,-0.6682,1.6675,-0.2714,-0.47,0.3435,-0.0362,-0.1778,-0.1444,0.0743,0.4882,0.7394,0.035,-0.0983],[-0.1364,-0.4236,-0.1684,-0.2338,1.3668,0.2577,-0.117,0.1546,-0.0568,-0.2702,-0.0328,0.2063,0.296,0.2491,0.069,0.1218],[-0.1536,0.0602,-0.0312,-0.4144,1.3651,-0.0207,-0.0451,0.1309,0.0407,-0.1391,-0.2162,0.1005,-0.2219,0.1513,0.0912,-0.1159],[0.2655,0.3135,-0.1726,-0.0616,2.0144,-0.1007,0.0764,-0.1064,-0.1237,-0.3089,-0.0839,0.0498,0.317,-0.0436,0.0928,-0.1156],[0.0117,0.0377,0.0073,-0.0703,1.3874,0.0161,0.0504,-0.0229,-0.0175,-0.4272,0.1183,-0.0671,0.2171,-0.1176,-0.0315,-0.0462],[-0.1271,-0.0243,-0.0171,-0.2896,1.3593,0.0278,-0.0685,0.1957,0.1671,0.8345,-0.1102,0.1402,0.1922,0.314,0.0965,-0.0568],[0.2436,0.1358,0.0389,0.1342,0.9411,-0.069,0.1186,-0.1193,0.2508,1.0232,0.0856,-0.143,0.0888,-0.3553,-0.0715,-0.1006],[-0.1502,-0.1391,0.1362,0.1678,0.5073,-0.0265,0.2253,-0.0568,0.2249,2.2284,-0.1247,-0.0101,-0.98,0.0714,-0.3125,0.2199],[0.0091,0.227,-0.183,-0.3397,-0.2664,0.0532,-0.276,0.0988,-0.0942,1.5942,0.0633,0.0069,-0.6076,-0.1425,0.2339,-0.3246],[-0.2663,-0.1632,0.0068,-0.1931,-0.0788,0.0314,-0.0571,0.0445,0.0418,1.55,0.0111,0.0294,0.5016,0.1087,0.0713,0.0553],[0.0601,-0.1977,0.1142,-0.2142,-0.6334,0.1276,0.11,0.0388,0.2228,1.7206,0.0726,0.0405,1.388,0.085,0.0412,0.1093],[-0.1957,0.2849,0.0369,0.0576,1.9321,-0.1082,-0.0672,-0.0159,-0.1426,0.0978,0.1062,-0.1159,0.2659,-0.0412,-0.0787,-0.1226],[0.1628,0.0697,-0.2005,-0.1769,1.9428,-0.0297,-0.0182,-0.0585,-0.2466,-0.1796,-0.1628,0.1501,0.3725,0.2255,0.1442,-0.0228],[-0.0403,0.0261,-0.0908,-0.5515,1.6918,0.0306,0.0346,0.0322,0.316,-0.3167,0.0933,-0.0121,0.2252,-0.1428,-0.0126,-0.1741],[-0.0685,0.0468,0.0516,-0.317,1.8963,-0.0067,-0.0057,-0.0168,0.0752,0.5357,0.0164,-0.0587,-0.3952,-0.0429,-0.0222,-0.0643],[-0.1108,0.3158,-0.1782,-0.5115,0.2208,-0.0686,-0.1388,0.0625,0.2891,1.4068,0.1638,-0.1345,-0.3479,-0.2329,-0.1509,-0.4668],[-0.3104,-0.0576,0.0054,-0.2829,0.2826,-0.0496,-0.0311,0.0974,0.2963,1.4594,-0.1232,0.029,-1.1532,0.2061,-0.0784,-0.0378],[-0.1612,-0.311,0.2473,0.4657,0.5689,-0.0656,0.3784,-0.1369,0.0378,1.9659,-0.2146,-0.0066,-0.6849,0.1847,-0.4799,0.5065],[0.0162,0.1325,-0.113,-0.4487,0.1454,0.1154,-0.1663,0.0706,-0.0169,1.4065,-0.0025,0.0092,-1.3229,0.0288,0.1149,-0.2643],[0.6691,0.2486,0.069,0.4547,-0.4583,-0.1402,-0.117,0.012,-0.2282,1.3646,-0.2172,0.0881,1.1991,0.0255,0.495,-0.1519],[-0.127,-0.2065,0.2261,-0.221,-0.4515,0.1689,0.1734,0.0132,0.2576,2.0138,0.059,0.0086,1.3843,0.1583,-0.3326,0.1283],[0.2657,0.0525,0.0033,0.2891,-0.6951,-0.0208,-0.0994,0.0745,-0.022,1.1496,-0.1381,0.0376,0.9844,-0.0581,0.2584,-0.1327],[-0.2387,0.0041,-0.1247,0.2263,-0.1813,-0.0106,-0.2826,0.0369,-0.3499,1.3722,-0.2317,0.0365,0.8122,0.1089,0.2361,-0.0109]],"proj2":[[1.622,0.133],[-0.803,0.914],[0.662,0.766],[1.367,-0.486],[1.159,-0.47],[1.134,0.069],[1.668,-0.422],[1.278,-0.425],[0.43,-0.024],[-0.04,0.05],[-1.094,1.373],[-1.181,0.604],[-1.135,-0.337],[-1.745,-1.208],[1.334,-0.206],[1.534,-0.458],[1.449,-0.294],[1.065,0.542],[-0.72,0.502],[-0.681,1.261],[-0.923,1.031],[-0.704,1.302],[-1.369,-1.305],[-1.814,-1.016],[-1.382,-1.12],[-1.111,-0.777]],"loss_curve":[9.623,8.874,8.415,4.535,2.354,3.345,1.838,4.347,3.473,2.28,2.182,2.801,1.462,4.032,2.105,4.086,1.478,2.376,3.128,2.904,4.238,2.139,2.707,1.893,3.105,3.123,3.026,2.691,2.294,1.529,2.549,2.055,4.004,1.849,4.716,3.134,2.072,3.545,1.959,1.925,3.17,2.822,1.599,2.568,2.529,1.7,2.993,3.18,2.45,2.828,1.959,3.261,1.631,3.978,2.989,1.792,2.826,2.477,4.997,4.057,3.215,1.467,1.985,3.866,3.536,1.805,1.575,4.216,2.797,2.164,2.702,1.777,2.123,1.926,3.257,1.689,1.731,2.436,3.7,2.579,2.92,3.759,2.106,2.605,4.401,3.93,3.065,2.772,2.211,4.475,3.243,2.294,2.7,3.425,3.193,3.543,3.92,3.431,3.906,1.661,3.944,1.071,2.926,2.482,3.185,2.403,2.803,2.634,1.872,2.566,1.722,3.327,1.975,3.219,2.956,3.42,2.25,2.789,2.054,2.857,3.743,1.763,2.879,3.2,2.046,3.293,1.29,2.743,5.94,1.423,3.304,2.839,1.841,4.21,2.769,1.795,1.992,2.296,4.822,2.182,2.557,2.787,5.625,3.123,4.778,2.633,2.172,1.532,1.969,4.478,1.855,2.377,2.385,4.018,3.873,1.523,2.033,4.364,1.643,2.922,2.5,3.158,2.252,2.834,3.484,1.154,1.457],"category":{"dog":"A","cat":"A","bird":"A","fish":"A","bark":"S","meow":"S","tweet":"S","splash":"S","park":"P","sofa":"P","tree":"P","tank":"P"},"demo_sentences":[{"text":"the dog says ___","ctx":["the","dog","says"],"answers":["bark"]},{"text":"the cat says ___","ctx":["the","cat","says"],"answers":["meow"]},{"text":"the bird says ___","ctx":["the","bird","says"],"answers":["tweet"]},{"text":"the ___ says splash","ctx":["the","says","splash"],"answers":["fish"]},{"text":"___ is loud","ctx":["is","loud"],"answers":["bark","meow","tweet","splash"]},{"text":"___ is soft","ctx":["is","soft"],"answers":["bark","meow","tweet","splash"]},{"text":"___ is big","ctx":["is","big"],"answers":["park","sofa","tree","tank"]},{"text":"the dog ___ park","ctx":["the","dog","park"],"answers":["plays","runs","eats","sleeps","jumps"]},{"text":"the ___ is cute","ctx":["the","is","cute"],"answers":["dog","cat","bird","fish"]},{"text":"the ___ is small","ctx":["the","is","small"],"answers":["dog","cat","bird","fish"]}],"n_sentences":48,"d":16,"total_steps":5000}</script>
+
+<div class="callout good" style="margin-top:14px;">
+  <strong>🎯 That's the core LLM tenet.</strong> Same algorithm, same training loop, same code. Only the <em>amount of data</em> and the <em>size of the embeddings</em> went up — and the model got noticeably better. This is the single most important lesson of modern AI: <strong>scale fixes things</strong>.
+  <p style="margin:8px 0 0;">PRAGMA-L isn't a fundamentally different idea from your toy here. It's the same recipe with <em>billions of sentences</em>, <em>1024-dimensional embeddings</em>, and <em>18 stacked layers of attention</em>. The reason GPT-4 feels like magic isn't a magic algorithm — it's that the recipe scales beautifully.</p>
+</div>
 
 <h3>Why animals only <em>partially</em> clustered (honest read)</h3>
 
@@ -965,10 +1038,20 @@ summary = [0.20, 0.55]</code></pre>
     const topWord = top5[0].w;
 
     // show context as visible-vs-blank
-    const ctxHtml = d.text.replace('___', `<span style="background:#a855f7;color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;">${topWord}</span>`);
+    const isCorrect = (d.answers || []).includes(topWord);
+    const blankBg = isCorrect ? '#10b981' : '#ef4444';
+    const ctxHtml = d.text.replace('___', `<span style="background:${blankBg};color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;">${topWord}</span>`);
     let html = `<div style="font-size:15px;margin-bottom:6px;">Model fills it in: <span style="font-family:ui-monospace,monospace;">${ctxHtml}</span></div>`;
-    html += `<div style="color:var(--text-dim);font-size:13px;">Expected: <code>${d.answer}</code></div>`;
+    html += `<div style="color:var(--text-dim);font-size:13px;">Accepted answers: <code>${(d.answers||[]).join(', ')}</code></div>`;
     document.getElementById('cb-explain').innerHTML = html;
+    const verdict = document.getElementById('cb-verdict');
+    if (isCorrect) {
+      verdict.textContent = '✅ Correct — the trained model nailed it.';
+      verdict.style.color = 'var(--good)';
+    } else {
+      verdict.textContent = `❌ Not quite — model said "${topWord}". (loss didn't fully converge — try the second widget below with more data.)`;
+      verdict.style.color = 'var(--bad)';
+    }
 
     // bar chart of top 5 (positive bars only)
     const maxS = Math.max(...top5.map(o => Math.abs(o.s)), 0.5);
@@ -999,6 +1082,192 @@ summary = [0.20, 0.55]</code></pre>
   });
   document.getElementById('cb-reset').addEventListener('click', reset);
   document.getElementById('cb-q').addEventListener('change', renderInference);
+  reset();
+})();
+</script>
+
+<script>
+// --- BERT-style CBOW widget — TRY 2 (more data, bigger d) ---
+(() => {
+  const dataEl = document.getElementById('cb2-data');
+  if (!dataEl) return;
+  const D = JSON.parse(dataEl.textContent);
+  const VOCAB = D.vocab, EMB = D.embeddings, PROJ = D.proj2;
+  const LOSS = D.loss_curve, CAT = D.category, DEMOS = D.demo_sentences;
+  const t2i = Object.fromEntries(VOCAB.map((w,i) => [w,i]));
+  const COL = {A:'#3b82f6', S:'#f59e0b', P:'#10b981'};
+  const FALLBACK = '#94a3b8';
+  const cv = document.getElementById('cb2-canvas');
+  const ctx = cv.getContext('2d');
+  const lossCv = document.getElementById('cb2-loss-cv');
+  const lossCtx = lossCv.getContext('2d');
+  const STEPS_TOTAL = 300;
+  const W = cv.width, H = cv.height;
+  const xs = PROJ.map(p => p[0]); const ys = PROJ.map(p => p[1]);
+  const xmin = Math.min(...xs), xmax = Math.max(...xs);
+  const ymin = Math.min(...ys), ymax = Math.max(...ys);
+  const px = (x) => 30 + (x - xmin) / (xmax - xmin) * (W - 60);
+  const py = (y) => 30 + (1 - (y - ymin) / (ymax - ymin)) * (H - 60);
+  let step = 0, running = false, raf = null;
+  function rngSeed(i){ let x = Math.sin(i * 77291 + 13) * 10000; return x - Math.floor(x); }
+  const start = VOCAB.map((_,i) => [ rngSeed(i*2)*2-1, rngSeed(i*2+1)*2-1 ]);
+  function curPos(i, t) { return [ start[i][0]*(1-t) + PROJ[i][0]*t, start[i][1]*(1-t) + PROJ[i][1]*t ]; }
+  function progress() { return Math.min(1, step / STEPS_TOTAL); }
+
+  function setPhase(phase) {
+    const tag = document.getElementById('cb2-phase-tag');
+    const msg = document.getElementById('cb2-phase-msg');
+    const inf = document.getElementById('cb2-inference');
+    if (phase === 'train') {
+      tag.textContent = 'PHASE 1 · TRAINING (Try 2)';
+      tag.style.background = '#dbeafe'; tag.style.color = '#1d4ed8';
+      msg.textContent = 'Same recipe — just more sentences, bigger vocabulary, bigger embeddings, longer training.';
+      inf.style.display = 'none';
+    } else if (phase === 'training-running') {
+      tag.textContent = 'PHASE 1 · TRAINING (running, Try 2)';
+      tag.style.background = '#fef3c7'; tag.style.color = '#92400e';
+      msg.textContent = 'Watch the loss flatten near 1.5 — much tighter than Try 1.';
+      inf.style.display = 'none';
+    } else {
+      tag.textContent = '✓ TRAINED → PHASE 2 · INFERENCE (Try 2)';
+      tag.style.background = '#dcfce7'; tag.style.color = '#047857';
+      msg.textContent = 'Loss settled — embeddings are sharper. Pick a masked sentence; inference should be more accurate.';
+      inf.style.display = 'block';
+      renderInference();
+    }
+  }
+  function draw() {
+    const t = progress();
+    ctx.clearRect(0,0,W,H);
+    for (let i = 0; i < VOCAB.length; i++) {
+      const w = VOCAB[i];
+      const [u,v] = curPos(i, t);
+      const x = px(u), y = py(v);
+      const color = COL[CAT[w]] || FALLBACK;
+      ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(x,y,5.5,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = (CAT[w] ? 'bold ' : '') + '12px ui-sans-serif,system-ui';
+      ctx.textAlign = 'left';
+      ctx.fillText(w, x + 8, y + 4);
+    }
+    document.getElementById('cb2-step').textContent = step;
+    const li = Math.min(LOSS.length - 1, Math.floor(t * (LOSS.length - 1)));
+    document.getElementById('cb2-loss').textContent = LOSS[li].toFixed(2);
+  }
+  function drawLoss() {
+    const LW = lossCv.width, LH = lossCv.height, pad = 26;
+    lossCtx.clearRect(0,0,LW,LH);
+    lossCtx.strokeStyle = '#e5e5e5'; lossCtx.lineWidth = 1;
+    lossCtx.beginPath();
+    lossCtx.moveTo(pad, LH-pad); lossCtx.lineTo(LW-pad/2, LH-pad);
+    lossCtx.moveTo(pad, 4); lossCtx.lineTo(pad, LH-pad);
+    lossCtx.stroke();
+    lossCtx.fillStyle = '#888'; lossCtx.font = '10.5px ui-sans-serif,system-ui';
+    lossCtx.textAlign = 'right'; lossCtx.fillText('loss', pad-4, 12);
+    lossCtx.textAlign = 'left'; lossCtx.fillText('0', pad+2, LH-pad+12);
+    lossCtx.fillText('5000 steps', LW-pad-65, LH-pad+12);
+    const t = progress();
+    const visiblePts = Math.max(1, Math.floor(t * LOSS.length));
+    const ymax = Math.max(...LOSS, 1);
+    lossCtx.strokeStyle = '#10b981'; lossCtx.lineWidth = 2;
+    lossCtx.beginPath();
+    for (let i = 0; i < visiblePts; i++) {
+      const x = pad + (i / (LOSS.length - 1)) * (LW - pad*1.5);
+      const y = (LH-pad) - (LOSS[i] / ymax) * (LH - pad - 6);
+      if (i === 0) lossCtx.moveTo(x, y); else lossCtx.lineTo(x, y);
+    }
+    lossCtx.stroke();
+    if (visiblePts > 0) {
+      const i = visiblePts - 1;
+      const x = pad + (i / (LOSS.length - 1)) * (LW - pad*1.5);
+      const y = (LH-pad) - (LOSS[i] / ymax) * (LH - pad - 6);
+      lossCtx.fillStyle = '#047857';
+      lossCtx.beginPath(); lossCtx.arc(x,y,3.5,0,Math.PI*2); lossCtx.fill();
+    }
+  }
+  function reset() {
+    running = false; if (raf) cancelAnimationFrame(raf);
+    document.getElementById('cb2-train').textContent = '▶ Train';
+    step = 0; setPhase('train'); draw(); drawLoss();
+  }
+  function loop() {
+    if (!running) return;
+    step++; draw(); drawLoss();
+    if (step >= STEPS_TOTAL) {
+      running = false;
+      document.getElementById('cb2-train').textContent = '✓ Trained (reset to replay)';
+      setPhase('inference');
+      return;
+    }
+    raf = requestAnimationFrame(loop);
+  }
+  function fillDemos() {
+    const sel = document.getElementById('cb2-q');
+    sel.innerHTML = '';
+    DEMOS.forEach((d, i) => {
+      const opt = document.createElement('option');
+      opt.value = i; opt.textContent = d.text;
+      sel.appendChild(opt);
+    });
+  }
+  function dot(a, b){ let s=0; for (let i=0;i<a.length;i++) s+=a[i]*b[i]; return s; }
+  function renderInference() {
+    const sel = document.getElementById('cb2-q');
+    const idx = +sel.value;
+    const d = DEMOS[idx];
+    const ce = new Array(EMB[0].length).fill(0);
+    for (const w of d.ctx) {
+      const v = EMB[t2i[w]];
+      for (let i=0;i<v.length;i++) ce[i] += v[i];
+    }
+    for (let i=0;i<ce.length;i++) ce[i] /= d.ctx.length;
+    const scored = VOCAB.map((w,i) => ({w, s: dot(EMB[i], ce)}));
+    const filt = scored.filter(o => !d.ctx.includes(o.w));
+    filt.sort((a,b) => b.s - a.s);
+    const top5 = filt.slice(0, 5);
+    const topWord = top5[0].w;
+    const isCorrect = (d.answers || []).includes(topWord);
+    const blankBg = isCorrect ? '#10b981' : '#ef4444';
+    const ctxHtml = d.text.replace('___', `<span style="background:${blankBg};color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;">${topWord}</span>`);
+    let html = `<div style="font-size:15px;margin-bottom:6px;">Model fills it in: <span style="font-family:ui-monospace,monospace;">${ctxHtml}</span></div>`;
+    html += `<div style="color:var(--text-dim);font-size:13px;">Accepted answers: <code>${(d.answers||[]).join(', ')}</code></div>`;
+    document.getElementById('cb2-explain').innerHTML = html;
+    const verdict = document.getElementById('cb2-verdict');
+    if (isCorrect) {
+      verdict.textContent = '✅ Correct — more data, sharper model.';
+      verdict.style.color = 'var(--good)';
+    } else {
+      verdict.textContent = `❌ Still wrong — model said "${topWord}". Even Try 2 isn't perfect; that's where attention helps (Lesson 3).`;
+      verdict.style.color = 'var(--bad)';
+    }
+    const maxS = Math.max(...top5.map(o => Math.abs(o.s)), 0.5);
+    let bars = '';
+    for (const {w, s} of top5) {
+      const isTop = w === topWord;
+      const frac = Math.max(0, s) / maxS;
+      const negFrac = Math.max(0, -s) / maxS;
+      bars += `<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px;">
+        <div style="width:56px;text-align:right;font-family:ui-monospace,monospace;font-weight:${isTop?'700':'500'};color:${isTop?'#047857':'#444'};">${w}</div>
+        <div style="flex:1;background:#f4f4f5;border-radius:4px;height:16px;position:relative;">
+          <div style="position:absolute;left:50%;top:0;height:100%;width:${frac*48}%;background:${isTop?'#10b981':'#94a3b8'};border-radius:0 4px 4px 0;"></div>
+          <div style="position:absolute;right:50%;top:0;height:100%;width:${negFrac*48}%;background:#fca5a5;border-radius:4px 0 0 4px;"></div>
+          <div style="position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#cbd5e1;"></div>
+        </div>
+        <div style="width:54px;font-family:ui-monospace,monospace;font-size:12px;color:#666;">${s.toFixed(2)}</div></div>`;
+    }
+    document.getElementById('cb2-bars').innerHTML = bars;
+  }
+  fillDemos();
+  document.getElementById('cb2-train').addEventListener('click', () => {
+    if (step >= STEPS_TOTAL) reset();
+    running = !running;
+    document.getElementById('cb2-train').textContent = running ? '⏸ Pause' : '▶ Train';
+    setPhase(running ? 'training-running' : 'train');
+    if (running) loop();
+  });
+  document.getElementById('cb2-reset').addEventListener('click', reset);
+  document.getElementById('cb2-q').addEventListener('change', renderInference);
   reset();
 })();
 </script>
