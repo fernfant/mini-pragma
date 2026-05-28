@@ -570,6 +570,23 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   </div>
 </div>
 
+<div class="callout info" style="margin-top:14px;">
+  <strong>The one rule to hold onto: the vector stays 32 wide the whole way through.</strong> Attention takes 32 numbers in and gives 32 back. The head takes 32 in. The <em>only</em> place a different number shows up is <strong>64</strong> — and that's just the temporary bulge <em>inside</em> the feed-forward step, gone again one line later. So it's <strong>32 in, 32 out, with a quick puff to 64 in the middle</strong> — not "64 neurons per layer."
+</div>
+
+<h3 style="margin-bottom:4px;margin-top:22px;">②½ Why "vector" is the key word — it's all matrix multiplication</h3>
+<p style="margin-top:4px;">A word is a <strong>vector</strong>: a list of 32 numbers. Stack a whole sentence of them and you get a grid — a <strong>matrix</strong> of (words × 32). That's the secret to <em>why</em> every step above is fast and identical in shape: each one is a single <strong>matrix multiplication</strong>.</p>
+<div class="widget" style="background:#0f172a;color:#cbd5e1;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;font-size:13.5px;line-height:1.6;">
+  <div style="font-family:ui-monospace,monospace;color:#93c5fd;margin-bottom:10px;">vector (1 word) = [32 numbers] &nbsp;·&nbsp; matrix (a sentence) = [words × 32]</div>
+  <ul style="margin:0;padding-left:18px;">
+    <li>Expand <strong>32 → 64</strong> = multiply the word-vector by a <strong>32 × 64</strong> grid of weights.</li>
+    <li>Shrink <strong>64 → 32</strong> = multiply by a <strong>64 × 32</strong> grid.</li>
+    <li>Attention scores = multiply the <strong>queries</strong> matrix by the <strong>keys</strong> matrix (Q × Kᵀ).</li>
+    <li>The head = multiply the final 32-vector by a <strong>32 × 31</strong> grid to get one score per word.</li>
+  </ul>
+  <p style="margin:10px 0 0;">Those weight grids <strong>are</strong> the parameters from §③. "Training" just means nudging the numbers inside them. And it's why <strong>GPUs run AI</strong>: a GPU is a machine built to multiply giant matrices, fast.</p>
+</div>
+
 <h3 style="margin-bottom:4px;margin-top:22px;">③ Where do the 11,071 parameters actually live?</h3>
 <p style="margin-top:4px;"><strong>Parameter</strong> is the official word for one adjustable number the model learns (you'll also hear <strong>weight</strong>). Every box above is made of these. Here's the real split — with a plain-English example of what each group <em>does</em> — and the surprise is that <strong>attention's Q/K/V</strong>, not the feed-forward, is the single biggest piece:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
@@ -593,6 +610,36 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 
 <div class="callout good">
   <strong>That's the whole secret.</strong> You now understand every dial on this list — you tuned the small versions yourself on this page. ChatGPT just turns each one up and stacks the layer a hundred times. Same brain, drawn bigger.
+</div>
+
+<h3 style="margin-bottom:4px;margin-top:26px;">⑤ What happens if we stack a <em>second</em> layer? (a real experiment)</h3>
+<p style="margin-top:4px;">Stacking layers is the one dial we haven't touched. So we retrained the <strong>exact same model with two encoder layers</strong> instead of one — same corpus, same settings, same 800 steps — and measured the difference. (Layer 2 takes layer 1's 32-wide vectors and runs the <em>same</em> attention + feed-forward routine again.)</p>
+
+<table class="compact" style="max-width:600px;">
+  <thead><tr><th></th><th>1 layer (this page)</th><th>2 layers</th><th>change</th></tr></thead>
+  <tbody>
+    <tr><td>encoder layers</td><td>1</td><td>2</td><td>×2</td></tr>
+    <tr><td>parameters</td><td>11,071</td><td>19,615</td><td>+8,544 (+77%)</td></tr>
+    <tr><td>final loss (800 steps)</td><td>0.546</td><td>0.539</td><td>−0.007</td></tr>
+    <tr><td><code>the cat</code> →</td><td>…sat on the couch</td><td>…sat on the couch</td><td>identical</td></tr>
+    <tr><td><code>the dog likes to</code> →</td><td>…play</td><td>…play</td><td>identical</td></tr>
+    <tr><td><code>she opened the</code> →</td><td>…door</td><td>…door</td><td>identical</td></tr>
+    <tr><td><code>i went to the</code> →</td><td>…park</td><td>…park</td><td>identical</td></tr>
+  </tbody>
+</table>
+
+<p style="margin-top:8px;">Where did the <strong>+8,544</strong> parameters go? It's <em>exactly</em> one more copy of a layer's insides — the embeddings and the head are shared, only the layer block is duplicated:</p>
+<table class="compact" style="max-width:420px;">
+  <tbody>
+    <tr><td>attention Q/K/V + out</td><td>3,168 + 1,056 = 4,224</td></tr>
+    <tr><td>feed-forward (32→64→32)</td><td>4,192</td></tr>
+    <tr><td>2× LayerNorm</td><td>128</td></tr>
+    <tr style="background:#dcfce7"><td><strong>one extra layer</strong></td><td><strong>8,544</strong></td></tr>
+  </tbody>
+</table>
+
+<div class="callout info" style="margin-top:12px;">
+  <strong>The honest result: +77% more parameters, and the model writes <em>exactly the same sentences</em>.</strong> The loss barely budged (0.546 → 0.539). Why? Our 29-sentence corpus is so simple that <strong>one layer already captures every pattern in it</strong> — there's nothing left for a second layer to learn. Depth only pays off when the task has deeper structure that a single layer <em>can't</em> hold. That's the real lesson: more layers ≠ automatically smarter — they help when the data is hard enough to need them. GPT-3 stacks <strong>96</strong> layers because human language genuinely is that deep; our toy corpus isn't. <em>(Try it: add 30 trickier, longer sentences to the corpus and the 2-layer model should start to pull ahead.)</em>
 </div>
 
 <div id="quiz-l4f"></div>
