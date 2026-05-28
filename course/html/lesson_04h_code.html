@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 4h · Code Walkthrough — the real GPT, file by file</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ---- code-walkthrough scoped styles (cw-) ---- */
+.cw-intro { background:#eef2ff; border:1px solid #c7d2fe; border-radius:12px; padding:14px 18px; margin:18px 0 26px; }
+.cw-cell { margin:26px 0 34px; border-top:1px dashed var(--border); padding-top:22px; }
+.cw-cell:first-of-type { border-top:none; }
+.cw-celltag { display:inline-block; font-family:ui-monospace,monospace; font-size:11px; font-weight:700;
+  color:#fff; background:#6366f1; border-radius:6px; padding:2px 8px; letter-spacing:.04em; margin-bottom:8px; }
+.cw-celltag.f { background:#0ea5e9; }
+.cw-h { font-size:18px; font-weight:700; margin:4px 0 8px; }
+.cw-say { color:#475569; margin:0 0 12px; }
+.cw-code { background:#0f172a; color:#e2e8f0; border-radius:10px; padding:14px 16px; overflow-x:auto;
+  font-family:ui-monospace,"SF Mono",Monaco,monospace; font-size:12.5px; line-height:1.55; border:1px solid #1e293b; white-space:pre; }
+.cw-code .c { color:#7c8aa5; }
+.cw-code .k { color:#c4b5fd; }
+.cw-code .s { color:#86efac; }
+.cw-out { margin-top:10px; }
+.cw-out-label { font-family:ui-monospace,monospace; font-size:11px; font-weight:700; color:#16a34a;
+  text-transform:uppercase; letter-spacing:.06em; }
+.cw-out pre { margin:4px 0 0; background:#f0fdf4; border:1px solid #bbf7d0; border-left:3px solid #22c55e;
+  border-radius:8px; padding:10px 14px; font-size:12.5px; line-height:1.5; color:#14532d; overflow-x:auto; white-space:pre; }
+.cw-viz { margin-top:14px; background:#fff; border:1px solid var(--border); border-radius:12px;
+  padding:16px 18px; box-shadow:var(--shadow); }
+.cw-viz h4 { margin:0 0 12px; font-size:14px; color:#6366f1; }
+.cw-viz h4::before { content:"🔍 "; }
+/* causal mask grid */
+.cw-mask { border-collapse:collapse; font-family:ui-monospace,monospace; font-size:11px; }
+.cw-mask td, .cw-mask th { width:32px; height:28px; text-align:center; border:1px solid #e2e8f0; }
+.cw-mask th { color:#64748b; font-weight:600; background:#f8fafc; }
+.cw-mask td.see { background:#dcfce7; color:#16a34a; }
+.cw-mask td.no  { background:#fee2e2; color:#fca5a5; }
+/* sliding window */
+.cw-stream { font-family:ui-monospace,monospace; font-size:13px; line-height:1.9; letter-spacing:1px;
+  background:#f8fafc; border:1px solid var(--border); border-radius:8px; padding:10px 12px; white-space:pre-wrap; word-break:break-all; }
+.cw-stream .win { background:#dbeafe; border-bottom:2px solid #3b82f6; }
+.cw-stream .nxt { background:#fce7f3; border-bottom:2px solid #ec4899; }
+/* lr schedule bars */
+.cw-lr { display:flex; align-items:flex-end; gap:10px; height:120px; padding:6px 4px 0; }
+.cw-lr .col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; justify-content:flex-end; }
+.cw-lr .bar { width:100%; background:linear-gradient(180deg,#818cf8,#6366f1); border-radius:4px 4px 0 0; }
+.cw-lr .it { font-family:ui-monospace,monospace; font-size:10.5px; color:#64748b; }
+.cw-lr .ph { font-size:10.5px; font-weight:700; }
+/* residual flow */
+.cw-res { display:flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:ui-monospace,monospace; font-size:12.5px; }
+.cw-res .step { background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:6px 10px; }
+.cw-res .plus { color:#6366f1; font-weight:700; font-size:16px; }
+.cw-res .arr { color:#94a3b8; font-size:16px; }
+/* part divider */
+.cw-part { margin:40px 0 8px; padding:14px 18px; border-radius:12px; color:#fff; }
+.cw-part.a { background:linear-gradient(90deg,#6366f1,#818cf8); }
+.cw-part.b { background:linear-gradient(90deg,#0ea5e9,#38bdf8); }
+.cw-part.c { background:linear-gradient(90deg,#10b981,#34d399); }
+.cw-part.d { background:linear-gradient(90deg,#f59e0b,#fbbf24); }
+.cw-part .pt { font-size:12px; text-transform:uppercase; letter-spacing:.08em; opacity:.85; }
+.cw-part h2 { margin:2px 0 0; color:#fff; border:none; }
+.cw-file { font-family:ui-monospace,monospace; background:#0f172a; color:#e2e8f0; padding:2px 8px; border-radius:5px; font-size:13px; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html">L1b</a>
+    <a href="lesson_01c.html">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04_code.html">L4·code</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="current">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Lesson 4h · Code Walkthrough</h1>
+<p class="subtitle">The <strong>minigpt</strong> capstone, read <strong>file by file</strong>. This is the real, runnable code in <code>course/minigpt/</code> — the same GPT-3 architecture, sized for a Mac. Four small files: <span class="cw-file">model.py</span> (the network), <span class="cw-file">data.py</span> (text → tokens), <span class="cw-file">train.py</span> (the loop), <span class="cw-file">sample.py</span> (generate). Every output below is from a real run on an M4.</p>
+
+<div class="lesson-links">
+  <a href="http://localhost:8011/notebooks/lesson_04h_minigpt.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Run the notebook</a>
+  <a href="lesson_04h.html"><span class="ico">↩</span> Back to Lesson 4h</a>
+</div>
+
+<div class="cw-intro">
+  <strong>How to read this page.</strong> Each block is a chunk of one source file. The <span style="font-family:ui-monospace,monospace;background:#0f172a;color:#e2e8f0;padding:1px 6px;border-radius:4px;">dark box</span> is the real code. The <span style="color:#16a34a;font-weight:700;">green box</span> is what the computer printed when we ran it. The <span style="color:#6366f1;font-weight:700;">🔍 picture</span> shows what the lines do under the covers. The big idea: <strong>this is the exact same machinery as Lesson 4 — just the grown-up recipe</strong>.
+</div>
+
+<!-- ============================================================ -->
+<div class="cw-part a">
+  <div class="pt">Part A · <span style="font-family:ui-monospace,monospace;">model.py</span></div>
+  <h2>The network — same pipeline as 4g, grown-up recipe</h2>
+</div>
+<p>One file defines the whole GPT. Read top to bottom it's: a config of <em>dials</em>, then the three building blocks (attention, feed-forward, the block that wires them), then the full model, then named presets.</p>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · the dials</span>
+  <div class="cw-h">GPTConfig — the GPT-3 family table, as code</div>
+  <p class="cw-say">Every knob that separates "tiny laptop GPT" from "GPT-3 175B" lives here. Change these numbers and nothing else, and you slide along the whole family.</p>
+<pre class="cw-code"><span class="k">@dataclass</span>
+<span class="k">class</span> GPTConfig:
+    block_size: int = 256      <span class="c"># context length (how many tokens it sees at once)</span>
+    vocab_size: int = 50257    <span class="c"># tiktoken gpt2 BPE vocabulary</span>
+    n_layer: int = 6
+    n_head: int = 6
+    n_embd: int = 384          <span class="c"># d_model — the "width" of every vector</span>
+    dropout: float = 0.1
+    bias: bool = True</pre>
+  <div class="cw-viz">
+    <h4>The 4 dials you turn to grow a GPT</h4>
+    <p style="margin:0;font-size:13.5px;color:#334155;line-height:1.7;"><strong>n_embd</strong> (width): 384 here → 768 in GPT-3 Small → 12,288 in 175B.<br>
+    <strong>n_layer</strong> (depth): 6 here → 12 → 96.<br>
+    <strong>n_head</strong> (attention heads, see <a href="lesson_04h.html">L4h</a>): 6 → 12 → 96.<br>
+    <strong>block_size</strong> (context): 256 here → 2048 in every real GPT-3.<br>
+    <span style="color:#64748b;">Same class, same forward pass — only the numbers move.</span></p>
+  </div>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · attention</span>
+  <div class="cw-h">CausalSelfAttention — every token looks <em>left only</em></div>
+  <p class="cw-say">Q, K, V are computed in one matmul, then split into <code>n_head</code> parallel heads. <code>scaled_dot_product_attention(is_causal=True)</code> does the fast, fused attention with the triangular mask baked in — the same mask you built by hand in Lesson 4, now one flag.</p>
+<pre class="cw-code"><span class="k">class</span> CausalSelfAttention(nn.Module):
+    <span class="k">def</span> forward(self, x):
+        B, T, C = x.shape
+        q, k, v = self.c_attn(x).split(self.n_embd, dim=2)   <span class="c"># q,k,v in one go</span>
+        <span class="c"># (B, T, C) -&gt; (B, nh, T, hd): split C across the heads</span>
+        q = q.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        k = k.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        v = v.view(B, T, self.n_head, C // self.n_head).transpose(1, 2)
+        y = F.scaled_dot_product_attention(
+            q, k, v, is_causal=<span class="s">True</span>,                 <span class="c"># &lt;- the causal mask</span>
+            dropout_p=self.dropout <span class="k">if</span> self.training <span class="k">else</span> 0.0)
+        y = y.transpose(1, 2).contiguous().view(B, T, C)     <span class="c"># re-join the heads</span>
+        <span class="k">return</span> self.resid_dropout(self.c_proj(y))</pre>
+  <div class="cw-viz">
+    <h4>is_causal=True = this triangle (token 4 can't peek at 5)</h4>
+    <table class="cw-mask">
+      <tr><th></th><th>t1</th><th>t2</th><th>t3</th><th>t4</th><th>t5</th></tr>
+      <tr><th>t1</th><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>t2</th><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>t3</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td><td class="no">✕</td></tr>
+      <tr><th>t4</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="no">✕</td></tr>
+      <tr><th>t5</th><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td><td class="see">✓</td></tr>
+    </table>
+    <p style="margin:10px 0 0;font-size:13px;color:#64748b;">Green = "allowed to look". Each row is a token; it can attend to itself and everything to its left, never to the future. That's what makes it a <em>predict-the-next-word</em> model.</p>
+  </div>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · the block</span>
+  <div class="cw-h">MLP + Block — think alone, then the pre-LayerNorm wiring</div>
+  <p class="cw-say">The MLP is a 2-layer net, 4× wider in the middle, with GELU (the smoother cousin of ReLU). The Block wires attention + MLP with <strong>pre-LayerNorm</strong> and a <strong>residual add</strong>: normalise, run the sublayer, add the result back onto the input.</p>
+<pre class="cw-code"><span class="k">class</span> MLP(nn.Module):
+    <span class="k">def</span> forward(self, x):
+        <span class="k">return</span> self.dropout(self.c_proj(F.gelu(self.c_fc(x))))   <span class="c"># wide -&gt; GELU -&gt; back</span>
+
+<span class="k">class</span> Block(nn.Module):
+    <span class="c"># pre-LN: x = x + attn(ln(x)); x = x + mlp(ln(x))</span>
+    <span class="k">def</span> forward(self, x):
+        x = x + self.attn(self.ln_1(x))   <span class="c"># 1. look at neighbours</span>
+        x = x + self.mlp(self.ln_2(x))    <span class="c"># 2. think alone</span>
+        <span class="k">return</span> x</pre>
+  <div class="cw-viz">
+    <h4>x = x + sublayer(ln(x)) — the residual highway</h4>
+    <div class="cw-res">
+      <span class="step">x</span><span class="arr">→</span>
+      <span class="step">ln_1</span><span class="arr">→</span>
+      <span class="step">attn</span><span class="plus">+x</span><span class="arr">→</span>
+      <span class="step">ln_2</span><span class="arr">→</span>
+      <span class="step">mlp</span><span class="plus">+x</span><span class="arr">→</span>
+      <span class="step">out</span>
+    </div>
+    <p style="margin:10px 0 0;font-size:13px;color:#64748b;">The <span style="color:#6366f1;font-weight:700;">+x</span> is the residual connection: each sublayer only has to learn a small <em>correction</em>, and gradients flow straight down the highway. Stacking <code>n_layer</code> of these blocks is the entire depth of a GPT.</p>
+  </div>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · the model</span>
+  <div class="cw-h">GPT — embeddings → blocks → head, with weight tying</div>
+  <p class="cw-say">Tokens and positions are embedded and added, run through the stack of blocks, normalised once more, then projected to a score per vocabulary word. The clever bit: the output head <strong>shares its weights</strong> with the input embedding table (<em>weight tying</em>) — fewer parameters, better results.</p>
+<pre class="cw-code">self.lm_head = nn.Linear(cfg.n_embd, cfg.vocab_size, bias=<span class="s">False</span>)
+self.transformer.wte.weight = self.lm_head.weight   <span class="c"># weight tying</span>
+
+<span class="k">def</span> forward(self, idx, targets=<span class="s">None</span>):
+    pos = torch.arange(T, device=idx.device)
+    x = self.transformer.drop(self.transformer.wte(idx) + self.transformer.wpe(pos))
+    <span class="k">for</span> block <span class="k">in</span> self.transformer.h:        <span class="c"># the stack of Blocks</span>
+        x = block(x)
+    x = self.transformer.ln_f(x)
+    <span class="k">if</span> targets <span class="k">is not</span> <span class="s">None</span>:
+        logits = self.lm_head(x)
+        loss = F.cross_entropy(logits.view(-1, logits.size(-1)), targets.view(-1))
+        <span class="k">return</span> logits, loss                 <span class="c"># training: score + how-wrong</span>
+    <span class="k">return</span> self.lm_head(x[:, [-1], :]), <span class="s">None</span>  <span class="c"># inference: only the last position</span></pre>
+  <p class="cw-say" style="margin-top:12px;">It's the Lesson 4 pipeline exactly: <strong>embed → attention → feed-forward → head → softmax</strong>, with the loss being the same cross-entropy. The "scores" are <em>logits</em>; softmax turns them into next-token probabilities.</p>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · generate</span>
+  <div class="cw-h">generate — write one token at a time</div>
+  <p class="cw-say">To write, we keep feeding the model its own output. Each step: take the last <code>block_size</code> tokens, get logits for the next one, divide by <em>temperature</em> (lower = safer, higher = wilder), keep only the <em>top-k</em> candidates, sample one, append, repeat.</p>
+<pre class="cw-code"><span class="k">@torch.no_grad()</span>
+<span class="k">def</span> generate(self, idx, max_new_tokens, temperature=0.8, top_k=200):
+    <span class="k">for</span> _ <span class="k">in</span> range(max_new_tokens):
+        idx_cond = idx[:, -self.cfg.block_size:]      <span class="c"># last block_size tokens</span>
+        logits, _ = self(idx_cond)
+        logits = logits[:, -1, :] / temperature
+        v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+        logits[logits &lt; v[:, [-1]]] = -float(<span class="s">"inf"</span>)  <span class="c"># drop unlikely words</span>
+        probs = F.softmax(logits, dim=-1)
+        nxt = torch.multinomial(probs, 1)             <span class="c"># roll the weighted dice</span>
+        idx = torch.cat((idx, nxt), dim=1)
+    <span class="k">return</span> idx</pre>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">model.py · presets</span>
+  <div class="cw-h">PRESETS — three named sizes</div>
+  <p class="cw-say">Named configs so you don't retype dials. <code>shakespeare</code> for a minutes-long sanity check, <code>tinystories</code> for the real overnight run, <code>gpt3-small</code> for reference (it needs a cloud GPU).</p>
+<pre class="cw-code">PRESETS = {
+    <span class="s">"shakespeare"</span>: GPTConfig(block_size=256, n_layer=6, n_head=6, n_embd=384, dropout=0.2),
+    <span class="s">"tinystories"</span>: GPTConfig(block_size=256, n_layer=6, n_head=6, n_embd=384, dropout=0.1),
+    <span class="s">"gpt3-small"</span>:  GPTConfig(block_size=1024, n_layer=12, n_head=12, n_embd=768, dropout=0.0),
+}</pre>
+</div>
+
+<div id="chk-attn"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-attn",{
+  q:"What does is_causal=True actually enforce inside attention?",
+  options:["Each token may only attend to itself and tokens to its left","It speeds up the matmul","It makes the model bigger"],
+  answer:0,
+  explain:"The causal mask blocks every token from seeing the future. That left-only view is exactly what makes this a next-word predictor — and it's one boolean flag instead of the hand-built mask from Lesson 4."
+});});</script>
+
+<!-- ============================================================ -->
+<div class="cw-part b">
+  <div class="pt">Part B · <span style="font-family:ui-monospace,monospace;">data.py</span></div>
+  <h2>Text → one long stream of token ids</h2>
+</div>
+<p>Training wants numbers, not letters. This file downloads a corpus, runs it through the GPT-2 BPE tokenizer, and saves the ids as compact <code>uint16</code> binary files that the trainer memory-maps.</p>
+
+<div class="cw-cell">
+  <span class="cw-celltag f">data.py · encode</span>
+  <div class="cw-h">encode_to_bin — words become uint16 ids on disk</div>
+  <p class="cw-say">The gpt2 vocabulary is 50,257 pieces — under 65,536 — so every id fits in a 2-byte <code>uint16</code>. We tokenise the whole text once and dump the raw array to a <code>.bin</code> file. A 90/10 split gives train and validation streams.</p>
+<pre class="cw-code"><span class="k">def</span> encode_to_bin(text: str, out: Path):
+    ids = ENC.encode_ordinary(text)
+    arr = np.array(ids, dtype=np.uint16)   <span class="c"># gpt2 vocab &lt; 65536, fits in uint16</span>
+    arr.tofile(out)
+
+<span class="k">def</span> prep_shakespeare(d: Path):
+    text = (d / <span class="s">"input.txt"</span>).read_text(encoding=<span class="s">"utf-8"</span>)
+    n = int(len(text) * 0.9)               <span class="c"># 90% train, 10% val</span>
+    encode_to_bin(text[:n], d / <span class="s">"train.bin"</span>)
+    encode_to_bin(text[n:], d / <span class="s">"val.bin"</span>)</pre>
+  <div class="cw-out">
+    <span class="cw-out-label">$ python data.py shakespeare</span>
+<pre>preparing shakespeare -&gt; data/shakespeare
+  have input.txt (1 MB)
+  wrote train.bin: 301,966 tokens
+  wrote val.bin: 36,059 tokens
+done.</pre>
+  </div>
+  <p class="cw-say" style="margin-top:12px;">~1 MB of text → ~338k tokens, sitting on disk as two binary files. The real run swaps in <code>tinystories</code> (use <code>--mb 200</code> to cap the download) — same code, bigger stream.</p>
+</div>
+
+<!-- ============================================================ -->
+<div class="cw-part c">
+  <div class="pt">Part C · <span style="font-family:ui-monospace,monospace;">train.py</span></div>
+  <h2>The same five-line loop, dressed up</h2>
+</div>
+<p>The heart is the loop from Lesson 1 — <strong>predict → loss → backward → step → repeat</strong>. The grown-up recipe adds: random windows for batches, a cosine learning-rate schedule, AdamW with weight decay, gradient clipping, gradient accumulation, and bf16 on the Apple GPU.</p>
+
+<div class="cw-cell">
+  <span class="cw-celltag">train.py · batches</span>
+  <div class="cw-h">get_batch — slide a window over the stream</div>
+  <p class="cw-say">A training example is just <code>block_size</code> tokens (the input <code>x</code>) and the same span shifted one to the right (the target <code>y</code> — i.e. "the next token at every position"). We grab <code>batch_size</code> random windows at once.</p>
+<pre class="cw-code"><span class="k">def</span> get_batch(data, block_size, batch_size, device):
+    ix = torch.randint(len(data) - block_size - 1, (batch_size,))   <span class="c"># random starts</span>
+    x = torch.stack([torch.from_numpy(data[i     : i+block_size  ].astype(np.int64)) <span class="k">for</span> i <span class="k">in</span> ix])
+    y = torch.stack([torch.from_numpy(data[i+1   : i+1+block_size].astype(np.int64)) <span class="k">for</span> i <span class="k">in</span> ix])
+    <span class="k">return</span> x.to(device), y.to(device)</pre>
+  <div class="cw-viz">
+    <h4>x is the window, y is the same window shifted +1</h4>
+    <div class="cw-stream">… To <span class="win">be or not to be that is the</span> <span class="nxt">question</span> …</div>
+    <p style="margin:10px 0 0;font-size:13px;color:#64748b;"><span style="background:#dbeafe;">blue</span> = the input window <code>x</code>; <span style="background:#fce7f3;">pink</span> = the next token the model must predict. Every position in the window predicts <em>its</em> next token at once, so one window is really <code>block_size</code> tiny lessons.</p>
+  </div>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">train.py · schedule</span>
+  <div class="cw-h">lr_at — warm up, then cosine-decay the learning rate</div>
+  <p class="cw-say">The learning rate isn't fixed. It ramps up linearly for <code>warmup</code> steps (so the fresh, random model doesn't get yanked around), then follows a smooth cosine curve down to <code>min_lr</code>. This is the exact schedule GPT-3 used.</p>
+<pre class="cw-code"><span class="k">def</span> lr_at(it, lr, warmup, max_iters, min_lr):
+    <span class="k">if</span> it &lt; warmup:
+        <span class="k">return</span> lr * (it + 1) / warmup                 <span class="c"># linear warmup</span>
+    ratio = (it - warmup) / (max_iters - warmup)
+    <span class="k">return</span> min_lr + 0.5 * (1 + math.cos(math.pi * ratio)) * (lr - min_lr)   <span class="c"># cosine decay</span></pre>
+  <div class="cw-viz">
+    <h4>warmup ↗ then cosine ↘ (peak 6e-4 → min 6e-5)</h4>
+    <div class="cw-lr">
+      <div class="col"><div class="bar" style="height:3%"></div><div class="it">0</div></div>
+      <div class="col"><div class="bar" style="height:50%"></div><div class="it">100</div></div>
+      <div class="col"><div class="bar" style="height:100%;background:linear-gradient(180deg,#34d399,#10b981)"></div><div class="it">200</div></div>
+      <div class="col"><div class="bar" style="height:94%"></div><div class="it">1000</div></div>
+      <div class="col"><div class="bar" style="height:55%"></div><div class="it">2600</div></div>
+      <div class="col"><div class="bar" style="height:21%"></div><div class="it">4000</div></div>
+      <div class="col"><div class="bar" style="height:10%"></div><div class="it">5000</div></div>
+    </div>
+    <p style="margin:10px 0 0;font-size:13px;color:#64748b;">The <span style="color:#10b981;font-weight:700;">green</span> bar at iter 200 is the peak — the end of warmup. After that the rate eases down so the model can settle into a good minimum instead of bouncing around it.</p>
+  </div>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">train.py · optimizer</span>
+  <div class="cw-h">configure_optimizers — AdamW, decay the matmuls only</div>
+  <p class="cw-say">AdamW = Adam plus <em>weight decay</em> (gently shrink weights toward zero to curb overfitting). We decay the 2-D weight matrices but <strong>not</strong> biases or LayerNorm scales — decaying those hurts. <code>betas=(0.9, 0.95)</code> is the GPT-3 setting.</p>
+<pre class="cw-code"><span class="k">def</span> configure_optimizers(self, weight_decay, lr, betas):
+    decay   = [p <span class="k">for</span> p <span class="k">in</span> self.parameters() <span class="k">if</span> p.dim() &gt;= 2]   <span class="c"># matmuls, embeddings</span>
+    nodecay = [p <span class="k">for</span> p <span class="k">in</span> self.parameters() <span class="k">if</span> p.dim() &lt; 2]    <span class="c"># biases, LayerNorms</span>
+    groups = [{<span class="s">"params"</span>: decay,   <span class="s">"weight_decay"</span>: weight_decay},
+              {<span class="s">"params"</span>: nodecay, <span class="s">"weight_decay"</span>: 0.0}]
+    <span class="k">return</span> torch.optim.AdamW(groups, lr=lr, betas=betas)</pre>
+</div>
+
+<div class="cw-cell">
+  <span class="cw-celltag">train.py · the loop</span>
+  <div class="cw-h">The loop — predict, blame, nudge, repeat</div>
+  <p class="cw-say">Here it is. <code>grad_accum</code> runs several mini-batches before each step so the <em>effective</em> batch is bigger than memory would allow. <code>clip_grad_norm_</code> caps runaway gradients. Everything inside <code>ctx</code> runs in bf16 on the GPU. Strip the recipe away and it's the Lesson 1 loop.</p>
+<pre class="cw-code"><span class="k">for</span> it <span class="k">in</span> range(max_iters + 1):
+    <span class="k">for</span> g <span class="k">in</span> opt.param_groups:
+        g[<span class="s">"lr"</span>] = lr_at(it, ...)                 <span class="c"># set today's learning rate</span>
+
+    opt.zero_grad(set_to_none=<span class="s">True</span>)
+    <span class="k">for</span> _ <span class="k">in</span> range(grad_accum):              <span class="c"># accumulate over mini-batches</span>
+        x, y = get_batch(train_data, ...)
+        <span class="k">with</span> ctx:                            <span class="c"># bf16 autocast on MPS</span>
+            _, loss = model(x, y)            <span class="c"># predict + measure</span>
+            loss = loss / grad_accum
+        loss.backward()                      <span class="c"># blame each knob</span>
+    torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
+    opt.step()                               <span class="c"># nudge them all</span></pre>
+  <div class="cw-out">
+    <span class="cw-out-label">$ python train.py --preset shakespeare (real M4 run)</span>
+<pre id="train-out">device=mps  dtype=bf16  params=29.9M  tokens(train)=0.3M
+effective batch = 16 x 1 = 16 sequences of 256 tokens
+
+iter      0 | val loss 10.837 | lr 3.0e-06 | 0.2 min
+iter    200 | val loss  5.227 | lr 6.0e-04 | 2.6 min
+iter    400 | val loss  4.969 | lr 3.3e-04 | 5.6 min
+iter    600 | val loss  4.863 | lr 6.0e-05 | 8.6 min
+
+done. best val loss 4.863. checkpoint -&gt; ckpt_shakespeare.pt</pre>
+  </div>
+</div>
+
+<div id="chk-loop"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-loop",{
+  q:"Why accumulate gradients over several mini-batches before opt.step()?",
+  options:["To get a bigger effective batch than memory could hold in one go","To make training slower on purpose","To skip the backward pass"],
+  answer:0,
+  explain:"Each mini-batch adds its gradients; after grad_accum of them we take one step. The model sees a large effective batch (batch_size × grad_accum) without ever holding it all in memory at once — important on a 16 GB Mac."
+});});</script>
+
+<!-- ============================================================ -->
+<div class="cw-part d">
+  <div class="pt">Part D · <span style="font-family:ui-monospace,monospace;">sample.py</span></div>
+  <h2>Generate from a saved checkpoint</h2>
+</div>
+<p>Training saves a checkpoint whenever validation loss improves. This file loads one back and writes text from your prompt.</p>
+
+<div class="cw-cell">
+  <span class="cw-celltag" style="background:#f59e0b">sample.py</span>
+  <div class="cw-h">Load the checkpoint, rebuild the model, generate</div>
+  <p class="cw-say">The checkpoint stores both the weights and the <code>cfg</code> dict, so we rebuild the exact same architecture, load the weights, encode the prompt to ids, and call <code>generate</code>.</p>
+<pre class="cw-code">ck = torch.load(Path(args.ckpt), map_location=device)
+model = GPT(GPTConfig(**ck[<span class="s">"cfg"</span>])).to(device)   <span class="c"># same dials as training</span>
+model.load_state_dict(ck[<span class="s">"model"</span>])
+model.eval()
+
+ids = ENC.encode_ordinary(args.prompt) <span class="k">or</span> ENC.encode_ordinary(<span class="s">"\n"</span>)
+x = torch.tensor([ids], device=device)
+out = model.generate(x, max_new_tokens=args.tokens,
+                     temperature=args.temperature, top_k=args.top_k)
+print(ENC.decode(out[0].tolist()))</pre>
+  <div class="cw-out">
+    <span class="cw-out-label">$ python sample.py --ckpt ckpt_shakespeare.pt --prompt "ROMEO:"</span>
+<pre id="sample-out">loaded ckpt_shakespeare.pt (iter 600, val loss 4.863)
+
+ROMEO:
+This is so far's love thee, fair,
+This is in thy joy.
+DUKE OF YORK:
+And are death, help me, and Warwick, with his tongue.
+
+DUCHESS OF YORK:
+
+Boy, lords, to my lord,
+CLIFFORD:
+That he is my name is it were a king's royal oath.</pre>
+  </div>
+</div>
+
+<div class="recap">
+  <div class="r-title">✅ The whole capstone in four files</div>
+  <ul>
+    <li><span class="cw-file">model.py</span> — config dials + attention + MLP/Block + GPT + presets. The GPT-3 architecture; size lives entirely in the config.</li>
+    <li><span class="cw-file">data.py</span> — corpus → BPE ids → <code>uint16</code> <code>train.bin</code>/<code>val.bin</code>.</li>
+    <li><span class="cw-file">train.py</span> — the Lesson 1 loop + cosine LR, AdamW, grad clip/accum, bf16 on MPS.</li>
+    <li><span class="cw-file">sample.py</span> — reload a checkpoint and write.</li>
+    <li><strong>Nothing here is new physics</strong> — it's Lesson 4's pipeline with the grown-up training recipe.</li>
+  </ul>
+</div>
+
+<div id="quiz-l4hc"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4hc",[
+  {"q":"Where does the difference between a tiny laptop GPT and GPT-3 175B live in this code?","options":["In a different model.py","Entirely in the GPTConfig numbers","In sample.py"],"answer":1,"explain":"Same model.py, same loop. n_layer / n_embd / n_head / block_size and the amount of data are the only things that change across the whole GPT-3 family."},
+  {"q":"Why are the token ids stored as uint16?","options":["It looks nicer","The gpt2 vocab (50,257) fits under 65,536, so 2 bytes per token is enough","uint16 trains faster"],"answer":1,"explain":"uint16 holds 0–65,535. The vocabulary is smaller than that, so each token costs just 2 bytes on disk — half of int32."},
+  {"q":"What is y in get_batch?","options":["A separate labels file","The input window shifted one token to the right","The validation set"],"answer":1,"explain":"Next-token prediction: the target at each position is simply the following token, so y is x shifted by one. The labels are free — they're just the text itself."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_04h.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L4h — scaling up to a real GPT</span>
+  </a>
+  <a href="lesson_05.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L5 — pragma_mini.py walkthrough</span>
+  </a>
+</div>
+
+</div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+<script src="course.js"></script>
+</body>
+</html>
