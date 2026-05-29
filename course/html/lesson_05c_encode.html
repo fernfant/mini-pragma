@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forward pass · 1 Encode</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="forward_pass.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt current">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar branch">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Side-quest · the forward pass, stage by stage</span>
+  <span class="sb-step">1 of 4 · Encode</span>
+</div>
+
+<div class="wrap">
+
+<h1>Step 1 — Encode: words become numbers</h1>
+<p class="subtitle">A computer can't read. Before anything else, every word is turned into a short list of numbers — a <em>vector</em>. That's encoding, and it's where the whole forward pass begins.</p>
+
+<div class="flow-steps">
+  <a href="lesson_05c.html"><span class="n">overview</span> Whole flow</a>
+  <a href="lesson_05c_encode.html" class="here"><span class="n">step 1</span> Encode</a>
+  <a href="lesson_05c_attention.html"><span class="n">step 2</span> Attention</a>
+  <a href="lesson_05c_neurons.html"><span class="n">step 3</span> Neurons</a>
+  <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
+</div>
+
+<p>This is the same machine from the <a href="lesson_05c.html">whole-flow page</a>, but we've turned the lights down on every stage except the first. Watch the left-hand column: each word lights up as a little stack of coloured cells. That stack <em>is</em> the word, rewritten as numbers.</p>
+
+<figure class="figure-wide">
+  <div id="fp"></div>
+  <figcaption>Encode, lit; the rest of the pipeline dimmed for context. Each word becomes a column of 6 numbers — blue for negative, orange for positive, brighter = bigger.</figcaption>
+</figure>
+
+<h2 class="step" id="why"><span class="step-num">Why</span> Why numbers, and why a <em>list</em>?</h2>
+
+<p>A model only ever does arithmetic — multiply, add, repeat. So step one is always to replace each word with numbers it can do math on. But why a whole <strong>list</strong> instead of one number?</p>
+
+<p>Because one number can only put a word on a single line — more "cat" or less "cat". A <strong>list</strong> of numbers gives the word <em>coordinates</em> in many directions at once: a bit animal, a bit small, a bit furry, a bit subject-of-the-sentence. Each slot captures a different shade of meaning. Our toy uses 6 slots; real models use hundreds or thousands. These numbers aren't hand-written — they're <strong>learned</strong> during training, nudged by the same loop you saw in <a href="lesson_01.html">Lesson 1</a> until words that behave alike end up with similar lists.</p>
+
+<div class="callout">
+  <strong>The lookup.</strong> Encoding is just a table lookup. The model keeps one row of numbers per word it knows (the <em>embedding table</em>); to encode a word it copies that word's row. Here are the three rows for <em>"once upon a"</em>, exactly as the demo uses them:
+  <pre style="margin:10px 0 0;"><code>"once"  →  [ 0.6, -0.2,  0.3,  0.1, -0.5,  0.4 ]
+"upon"  →  [-0.3,  0.5, -0.6,  0.2,  0.7, -0.1 ]
+"a"     →  [ 0.2,  0.8,  0.1, -0.4, -0.2,  0.5 ]</code></pre>
+</div>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-enc"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-enc",{
+  q: "Two words mean almost the same thing (say 'big' and 'large'). After training, what should their number-lists look like?",
+  options: ["Identical — same word, same numbers", "Very similar, but not identical", "Completely different and random"],
+  correct: 1,
+  reveal: "Training pulls words that behave alike toward similar coordinates — so 'big' and 'large' land close together, but not exactly equal (they're still different words). That closeness is what lets the next stages treat them alike. Distance between vectors becomes distance in meaning."
+});});</script>
+
+<h2 class="step" id="seeing"><span class="step-num">Seeing</span> Read the colours</h2>
+
+<p>In the panel, each cell's colour is its number: <span style="color:#c2532a;font-weight:600">orange</span> for positive, <span style="color:#3a7bd0;font-weight:600">blue</span> for negative, and the stronger the colour the bigger the value. So a word's "shape" — its pattern of warm and cool cells — is its meaning. Switch sentences with the chips and watch each word arrive with its own pattern. Nothing is happening to them <em>yet</em>; they're just lined up, encoded, waiting for the next stage to mix them.</p>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>A model does math, so every word is first turned into a <strong>vector</strong> — a short list of numbers.</li>
+    <li>One number is one dimension of meaning; a list gives a word <strong>coordinates</strong> in many directions.</li>
+    <li>Those numbers are <strong>learned</strong>, and similar words end up with similar lists.</li>
+  </ul>
+</div>
+
+<div id="quiz-enc"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-enc",[
+  {"q":"What is the main reason a word is turned into numbers at all?","options":["To save memory","Because the model can only do arithmetic","To make it shorter"],"answer":1,"explain":"Everything downstream is multiply-and-add, so the word has to be numbers first."},
+  {"q":"Why a list of numbers instead of a single number per word?","options":["One number can only rank words on one axis; a list gives many directions of meaning","Lists are faster","It looks nicer"],"answer":0,"explain":"A vector places the word in a many-dimensional space, capturing several shades of meaning at once."},
+  {"q":"Where do a word's numbers come from?","options":["They're chosen by hand","They're random forever","They're learned during training"],"answer":2,"explain":"The embedding table is nudged by the training loop until similar words sit close together."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_05c.html">
+    <span class="dir">← Overview</span>
+    <span class="ttl">L5c — Watch it think</span>
+  </a>
+  <a href="lesson_05c_attention.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">Step 2 — Attention</span>
+  </a>
+</div>
+
+</div>
+
+<script src="forward_pass.js"></script>
+<script>initFlow(document.getElementById('fp'),{focus:'encode',caption:'<b>Encode</b> is lit; later stages are dimmed. Each word is now a column of numbers. Switch sentences with the chips. Focus the panel, then <kbd>Space</kbd> to sweep the whole pipeline.'});</script>
+<script src="course.js"></script>
+</body>
+</html>

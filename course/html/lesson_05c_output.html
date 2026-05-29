@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forward pass · 4 Output</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="forward_pass.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt current">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar branch">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Side-quest · the forward pass, stage by stage</span>
+  <span class="sb-step">4 of 4 · Output</span>
+</div>
+
+<div class="wrap">
+
+<h1>Step 4 — Output: the guess blooms</h1>
+<p class="subtitle">The firing pattern becomes a score for every candidate word. Softmax turns those scores into percentages, and the model commits to the brightest one.</p>
+
+<div class="flow-steps">
+  <a href="lesson_05c.html"><span class="n">overview</span> Whole flow</a>
+  <a href="lesson_05c_encode.html"><span class="n">step 1</span> Encode</a>
+  <a href="lesson_05c_attention.html"><span class="n">step 2</span> Attention</a>
+  <a href="lesson_05c_neurons.html"><span class="n">step 3</span> Neurons</a>
+  <a href="lesson_05c_output.html" class="here"><span class="n">step 4</span> Output</a>
+</div>
+
+<p>We have a firing pattern — the model's thought about <em>"once upon a"</em>. The last step turns that thought into an actual word. One more layer gives every candidate word a raw <strong>score</strong> (a <em>logit</em>): higher means "this fits better". Then <strong>softmax</strong> — the same squasher from attention — turns the scores into probabilities that add to 100%. The tallest bar wins.</p>
+
+<figure class="figure-wide">
+  <div id="fp"></div>
+  <figcaption>Output, lit. Each candidate word gets a bar; softmax sets the lengths so they sum to 100%. The winner glows green — the model's predicted next word.</figcaption>
+</figure>
+
+<h2 class="step" id="softmax"><span class="step-num">Softmax</span> Scores → confidence</h2>
+
+<p>The firing neurons feed one last weighted sum, producing a raw score per word. For <em>"once upon a"</em> the scores come out wildly uneven — and softmax exaggerates the gap, sending almost all the probability to the top word:</p>
+
+<div class="callout">
+<pre style="margin:0;"><code>raw scores (logits):  time 8.3   blue -3.9   you -0.5   much -0.2   cake -4.1
+softmax →             time 100%  blue  0%   you  0%   much  0%   cake  0%
+
+predicted next word →  "time"</code></pre>
+</div>
+
+<p>That's the entire forward pass: <em>once upon a</em> → <strong>time</strong>. To write a whole sentence, a model just does this again and again — tack the chosen word onto the end and run the pass once more for the next one. Notice softmax shows up twice in the pipeline: once to mix attention, once to pick the winner. Same tool, two jobs — turning a row of numbers into a set of choices that add to 100%.</p>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-out"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-out",{
+  q: "Two candidate words have raw scores 8.3 and -0.2. After softmax, roughly how is the probability split?",
+  options: ["About 50/50 — they're both just numbers", "Almost all on 8.3; -0.2 gets nearly nothing", "-0.2 wins because it's closer to zero"],
+  correct: 1,
+  reveal: "Softmax uses exponentials, so it blows small gaps up into big ones — a score of 8.3 utterly dominates -0.2. The biggest logit takes almost all the probability, which is why the winning bar shoots to ~100%."
+});});</script>
+
+<h2 class="step" id="honest"><span class="step-num">Honest</span> A real guess, from a real net</h2>
+
+<p>Every number on these four pages was computed, not faked: this tiny network was actually <strong>trained</strong> (same predict → measure error → nudge loop as <a href="lesson_01.html">Lesson 1</a>) so each phrase lands on its true next word — <em>once upon a → <strong>time</strong></em>, <em>the sky is → <strong>blue</strong></em>. It has a 5-word vocabulary, not GPT's 50,000, but the machinery is identical. You've now traced a full forward pass end to end.</p>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>The output layer gives each candidate word a raw <strong>score</strong> (logit).</li>
+    <li><strong>Softmax</strong> turns the scores into probabilities that add to 100%, exaggerating the gaps.</li>
+    <li>The model picks the highest — and writes longer text by repeating the whole pass one word at a time.</li>
+  </ul>
+</div>
+
+<div id="quiz-out"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-out",[
+  {"q":"What turns the raw word scores into percentages that add to 100%?","options":["ReLU","Softmax","Attention"],"answer":1,"explain":"Softmax maps the logits to a probability distribution summing to 1."},
+  {"q":"How does the model write a whole sentence, not just one word?","options":["It outputs all words at once","It repeats the forward pass, adding its chosen word and predicting the next","It looks the sentence up in a table"],"answer":1,"explain":"Generation is the forward pass run again and again, one token at a time."},
+  {"q":"Why does the top-scoring word usually dominate after softmax?","options":["Softmax uses exponentials, which blow small gaps into big ones","It picks randomly","All words always tie"],"answer":0,"explain":"Exponentiating the scores exaggerates differences, so the largest logit takes most of the probability."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_05c_neurons.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">Step 3 — Neurons</span>
+  </a>
+  <a href="lesson_06.html" class="next">
+    <span class="dir">↩ Back to the path</span>
+    <span class="ttl">L6 — Capstone</span>
+  </a>
+</div>
+
+</div>
+
+<script src="forward_pass.js"></script>
+<script>initFlow(document.getElementById('fp'),{focus:'output',caption:'<b>Output</b> is lit. Each candidate word gets a bar; softmax sets the lengths to sum to 100%, and the winner glows green. Focus the panel, then <kbd>Space</kbd> to sweep the whole pass.'});</script>
+<script src="course.js"></script>
+</body>
+</html>

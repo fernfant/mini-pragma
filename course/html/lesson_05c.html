@@ -5,6 +5,7 @@
 <title>Lesson 5c — Watch it think</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="forward_pass.css">
 <style>
   .fp{--fp-warm:#ff6a2b;--fp-cool:#4aa3ff;--fp-good:#46d39a;--fp-neu:#c9a0ff;
     background:linear-gradient(180deg,#0f1018,#0b0c11);border-radius:14px;padding:14px;
@@ -78,7 +79,7 @@
   <a href="lesson_03.html"><span class="ico">🎯</span> L3 attention</a>
 </div>
 
-<p>You've met every part separately: a word becomes a <strong>vector of numbers</strong> (L2), <strong>attention</strong> lets each word gather meaning from the others (L3), and a little <strong>feed-forward net</strong> of neurons does the thinking (L1.5, L4). Here they're all wired together, running on three words — <em>"the cat sat"</em> — as the model guesses the next word. Press play and watch one thought travel through.</p>
+<p>You've met every part separately: a word becomes a <strong>vector of numbers</strong> (L2), <strong>attention</strong> lets each word gather meaning from the others (L3), and a little <strong>feed-forward net</strong> of neurons does the thinking (L1.5, L4). Here they're all wired together, running on three words — <em>"once upon a"</em> — as the model guesses the next word (you can already feel the answer coming). Press play and watch one thought travel through.</p>
 
 <h2 class="step" id="predict"><span class="step-num">Predict</span> Before you watch</h2>
 
@@ -124,10 +125,21 @@
         <span><i class="fp-dot" style="background:var(--fp-good)"></i>prediction</span>
       </div>
     </div>
-    <p class="fp-cap" id="fpCap">Numbers are real for the mechanism; the weights are <em>illustrative</em> — watch how signal flows and blends, not the exact word it lands on. Focus the panel, then <kbd>Space</kbd> play/pause · <kbd>&rarr;</kbd> step · <kbd>R</kbd> restart.</p>
+    <p class="fp-cap" id="fpCap">Every number is real: the network was actually trained so each phrase predicts its true next word. Drag the dials to change the blend and watch the guess move. Focus the panel, then <kbd>Space</kbd> play/pause · <kbd>&rarr;</kbd> step · <kbd>R</kbd> restart.</p>
   </div>
-  <figcaption>One forward pass end to end. <strong>Encode:</strong> each word becomes a vector (blue↔orange cells = the numbers). <strong>Attention:</strong> beams blend the words into the focus word, thickness = weight. <strong>Neurons:</strong> a ReLU layer fires (bright = active, grey = silenced). <strong>Output:</strong> scores over candidate words, softmaxed; the brightest wins. The attention weights are real softmax values; the network weights are illustrative.</figcaption>
+  <figcaption>One forward pass end to end. <strong>Encode:</strong> each word becomes a vector (blue↔orange cells = the numbers). <strong>Attention:</strong> beams blend the words into the focus word, thickness = weight. <strong>Neurons:</strong> a ReLU layer fires (bright = active, grey = silenced). <strong>Output:</strong> scores over candidate words, softmaxed; the brightest wins. Every number is computed — the tiny network was trained so each phrase predicts its real next word.</figcaption>
 </figure>
+
+<h2 class="step" id="zoom"><span class="step-num">Zoom in</span> Take each stage one at a time</h2>
+
+<p>Want to slow down and really see one stage? Each of these opens the <em>same</em> machine with everything dimmed except that step — plus a worked example with the real numbers, and something to play with.</p>
+
+<div class="flow-steps">
+  <a href="lesson_05c_encode.html"><span class="n">step 1</span> Encode</a>
+  <a href="lesson_05c_attention.html"><span class="n">step 2</span> Attention</a>
+  <a href="lesson_05c_neurons.html"><span class="n">step 3</span> Neurons</a>
+  <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
+</div>
 
 <h2 class="step" id="seeing"><span class="step-num">Seeing</span> What each stage is doing</h2>
 
@@ -140,7 +152,7 @@
 </ul>
 
 <div class="callout info">
-  <strong>Why "illustrative"?</strong> The embeddings and attention weights are computed for real, so the <em>flow</em> is honest. The neuron and output weights are fixed random numbers — enough to show the mechanism, not a trained model. Don't read meaning into <em>which</em> word wins; read meaning into <em>how</em> changing the blend changes the firing and the guess.
+  <strong>Is the guess real?</strong> Yes. This tiny network was actually <em>trained</em> (the same predict → measure error → nudge loop from <a href="lesson_01.html">Lesson 1</a>) on these four phrases, so at the default weights each one predicts its true next word — <em>once upon a → <strong>time</strong></em>, <em>the sky is → <strong>blue</strong></em>. It's a toy with a 6-number vocabulary, not GPT, but the flow and the numbers are honest. Now drag a dial to 100% and watch the blend, the firing, and the guess all shift — that's <em>why</em> attention matters.
 </div>
 
 <div class="recap">
@@ -181,20 +193,20 @@
   cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr); cv.style.aspectRatio=W+'/'+H;
 
   const D=6,V=5,H1=10;
+  // Shared next-word vocabulary. The four phrases below each have one obvious next word in it.
+  const vocab=["time","blue","you","much","cake"];
   const presets=[
-    {tokens:["the","cat","sat"], cand:["mat","rug","floor","grass","step"],
-     E:[[.8,-.3,.5,-.6,.2,.1],[-.4,.9,-.2,.7,-.5,.6],[.3,.2,.9,-.1,.8,-.4]]},
-    {tokens:["she","loves","code"], cand:["python","jazz","cats","rain","you"],
-     E:[[.5,.6,-.4,.2,-.7,.3],[.7,-.2,.6,-.5,.4,.1],[-.3,.8,.2,.6,-.1,-.6]]},
-    {tokens:["dogs","chase","balls"], cand:["fast","home","tails","cats","far"],
-     E:[[-.6,.4,.7,-.2,.5,-.3],[.2,-.5,.4,.8,-.6,.3],[.6,.3,-.4,-.1,.7,.5]]},
+    {tokens:["once","upon","a"],        E:[[.6,-.2,.3,.1,-.5,.4],[-.3,.5,-.6,.2,.7,-.1],[.2,.8,.1,-.4,-.2,.5]]},
+    {tokens:["the","sky","is"],         E:[[.8,-.3,.5,-.6,.2,.1],[-.4,.9,-.2,.7,-.5,.6],[.3,.2,.9,-.1,.8,-.4]]},
+    {tokens:["happy","birthday","to"],  E:[[.5,.6,-.4,.2,-.7,.3],[.7,-.2,.6,-.5,.4,.1],[-.3,.8,.2,.6,-.1,-.6]]},
+    {tokens:["thank","you","very"],     E:[[-.6,.4,.7,-.2,.5,-.3],[.2,-.5,.4,.8,-.6,.3],[.6,.3,-.4,-.1,.7,.5]]},
   ];
   let pi=0;
-  function rng(s){return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296-.5;};}
-  const r=rng(7);
-  const W1=Array.from({length:D},()=>Array.from({length:H1},()=>r()*1.6));
-  const b1=Array.from({length:H1},()=>r()*.4);
-  const W2=Array.from({length:H1},()=>Array.from({length:V},()=>r()*1.6));
+  // Weights of a tiny network actually TRAINED (offline, cross-entropy) so each phrase's
+  // auto-attention blend predicts its real next word. Mechanism is a genuine forward pass.
+  const W1=[[-0.111,0.758,0.285,-0.237,-0.565,-0.388,0.544,0.114,0.91,0.466],[1.96,0.05,-0.793,1.321,0.801,0.027,-0.873,-0.915,-1.279,0.529],[-0.894,1.136,1.459,-0.633,0.211,-1.138,-0.329,0.696,0.444,2.146],[-1.913,-1.502,-0.667,0.662,1.244,0.869,-0.218,-0.442,-0.062,1.074],[-2.661,0.372,0.388,-1.492,-0.446,1.16,-1.004,-0.267,1.909,-0.915],[1.696,-0.051,-1.375,-0.06,-0.658,1.563,0.701,0.198,1.036,-2.713]];
+  const b1=[0.473,0.184,0.213,0.889,0.447,0.648,-0.064,-0.282,1.59,0.643];
+  const W2=[[3.351,-0.972,-0.394,-2.403,-0.923],[-0.161,1.601,-1.621,-0.934,-0.132],[0.482,1.42,-1.044,-1.932,0.055],[0.831,-1.501,1.559,-0.355,-0.344],[-0.122,-0.245,1.893,0.244,-0.065],[0.523,-1.558,-0.211,2.065,0.054],[-0.985,-0.317,0.421,-0.906,-0.092],[0.49,-0.592,0.791,0.263,-0.091],[-0.246,0.82,-1.196,2.535,-1.123],[-2.042,1.527,2.32,-1.522,0.076]];
   const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
   const softmax=a=>{const m=Math.max(...a),e=a.map(x=>Math.exp(x-m)),s=e.reduce((x,y)=>x+y,0);return e.map(x=>x/s);};
 
@@ -211,7 +223,7 @@
     const hid=pre.map(x=>Math.max(0,x));
     const logits=Array.from({length:V},(_,v)=>hid.reduce((s,x,h)=>s+x*W2[h][v],0));
     const probs=softmax(logits);
-    comp={E,attn,auto,blend,hid,logits,probs,winner:probs.indexOf(Math.max(...probs)),tokens:P.tokens,cand:P.cand,focus};
+    comp={E,attn,auto,blend,hid,logits,probs,winner:probs.indexOf(Math.max(...probs)),tokens:P.tokens,cand:vocab,focus};
   }
 
   const lane=[150,280,410];

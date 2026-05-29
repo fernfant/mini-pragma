@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forward pass · 3 Neurons</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="forward_pass.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt current">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar branch">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Side-quest · the forward pass, stage by stage</span>
+  <span class="sb-step">3 of 4 · Neurons</span>
+</div>
+
+<div class="wrap">
+
+<h1>Step 3 — Neurons: the thinking</h1>
+<p class="subtitle">The blend runs into a layer of neurons. Each one adds up the blend in its own way, and ReLU switches it on or off. The pattern of who fires <em>is</em> the model's thought.</p>
+
+<div class="flow-steps">
+  <a href="lesson_05c.html"><span class="n">overview</span> Whole flow</a>
+  <a href="lesson_05c_encode.html"><span class="n">step 1</span> Encode</a>
+  <a href="lesson_05c_attention.html"><span class="n">step 2</span> Attention</a>
+  <a href="lesson_05c_neurons.html" class="here"><span class="n">step 3</span> Neurons</a>
+  <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
+</div>
+
+<p>Attention handed us one blended vector. Now it flows into a <strong>feed-forward layer</strong> — the little neural net from <a href="lesson_01_5.html">Lesson 1.5</a>. Each neuron takes the blend, multiplies it by its own set of weights, adds them up, and then asks one question: <em>is my total above zero?</em> If yes, it fires (bright); if no, <strong>ReLU</strong> shuts it to exactly zero (grey). Watch the middle column light up — only some neurons survive.</p>
+
+<figure class="figure-wide">
+  <div id="fp"></div>
+  <figcaption>Neurons, lit. Bright purple = a firing neuron (brighter = stronger); grey = silenced by ReLU. The sparse on/off pattern is this layer's response to the blend.</figcaption>
+</figure>
+
+<h2 class="step" id="relu"><span class="step-num">ReLU</span> Add it up, then keep only the positive</h2>
+
+<p>Each neuron does two things. First a <strong>weighted sum</strong>: multiply every number in the blend by that neuron's weight for it, and add. That can come out positive or negative. Then <strong>ReLU</strong> (the bend from L1.5) does something brutally simple — keep the number if it's positive, replace it with 0 if it's negative:</p>
+
+<div class="callout">
+<pre style="margin:0;"><code>blend → 10 neurons → ReLU:
+
+[ 2.11, 0.41, 0, 1.41, 0.38, 0.97, 0, 0, 1.44, 0 ]
+   ▲fire        ▲off (was negative → 0)
+
+7 of the 10 neurons fired; 3 were silenced.</code></pre>
+</div>
+
+<p>Why bother zeroing things out? Because if neurons only ever added and scaled, stacking them would collapse into one big multiply — no smarter than a single layer. The ReLU bend lets each neuron <strong>specialise</strong>: react to some blends, stay silent for others. That selective firing is what lets the network carve up meaning into useful pieces.</p>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-neu"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-neu",{
+  q: "A neuron's weighted sum of the blend comes out to −0.8. After ReLU, what value does it pass on?",
+  options: ["−0.8, unchanged", "0", "0.8 (it flips the sign)"],
+  correct: 1,
+  reveal: "ReLU keeps positives and replaces anything negative with exactly 0. So −0.8 becomes 0 — that neuron stays silent for this input. Positives pass through untouched."
+});});</script>
+
+<h2 class="step" id="play"><span class="step-num">Play</span> Watch the pattern change</h2>
+
+<p>Switch sentences with the chips, or go back to <a href="lesson_05c_attention.html">Attention</a> and re-mix the blend — then return here and watch a <em>different</em> set of neurons light up. Same neurons, same weights; only the input changed. That shifting firing pattern is the model "thinking differently" about a different phrase. It's also exactly what flows into the final stage to become a guess.</p>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Each neuron computes a <strong>weighted sum</strong> of the blend, then <strong>ReLU</strong> keeps it (if positive) or zeroes it.</li>
+    <li>The result is a <strong>sparse firing pattern</strong> — only some neurons active.</li>
+    <li>That bend is what lets stacked layers learn more than a single multiply could.</li>
+  </ul>
+</div>
+
+<div id="quiz-neu"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-neu",[
+  {"q":"What does ReLU do to a neuron's total?","options":["Doubles it","Keeps positives, sets negatives to 0","Always returns 1"],"answer":1,"explain":"ReLU = max(0, total): positives pass, negatives become zero."},
+  {"q":"Why do networks need a bend like ReLU at all?","options":["To save memory","So stacked layers can do more than one big multiply","To make training slower"],"answer":1,"explain":"Without a non-linearity, many layers collapse into a single linear step."},
+  {"q":"What feeds INTO this neuron layer?","options":["The raw words","The blended vector from attention","The final probabilities"],"answer":1,"explain":"Attention's blend is the input to the feed-forward neurons."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_05c_attention.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">Step 2 — Attention</span>
+  </a>
+  <a href="lesson_05c_output.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">Step 4 — Output</span>
+  </a>
+</div>
+
+</div>
+
+<script src="forward_pass.js"></script>
+<script>initFlow(document.getElementById('fp'),{focus:'neurons',caption:'<b>Neurons</b> are lit. Bright = firing, grey = silenced by ReLU. Switch sentences and watch the firing pattern change. Focus the panel, then <kbd>Space</kbd> to sweep.'});</script>
+<script src="course.js"></script>
+</body>
+</html>

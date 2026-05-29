@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Forward pass · 2 Attention</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="forward_pass.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt current">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar branch">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Side-quest · the forward pass, stage by stage</span>
+  <span class="sb-step">2 of 4 · Attention</span>
+</div>
+
+<div class="wrap">
+
+<h1>Step 2 — Attention: words mix meaning</h1>
+<p class="subtitle">Now the words can look at each other. The word doing the predicting builds one <em>blend</em> — a weighted mix of all the words — and you get to set the weights yourself.</p>
+
+<div class="flow-steps">
+  <a href="lesson_05c.html"><span class="n">overview</span> Whole flow</a>
+  <a href="lesson_05c_encode.html"><span class="n">step 1</span> Encode</a>
+  <a href="lesson_05c_attention.html" class="here"><span class="n">step 2</span> Attention</a>
+  <a href="lesson_05c_neurons.html"><span class="n">step 3</span> Neurons</a>
+  <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
+</div>
+
+<p>After encoding, the words are just sitting in a row, each minding its own numbers. Attention is where they finally <em>talk</em>. The last word — the one about to predict what comes next — reaches back to every word (including itself) and pulls in a share of each. The result is a single new vector, the <strong>blend</strong>. Drag the dials below and watch the blend change in real time.</p>
+
+<figure class="figure-wide">
+  <div id="fp"></div>
+  <figcaption>Attention, lit. Beam thickness = how much of each word flows into the blend. The three dials are the weights; "auto" restores the model's own values.</figcaption>
+</figure>
+
+<h2 class="step" id="weights"><span class="step-num">How</span> Where the weights come from</h2>
+
+<p>The model doesn't pick the mix by hand. It scores how relevant each word is to the focus word (by comparing their vectors), then squashes those scores into percentages that add to 100% with <strong>softmax</strong> — the same squasher you'll meet again at the very end. For <em>"once upon a"</em>, the focus word is <em>"a"</em>, and the real numbers are:</p>
+
+<div class="callout">
+<pre style="margin:0;"><code>relevance scores:   once 0.10   upon 0.00   a 0.47
+softmax →           once  30%   upon  27%   a 43%
+
+blend = 0.30·[once] + 0.27·[upon] + 0.43·[a]
+      = [0.18, 0.42, -0.03, -0.09, -0.05, 0.31]</code></pre>
+</div>
+
+<p>So the blend leans most on <em>"a"</em> (43%) but still carries a chunk of <em>"once"</em> and <em>"upon"</em>. That one vector now stands in for the <em>whole phrase so far</em> — and it's what the next stage actually thinks about.</p>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> You are the attention head</h2>
+
+<div id="pred-att"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-att",{
+  q: "If you drag one dial to 100% and the others to 0%, what is the blend equal to?",
+  options: ["The average of all three words", "Exactly that one word's vector", "Zero"],
+  correct: 1,
+  reveal: "A weighted mix with all the weight on one word is just that word. Try it: slam one dial to 100% and the blend cells snap to match that word's column exactly — and watch the prediction downstream move with it."
+});});</script>
+
+<h2 class="step" id="play"><span class="step-num">Play</span> Break it on purpose</h2>
+
+<p>Set the dials so the focus word ignores itself and listens only to <em>"once"</em>. The blend shifts, and if you follow the dimmed pipeline rightward, the guess can change too. That's the whole point of attention: <strong>which words you mix decides what the model thinks comes next.</strong> Real Transformers run this same step many times in parallel (one set of weights per "head") so a word can track grammar, meaning, and reference all at once.</p>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Attention builds one <strong>blend</strong>: a weighted mix of every word's vector.</li>
+    <li>The weights come from <strong>relevance scores → softmax</strong> (they add to 100%).</li>
+    <li>Change the weights and you change what the rest of the network sees — and predicts.</li>
+  </ul>
+</div>
+
+<div id="quiz-att"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-att",[
+  {"q":"What does the attention step output for the focus word?","options":["A single winning word","One blended vector — a weighted mix of all the words","A probability"],"answer":1,"explain":"Attention produces the blend, which flows on to the neurons."},
+  {"q":"What guarantees the attention weights add up to 100%?","options":["ReLU","Softmax","The embedding table"],"answer":1,"explain":"Softmax turns the raw relevance scores into a distribution that sums to 1."},
+  {"q":"You move all the weight onto one word. The blend becomes…","options":["That word's own vector","Still the average","Always zero"],"answer":0,"explain":"All weight on one word means the mix is just that word."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_05c_encode.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">Step 1 — Encode</span>
+  </a>
+  <a href="lesson_05c_neurons.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">Step 3 — Neurons</span>
+  </a>
+</div>
+
+</div>
+
+<script src="forward_pass.js"></script>
+<script>initFlow(document.getElementById('fp'),{focus:'attention',caption:'<b>Attention</b> is lit. Beam thickness = weight; drag the dials to set the blend yourself, or press <b>auto</b> for the model’s own values.'});</script>
+<script src="course.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+/* Shared styles for the forward-pass flow widget (used by L5c overview + the per-stage deep-dives). */
+.fp{--fp-warm:#ff6a2b;--fp-cool:#4aa3ff;--fp-good:#46d39a;--fp-neu:#c9a0ff;
+  background:linear-gradient(180deg,#0f1018,#0b0c11);border-radius:14px;padding:14px;
+  color:#ece9e3;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 50px -28px #000}
+.fp .fp-canvas{display:block;width:100%;height:auto;border-radius:10px;background:#0c0d12}
+.fp .fp-panel{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-top:14px}
+.fp .fp-group{display:flex;flex-direction:column;gap:7px}
+.fp .fp-lbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#8b8c98}
+.fp .fp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.fp button,.fp .chip{appearance:none;border:1px solid #2a2c39;background:#171925;color:#ece9e3;
+  padding:7px 13px;border-radius:9px;font:inherit;font-size:13px;cursor:pointer;transition:.15s}
+.fp button:hover,.fp .chip:hover{border-color:var(--fp-warm);color:#fff}
+.fp .chip[aria-pressed=true]{border-color:var(--fp-warm);background:#241a16;color:#ffd9c7}
+.fp button:focus-visible,.fp .chip:focus-visible,.fp input:focus-visible{outline:2px solid var(--fp-warm);outline-offset:2px}
+.fp .fp-sliders{display:flex;flex-direction:column;gap:6px;min-width:240px}
+.fp .fp-s{display:grid;grid-template-columns:64px 1fr 42px;gap:8px;align-items:center;font-size:13px}
+.fp .fp-s b{color:#ffd9c7;font-weight:600;text-align:right}
+.fp input[type=range]{accent-color:var(--fp-warm);width:100%}
+.fp .fp-legend{display:flex;gap:14px;flex-wrap:wrap;color:#8b8c98;font-size:12px;margin-left:auto;align-self:flex-end}
+.fp .fp-legend span{display:inline-flex;gap:6px;align-items:center}
+.fp .fp-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+.fp .fp-cap{color:#b8b9c4;font-size:13px;margin-top:12px;min-height:34px}
+.fp .fp-cap b{color:#ece9e3}
+.fp .fp-auto{padding:2px 8px;font-size:11px;margin-left:6px}
+.fp:focus-visible{outline:2px solid var(--fp-warm);outline-offset:3px}
+/* sub-series stage navigator (light, lives in the course column) */
+.flow-steps{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.flow-steps a{display:flex;gap:8px;align-items:center;text-decoration:none;border:1px solid var(--border);
+  border-radius:10px;padding:8px 12px;font-size:13.5px;color:var(--text);background:var(--bg-card);transition:.15s}
+.flow-steps a:hover{border-color:#ff6a2b}
+.flow-steps a.here{border-color:#ff6a2b;background:#fff4ee;font-weight:600}
+.flow-steps a .n{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em}
