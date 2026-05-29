@@ -145,6 +145,14 @@ tok2id = {w: i for i, w in enumerate(vocab)}</code></pre>
   <strong>Why <code>&lt;eos&gt;</code> matters for a writer but not for TinyMLM:</strong> fill-in-the-blank always has a fixed sentence, so it never needs to decide "am I done?". A next-word writer makes that decision every single step — predicting <code>&lt;eos&gt;</code> is literally the model choosing to put down the pen.
 </div>
 
+<div id="chk-l4f-eos"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l4f-eos",{
+  q:"How does a next-word model know when to stop writing?",
+  options:["It predicts the <eos> token","It always writes exactly 10 words","A human presses stop"],
+  answer:0,
+  explain:"The model learns to predict <eos> when the sentence is done — choosing to put down the pen. No fixed length, no human needed."
+});});</script>
+
 <!-- ──────────────────────────────────────────────────────────── -->
 <h2 class="step" id="step-3"><span class="step-num">Step 3</span> Tokenise: words → ids</h2>
 
@@ -362,7 +370,7 @@ ids = [BOS] + [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-k
 </div>
 
 <div class="pg-try" style="margin-top:12px;">
-  <strong>🎯 Try this with your kid:</strong>
+  <strong>🎯 Try this:</strong>
   <ol>
     <li>Run to the <em>embed</em> line. Why does "the" (it appears twice) get the <em>same</em> word numbers but a <em>different</em> final vector?
       <details class="pg-answer"><summary>Show answer</summary><p>Same <strong>word</strong> embedding (it's the same word), but a different <strong>position</strong> embedding is added (slot 1 vs slot 5). That's exactly why we needed Step 4.</p></details>
@@ -408,7 +416,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <div class="widget" id="evo" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
     <strong style="color:#fde047;font-size:13px;">🎬 Training step:</strong>
-    <input id="evo-slider" type="range" min="0" max="5" step="1" value="0" style="flex:1;min-width:160px;">
+    <input id="evo-slider" aria-label="Training step (0 to 5): drag to see the model's outputs at each stage of training" type="range" min="0" max="5" step="1" value="0" style="flex:1;min-width:160px;">
     <span id="evo-step" style="font-family:ui-monospace,monospace;color:#fde047;font-size:14px;font-weight:700;">0</span>
     <span style="color:#94a3b8;font-size:12.5px;">loss <span id="evo-loss" style="color:#22d3ee;font-family:ui-monospace,monospace;">—</span></span>
   </div>
@@ -430,7 +438,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <div class="widget" id="gen" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;">
     <strong style="color:#fde047;font-size:13px;">✍️ Start:</strong>
-    <select id="gen-start" style="padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;"></select>
+    <select id="gen-start" aria-label="Starting words for the model to continue writing from" style="padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;"></select>
     <label style="font-size:12.5px;color:#cbd5e1;display:flex;align-items:center;gap:6px;">
       🌡️ temperature <input id="gen-temp" type="range" min="0.2" max="1.6" step="0.1" value="0.8" style="width:120px;">
       <span id="gen-temp-val" style="font-family:ui-monospace,monospace;color:#fde047;">0.8</span>
@@ -471,7 +479,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <div class="widget" id="dj" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
     <strong style="color:#fde047;font-size:13px;">🔬 Context:</strong>
-    <select id="dj-start" style="padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;"></select>
+    <select id="dj-start" aria-label="Context sentence to follow through every stage of the model" style="padding:6px 10px;border-radius:6px;background:#1e293b;color:#e2e8f0;border:1px solid #334155;font-size:13px;"></select>
   </div>
 
   <div style="margin:12px 0;padding:12px 14px;background:#020617;border:1px solid #1e293b;border-radius:8px;font-size:18px;line-height:1.7;">
@@ -495,6 +503,14 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <h2 class="step" id="step-10"><span class="step-num">Step 10</span> Scaling up to ChatGPT &amp; PRAGMA</h2>
 
 <p>You just built and watched a real next-word model. ChatGPT is <strong>this exact loop</strong> — scaled. Here's what changes (and what doesn't):</p>
+
+<div id="pred-l4f-scale"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l4f-scale",{
+  q:"Going from our toy to ChatGPT, which part of the pipeline gets replaced?",
+  options:["The training loop and the prediction loop are swapped for something new","Nothing structural — the same pipeline just gets bigger (vocab, layers, dims)","Attention is dropped in favour of plain lookups"],
+  correct:1,
+  reveal:"None of the machinery changes. Same tokenise → embed → attention → feed-forward → head → softmax, same shifted-label training, same predict→append→repeat. ChatGPT is this page with a bigger vocab, more layers, and wider vectors."
+});});</script>
 
 <table>
   <thead><tr><th>Our NextWord</th><th>What stays the same</th><th>ChatGPT-scale</th></tr></thead>
@@ -616,7 +632,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
     const X = x => pad + (x/xmax)*(W-pad-10);
     const Y = y => 10 + (1 - y/ymax)*(H-pad-10);
     const path = pts.map((p,i)=>`${i?'L':'M'}${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(' ');
-    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:540px;">
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;max-width:540px;" role="img" aria-label="Training loss curve: starts at ${ys[0]} (random guessing) at step 0, drops steeply over the first ~100 steps, then plateaus around ${ys[ys.length-1]} through step 800.">
       <line x1="${pad}" y1="10" x2="${pad}" y2="${H-pad}" stroke="#334155"/>
       <line x1="${pad}" y1="${H-pad}" x2="${W-10}" y2="${H-pad}" stroke="#334155"/>
       <path d="${path}" fill="none" stroke="#22d3ee" stroke-width="2.5"/>

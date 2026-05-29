@@ -184,6 +184,31 @@
 
 <p><strong>Success check:</strong> print sample sequences for a normal and a fraud user. Eyeball them — can you spot the difference?</p>
 
+<p>Here's the kind of thing you're aiming to generate — a slice of one user's events:</p>
+
+<div style="display:flex;gap:18px;flex-wrap:wrap;margin:14px 0;">
+  <table style="flex:1;min-width:240px;">
+    <thead><tr><th colspan="3">🟢 Normal user</th></tr><tr><th>type</th><th>amount</th><th>time</th></tr></thead>
+    <tbody>
+      <tr><td>groceries</td><td>medium</td><td>evening</td></tr>
+      <tr><td>coffee</td><td>small</td><td>morning</td></tr>
+      <tr><td>salary</td><td>large</td><td>morning</td></tr>
+      <tr><td>rent</td><td>large</td><td>morning</td></tr>
+    </tbody>
+  </table>
+  <table style="flex:1;min-width:240px;">
+    <thead><tr><th colspan="3">🔴 Fraud user</th></tr><tr><th>type</th><th>amount</th><th>time</th></tr></thead>
+    <tbody>
+      <tr><td>online</td><td>tiny</td><td>late-night</td></tr>
+      <tr><td>online</td><td>tiny</td><td>late-night</td></tr>
+      <tr><td>online</td><td>tiny</td><td>late-night</td></tr>
+      <tr><td>online</td><td>large</td><td>late-night</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);">The fraud pattern — a burst of tiny late-night test charges, then one big hit — is exactly the kind of structure pre-training can learn to recognise as "not normal."</p>
+
 <div id="pred-l6"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l6",{
   q:"You have millions of events but only a few labelled as fraud. What can pre-training learn from the unlabelled millions?",
@@ -202,6 +227,14 @@
 
 <p>Save the encoder weights with <code>torch.save(...)</code>.</p>
 
+<div id="pred-l6-loss"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l6-loss",{
+  q:"As pre-training runs, what should happen to the loss — and what does that tell you?",
+  options:["It should climb, meaning the model is forgetting","It should drop, meaning the model is getting better at guessing the hidden event","It should stay flat, meaning training is done"],
+  correct:1,
+  reveal:"Loss = how wrong its guesses are. As the encoder learns the shape of normal behaviour, its fill-in-the-blank guesses get closer to the truth, so the loss falls. Dropping under ~0.5 means it has genuinely learned the event structure."
+});});</script>
+
 <p><strong>Success check:</strong> pre-training loss drops to under 0.5.</p>
 
 <h2 class="step" id="stage-3"><span class="step-num">Stage 3</span> Build the fraud classifier</h2>
@@ -216,7 +249,7 @@
   <li><strong>Add a tiny classifier head:</strong> one linear layer to 2 logits.</li>
   <li><strong>Split</strong> data 80/20.</li>
   <li><strong>Train</strong> just the head on the train set.</li>
-  <li><strong>Evaluate</strong>: overall accuracy + <strong>recall on fraud</strong> (the metric that actually matters with class imbalance).</li>
+  <li><strong>Evaluate</strong>: overall accuracy + <strong>recall on fraud</strong> (<em>recall = of all the users who really were fraudsters, what fraction did you catch?</em> — the metric that actually matters with class imbalance).</li>
 </ol>
 
 <div id="chk-l6"></div>
@@ -256,7 +289,7 @@
 <ol>
   <li><strong>Real time encoding.</strong> Give each event a timestamp. Use PRAGMA's <code>8 * log(1 + t/8)</code>.</li>
   <li><strong>Profile state.</strong> Add static user attributes (country, plan).</li>
-  <li><strong>LoRA fine-tuning</strong> (a trick that nudges a tiny slice of the encoder's weights instead of freezing it completely) instead of freeze + probe. Tune ~2-4% of weights.</li>
+  <li><strong>LoRA fine-tuning</strong> (a trick that nudges a tiny slice of the encoder's weights instead of freezing it completely) instead of freeze + probe. Typically only a small percentage of weights get tuned — a fraction of the full model.</li>
   <li><strong>Multi-task.</strong> Two heads on the same frozen encoder.</li>
   <li><strong>Scale.</strong> Increase to 20k, 100k users.</li>
 </ol>
@@ -428,7 +461,7 @@ encoder.load_state_dict(torch.load("encoder.pt"))  # load Stage 2's weights
 </div>
 
 <div id="quiz-l6"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l6",[{"q": "During pre-training your fraud detector, should you use the fraud labels?", "options": ["Yes, always", "No — ignore them; pre-training is label-free", "Only the fraud ones"], "answer": 1, "explain": "Pre-training learns event structure with fill-in-the-blank. Labels come later, for the head."}, {"q": "With very few fraudsters, the headline metric to report is…", "options": ["Recall on fraud", "Total accuracy", "Number of users"], "answer": 0, "explain": "Same lesson as L5b — with a rare class, recall is what actually matters."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l6",[{"q": "During pre-training your fraud detector, should you use the fraud labels?", "options": ["Yes, always", "No — ignore them; pre-training is label-free", "Only the fraud ones"], "answer": 1, "explain": "Pre-training learns event structure with fill-in-the-blank. Labels come later, for the head."}, {"q": "With very few fraudsters, the headline metric to report is…", "options": ["Recall on fraud", "Total accuracy", "Number of users"], "answer": 0, "explain": "Same lesson as L5b — with a rare class, recall is what actually matters."}, {"q": "Only 5% of users are fraudsters. A lazy model that labels EVERYONE 'normal' scores 95% accuracy. Why is that model useless?", "options": ["95% accuracy is actually a great score", "Its recall on fraud is 0% — it catches none of the fraudsters, which is the whole job", "It would be too slow to run"], "answer": 1, "explain": "High accuracy hides total failure on the rare class. Recall asks 'of the real fraudsters, how many did we catch?' — here, zero. That's why recall, not accuracy, is the metric that matters."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_05b.html">

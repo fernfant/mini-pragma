@@ -319,7 +319,7 @@ answer:     <span class="pg-ans">${answer}</span>  (id ${tok2id[answer]})`;
 
 <div class="widget">
   <h3>🎮 Interactive: mask a word, see what the model would predict</h3>
-  <p>This demo uses pre-baked predictions for example sentences (no actual model in your browser). Click any word to mask it.</p>
+  <p>This demo uses pre-baked predictions for example sentences (no actual model in your browser). Click or press Enter on any word to mask it.</p>
 
   <div style="margin-bottom:10px;">
     <select id="sent" style="padding:6px 10px;">
@@ -337,7 +337,7 @@ answer:     <span class="pg-ans">${answer}</span>  (id ${tok2id[answer]})`;
 <ol>
   <li><strong>Tokenise + embed</strong> (<a href="lesson_02.html">L2</a>) — each word becomes a vector of numbers.</li>
   <li><strong>Attention</strong> (<a href="lesson_03.html">L3</a>) — the masked vector "looks at" surrounding words and absorbs their context. After attention, the mask vector has a flavour like "small-furry-animal".</li>
-  <li><strong>Feed-forward</strong> (<a href="lesson_01_5.html#step-75">L1.5</a>) — Linear → GELU → Linear refines the per-token vector. (In real Transformers, attention + feed-forward repeat 18 times.)</li>
+  <li><strong>Feed-forward</strong> (<a href="lesson_01_5.html#step-75">L1.5</a>) — Linear → GELU → Linear refines the per-token vector (GELU is the on/off switch that lets the network bend straight lines into curves). (In real Transformers, attention + feed-forward repeat 18 times.)</li>
   <li><strong>Predict</strong> — score every vocab word, pick the best.</li>
   <li><strong>Compare + nudge</strong> (<a href="lesson_01.html">L1</a>) — <code>loss.backward()</code>, <code>opt.step()</code>, repeat.</li>
 </ol>
@@ -864,13 +864,16 @@ step 400   loss 0.006     ← essentially zero</code></pre>
         border: 2px solid ${isMasked ? '#7e22ce' : 'transparent'};
       `;
       span.textContent = isMasked ? '<mask>' : s.words[i];
+      span.setAttribute('tabindex', '0');
+      span.setAttribute('role', 'button');
       span.onclick = () => { masked = (masked === i ? -1 : i); render(); };
+      span.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { masked = (masked === i ? -1 : i); render(); e.preventDefault(); } });
       disp.appendChild(span);
     }
 
     const pdiv = document.getElementById('predictions');
     if (masked < 0) {
-      pdiv.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Click a word above to mask it and see what the model would predict.</p>';
+      pdiv.innerHTML = '<p style="text-align:center;color:var(--text-dim);">Click or press Enter on a word above to mask it and see what the model would predict.</p>';
       return;
     }
     const preds = s.preds[masked] || [];

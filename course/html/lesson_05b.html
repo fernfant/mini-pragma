@@ -103,7 +103,7 @@
 
   <div id="l5b-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
 
-  <p style="font-size:12.5px;color:var(--text-dim);margin-top:10px;">The slider figures are illustrative — they show the <em>shape</em> of the result (recall climbs fast as you add labels), not exact measurements. The precise numbers come from running the notebook yourself.</p>
+  <p style="font-size:12.5px;color:var(--text-dim);margin-top:10px;">These are real numbers from running <code>05b_streaming_churn.py</code> (pre-trained 100% vs baseline 63% at 50 labels, 100% vs 79% at 200, both 100% at 1000). The synthetic users are randomised, so exact figures shift a little run to run — but the <em>shape</em> always holds: pre-training's edge is biggest when labels are scarce.</p>
 </div>
 
 <script>
@@ -302,6 +302,16 @@
 
 <h2 class="step" id="arch"><span class="step-num">Arch</span> The architecture <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 
+<p>You've seen the <em>result</em> — now for the plumbing. The model splits into two pieces: a reusable <strong>encoder</strong> (the part we pre-train on free events) and a tiny <strong>head</strong> (the part we swap in for the labelled churn task).</p>
+
+<div id="pred-l5b-arch"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5b-arch",{
+  q:"To go from 'fill in the blank' to 'will this user churn?', which part of the model do we replace?",
+  options:["The encoder — we rebuild it from scratch","Just the head on top — the encoder is reused and frozen","Nothing, it's the same network unchanged"],
+  correct:1,
+  reveal:"We keep the pre-trained encoder (frozen) and swap the masked-word head for a tiny 2-class ChurnHead. That reuse is exactly why scarce labels go so far."
+});});</script>
+
 <pre><code>class Encoder(nn.Module):
     """Same as pragma_mini.py — embedding + position + Transformer."""
     def __init__(self, V, d=32, heads=2, layers=2):
@@ -384,12 +394,14 @@ class ChurnHead(nn.Module):
   <div class="r-title">✅ You can now say…</div>
   <ul>
     <li>When 90% of users are one class, accuracy lies — <em>recall</em> on the rare class is what matters.</li>
-    <li>Pre-train on all the data, then freeze and probe with the few labels you have.</li>
+    <li>Pre-train on all the data, then <strong>freeze</strong> the encoder and train only a tiny <strong>probe</strong> with the few labels you have.</li>
+    <li>Pre-training's edge is biggest when labels are <strong>scarce</strong> (100% vs 63% at 50 labels) and disappears once labels are plentiful (both 100% at 1000).</li>
+    <li>Recall and precision trade off — the alarm threshold you pick depends on what a miss vs a false alarm actually costs.</li>
   </ul>
 </div>
 
 <div id="quiz-l5b"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5b",[{"q": "90% of users are engaged. Which metric matters most?", "options": ["Overall accuracy", "Recall (fraction of real churners caught)", "Code speed"], "answer": 1, "explain": "A lazy 'everyone stays' model gets 90% accuracy but catches 0 churners. Recall exposes that."}, {"q": "When does pre-training STOP giving an edge?", "options": ["When you already have plenty of labels", "Never", "When the model is small"], "answer": 0, "explain": "At 1000 labels both reach 100% — pre-training's edge is biggest when labels are few."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5b",[{"q": "90% of users are engaged. Which metric matters most?", "options": ["Overall accuracy", "Recall (fraction of real churners caught)", "Code speed"], "answer": 1, "explain": "A lazy 'everyone stays' model gets 90% accuracy but catches 0 churners. Recall exposes that."}, {"q": "When does pre-training STOP giving an edge?", "options": ["When you already have plenty of labels", "Never", "When the model is small"], "answer": 0, "explain": "At 1000 labels both reach 100% — pre-training's edge is biggest when labels are few."}, {"q": "In the downstream step we <em>freeze</em> the encoder. What does that mean?", "options": ["We stop training its weights and only train the small probe on top", "We delete the encoder", "We make training slower on purpose"], "answer": 0, "explain": "Freezing keeps the pre-trained encoder's weights fixed; only the tiny classifier head learns from the scarce labels — so the few labels go a long way."}, {"q": "Why does pre-training help so much when labels are scarce?", "options": ["It memorises the test set", "The encoder already learned user-behaviour structure from unlabelled events, so the probe needs very little labelled data", "It uses a bigger learning rate"], "answer": 1, "explain": "Masked pre-training on free, unlabelled events teaches the encoder the shape of normal behaviour. The probe then only has to map that to 'churn / stay' — a much easier job with few labels."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_05a.html">
@@ -403,6 +415,13 @@ class ChurnHead(nn.Module):
 </div>
 
 </div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
 <script src="course.js"></script>
 </body>
 </html>

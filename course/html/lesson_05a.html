@@ -153,8 +153,10 @@ A "sentence" of a house:   [bedrooms=3] [bathrooms=2] [area=1800] [garage=yes] [
     <div id="hp-price" style="font-size:30px;font-weight:800;color:var(--accent-strong);">$0</div>
   </div>
 
-  <canvas id="hp-canvas" width="720" height="130" style="max-width:100%;" aria-label="Bar chart of how much each feature adds to the predicted price; the neighbourhood bar is the largest, then size, then bedrooms."></canvas>
-  <figcaption>Each bar is one feature's contribution to the price. The longest bar is the feature pulling hardest right now — usually neighbourhood.</figcaption>
+  <figure class="figure-wide" style="margin:0;">
+    <canvas id="hp-canvas" width="720" height="130" style="max-width:100%;" aria-label="Bar chart of how much each feature adds to the predicted price; the neighbourhood bar is the largest, then size, then bedrooms."></canvas>
+    <figcaption>Each bar is one feature's contribution to the price. The longest bar is the feature pulling hardest right now — usually neighbourhood.</figcaption>
+  </figure>
 
   <p style="font-size:12.5px;color:var(--text-dim);margin-top:10px;">Illustrative weights — they show the <em>shape</em> of how features add up, not real market prices.</p>
 </div>
@@ -350,6 +352,14 @@ AFTER MASKING (random 30%):
 
 <p>Same 5-line loop as <a href="lesson_01.html">Lesson 1</a>, just with thousands more knobs:</p>
 
+<div id="pred-l5a-pretrain"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a-pretrain",{
+  q:"During pre-training, what does the loss measure the model against?",
+  options:["The real price labels of each house","The feature values it masked out and is trying to fill back in","A human grader scoring each guess"],
+  correct:1,
+  reveal:"Pre-training plays fill-in-the-blank: it hides some feature values and the loss measures how far its guesses are from the true (hidden) values. No price labels are used yet — those come later, in Game 2."
+});});</script>
+
 <pre><code>for step in range(3000):
     xb, yb = mlm_mask(X[idx])                   # take a batch, mask some values
     logits = mlm_head(encoder(xb))              # 1. guess
@@ -442,8 +452,10 @@ AFTER MASKING (random 30%):
     <span id="l5a-labels" style="font-family:ui-monospace,monospace;font-weight:700;font-size:18px;min-width:60px;text-align:right;color:var(--accent-strong);">50</span>
   </div>
 
-  <canvas id="l5a-canvas" width="720" height="210" style="max-width:100%;" aria-label="Two bars comparing accuracy of the pre-trained probe versus the from-scratch baseline at the selected number of labelled houses; a crown marks whichever is higher."></canvas>
-  <figcaption>Pre-trained probe vs end-to-end baseline accuracy. With few labels the pre-trained bar leads; past ~500 labels the baseline overtakes — the crown marks the winner.</figcaption>
+  <figure class="figure-wide" style="margin:0;">
+    <canvas id="l5a-canvas" width="720" height="210" style="max-width:100%;" aria-label="Two bars comparing accuracy of the pre-trained probe versus the from-scratch baseline at the selected number of labelled houses; a crown marks whichever is higher."></canvas>
+    <figcaption>Pre-trained probe vs end-to-end baseline accuracy. With few labels the pre-trained bar leads; past ~500 labels the baseline overtakes — the crown marks the winner.</figcaption>
+  </figure>
 
   <div id="l5a-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
 
@@ -465,10 +477,12 @@ AFTER MASKING (random 30%):
     <li><strong>Tabular data has limited contextual richness.</strong> Only 10 attributes per house. Compare to L5b: 15 events × 4 attributes = 60 correlated pieces of info plus temporal ordering. More structure = more for pre-training to learn.</li>
     <li><strong>A frozen encoder is a hard constraint.</strong> It can't be tuned for the price task. Once we hit ~500 labels, the baseline's flexibility wins.</li>
   </ol>
-  <strong>Real-world fix:</strong> instead of a fully frozen probe, use <strong>LoRA fine-tuning</strong> (PRAGMA §3.1.2) — unfreeze ~2-4% of weights during downstream training. You get pre-training's warm start AND the ability to tune for the task. Best of both worlds.
+  <strong>Real-world fix:</strong> instead of a fully frozen probe, use <strong>LoRA fine-tuning</strong> (the approach PRAGMA uses) — unfreeze just a small slice of weights during downstream training. You get pre-training's warm start AND the ability to tune for the task. Best of both worlds.
 </div>
 
 <h2 class="step" id="step-10"><span class="step-num">Step 10</span> Sample predictions</h2>
+
+<p style="font-size:13px;color:var(--text-dim);">Actual outputs from the trained probe in the companion notebook (<code>05a_tabular.py</code>):</p>
 
 <table>
   <thead><tr><th>Input house</th><th>Prediction</th><th>Confidence</th></tr></thead>
@@ -551,7 +565,7 @@ AFTER MASKING (random 30%):
 </div>
 
 <div id="quiz-l5a"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5a",[{"q": "What does PRE-TRAINING use?", "options": ["Only labelled houses", "All houses, features only, no price labels", "Just the 3 example houses"], "answer": 1, "explain": "Pre-training plays fill-in-the-blank on features alone — no labels, all the data."}, {"q": "Why does pre-training help most when labels are scarce?", "options": ["It already learned the structure, so the head needs little labelled data", "It memorises the labels", "It makes training slower"], "answer": 0, "explain": "The frozen encoder brings knowledge for free; the tiny head learns from few labels."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5a",[{"q": "What does PRE-TRAINING use?", "options": ["Only labelled houses", "All houses, features only, no price labels", "Just the 3 example houses"], "answer": 1, "explain": "Pre-training plays fill-in-the-blank on features alone — no labels, all the data."}, {"q": "Why does pre-training help most when labels are scarce?", "options": ["It already learned the structure, so the head needs little labelled data", "It memorises the labels", "It makes training slower"], "answer": 0, "explain": "The frozen encoder brings knowledge for free; the tiny head learns from few labels."}, {"q": "Once you have 500+ labelled houses, why can the from-scratch baseline overtake the frozen probe?", "options": ["Pre-training stops working after 500 labels", "The frozen encoder can't be tuned for the price task, so a flexible from-scratch model catches up once it has enough labels", "The baseline secretly uses pre-training too"], "answer": 1, "explain": "A frozen encoder is a hard constraint — great for a warm start, but it can't adapt to the task. With plenty of labels, a fully-trainable baseline has the flexibility to win. (The real-world fix is LoRA: unfreeze a tiny slice so you get both.)"}]);});</script>
 
 <div class="pagination">
   <a href="lesson_05.html">

@@ -57,14 +57,14 @@
   <ol>
     <li><a href="#step-1">Step 1 — A new dataset: a curve</a></li>
     <li><a href="#step-2">Step 2 — Try linear regression (it fails)</a></li>
-    <li><a href="#step-3">Step 3 — Add an x² feature (polynomial regression)</a></li>
+    <li><a href="#step-3">Step 3 — Trick: give linear regression more features</a></li>
     <li><a href="#step-4">Step 4 — One neuron (perceptron) → the neural network</a></li>
     <li><a href="#step-5">Step 5 — Train the MLP on the same data</a></li>
     <li><a href="#step-6">Step 6 — Side-by-side comparison</a></li>
-    <li><a href="#step-75">Step 7.5 — The MLP IS the Transformer's feed-forward</a></li>
-    <li><a href="#step-76">Step 7.6 — Stacking layers: why BERT uses 18</a></li>
-    <li><a href="#step-77">Step 7.7 — Embeddings &amp; attention work in BOTH frameworks</a></li>
-    <li><a href="#step-8">Step 8 — The big reveal: what BERT actually is</a></li>
+    <li><a href="#step-75">Step 7 — The MLP IS the Transformer's feed-forward</a></li>
+    <li><a href="#step-76">Step 8 — Stacking layers: why BERT uses 18</a></li>
+    <li><a href="#step-77">Step 9 — Embeddings &amp; attention work in BOTH frameworks</a></li>
+    <li><a href="#step-8">Step 10 — The big reveal: what BERT actually is</a></li>
   </ol>
 </details>
 
@@ -246,7 +246,7 @@ for _ in range(1000):
 
   <div id="nr-plotwrap" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-top:12px;">
     <div style="flex:0 0 auto;">
-      <svg id="nr-svg" width="240" height="240" viewBox="0 0 240 240" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;"></svg>
+      <svg id="nr-svg" aria-hidden="true" width="240" height="240" viewBox="0 0 240 240" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;"></svg>
       <div style="color:#94a3b8;font-size:12px;line-height:1.45;margin-top:7px;max-width:240px;">Each axis is one input. The <b style="color:#fbbf24;">amber line</b> is the neuron's fence: dots in the <b style="color:#34d399;">green</b> zone fire (1), grey dots stay quiet (0). <b>One neuron = one straight fence.</b></div>
     </div>
     <div id="nr-table" style="flex:1 1 260px;"></div>
@@ -349,8 +349,8 @@ for _ in range(1000):
 <div class="playground" id="pg-grow">
   <div class="pg-head">🌱 Grow the network — from one neuron to a deep net</div>
   <div class="pg-sub">It's the same building block, stacked up. Step through (or hit <b>Grow it</b>) and watch the single OR neuron grow into the classic deep-neural-network picture.</div>
-  <svg id="grow-svg" viewBox="0 0 720 360" width="100%" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;max-height:380px;"></svg>
-  <div class="pg-output" id="grow-note" style="margin-top:10px;"></div>
+  <svg id="grow-svg" aria-hidden="true" viewBox="0 0 720 360" width="100%" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;max-height:380px;"></svg>
+  <div class="pg-output" id="grow-note" aria-live="polite" style="margin-top:10px;"></div>
   <div class="pg-controls" style="gap:10px;align-items:center;">
     <button class="pg-run" id="grow-prev">← Back</button>
     <span id="grow-stage" class="nr-mono" style="color:#e2e8f0;min-width:92px;text-align:center;"></span>
@@ -661,7 +661,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 
 <p>The polynomial uses 3 parameters; the neural net uses 25. The neural net has extra capacity it didn't strictly need for this simple problem. So why ever use a neural network? Because for <strong>complex data</strong> you can't say "add <code>x²</code>" — the data is too complex for that intuition to apply. A neural network with enough capacity figures out the features for you.</p>
 
-<h2 class="step" id="step-75"><span class="step-num">Step 7.5</span> Heads-up — you just built the MLP that lives inside every Transformer</h2>
+<h2 class="step" id="step-75"><span class="step-num">Step 7</span> Heads-up — you just built the MLP that lives inside every Transformer</h2>
 
 <div id="pred-s75"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s75",{
@@ -694,7 +694,7 @@ Linear(2048, 512)</code></pre>
 
 <p>So when you read "feed-forward layer" in any Transformer paper, picture the small MLP you trained on the parabola. Same architecture, scaled up.</p>
 
-<h2 class="step" id="step-76"><span class="step-num">Step 7.6</span> What does "stacking layers" mean? Why does BERT use 18?</h2>
+<h2 class="step" id="step-76"><span class="step-num">Step 8</span> What does "stacking layers" mean? Why does BERT use 18?</h2>
 
 <div id="pred-s76"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s76",{
@@ -805,7 +805,7 @@ Linear(2048, 512)</code></pre>
 
 <p>The notebook runs an empirical depth test on a sine wave: depth 1 → loss 0.10, depth 2 → 0.0016, depth 4 → 0.0009. Deeper models build hierarchical features that shallow models can't.</p>
 
-<h2 class="step" id="step-77"><span class="step-num">Step 7.7</span> Embeddings &amp; attention work in BOTH frameworks</h2>
+<h2 class="step" id="step-77"><span class="step-num">Step 9</span> Embeddings &amp; attention work in BOTH frameworks</h2>
 
 <div id="pred-s77"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s77",{
@@ -847,7 +847,7 @@ Linear(2048, 512)</code></pre>
 
 <p><strong>Key insight:</strong> <em>embedding</em> and <em>attention</em> are reusable building blocks. The "linear vs neural" decision is a separate axis — it's about whether the head that consumes their output has a nonlinearity. A real Transformer block uses the MLP option (Demo D), and stacks 18 copies of it.</p>
 
-<h2 class="step" id="step-8"><span class="step-num">Step 8</span> The big reveal — what IS BERT, then?</h2>
+<h2 class="step" id="step-8"><span class="step-num">Step 10</span> The big reveal — what IS BERT, then?</h2>
 
 <div id="pred-s8"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s8",{

@@ -55,12 +55,12 @@
 <div class="wrap">
 
 <h1>Course Scorecard</h1>
-<p class="subtitle">Full-spine audit against the 10-criterion rubric · <strong>2026-05-29</strong> (v3, post-fix batch). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+<p class="subtitle">Full-spine audit against the 10-criterion rubric · <strong>2026-05-29</strong> (v4, post-fix batch). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
 
 <div class="stat-row">
-  <div class="stat"><div class="big">86.6</div><div class="lbl">Course average / 100 — <span class="band-st">Strong</span></div></div>
-  <div class="stat"><div class="big">5</div><div class="lbl">Exemplary pages (90+)</div></div>
-  <div class="stat"><div class="big">8</div><div class="lbl">Strong pages (75–89)</div></div>
+  <div class="stat"><div class="big">92.8</div><div class="lbl">Course average / 100 — <span class="band-ex">Exemplary</span></div></div>
+  <div class="stat"><div class="big">9</div><div class="lbl">Exemplary pages (90+)</div></div>
+  <div class="stat"><div class="big">4</div><div class="lbl">Strong pages (75–89)</div></div>
   <div class="stat"><div class="big">0</div><div class="lbl">Acceptable / weak / failing</div></div>
 </div>
 
@@ -83,7 +83,7 @@
 <p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 16 · Clarity 10 · Concrete-first 10 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 10 · Technical 8 · Accessibility 8 · Flow 8.</p>
 
 <div class="callout">
-  ⚠️ <strong>Confidence note.</strong> <a href="lesson_04f.html">L4f</a> and <a href="lesson_04g.html">L4g</a> are ~880-line pages and were only partially read in this pass, so their <strong>78</strong> totals are conservative floors — a full read may move them. Every other page was read end-to-end.
+  ✅ <strong>What changed in v4.</strong> A targeted fix batch touched all 13 spine pages — keyboard-operable widgets and figure/SVG text equivalents (C9), a predict-before-reveal at each page's key moment plus a third quiz question where one was missing (C1/C6), every cited figure either tied to its companion notebook or de-specified (C4a), and several flow/structure repairs. The course average rose from <strong>86.6 → 92.8</strong>; the three remaining 86s (L4f, L4g, L5) are now the highest-leverage targets.
 </div>
 
 <h2 class="step"><span class="step-num">Rubric</span> The 10 criteria</h2>
@@ -107,16 +107,16 @@
 </table>
 </div>
 
-<h2 class="step"><span class="step-num">Next</span> Highest-leverage fixes across the spine</h2>
+<h2 class="step"><span class="step-num">Next</span> Highest-leverage fixes remaining</h2>
 <ol>
-  <li><strong>Full read + technical audit of L4f and L4g.</strong> The two lowest scores rest on ~25% of their content — the dominant uncertainty in the whole scorecard.</li>
-  <li><strong>L4 <code>#mask-word</code>: keyboard-enable the masking spans.</strong> Add <code>tabindex</code>/<code>role</code>/<code>onkeydown</code> — the only confirmed mouse-only interaction left (C9 3→4).</li>
-  <li><strong>Add one quiz question each to L5, L5b, and a formal quiz to L6.</strong> Three pages sit below the 3-question minimum (C6 3→4).</li>
-  <li><strong>L1.5: rename the 7.5 / 7.6 / 7.7 sub-steps</strong> so they don't fight the "Step N of 13" spinebar, and add an <code>aria-label</code> to <code>#grow-svg</code> (C9 &amp; C10 3→4).</li>
-  <li><strong>L4h: add a tick-by-tick loss-curve slider</strong> (10.836 → 5.040) — makes the page's central quantitative claim interactive (C1 3→4).</li>
+  <li><strong>L4f — convert one explanatory passage to a predict-before-reveal and add a worked numeric opener (C3).</strong> The narrative (C5) and reinforcement now hold; the remaining gap is a touch more concrete-first framing.</li>
+  <li><strong>L4g — add a second hands-on widget and a third reinforcement check (C1/C6).</strong> Currently it leans on one interactive; a second meaningful widget would clear the last 4s.</li>
+  <li><strong>L5 — lift interactivity beyond the single playground (C1) and tighten the toy-model architecture walk-through (C7).</strong></li>
+  <li><strong>Sweep C8 across L1, L1.5, L4, L3.</strong> Inline JS passes <code>node --check</code> cleanly, but a couple of widgets could add explicit guards/empty-state handling to earn the 5.</li>
+  <li><strong>Flow polish on L2 / L5b (C10).</strong> Both have one dense section (the embedding-widget block on L2, the architecture section on L5b) that a cold reader hits before its setup.</li>
 </ol>
 
-<p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v3.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
+<p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v4.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
 
 </div>
 
@@ -136,19 +136,19 @@
     {"k":"C10","name":"Flow","w":8}
   ],
   "pages": [
-    {"p":"L4f","href":"lesson_04f.html","s":[4,4,4,4,5,4,4,4,3,3,4],"total":78,"band":"Strong"},
-    {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,4,5,4,3,4,3,4,4],"total":78,"band":"Strong"},
-    {"p":"L5","href":"lesson_05.html","s":[3,4,4,5,4,5,4,4,4,4,4],"total":80,"band":"Strong"},
-    {"p":"L1","href":"lesson_01.html","s":[4,4,4,5,5,4,5,4,4,4,4],"total":84,"band":"Strong"},
-    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,3,3],"total":85,"band":"Strong"},
-    {"p":"L4h","href":"lesson_04h.html","s":[3,4,4,5,5,5,4,5,5,4,5],"total":86,"band":"Strong"},
-    {"p":"L2a","href":"lesson_02a.html","s":[4,4,4,5,5,5,5,5,4,4,4],"total":88,"band":"Strong"},
-    {"p":"L5b","href":"lesson_05b.html","s":[4,5,5,4,5,5,3,4,5,5,4],"total":88,"band":"Strong"},
-    {"p":"L2","href":"lesson_02.html","s":[5,4,5,4,5,5,4,5,4,4,4],"total":90,"band":"Exemplary"},
-    {"p":"L6","href":"lesson_06.html","s":[4,4,4,4,5,5,4,5,5,5,5],"total":90,"band":"Exemplary"},
-    {"p":"L4","href":"lesson_04.html","s":[5,4,5,5,5,5,5,5,4,3,4],"total":92,"band":"Exemplary"},
-    {"p":"L5a","href":"lesson_05a.html","s":[4,5,5,4,5,5,4,4,5,5,5],"total":92,"band":"Exemplary"},
-    {"p":"L3","href":"lesson_03.html","s":[5,4,5,5,5,5,5,5,4,4,5],"total":95,"band":"Exemplary"}
+    {"p":"L4f","href":"lesson_04f.html","s":[5,4,4,4,5,4,5,4,4,4,4],"total":86,"band":"Strong"},
+    {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,5,5,5,4,4,4,4,5],"total":86,"band":"Strong"},
+    {"p":"L5","href":"lesson_05.html","s":[4,4,4,5,4,5,5,4,4,4,5],"total":86,"band":"Strong"},
+    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,4,4],"total":88,"band":"Strong"},
+    {"p":"L1","href":"lesson_01.html","s":[4,4,4,5,5,5,5,5,4,4,5],"total":90,"band":"Exemplary"},
+    {"p":"L4h","href":"lesson_04h.html","s":[4,4,4,5,5,5,5,5,5,5,5],"total":93,"band":"Exemplary"},
+    {"p":"L2a","href":"lesson_02a.html","s":[5,4,4,5,5,5,5,5,4,5,5],"total":94,"band":"Exemplary"},
+    {"p":"L4","href":"lesson_04.html","s":[5,5,5,5,5,5,5,5,4,4,4],"total":95,"band":"Exemplary"},
+    {"p":"L2","href":"lesson_02.html","s":[5,5,5,5,5,5,5,5,4,5,4],"total":97,"band":"Exemplary"},
+    {"p":"L5b","href":"lesson_05b.html","s":[5,5,5,5,5,5,4,5,5,5,4],"total":97,"band":"Exemplary"},
+    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5],"total":98,"band":"Exemplary"},
+    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5],"total":98,"band":"Exemplary"},
+    {"p":"L6","href":"lesson_06.html","s":[5,5,5,5,5,5,4,5,5,5,5],"total":98,"band":"Exemplary"}
   ]
 }
 </script>

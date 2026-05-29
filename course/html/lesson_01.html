@@ -46,6 +46,8 @@
 <h1>Lesson 1 — How a model learns</h1>
 <p class="subtitle">Before transformers, before any of the fancy stuff: what does "learning" actually mean?</p>
 
+<p>This is Step 1 of the journey that ends at PRAGMA, Revolut's banking Transformer. Every later lesson — embeddings, attention, masking — is built on the one idea you'll meet here: <strong>a model is a bag of numbers, and learning is just nudging those numbers to be less wrong.</strong> Get this and the rest is variations on a theme.</p>
+
 <div class="lesson-links">
   <a href="http://localhost:8011/notebooks/lesson_01_linear_regression.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
   <a href="../01_how_models_learn.py"><span class="ico">🐍</span> 01_how_models_learn.py</a>
@@ -80,8 +82,7 @@
   <figcaption>Start small. A box with <strong>0 knobs</strong> always says the same thing. <strong>1 knob</strong> can tilt the line. <strong>2 knobs</strong> can tilt AND slide — that's Lesson 1's model.</figcaption>
 </figure>
 
-<p>Lesson 1's model is the rightmost box: <strong>two knobs</strong>, one rule — <code>y = w·x + b</code>. Training = nudging the two knobs until the box's guesses match the truth as closely as possible.</p>
-<p>Two knobs (<code>w</code> and <code>b</code>), one rule: <code>y = w · x + b</code>.</p>
+<p>Lesson 1's model is the rightmost box: <strong>two knobs</strong> (<code>w</code> and <code>b</code>), one rule — <code>y = w·x + b</code>. Training = nudging the two knobs until the box's guesses match the truth as closely as possible.</p>
 <p>The data below comes from a <em>secret rule</em> — <code>y = 2x + 1</code> — that the model doesn't know. Its job is to figure that rule out by looking at example pairs.</p>
 
 <div class="callout info">
@@ -145,6 +146,14 @@
     opt.step()                               # 5. nudge w and b a little</code></pre>
 
 <p>Memorise these five lines. You will see them again — unchanged — in <a href="lesson_02.html">Lesson 2</a>, <a href="lesson_04.html">Lesson 4</a>, and PRAGMA itself.</p>
+
+<div id="chk-l1-loop"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l1-loop",{
+  q:"In the 5-line loop, what does <code>loss.backward()</code> work out?",
+  options:["The model's final answer","Which way to nudge each knob to make the loss smaller","A random change to try"],
+  answer:1,
+  explain:"backward() computes the gradient — the direction that lowers the loss for every knob. Then opt.step() takes the actual nudge in that direction."
+});});</script>
 
 <h2 class="step" id="data"><span class="step-num">Steps 1–2</span> Walking through it line by line</h2>
 
@@ -274,11 +283,13 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
   <p><strong>Absolute value</strong> (<code>|error|</code>) does make everything positive and is sometimes used. But squaring has a bonus: it has a smooth, clean slope everywhere (great for gradient descent) and it leans hard on big mistakes — a miss of 10 hurts 100×, not 10×, so training rushes to fix the worst errors first.</p>
 </details>
 
-<h3 id="magic">The three magic lines (Step 4)</h3>
+<h2 class="step" id="magic"><span class="step-num">Step 4</span> The three magic lines</h2>
+
+<p>First, the one word that makes these click: the <strong>gradient</strong> is just "which way to nudge each knob to make the loss smaller" — and by how much. With that in hand, the three lines (in the order they run) are:</p>
 <ul>
-  <li><code>opt.zero_grad()</code> — clear last step's notes about which way to nudge.</li>
-  <li><code>loss.backward()</code> — PyTorch computes the <em>gradient</em> of the loss with respect to <code>w</code> and <code>b</code>. The gradient says "if I increase this knob by 1, how does the loss change?"</li>
-  <li><code>opt.step()</code> — nudge each knob in the direction opposite its gradient (because we want loss to go down).</li>
+  <li><code>opt.zero_grad()</code> — clear last step's gradient notes so this step starts fresh (otherwise they'd pile up).</li>
+  <li><code>loss.backward()</code> — PyTorch computes the <em>gradient</em> of the loss with respect to <code>w</code> and <code>b</code>. It answers "if I increase this knob a little, does the loss go up or down?"</li>
+  <li><code>opt.step()</code> — nudge each knob in the direction opposite its gradient (because we want loss to go <em>down</em>).</li>
 </ul>
 
 <p>For more on <em>why</em> this works, see <a href="lesson_01c.html">Lesson 1c</a>, where we open up gradient descent and compute the gradients by hand.</p>

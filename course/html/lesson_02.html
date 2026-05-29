@@ -462,7 +462,7 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
     <p style="margin:8px 0;font-size:13.5px;">Pick a word. The model will return the <em>other</em> word whose embedding is most similar (highest dot product). If that word turns out to be the secret partner, the model got it right.</p>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="color:var(--text-dim);">Given:</span>
-      <select id="et-q" style="padding:5px 9px;font-size:14px;">
+      <select id="et-q" aria-label="Pick a word — the model returns the closest word it knows" style="padding:5px 9px;font-size:14px;">
         <option value="dog">dog</option>
         <option value="bark">bark</option>
         <option value="cat">cat</option>
@@ -495,7 +495,7 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
 
 <details class="go-deeper">
   <summary>Go deeper: what if I train 10× longer? Does dog·bark keep climbing?</summary>
-  <p>I trained the L2 notebook's tiny embedding model at three durations and measured the trained <code>dog · bark</code> dot product. Real numbers:</p>
+  <p>I trained the L2 notebook's tiny embedding model at three durations and measured the trained <code>dog · bark</code> dot product (notebook run — see <code>02_tokens_and_embeddings.py</code>). Real numbers:</p>
   <table class="compact" style="max-width:360px;">
     <thead><tr><th>steps</th><th>dog · bark</th><th>training loss</th></tr></thead>
     <tbody>
@@ -504,7 +504,7 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
       <tr><td>4000</td><td>+12.37</td><td>4.16</td></tr>
     </tbody>
   </table>
-  <p>The <strong>loss plateaus around 4.16</strong> (the floor for this tiny vocab) — but <code>dog·bark</code> <strong>keeps growing</strong> because nothing stops the vectors from getting longer. The <em>direction</em> they point is already correct after ~400 steps; extra training just makes them bigger. That's why real models use tricks like LayerNorm and weight decay to keep magnitudes in check.</p>
+  <p>The <strong>loss plateaus around 4.16</strong> (the floor for this tiny vocab) — but <code>dog·bark</code> <strong>keeps growing</strong> because nothing stops the vectors from getting longer. The <em>direction</em> they point is already correct after ~400 steps; extra training just makes them bigger. That's why real models use tricks like <strong>LayerNorm</strong> (rescales each vector to a standard length, so no single one runs away) and <strong>weight decay</strong> (gently pulls every number toward zero each step, penalising bloat) to keep magnitudes in check.</p>
 </details>
 
 <h2 class="step" id="data"><span class="step-num">Data</span> 🔎 What did we actually FEED into the model?</h2>
@@ -818,7 +818,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
     <p style="margin:8px 0;font-size:13.5px;">Pick a masked sentence. The model averages the visible word embeddings, scores every vocab word against that average, and returns the top guess.</p>
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="color:var(--text-dim);">Sentence:</span>
-      <select id="cb-q" style="padding:5px 9px;font-size:14px;"></select>
+      <select id="cb-q" aria-label="Pick a masked sentence for the model to fill in" style="padding:5px 9px;font-size:14px;"></select>
     </div>
     <div id="cb-explain" style="margin-top:10px;font-size:13.5px;"></div>
     <div id="cb-verdict" style="margin-top:6px;font-size:14px;font-weight:700;"></div>
@@ -852,7 +852,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
 </div>
 
 <div id="quiz-l2"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l2",[{"q": "Two word-vectors have a BIG dot product. That means…", "options": ["The words are similar", "The words are opposites", "One word is longer"], "answer": 0, "explain": "Big dot product = the lists agree on their slots = similar meaning."}, {"q": "Who decides what each embedding slot 'means'?", "options": ["The programmer names them", "Nobody — it emerges during training", "They're fixed by the dictionary"], "answer": 1, "explain": "The slots get their meaning automatically as training nudges similar words together."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l2",[{"q": "Two word-vectors have a BIG dot product. That means…", "options": ["The words are similar", "The words are opposites", "One word is longer"], "answer": 0, "explain": "Big dot product = the lists agree on their slots = similar meaning."}, {"q": "Who decides what each embedding slot 'means'?", "options": ["The programmer names them", "Nobody — it emerges during training", "They're fixed by the dictionary"], "answer": 1, "explain": "The slots get their meaning automatically as training nudges similar words together."}, {"q": "We trained embeddings by predicting a masked word from its neighbours (BERT/CBOW style). Skip-gram flips it — predict the neighbours from one word. What do BOTH actually train?", "options": ["The embedding table — the vectors are the prize either way", "Two completely different networks", "Only a final classifier, never the vectors"], "answer": 0, "explain": "Both objectives are just an excuse to nudge the embedding vectors into a useful shape. The prediction task is throwaway; the trained vectors are what we keep."}]);});</script>
 
 <div class="callout info">
   <strong>Want to push this harder?</strong> The next page, <a href="lesson_02a.html">Lesson 2a — Scaling up embeddings</a>, re-runs this exact experiment with more data, bigger vectors and batches, so you can <em>see</em> scale help — and meet the wall that only attention can break. It's optional but it sets up Lesson 3 nicely. Or skip straight to <a href="lesson_03.html">Lesson 3 — Attention</a>.

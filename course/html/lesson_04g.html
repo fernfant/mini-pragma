@@ -151,6 +151,8 @@
   <strong>The one rule to hold onto: the vector stays 32 wide the whole way through.</strong> Attention takes 32 numbers in and gives 32 back. The head takes 32 in. The <em>only</em> place a different number shows up is <strong>64</strong> — and that's just the temporary bulge <em>inside</em> the feed-forward step, gone again one line later. So it's <strong>32 in, 32 out, with a quick puff to 64 in the middle</strong> — not "64 neurons per layer."
 </div>
 
+<p style="margin-top:18px;">You've now seen every box in the machine. Before we count the parameters and scale it up, here's the single idea that ties all those boxes together — and explains why a GPU is the tool for the job:</p>
+
 <h3 style="margin-bottom:4px;margin-top:22px;">②½ Why "vector" is the key word — it's all matrix multiplication</h3>
 <p style="margin-top:4px;">A word is a <strong>vector</strong>: a list of 32 numbers. Stack a whole sentence of them and you get a grid — a <strong>matrix</strong> of (words × 32). That's the secret to <em>why</em> every step above is fast and identical in shape: each one is a single <strong>matrix multiplication</strong>.</p>
 <div class="widget" style="background:#0f172a;color:#cbd5e1;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;font-size:13.5px;line-height:1.6;">
@@ -170,6 +172,14 @@
   <div id="anat-bar" role="img" aria-label="A horizontal stacked bar showing how the 11,071 parameters split across the model's parts, with attention's Q/K/V the largest segment. Full breakdown in the legend below." style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid #334155;"></div>
   <div id="anat-legend" style="display:flex;flex-direction:column;gap:11px;margin-top:14px;font-size:12.5px;"></div>
 </div>
+
+<div id="chk-l4g-params"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l4g-params",{
+  q:"Which part of the model holds the most parameters?",
+  options:["The feed-forward network","Attention's Q/K/V projections","The position embeddings"],
+  answer:1,
+  explain:"The surprise from the bar above: attention's Q/K/V is the single biggest chunk — bigger than the feed-forward. That's where most of a Transformer's learning capacity lives."
+});});</script>
 
 <h3 style="margin-bottom:4px;margin-top:22px;">④ Now scale it up — same shape, more of everything</h3>
 <p style="margin-top:4px;">ChatGPT isn't a <em>different</em> kind of machine. It's this exact diagram with every number cranked up and the layer stacked ~100 times:</p>
@@ -238,16 +248,16 @@
 <h3 style="margin-bottom:4px;margin-top:20px;">① First, feel the ceiling — the 31-word wall</h3>
 <p style="margin-top:4px;">Our whole-word model has a fixed dictionary of 31 entries. If a word isn't in it, the model literally has <em>no box</em> for it — it can't even read the input. Type a word and see:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
-  <input id="ov-input" type="text" value="puppy" placeholder="type any word…" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:8px 12px;font-size:15px;width:200px;font-family:ui-monospace,monospace;">
+  <input id="ov-input" aria-label="Type any word to test whether the 31-word model has a box for it" type="text" value="puppy" placeholder="type any word…" style="background:#1e293b;color:#e2e8f0;border:1px solid #334155;border-radius:8px;padding:8px 12px;font-size:15px;width:200px;font-family:ui-monospace,monospace;">
   <div id="ov-out" style="margin-top:12px;font-size:13.5px;line-height:1.6;"></div>
 </div>
 
 <h3 style="margin-bottom:4px;margin-top:22px;">② The fix: read by <em>characters</em>, not whole words</h3>
-<p style="margin-top:4px;">We rebuilt the same Transformer, but now its alphabet is just <strong>25 characters</strong> (letters, space, newline) instead of 31 frozen words. It predicts the <strong>next character</strong>, one at a time. The magic: out of 25 letters it can spell <em>any</em> word — including ones never in its training. We trained it on <strong>13 nursery rhymes</strong> (~1,900 characters) for 4,000 steps. Watch it learn to <em>spell</em>, then <em>rhyme</em>:</p>
+<p style="margin-top:4px;">We rebuilt the same Transformer — same pieces, just a touch wider (64-dim vectors instead of the 32 we used before) — but now its alphabet is just <strong>25 characters</strong> (letters, space, newline) instead of 31 frozen words. It predicts the <strong>next character</strong>, one at a time. The magic: out of 25 letters it can spell <em>any</em> word — including ones never in its training. We trained it on <strong>13 nursery rhymes</strong> (~1,900 characters) for 4,000 steps. Watch it learn to <em>spell</em>, then <em>rhyme</em>:</p>
 <div class="widget" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:18px 20px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
     <button id="cev-play" style="padding:6px 13px;border-radius:6px;background:#065f46;color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:13px;white-space:nowrap;">▶ Watch it learn</button>
-    <input id="cev-slider" type="range" min="0" max="5" value="0" step="1" style="flex:1;min-width:200px;">
+    <input id="cev-slider" aria-label="Training checkpoint (0 to 5): drag to see the character model's output at each stage" type="range" min="0" max="5" value="0" step="1" style="flex:1;min-width:200px;">
     <div style="font-family:ui-monospace,monospace;font-size:13px;white-space:nowrap;">step <span id="cev-step" style="color:#fde047;font-weight:700;">0</span> · loss <span id="cev-loss" style="color:#86efac;font-weight:700;">—</span></div>
   </div>
   <div style="color:#64748b;font-size:11.5px;margin-top:4px;">seed: <code>the </code> → the model writes the next ~110 characters · <span style="color:#86efac;">green</span> = a correctly-spelled real word</div>

@@ -94,10 +94,10 @@
         <tr><th>loss</th><td id="cb2-loss">—</td></tr>
       </table>
       <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
-        <span style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
-        <span style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
-        <span style="color:#10b981;font-weight:700;">●</span> places &nbsp;
-        <span style="color:#94a3b8;font-weight:700;">●</span> rest
+        <span aria-hidden="true" style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
+        <span aria-hidden="true" style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
+        <span aria-hidden="true" style="color:#10b981;font-weight:700;">●</span> places &nbsp;
+        <span aria-hidden="true" style="color:#94a3b8;font-weight:700;">●</span> rest
       </div>
     </div>
   </div>
@@ -116,6 +116,7 @@
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="color:var(--text-dim);">Sentence:</span>
       <select id="cb2-q" style="padding:5px 9px;font-size:14px;"></select>
+      <button id="cb2-next" class="alt" style="padding:5px 11px;font-size:13px;">Next example →</button>
     </div>
     <div id="cb2-explain" style="margin-top:10px;font-size:13.5px;"></div>
     <div id="cb2-verdict" style="margin-top:6px;font-size:14px;font-weight:700;"></div>
@@ -140,7 +141,9 @@
 
 <h2 class="step" id="try3"><span class="step-num">Try 3</span> 🚀 Push it harder — more data, bigger embeddings, batches.</h2>
 
-<p>One more turn of the dial. Same recipe, but this time we add even <em>more</em> sentences (with new shared contexts so animals/sounds/places have stronger category signal), bigger embeddings, and we process examples in <strong>batches</strong> of 8 per step (averaging gradients across 8 examples per step instead of just 1).</p>
+<p>One more turn of the dial. Same recipe, but this time we add even <em>more</em> sentences (with new shared contexts so animals/sounds/places have stronger category signal), bigger embeddings, and we process examples in <strong>batches</strong> of 8 per step.</p>
+
+<p>What's a batch? Instead of nudging the knobs after every single example, each step now picks <strong>8 random (sentence, mask) examples</strong>, averages their gradients, and does one combined nudge. That's exactly what real BERT does to keep training stable. Here's how the three runs stack up:</p>
 
 <table class="compact" style="max-width:620px;">
   <thead><tr><th></th><th>Try 1</th><th>Try 2</th><th>Try 3 (this one)</th></tr></thead>
@@ -152,8 +155,6 @@
     <tr><td>Steps</td><td>3,000</td><td>5,000</td><td><strong>25,000</strong></td></tr>
   </tbody>
 </table>
-
-<p>Each step now picks <strong>8 random (sentence, mask) examples</strong>, averages their gradients, and does one combined nudge. That's exactly what real BERT does to keep training stable.</p>
 
 <div id="pred-02a-scale"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-02a-scale",{
@@ -193,10 +194,10 @@
         <tr><th>loss</th><td id="cb3-loss">—</td></tr>
       </table>
       <div style="font-size:12px;color:var(--text-dim);margin-top:14px;">
-        <span style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
-        <span style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
-        <span style="color:#10b981;font-weight:700;">●</span> places &nbsp;
-        <span style="color:#94a3b8;font-weight:700;">●</span> rest
+        <span aria-hidden="true" style="color:#3b82f6;font-weight:700;">●</span> animals &nbsp;
+        <span aria-hidden="true" style="color:#f59e0b;font-weight:700;">●</span> sounds &nbsp;
+        <span aria-hidden="true" style="color:#10b981;font-weight:700;">●</span> places &nbsp;
+        <span aria-hidden="true" style="color:#94a3b8;font-weight:700;">●</span> rest
       </div>
     </div>
   </div>
@@ -215,6 +216,7 @@
     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
       <span style="color:var(--text-dim);">Sentence:</span>
       <select id="cb3-q" style="padding:5px 9px;font-size:14px;"></select>
+      <button id="cb3-next" class="alt" style="padding:5px 11px;font-size:13px;">Next example →</button>
     </div>
     <div id="cb3-explain" style="margin-top:10px;font-size:13.5px;"></div>
     <div id="cb3-verdict" style="margin-top:6px;font-size:14px;font-weight:700;"></div>
@@ -466,6 +468,11 @@
   });
   document.getElementById('cb2-reset').addEventListener('click', reset);
   document.getElementById('cb2-q').addEventListener('change', renderInference);
+  document.getElementById('cb2-next').addEventListener('click', () => {
+    const s = document.getElementById('cb2-q');
+    s.selectedIndex = (s.selectedIndex + 1) % s.options.length;
+    s.dispatchEvent(new Event('change'));
+  });
   reset();
 })();
 </script>
@@ -652,6 +659,11 @@
   });
   document.getElementById('cb3-reset').addEventListener('click', reset);
   document.getElementById('cb3-q').addEventListener('change', renderInference);
+  document.getElementById('cb3-next').addEventListener('click', () => {
+    const s = document.getElementById('cb3-q');
+    s.selectedIndex = (s.selectedIndex + 1) % s.options.length;
+    s.dispatchEvent(new Event('change'));
+  });
   reset();
 })();
 </script>

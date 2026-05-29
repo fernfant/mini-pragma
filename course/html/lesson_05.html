@@ -71,19 +71,6 @@
   <figcaption><code>pragma_mini.py</code> is exactly this pipeline in code — embed, stack attention+feed-forward, then a head.</figcaption>
 </figure>
 
-
-<h2 id="legend">Lesson reference legend</h2>
-<p>
-  <a class="legend-chip" href="lesson_01.html">L1 — training loop</a>
-  <a class="legend-chip" href="lesson_01b.html">L1b — arch vs training</a>
-  <a class="legend-chip" href="lesson_01c.html">L1c — gradient descent</a>
-  <a class="legend-chip" href="lesson_01_5.html">L1.5 — neural nets &amp; FFN</a>
-  <a class="legend-chip" href="lesson_02.html">L2 — tokens &amp; embeddings</a>
-  <a class="legend-chip" href="lesson_03.html">L3 — attention</a>
-  <a class="legend-chip" href="lesson_03b.html">L3b — why transformers</a>
-  <a class="legend-chip" href="lesson_04.html">L4 — MLM</a>
-</p>
-
 <h2 class="step" id="vocab"><span class="step-num">Sec 1</span> Vocabulary <span class="legend-chip">L2</span></h2>
 
 <pre><code>KEYS   = ["pet", "action", "place"]
@@ -134,6 +121,18 @@ V = len(vocab)</code></pre>
     return ids</code></pre>
 
 <p>Turn an event into a flat list of token IDs. Key, value, key, value, …</p>
+
+<p>Each section below is tagged with the earlier lessons it builds on — here's the key:</p>
+<p>
+  <a class="legend-chip" href="lesson_01.html">L1 — training loop</a>
+  <a class="legend-chip" href="lesson_01b.html">L1b — arch vs training</a>
+  <a class="legend-chip" href="lesson_01c.html">L1c — gradient descent</a>
+  <a class="legend-chip" href="lesson_01_5.html">L1.5 — neural nets &amp; FFN</a>
+  <a class="legend-chip" href="lesson_02.html">L2 — tokens &amp; embeddings</a>
+  <a class="legend-chip" href="lesson_03.html">L3 — attention</a>
+  <a class="legend-chip" href="lesson_03b.html">L3b — why transformers</a>
+  <a class="legend-chip" href="lesson_04.html">L4 — MLM</a>
+</p>
 
 <h2 class="step" id="mask"><span class="step-num">Sec 4</span> Masking <span class="legend-chip">L4</span></h2>
 
@@ -263,6 +262,14 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
   explain:"Same fill-in-the-blank trick as Lesson 4: the data labels itself."
 });});</script>
 
+<div id="pred-l5-arch"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5-arch",{
+  q:"The toy model has ~20,000 numbers to learn. Which piece do you think holds the most?",
+  options:["The embedding table (one row per word)","The 2 encoder layers (attention + feed-forward)","The final scoring head"],
+  correct:1,
+  reveal:"The two encoder layers — about 17,000 of the ~20,000. The embedding table is only 448 and the head 462; almost all the model's capacity lives in the attention + feed-forward stacks."
+});});</script>
+
 <h2 class="step" id="arch"><span class="step-num">Sec 5</span> The architecture <span class="legend-chip">L1b</span> <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 
 <pre><code>class PragmaMini(nn.Module):
@@ -290,7 +297,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 
 <figure class="figure-wide">
   <img src="../visuals/encoder_depth.svg" alt="Encoder depth ladder">
-  <figcaption>Each layer takes the previous layer's output and runs attention + FFN again. Layer 1: surface relationships. Layer 18: abstract patterns. PRAGMA-L stacks 18. See <a href="lesson_01_5.html#step-76">L1.5 Step 7.6</a> for the full stack diagram.</figcaption>
+  <figcaption>Each layer takes the previous layer's output and runs attention + FFN again. Layer 1: surface relationships. Layer 18: abstract patterns. PRAGMA-L stacks 18. See <a href="lesson_01_5.html#step-76">L1.5 Step 8</a> for the full stack diagram.</figcaption>
 </figure>
 
 <h2 class="step" id="train"><span class="step-num">Sec 6</span> Training <span class="legend-chip">L1</span> <span class="legend-chip">L1c</span> <span class="legend-chip">L4</span></h2>
@@ -346,7 +353,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 <table class="compact">
   <thead><tr><th>Model</th><th>d_model</th><th>Encoder layers (P/E/H)</th><th>Heads</th><th>Total params</th></tr></thead>
   <tbody>
-    <tr><td>Our toy</td><td>32</td><td>– / 2 / –</td><td>2</td><td>~5,000</td></tr>
+    <tr><td>Our toy</td><td>32</td><td>– / 2 / –</td><td>2</td><td>~20,000</td></tr>
     <tr><td>PRAGMA-S</td><td>192</td><td>1 / 5 / 2</td><td>3</td><td>10 M</td></tr>
     <tr><td>PRAGMA-M</td><td>512</td><td>3 / 16 / 6</td><td>8</td><td>100 M</td></tr>
     <tr><td>PRAGMA-L</td><td>1024</td><td>9 / 45 / 18</td><td>16</td><td><strong>1 B</strong></td></tr>
@@ -355,15 +362,15 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 
 <h3>5. Smarter masking strategies</h3>
 <ul>
-  <li><strong>Token-level (15%)</strong> — like our toy.</li>
-  <li><strong>Event-level (10%)</strong> — hide a whole event.</li>
-  <li><strong>Key-level (10%)</strong> — hide all values of a key everywhere.</li>
+  <li><strong>Token-level (~15%)</strong> — like our toy.</li>
+  <li><strong>Event-level (~10%)</strong> — hide a whole event.</li>
+  <li><strong>Key-level (~10%)</strong> — hide all values of a key everywhere.</li>
 </ul>
 
 <h3>6. Downstream adaptation</h3>
 <ul>
   <li><strong>Embedding probe</strong> — freeze encoder, add tiny classifier on top.</li>
-  <li><strong>LoRA fine-tuning</strong> — tune ~2-4% of weights via low-rank adapters.</li>
+  <li><strong>LoRA fine-tuning</strong> — instead of retraining the whole model, swap in a tiny set of adapter weights (~2-4% of the model) via low-rank adapters.</li>
 </ul>
 
 <div class="callout good">
@@ -382,7 +389,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 </div>
 
 <div id="quiz-l5"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5",[{"q": "Why key-value tokenisation instead of plain text for banking data?", "options": ["It's shorter to type", "It keeps each field's structure and magnitude", "It uses fewer GPUs"], "answer": 1, "explain": "Plain text shatters '14.99' into pieces and loses magnitude. Key+value keeps structure."}, {"q": "What does the final linear head do?", "options": ["Projects each vector to a score per vocab word", "Adds up all the vectors", "Picks a random word"], "answer": 0, "explain": "The head turns context vectors into vocab scores so it can predict the masked token."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5",[{"q": "Why key-value tokenisation instead of plain text for banking data?", "options": ["It's shorter to type", "It keeps each field's structure and magnitude", "It uses fewer GPUs"], "answer": 1, "explain": "Plain text shatters '14.99' into pieces and loses magnitude. Key+value keeps structure."}, {"q": "What does the final linear head do?", "options": ["Projects each vector to a score per vocab word", "Adds up all the vectors", "Picks a random word"], "answer": 0, "explain": "The head turns context vectors into vocab scores so it can predict the masked token."}, {"q": "In the toy model, which part holds the most parameters?", "options": ["The embedding table", "The 2 encoder layers (attention + FFN)", "The final linear head"], "answer": 1, "explain": "The two TransformerEncoder layers are ~17K of the ~20K total — far more than the embedding (448) or head (462)."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_04h.html">

@@ -190,7 +190,7 @@ class GPTConfig:
         x = x + self.mlp(self.ln_2(x))    <span class="c"># 2. think alone (GELU feed-forward)</span>
         return x</pre>
 
-<p>And the head shares its weights with the token-embedding table — <strong>weight tying</strong>, one of the recipe's cheap wins:</p>
+<p>And the head shares its weights with the token-embedding table — <strong>weight tying</strong>, one of the recipe's cheap wins. (The embedding table turns token ids <em>into</em> vectors; the head turns vectors <em>back into</em> scores per token. Tying them means the <em>same</em> grid of numbers does both jobs — fewer parameters to learn, and the two stay consistent.)</p>
 <pre class="gw-code">self.lm_head = nn.Linear(n_embd, vocab_size, bias=False)
 self.tf.wte.weight = self.lm_head.weight   <span class="c"># same numbers do double duty</span></pre>
 
@@ -232,7 +232,7 @@ We know't, we know't.
 
 <p>That whole file becomes <strong>one long stream of BPE token ids</strong> — then we chop off the last 10% as a held-out validation set. The journey from text to training data:</p>
 
-<div class="gw-flow">
+<div class="gw-flow" role="group" aria-label="Data-flow diagram: 1,115,394 characters of raw text → tiktoken BPE → 338,025 token ids → 90/10 split → 304,222 train and 33,803 validation tokens.">
   <div class="gw-fbox">
     <div class="h">📄 raw text</div>
     <div class="b"><code>"First Citizen:\nBefore we proceed…"</code></div>
@@ -262,12 +262,59 @@ for it in range(601):
     loss.backward()                      <span class="c"># blame each knob</span>
     clip_grad_norm_(model.parameters(), 1.0)
     opt.step()                           <span class="c"># nudge them</span></pre>
-<div class="gw-out"><span class="gw-out-label">output (real run)</span><pre>1,115,394 chars -> 338,025 BPE tokens   (train 304,222 / val 33,803)
-iter    0 | val loss 10.836
-iter  150 | val loss  5.654
-iter  300 | val loss  5.230
-iter  450 | val loss  5.126
-iter  600 | val loss  5.040</pre></div>
+<div class="widget" id="l4h-loss" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
+  <div style="color:#64748b;font-size:11.5px;margin-bottom:8px;">real run · <code>1,115,394 chars → 338,025 BPE tokens (train 304,222 / val 33,803)</code></div>
+  <canvas id="l4h-loss-cv" width="520" height="200" aria-label="Validation-loss curve over training: drops from 10.836 at iteration 0 to 5.654 by iter 150, then eases down through 5.230, 5.126, and 5.040 by iter 600." style="width:100%;max-width:540px;display:block;"></canvas>
+  <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:8px;">
+    <button id="l4h-loss-play" style="padding:6px 13px;border-radius:6px;background:#065f46;color:#d1fae5;border:1px solid #10b981;cursor:pointer;font-size:13px;">▶ Replay</button>
+    <div style="font-family:ui-monospace,monospace;font-size:13px;color:#cbd5e1;">iter <span id="l4h-loss-it" style="color:#fde047;font-weight:700;">0</span> · val loss <span id="l4h-loss-v" style="color:#22d3ee;font-weight:700;">10.836</span></div>
+  </div>
+</div>
+<script id="l4h-loss-data" type="application/json">[[0,10.836],[150,5.654],[300,5.230],[450,5.126],[600,5.040]]</script>
+<script>
+(() => {
+  const cv = document.getElementById('l4h-loss-cv'); if (!cv) return;
+  const pts = JSON.parse(document.getElementById('l4h-loss-data').textContent);
+  const itEl = document.getElementById('l4h-loss-it'), vEl = document.getElementById('l4h-loss-v');
+  const ctx = cv.getContext('2d'), W = cv.width, H = cv.height, pad = 34;
+  const xmax = pts[pts.length-1][0], ymax = Math.max(...pts.map(p=>p[1]));
+  const X = x => pad + (x/xmax)*(W-pad-12);
+  const Y = y => 12 + (1 - y/ymax)*(H-pad-12);
+  function frame(n) { // n = how many segments drawn (0..pts.length-1), fractional
+    ctx.clearRect(0,0,W,H);
+    ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(pad,12); ctx.lineTo(pad,H-pad); ctx.lineTo(W-12,H-pad); ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '11px ui-monospace,monospace';
+    ctx.fillText(ymax.toFixed(1), 4, 16); ctx.fillText('0', 4, H-pad);
+    ctx.fillText('iter 0', pad, H-pad+16); ctx.fillText('600', W-40, H-pad+16);
+    ctx.strokeStyle = '#22d3ee'; ctx.lineWidth = 2.5; ctx.beginPath();
+    const full = Math.floor(n), frac = n - full;
+    for (let i=0; i<=full && i<pts.length; i++){ const px=X(pts[i][0]), py=Y(pts[i][1]); i?ctx.lineTo(px,py):ctx.moveTo(px,py); }
+    let curIt = pts[Math.min(full,pts.length-1)][0], curV = pts[Math.min(full,pts.length-1)][1];
+    if (full < pts.length-1 && frac > 0) {
+      const a = pts[full], b = pts[full+1];
+      curIt = Math.round(a[0] + (b[0]-a[0])*frac); curV = a[1] + (b[1]-a[1])*frac;
+      ctx.lineTo(X(curIt), Y(curV));
+    }
+    ctx.stroke();
+    ctx.fillStyle = '#22d3ee';
+    for (let i=0; i<=full && i<pts.length; i++){ ctx.beginPath(); ctx.arc(X(pts[i][0]),Y(pts[i][1]),3.5,0,7); ctx.fill(); }
+    itEl.textContent = curIt; vEl.textContent = curV.toFixed(3);
+  }
+  let raf;
+  function play() {
+    cancelAnimationFrame(raf);
+    const segs = pts.length-1, dur = 2200, t0 = performance.now();
+    (function step(t){
+      const k = Math.min(1, (t-t0)/dur);
+      frame(k*segs);
+      if (k < 1) raf = requestAnimationFrame(step);
+    })(t0);
+  }
+  document.getElementById('l4h-loss-play').addEventListener('click', play);
+  frame(pts.length-1); // show full curve at rest
+})();
+</script>
 
 <p>Then ask it to write. After only 600 steps it's far from fluent — but watch what emerged from pure noise: real words, play formatting, and <strong>actual Shakespeare character names it was never told about</strong> (GLOUCESTER, SICINIUS, RICHARD II):</p>
 <div class="gw-out"><span class="gw-out-label">generated</span><pre>Second Citizen:
@@ -326,7 +373,8 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4h",[
   {"q":"What actually separates GPT-3 175B from the model on this page?","options":["A different, secret architecture","Just bigger config numbers + more data — same code","A special kind of attention"],"answer":1,"explain":"The whole GPT-3 family is one architecture. Bigger = more layers, wider vectors, more heads, more data. The code is the same."},
   {"q":"Why use BPE subword tokens instead of single characters?","options":["They're easier to type","Common words stay short to read, but rare words still spell from pieces — best of both","Characters can't be embedded"],"answer":1,"explain":"BPE is the middle ground: frequent words are one piece (short sequences), rare words split into chunks down to letters, so nothing is unreadable."},
-  {"q":"What does device='mps' do on your Mac?","options":["Runs the math on the Apple GPU (Metal), like CUDA on NVIDIA","Downloads a model from Apple","Turns on multi-processing"],"answer":0,"explain":"MPS = Metal Performance Shaders, Apple's GPU backend for PyTorch. It runs tensors on the M-chip's GPU instead of the CPU."}
+  {"q":"What does device='mps' do on your Mac?","options":["Runs the math on the Apple GPU (Metal), like CUDA on NVIDIA","Downloads a model from Apple","Turns on multi-processing"],"answer":0,"explain":"MPS = Metal Performance Shaders, Apple's GPU backend for PyTorch. It runs tensors on the M-chip's GPU instead of the CPU."},
+  {"q":"Each block runs <code>x = x + sublayer(ln(x))</code> — normalising BEFORE the sublayer. Why pre-LayerNorm?","options":["It makes the model smaller","It keeps the signal stable through deep stacks so training doesn't blow up","It replaces the need for attention"],"answer":1,"explain":"Pre-LayerNorm (normalise first, then add the result back via the residual) keeps activations well-scaled all the way down a deep stack — that's what lets you train dozens of layers without the loss exploding."}
 ]);});</script>
 
 <div class="pagination">
