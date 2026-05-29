@@ -161,6 +161,9 @@
   <dt id="encoder">encoder</dt>
   <dd>The stack of Transformer blocks that reads the input and turns each token into a rich, context-aware vector. PRAGMA's encoder is the part you <a href="#pre-training">pre-train</a>; later you bolt a small task head on top of it.</dd>
 
+  <dt id="pooling">pooling (mean-pooling)</dt>
+  <dd>The model gives you one vector per item — one per word, or one per house-attribute. Pooling squashes that whole pile into a <em>single</em> summary vector for the thing as a whole. Mean-pooling is the simplest kind: just average all the vectors together. <span class="eg"><strong>Example:</strong> like turning the whole class's votes into one answer by averaging them. In L5/L6 you mean-pool the <a href="#encoder">encoder</a>'s per-token vectors into one vector, then feed that to the task head.</span></dd>
+
   <dt id="layer">layer / block</dt>
   <dd>One unit of (attention + feed-forward). "An 18-layer model" means this whole unit is repeated 18 times, each one refining the previous one's output. <span class="eg"><strong>Watch out:</strong> attention happens in <em>every</em> layer, not just the first one.</span></dd>
 

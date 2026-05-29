@@ -64,7 +64,7 @@
 <div class="callout info">
   <strong>This is the project.</strong> You write the code. The course up to here has been showing; now you do.
   <br><br>
-  Target effort: 4–8 hours over a few sessions.
+  Target effort: 4–8 hours — and that means <strong>across several sittings</strong>, not one marathon. Do a stage, take a break, come back. Using the starter skeleton below and re-opening earlier lessons while you build is <strong>exactly how it's meant to work</strong> — that's not cheating, that's how every real engineer codes.
 </div>
 
 <h2 class="step" id="challenge"><span class="step-num">Brief</span> The challenge</h2>
@@ -163,6 +163,152 @@
   <li><strong>Multi-task.</strong> Two heads on the same frozen encoder.</li>
   <li><strong>Scale.</strong> Increase to 20k, 100k users.</li>
 </ol>
+
+<h2 class="step" id="skeleton"><span class="step-num">Skeleton</span> 🪜 Starter skeleton — fill in the blanks</h2>
+
+<div class="callout">
+  Blank page is scary. So here's the <em>shape</em> of all three files — imports, function signatures, the class, the 5-line loop you already know — with the actual logic left as <code># TODO</code> for you to write. Same patterns as L1, L4, L5, L5b. You're not starting from zero; you're filling in gaps.
+</div>
+
+<h3>📄 <code>capstone_data.py</code> — make the fake transactions</h3>
+
+<pre><code>import random
+
+KEYS   = ["type", "amount_bucket", "time_of_day"]
+# TODO: list the VALUES for each key (e.g. "buy"/"refund"/"test", "low"/"mid"/"high", "morning"/"night")
+VALUES = [ ... ]
+PAD, MASK = "&lt;pad&gt;", "&lt;mask&gt;"
+vocab  = [PAD, MASK] + KEYS + VALUES
+tok2id = {t: i for i, t in enumerate(vocab)}
+V      = len(vocab)
+
+# Two profiles. The model never sees these — it must back them out of the data.
+NORMAL_RULES = { ... }   # TODO: common patterns (e.g. mostly "buy", "mid", "morning")
+FRAUD_RULES  = { ... }   # TODO: weird patterns (e.g. bursts of "test", "low", "night")
+
+def random_event(rules):
+    # TODO: pick one value per key using `rules`, return a list of (key, value) pairs
+    ...
+
+def make_user(is_fraud):
+    rules = FRAUD_RULES if is_fraud else NORMAL_RULES
+    # TODO: return 20 events for this user (a list of 20 events)
+    ...
+
+def make_dataset(n=2000, fraud_frac=0.05):
+    # TODO: build n users, ~5% fraud. Return (list_of_users, list_of_labels)
+    ...
+
+def encode(event):
+    ids = []
+    for k, v in event:          # key, value, key, value, ... (same as L5)
+        ids.append(tok2id[k]); ids.append(tok2id[v])
+    return ids
+
+if __name__ == "__main__":
+    # Checkpoint 1: eyeball a normal vs a fraud user
+    print("NORMAL:", make_user(False)[:5])
+    print("FRAUD :", make_user(True)[:5])</code></pre>
+
+<div class="callout good">
+  ✅ <strong>Checkpoint 1.</strong> Running this prints 5 fake transactions for a normal user and 5 for a fraud user, and you can <em>see</em> they look different. If yes — your data layer works. Move on.
+</div>
+
+<h3>📄 <code>capstone_pretrain.py</code> — learn what "normal" looks like (no labels!)</h3>
+
+<pre><code>import torch, torch.nn as nn, random
+from capstone_data import make_dataset, encode, vocab, tok2id, V, KEYS, MASK
+
+class Encoder(nn.Module):           # same shape as pragma_mini.py / L5b
+    def __init__(self, V, d=32, heads=2, layers=2):
+        super().__init__()
+        self.emb = nn.Embedding(V, d)
+        self.pos = nn.Embedding(512, d)
+        layer    = nn.TransformerEncoderLayer(d, heads, d*2, batch_first=True)
+        self.enc = nn.TransformerEncoder(layer, layers)
+    def forward(self, x):
+        pos = torch.arange(x.size(1))
+        return self.enc(self.emb(x) + self.pos(pos))
+
+def mask(ids, p=0.25):
+    # TODO: copy the masking idea from L4 / L5 — hide ~25% of VALUE tokens,
+    # keep KEY tokens visible, set labels=-100 on positions you DON'T score.
+    ...
+
+encoder  = Encoder(V)
+mlm_head = nn.Linear(32, V)
+opt      = torch.optim.AdamW(list(encoder.parameters()) + list(mlm_head.parameters()), lr=3e-3)
+loss_fn  = nn.CrossEntropyLoss(ignore_index=-100)
+
+# --- the same 5-line loop from L1 / L4 / L5 ---
+for step in range(2000):
+    # TODO: grab a batch of users, encode + mask them, build x and y tensors
+    x, y   = ...
+    logits = mlm_head(encoder(x))                          # 1. guess
+    loss   = loss_fn(logits.reshape(-1, V), y.reshape(-1)) # 2. how wrong?
+    opt.zero_grad(); loss.backward(); opt.step()           # 3,4,5  nudge the knobs
+    if step % 200 == 0: print(step, loss.item())
+
+torch.save(encoder.state_dict(), "encoder.pt")             # save the learned encoder</code></pre>
+
+<div class="callout good">
+  ✅ <strong>Checkpoint 2.</strong> The printed loss starts high and <strong>drops below ~0.5</strong> as it trains. That means the encoder has learned the normal event structure — with zero fraud labels. (Stuck near a flat high number? Check your masking actually hides values and that <code>ignore_index=-100</code> matches your label trick.)
+</div>
+
+<h3>📄 <code>capstone_classify.py</code> — freeze, then probe with the few labels</h3>
+
+<pre><code>import torch, torch.nn as nn
+from capstone_data import make_dataset, encode, V
+from capstone_pretrain import Encoder
+
+class FraudHead(nn.Module):         # tiny head: one linear layer to 2 logits (L5b)
+    def __init__(self, d=32):
+        super().__init__()
+        self.proj = nn.Linear(d, 2)
+    def forward(self, h):
+        pooled = h.mean(dim=1)      # mean-pool the sequence to one vector per user
+        return self.proj(pooled)
+
+def train_classifier(encoder, X_tr, y_tr, freeze=True):
+    head = FraudHead()
+    if freeze:                      # freeze + probe = the foundation-model recipe (L5b)
+        for p in encoder.parameters(): p.requires_grad = False
+        encoder.eval()
+        params = list(head.parameters())
+    else:                           # baseline: random encoder, train everything
+        params = list(encoder.parameters()) + list(head.parameters())
+    opt     = torch.optim.AdamW(params, lr=3e-3)
+    loss_fn = nn.CrossEntropyLoss()
+    for step in range(300):
+        logits = head(encoder(X_tr))               # 1. guess
+        loss   = loss_fn(logits, y_tr)             # 2. how wrong?
+        opt.zero_grad(); loss.backward(); opt.step()  # 3,4,5
+    return head
+
+# --- pre-trained run ---
+encoder = Encoder(V)
+encoder.load_state_dict(torch.load("encoder.pt"))  # load Stage 2's weights
+# TODO: build the dataset, split 80/20, pad/encode users into one tensor X and labels y
+# TODO: head = train_classifier(encoder, X_tr, y_tr, freeze=True)
+# TODO: evaluate — print overall accuracy AND recall on fraud (the metric that matters)
+
+# --- baseline run (Stage 4): same code, fresh random encoder, freeze=False ---
+# TODO: repeat with a brand-new Encoder(V) and freeze=False, then compare the two recalls</code></pre>
+
+<div class="callout good">
+  ✅ <strong>Checkpoint 3.</strong> The pre-trained model's <strong>recall on fraud beats the from-scratch baseline</strong> — especially when you only give it a few labels. When you see that gap, you've personally reproduced the headline result from <a href="lesson_05b.html">L5b</a>. That's the whole point of the course, proven by your own code.
+</div>
+
+<div class="callout info">
+  <strong>🆘 If you get stuck — which ladder rung to re-open:</strong>
+  <ul>
+    <li>Stuck on the <strong>training loop</strong> (the 5 lines)? → <a href="lesson_01.html">L1</a>.</li>
+    <li>Stuck on <strong>masking / fill-in-the-blank</strong>? → <a href="lesson_04.html">L4</a> (and the masking code in <a href="lesson_05.html">L5</a>).</li>
+    <li>Stuck on <strong>encode / key-value tokens</strong>? → <a href="lesson_05.html">L5</a>.</li>
+    <li>Stuck on <strong>freeze → probe</strong> or the baseline comparison? → <a href="lesson_05b.html">L5b</a>.</li>
+  </ul>
+  Re-reading an earlier lesson mid-build is the normal way to do this — keep that tab open.
+</div>
 
 <h2 class="step" id="ref"><span class="step-num">Ref</span> Reference solution</h2>
 

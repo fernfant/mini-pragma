@@ -50,6 +50,15 @@
   <a href="../05a_walkthrough.md"><span class="ico">📝</span> Walkthrough</a>
 </div>
 
+<div class="callout good">
+  🌉 <strong>The bridge: a house is just a short SENTENCE.</strong> In L4 the model played fill-in-the-blank on words. A house plays the exact same game — but its "words" are its <em>attributes</em>.
+  <pre style="font-size:12px;line-height:1.6;margin:10px 0;"><code>A sentence of words:       the   cat   sat   on   the   __
+A "sentence" of a house:   [bedrooms=3] [bathrooms=2] [area=1800] [garage=yes] [__]</code></pre>
+  Fill-in-the-blank on a house means: <strong>hide one attribute and predict it from the others</strong> — exactly like hiding a word and guessing it from the words around it. Hide <code>garage</code>, and the model uses bedrooms, bathrooms, and area to guess it.
+  <br><br>
+  Why this is powerful: the model learns how a house's attributes relate to each other <strong>with no labels at all</strong> — nobody tells it the answer, because the answer is just the attribute we hid. It's the same trick as masked-language-modelling (MLM) on text, pointed at a table instead.
+</div>
+
 <details class="lesson-toc" open>
   <summary>Steps in this lesson (matches the notebook)</summary>
   <ol>
@@ -278,6 +287,10 @@ AFTER MASKING (random 30%):
         pooled = h.mean(dim=1)          # average across positions
         return self.proj(pooled)</code></pre>
 
+<div class="callout">
+  <strong>What is <code>h.mean(dim=1)</code> doing? (mean-pooling)</strong> The encoder gives back one vector for <em>every</em> attribute — so a 10-attribute house comes out as 10 separate vectors. But the price head wants a single "summary of the whole house." So we just average all those vectors into one. Think of it like a class vote: each attribute gives its opinion, and we average them into one class opinion that stands for the whole house.
+</div>
+
 <p>Then train <em>only</em> this head on labelled houses, using the same 5-line loop. The encoder is frozen — <code>opt</code> only knows about the head's parameters.</p>
 
 <p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1.</p>
@@ -345,6 +358,8 @@ AFTER MASKING (random 30%):
   <canvas id="l5a-canvas" width="720" height="210" style="max-width:100%;"></canvas>
 
   <div id="l5a-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
+
+  <p style="font-size:12px;color:var(--text-dim);margin-top:10px;">Note: these slider numbers are illustrative — they show the <em>shape</em> of the result (pre-training leads with few labels, baseline overtakes with many). The real accuracy figures come from running the notebook.</p>
 </div>
 
 <h3>What the numbers say</h3>

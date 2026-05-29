@@ -289,6 +289,11 @@ RICHARD II: what, thou hast thou know you are with death.</pre></div>
 <div class="gw-part"><div class="pt">Part 5 · do it yourself</div><h2>Run the real one on your Mac</h2></div>
 
 <p>The <code>course/minigpt/</code> folder has this exact model, sized for an overnight run on <strong>TinyStories</strong> — a dataset engineered so a ~30M model writes <em>coherent</em> little stories:</p>
+
+<div class="callout info">
+  <strong>This part is watch / optional — you don't have to run it to finish the course.</strong> The <em>ideas</em> matter more than typing the commands. If you want to try it, you'll need a <strong>terminal</strong> (the text window where you type commands), <strong>Python 3</strong>, and the project's <strong>virtual environment</strong> (a "venv" — a tidy private box that holds the exact tools this project needs) switched on. If you've never opened a terminal, this is a perfect thing to do <em>with</em> an adult or someone who has. It downloads a few hundred MB and the training can run for a while, so it's fine to leave it going overnight. The text it writes back will be rough and a bit silly — that's completely normal at this tiny scale.
+</div>
+
 <pre class="gw-code"><span class="c"># from the course/minigpt folder</span>
 PY="../../.venv/bin/python"
 $PY data.py tinystories --mb 200            <span class="c"># download + BPE-tokenize ~200 MB</span>

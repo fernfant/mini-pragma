@@ -125,7 +125,7 @@ saved as answer (label):                  <span style="background:#10b981;color:
 
 <p>The <code>&lt;mask&gt;</code> is a real word in our vocabulary (a placeholder we added on purpose — id <code>1</code> in our 8-word vocab). The model knows position 2 exists, sees the placeholder, and has to guess what was there using <strong>only the surrounding words</strong>. It never sees <code>sat</code> during the forward pass.</p>
 
-<p><strong>To answer Fernando's son's question directly:</strong></p>
+<p><strong>So, to answer the two things everyone asks about masking:</strong></p>
 <ul>
   <li><strong>Yes — the hidden word becomes the label (the y).</strong> We save it aside and grade the model against it. Exact same role as <code>y_true</code> in Lesson 1's regression.</li>
   <li><strong>No — attention does not depend on the mask position in a special way.</strong> Attention always looks at every word's vector. The model produces a guess at <em>every</em> position; we only score it at the masked one.</li>
@@ -674,7 +674,7 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 <p>In Lesson 1.5 you walked the word <code>dog</code> through 18 layers and watched its "knowledge bundle" fill up. Now let's do the same thing for a <strong>whole sentence you choose</strong> — and instead of filling in a blank, we'll do the trick that makes ChatGPT feel alive: <strong>predict the very next word</strong>, then add it, then predict again, then again… until the model has written a sentence on its own.</p>
 
 <div class="callout info">
-  <strong>Two flavours of the same machine.</strong> BERT (and our mini-BERT) usually plays <em>fill-in-the-blank</em> — it can peek at words on both sides of the gap. ChatGPT plays <em>predict-the-next-word</em> — it only sees the words <em>before</em> the gap, so it can keep going forever. <strong>The pipeline is identical</strong> (embed → attention → feed-forward → head → softmax). The only change is <em>where the blank is</em>: in the middle (BERT) or always at the end (ChatGPT). Below we run the next-word version so you can watch it write.
+  <strong>Two flavours of the same machine.</strong> BERT (and our mini-BERT) plays <em>fill-in-the-blank</em> — every word is allowed to peek at the words on <em>both</em> sides of the gap. ChatGPT plays <em>predict-the-next-word</em> — each word is only allowed to peek at the words <em>before</em> it, never the ones ahead, so it can keep going forever. <strong>The pipeline is identical</strong> (embed → attention → feed-forward → head → softmax). The one real change is a rule inside attention called the <strong>causal mask</strong>: it blindfolds every word to everything on its right. (It's <em>not</em> just "the blank is at the end" — it's that no word is ever allowed to look ahead.) You'll see that mask up close in <a href="lesson_04f.html">L4f</a>; below we run the next-word version so you can watch it write.
 </div>
 
 <p>Pick a starter, then press <strong>Next ▶</strong> to follow your words through every stage of the model. At the end you'll see its top guesses for the next word — and you can <strong>accept a word and let it keep writing</strong>.</p>
