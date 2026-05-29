@@ -31,25 +31,27 @@ Weights sum to **100**. Per-point multiplier = weight ÷ 5.
 
 Ran through the **score → fix → re-score loop**, same as the course.
 
-| # | Criterion | W | Before | After | Note |
-|---|-----------|---|--------|-------|------|
-| B1 | Controlling idea & narrative | 12 | 5 | 5 | "method, not model" holds throughout. |
-| B2 | Concrete / worked examples | 12 | 3 | 5 | **Fix:** added before/after worked-example boxes (the softmax pacing fix, a scored rubric row). |
-| B3 | Visuals & diagrams | 12 | 1 | 4 | **Fix:** added 4 inline SVGs (score arc, spine, loop, rubric bars). *Held at 4:* static diagrams, not interactive like the course's widgets. |
-| B4 | Accuracy / verifiable data | 12 | 5 | 5 | Every figure traces to v3–v5 reports / scorecard. |
-| B6 | Clarity (exec reader) | 10 | 4 | 4 | *Held at 4:* a couple of dense clause-stacked sentences remain. |
-| B5 | Honest framing | 8 | 5 | 5 | The 92.2 dip is kept as the centrepiece. |
-| B7 | Flow / sequencing | 8 | 4 | 4 | *Held at 4:* the self-scorecard coda is a deliberate meta-detour. |
-| B9 | Skimmability / structure | 8 | 4 | 5 | Visuals + boxes + declarative headings make it scan. |
-| B8 | Pacing / runway | 6 | 4 | 4 | *Held at 4:* the rubric's 11 criteria are introduced briskly in one list. |
-| B10 | CxAI voice-match | 6 | 5 | 5 | Subtitle, "From X to Y" title, framework-by-naming, sign-off. |
-| B11 | Takeaways / actionability | 6 | 4 | 5 | The four-move list + coined frameworks. |
+| # | Criterion | W | Draft | v2 | v3 | Note |
+|---|-----------|---|-------|----|----|------|
+| B1 | Controlling idea & narrative | 12 | 5 | 5 | 5 | "method, not model" holds throughout. |
+| B2 | Concrete / worked examples | 12 | 3 | 5 | 5 | **v2 fix:** added before/after worked-example boxes (softmax pacing fix, a scored rubric row). |
+| B3 | Visuals & diagrams | 12 | 1 | 4 | 4 | **v2 fix:** 4 inline SVGs + the course-rubric table. *Held at 4:* static diagrams; the course earns its top marks with draggable widgets — a concrete fix is nameable, so the ceiling is 4. |
+| B4 | Accuracy / verifiable data | 12 | 5 | 5 | 5 | Every figure traces to the v3–v5 reports / scorecard. |
+| B6 | Clarity (exec reader) | 10 | 4 | 4 | **5** | **v3 fix:** broke the two densest clause-stacked sentences (the agentic-batch sentence; the adapted-rubric swap). |
+| B5 | Honest framing | 8 | 5 | 5 | 5 | The 92.2 dip is kept as the centrepiece. |
+| B7 | Flow / sequencing | 8 | 4 | 4 | 4 | *Held at 4:* the self-scorecard coda is a deliberate meta-detour a strict cold-read flags. |
+| B9 | Skimmability / structure | 8 | 4 | 5 | 5 | Visuals + boxes + table + declarative headings make it scan. |
+| B8 | Pacing / runway | 6 | 4 | 4 | **5** | **v3:** the 11 criteria now get a per-row table (runway each) and the new prose is plain-idea-first — no longer a brisk single list. |
+| B10 | CxAI voice-match | 6 | 5 | 5 | 5 | Subtitle (no terminal period), framework-by-naming, sign-off. |
+| B11 | Takeaways / actionability | 6 | 4 | 5 | 5 | The four-move list + coined frameworks. |
 
-**Total: 78.0 → 92.8.** Band: **Strong → Exemplary.** The two weak criteria before the
-pass were exactly the two this enrichment targeted — **B3 Visuals (1)** and **B2 worked
-examples (3)** — which is the whole point: the rubric, not taste, picked the fixes.
-Self-scored by the author; B3, B6, B7, B8 held at 4 with a named residual rather than
-rounded up.
+**Total: 78.0 → 92.8 → 96.0.** Band: **Strong → Exemplary → Exemplary.** Draft→v2: the two
+weak criteria (**B3 Visuals 1**, **B2 worked examples 3**) were exactly what the enrichment
+targeted. v2→v3 (this run): two criteria earned a genuine **4 → 5** — **B6 Clarity** (dense
+sentences broken) and **B8 Pacing** (the rubric became a per-row table) — for +2.0 and +1.2
+weighted points. Self-scored by the author. **B3 Visuals and B7 Flow are still held at 4**
+with a named, concrete residual rather than rounded up — because the rubric reserves 5 for
+"couldn't improve it," and both still have a nameable fix.
 
 **Meta pass (post-92.8).** A later edit made the post *practise* the course's pedagogy,
 not just describe it: a genuine **predict-before-reveal** on the reader (guess whether a

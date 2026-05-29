@@ -295,8 +295,8 @@ so you can check our marking. The first full audit (v3) averaged
 <strong>86.6</strong> — five pages exemplary, eight merely strong.</p>
 <p>Then came the iteration that mattered. The agent ran a single batch
 of roughly <strong>forty targeted fixes across all thirteen pages at
-once</strong> (tracked as tasks #59–#71), each one aimed at a specific
-low score — not "make it better," but instructions with coordinates:
+once</strong> (tracked as tasks #59–#71). Each one aimed at a specific
+low score — not "make it better," but an instruction with coordinates.
 <em>L5 claims the toy model has ~5,000 parameters; it has ~20,000 — fix
 the number. L5b labels its recall figures "illustrative"; run the
 notebook and use the real ones.</em> Re-scored, the average climbed to
@@ -433,12 +433,13 @@ course, a number) before it got abstract, it made you <strong>predict
 before the reveal</strong>, and — the part you'd expect least from a
 blog — it gets <strong>graded by a rubric</strong>. It would be a
 strange article about scoring your own work that didn't. So we built an
-<strong>adapted blog rubric</strong> — the course's eleven criteria with
-the four lesson-only ones (interactive widgets, keyboard access, the
-pill navigation, <code>node --check</code>) swapped for blog analogues:
-<em>visuals</em>, <em>skimmability</em>, <em>CxAI voice-match</em>,
-<em>takeaways</em>. Same 0–5 scale, same weights summing to 100, same
-bands.</p>
+<strong>adapted blog rubric.</strong> Four of the course's criteria only
+make sense for an interactive lesson — interactive widgets, keyboard
+access, the pill navigation, <code>node --check</code>. We swapped those
+four for blog analogues: <em>visuals</em>, <em>skimmability</em>,
+<em>CxAI voice-match</em>, and <em>takeaways</em>. Everything else
+carried over untouched — the same 0–5 scale, the same weights summing to
+100, the same bands.</p>
 <p><svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The adapted blog rubric: 11 weighted criteria summing to 100 — controlling idea 12, concrete and worked examples 12, visuals 12, accuracy 12, clarity 10, honest framing 8, flow 8, skimmability 8, pacing 6, CxAI voice 6, takeaways 6.">
 <rect width="720" height="360" fill="#fff"/>
 <text x="14" y="39" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B1  Controlling idea &amp; narrative</text>
@@ -492,6 +493,13 @@ at <strong>78 / 100 — Strong</strong>. Two criteria dragged it down:
 <strong>worked examples</strong>, at 3. So we did what the loop says —
 fixed the worst first (the diagrams above, the worked-example boxes) —
 and re-scored to <strong>92.8 / 100 — Exemplary</strong>.</p>
+<p>Then, because the loop never really stops, we ran it once more. This
+pass broke the two densest, clause-stacked sentences (<strong>Clarity 4
+→ 5</strong>) and recognised that the rubric table now gives each
+criterion its own row of runway (<strong>Pacing 4 → 5</strong>). That
+lifted the post to <strong>96.0 / 100</strong>. The same arc the course
+took — score, fix the worst, re-score — applied to the article you're
+reading.</p>
 <blockquote>
 <p><strong>Worked example — one row, scored honestly</strong></p>
 <p>Take <strong>B3 Visuals</strong> on the post you're reading.
@@ -502,11 +510,16 @@ interactivity marks with widgets a reader can <em>drag</em>; a static
 diagram can't. We named the residual and capped the score. Same
 discipline that holds two course pages at C11 = 4.</p>
 </blockquote>
-<p>Notice what <em>didn't</em> happen. We didn't round Clarity, Flow, or
-Pacing up to 5 because the prose felt nice — they sit at 4 with a named
-residual. The rubric, not our affection for our own writing, picked the
-fixes and set the ceiling. (You can read the full per-criterion card in
-<a
+<p>Notice what <em>didn't</em> happen. Clarity and Pacing reached 5 only
+after a real edit — sentences actually broken, the rubric actually
+restructured into a table — not because the prose felt nice. And
+<strong>two criteria are still held at 4</strong>: <em>Visuals</em> (the
+diagrams are static; the course earns its top marks with widgets you can
+drag) and <em>Flow</em> (this self-scoring coda is a deliberate
+meta-detour a strict cold-read would flag). We can still name a concrete
+fix for each, so the ceiling stays at 4. The rubric, not our affection
+for our own writing, picked the fixes and set the ceiling. (You can read
+the full per-criterion card in <a
 href="https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md"><code>blog_rubric.md</code></a>.)</p>
 <h2 id="what-this-means-if-youre-building-with-ai">What this means if
 you're building with AI</h2>

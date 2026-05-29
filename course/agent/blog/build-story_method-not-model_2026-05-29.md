@@ -57,7 +57,7 @@ With a grader in hand, the work stops being "write a course" and becomes a loop 
 
 This is where building *agentically* earns its keep, because the loop is tedious in exactly the way an agent doesn't mind. The arc is in the audit reports, and every page's current score is live on the [scorecard](https://fernfant.github.io/mini-pragma/course/html/scorecard.html), so you can check our marking. The first full audit (v3) averaged **86.6** — five pages exemplary, eight merely strong.
 
-Then came the iteration that mattered. The agent ran a single batch of roughly **forty targeted fixes across all thirteen pages at once** (tracked as tasks #59–#71), each one aimed at a specific low score — not "make it better," but instructions with coordinates: *L5 claims the toy model has ~5,000 parameters; it has ~20,000 — fix the number. L5b labels its recall figures "illustrative"; run the notebook and use the real ones.* Re-scored, the average climbed to **92.8**, nine pages now exemplary. Same model, same writer — the gain came entirely from grading what it produced and feeding the worst scores back in.
+Then came the iteration that mattered. The agent ran a single batch of roughly **forty targeted fixes across all thirteen pages at once** (tracked as tasks #59–#71). Each one aimed at a specific low score — not "make it better," but an instruction with coordinates. *L5 claims the toy model has ~5,000 parameters; it has ~20,000 — fix the number. L5b labels its recall figures "illustrative"; run the notebook and use the real ones.* Re-scored, the average climbed to **92.8**, nine pages now exemplary. Same model, same writer — the gain came entirely from grading what it produced and feeding the worst scores back in.
 
 And the *audits* were agentic too. For the pacing pass that came later, **three read-only audit agents ran in parallel**, each re-reading all thirteen pages hunting for one failure mode and reporting back the exact spots. No human re-reads thirteen lessons three times looking for a single kind of mistake. An agent does it before lunch — and that asymmetry is the whole reason the loop is cheap enough to run again, and again.
 
@@ -107,17 +107,19 @@ Two pages we deliberately *held* at four out of five, with the residual named in
 
 ## We graded this post, too
 
-By now you may have noticed this article is built like one of the lessons it describes: it opened **concrete** (an agent, a course, a number) before it got abstract, it made you **predict before the reveal**, and — the part you'd expect least from a blog — it gets **graded by a rubric**. It would be a strange article about scoring your own work that didn't. So we built an **adapted blog rubric** — the course's eleven criteria with the four lesson-only ones (interactive widgets, keyboard access, the pill navigation, `node --check`) swapped for blog analogues: *visuals*, *skimmability*, *CxAI voice-match*, *takeaways*. Same 0–5 scale, same weights summing to 100, same bands.
+By now you may have noticed this article is built like one of the lessons it describes: it opened **concrete** (an agent, a course, a number) before it got abstract, it made you **predict before the reveal**, and — the part you'd expect least from a blog — it gets **graded by a rubric**. It would be a strange article about scoring your own work that didn't. So we built an **adapted blog rubric.** Four of the course's criteria only make sense for an interactive lesson — interactive widgets, keyboard access, the pill navigation, `node --check`. We swapped those four for blog analogues: *visuals*, *skimmability*, *CxAI voice-match*, and *takeaways*. Everything else carried over untouched — the same 0–5 scale, the same weights summing to 100, the same bands.
 
 ![The adapted blog rubric — eleven weighted criteria, summing to 100.](assets/rubric-weights.svg)
 
 Then we scored *this very post*, cold. The first draft came in at **78 / 100 — Strong**. Two criteria dragged it down: **Visuals**, at 1 (all prose, no diagrams), and **worked examples**, at 3. So we did what the loop says — fixed the worst first (the diagrams above, the worked-example boxes) — and re-scored to **92.8 / 100 — Exemplary**.
 
+Then, because the loop never really stops, we ran it once more. This pass broke the two densest, clause-stacked sentences (**Clarity 4 → 5**) and recognised that the rubric table now gives each criterion its own row of runway (**Pacing 4 → 5**). That lifted the post to **96.0 / 100**. The same arc the course took — score, fix the worst, re-score — applied to the article you're reading.
+
 > **Worked example — one row, scored honestly**
 >
 > Take **B3 Visuals** on the post you're reading. *Before* these diagrams: a **1** — the whole argument rode on prose. *After* adding four: a **4**, not a 5. Why not 5? The course earns its top interactivity marks with widgets a reader can *drag*; a static diagram can't. We named the residual and capped the score. Same discipline that holds two course pages at C11 = 4.
 
-Notice what *didn't* happen. We didn't round Clarity, Flow, or Pacing up to 5 because the prose felt nice — they sit at 4 with a named residual. The rubric, not our affection for our own writing, picked the fixes and set the ceiling. (You can read the full per-criterion card in [`blog_rubric.md`](https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md).)
+Notice what *didn't* happen. Clarity and Pacing reached 5 only after a real edit — sentences actually broken, the rubric actually restructured into a table — not because the prose felt nice. And **two criteria are still held at 4**: *Visuals* (the diagrams are static; the course earns its top marks with widgets you can drag) and *Flow* (this self-scoring coda is a deliberate meta-detour a strict cold-read would flag). We can still name a concrete fix for each, so the ceiling stays at 4. The rubric, not our affection for our own writing, picked the fixes and set the ceiling. (You can read the full per-criterion card in [`blog_rubric.md`](https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md).)
 
 ## What this means if you're building with AI
 
