@@ -46,7 +46,7 @@ That's the mechanism most "AI writes your content" demos skip. The first draft i
 
 Two house techniques carry most of the pedagogical weight, and both are things the rubric explicitly rewards.
 
-The first is **predict-before-reveal.** Before showing any result, the page asks the reader to guess. The "🤔 good guess — here's what actually happens" beat is where understanding lodges, and when two pages tie in score, the one with a genuine prediction at the key moment ranks higher. It's the course's signature move, and it's baked into the grader so the agent can't forget it.
+The first is **predict-before-reveal.** Before showing any result, the page asks the reader to guess. The "🤔 good guess — here's what actually happens" beat is where understanding lodges, and when two pages tie in score, the one with a genuine prediction at the key moment ranks higher. It's the course's signature move, and it's baked into the grader so the agent can't forget it. (Keep it in mind — a few paragraphs from now, we're going to use it on *you*.)
 
 The second is the **honest-failure arc** — "it got worse, here's why." When a change makes accuracy *drop*, we teach the drop instead of hiding it. A real attention regression in one lesson is presented as a regression, then explained. This is a pedagogical choice, but it's also the project's ethic, and — as you're about to see — we held ourselves to it too.
 
@@ -62,7 +62,13 @@ And now the wrinkle — because a flawless arc would be exactly the kind of dish
 
 A human read the course and said something the rubric, in all its ten-criteria precision, had missed: *concepts are introduced too fast.* Not wrong, not out of order, not unclear sentence-by-sentence — just named and used in the same breath, with no micro-example in between. None of the existing criteria caught it. So we added an eleventh, **C11 Pacing**, defined tightly: does each genuinely new, load-bearing concept get real runway — *plain idea → name → micro-example → use* — or does it land all at once?
 
-We carved C11's eight points out of the most over-weighted criteria (interactivity dropped from 16 to 12) so the total still summed to 100. Then we re-scored. And the average **went down** — to **92.2** — because the new, stricter ruler immediately found nine pages with a real pacing gap.
+We carved C11's eight points out of the most over-weighted criteria (interactivity dropped from 16 to 12) so the total still summed to 100. Then we re-scored.
+
+> **🤔 Predict before you read on.** A stricter eleventh criterion has just been added to the rubric. The thirteen pages haven't changed — only the ruler has. So what happened to the average score: up, down, or flat?
+>
+> *Take the guess. The course makes thirteen-year-olds commit to an answer before the reveal; an executive can manage the same.*
+
+If you guessed **down**, you've internalised the whole point of this post. The average **fell** — to **92.2** — because the new, stricter ruler immediately found nine pages with a real pacing gap. (And that guess you just made? That was *predict-before-reveal*. You've now taken the course.)
 
 That drop is the most honest number in the whole project. It's what a sharper standard is *supposed* to do: surface problems the old standard was blind to. We found the nine spots, fixed each one, and re-scored a final time to **93.2**, nine pages exemplary again. Here's one of those fixes, in full:
 
@@ -80,7 +86,7 @@ Two pages we deliberately *held* at four out of five, with the residual named in
 
 ## We graded this post, too
 
-It would be a strange article about scoring your own work that didn't. So we built an **adapted blog rubric** — the course's eleven criteria with the four lesson-only ones (interactive widgets, keyboard access, the pill navigation, `node --check`) swapped for blog analogues: *visuals*, *skimmability*, *CxAI voice-match*, *takeaways*. Same 0–5 scale, same weights summing to 100, same bands.
+By now you may have noticed this article is built like one of the lessons it describes: it opened **concrete** (an agent, a course, a number) before it got abstract, it made you **predict before the reveal**, and — the part you'd expect least from a blog — it gets **graded by a rubric**. It would be a strange article about scoring your own work that didn't. So we built an **adapted blog rubric** — the course's eleven criteria with the four lesson-only ones (interactive widgets, keyboard access, the pill navigation, `node --check`) swapped for blog analogues: *visuals*, *skimmability*, *CxAI voice-match*, *takeaways*. Same 0–5 scale, same weights summing to 100, same bands.
 
 ![The adapted blog rubric — eleven weighted criteria, summing to 100.](assets/rubric-weights.svg)
 

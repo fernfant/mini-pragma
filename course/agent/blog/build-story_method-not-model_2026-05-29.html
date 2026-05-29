@@ -57,18 +57,18 @@
 <p>A coding agent wrote a <a
 href="https://fernfant.github.io/mini-pragma/course/html/index.html">thirteen-lesson
 course on how Transformers work</a> — the real machinery behind BERT,
-GPT, and Revolut’s PRAGMA — pitched at a curious thirteen-year-old. It
+GPT, and Revolut's PRAGMA — pitched at a curious thirteen-year-old. It
 did it fast. Static HTML, no build step, interactive widgets, a running
-example carried from “a computer can’t read, it only does math on
-numbers” all the way to a fine-tuned model. Impressive. Then came the
+example carried from "a computer can't read, it only does math on
+numbers" all the way to a fine-tuned model. Impressive. Then came the
 uncomfortable question, the one every team shipping AI-generated content
 eventually has to answer out loud:</p>
 <p><strong>Is it any good?</strong></p>
-<p>Not “does it run.” Not “does it look finished.” Is it
+<p>Not "does it run." Not "does it look finished." Is it
 <em>honest</em>, is it <em>clear</em>, would a kid actually learn from
 it — and how would we know, across thirteen pages, without simply
 reading each one and nodding along? That question is the whole story.
-Because the thing that made this course defensible wasn’t the model that
+Because the thing that made this course defensible wasn't the model that
 wrote it. It was the method we wrapped around the model. This is that
 method.</p>
 <h2 id="the-bet-learn-by-doing-taught-by-a-machine">The bet: learn by
@@ -81,11 +81,11 @@ algebra, and no jargon assumed. The house bet is one line: <strong>you
 learn more in 30 seconds of playing than 5 minutes of reading.</strong>
 Every page has something to click, drag, slide, or run. A page that is
 all prose is, by our own rule, a <em>failing</em> page.</p>
-<p>That bet matters here because it’s exactly the kind of standard an AI
+<p>That bet matters here because it's exactly the kind of standard an AI
 writer will quietly violate. Models love prose. They will happily
 generate four tidy paragraphs explaining attention and call it a lesson.
 Holding the line against that — page after page — is not a writing
-problem. It’s a <em>measurement</em> problem.</p>
+problem. It's a <em>measurement</em> problem.</p>
 <h2
 id="structure-is-a-product-decision-not-a-table-of-contents">Structure
 is a product decision, not a table of contents</h2>
@@ -93,17 +93,16 @@ is a product decision, not a table of contents</h2>
 linear spine of thirteen steps</strong>: text → ids → vectors →
 attention → a guess → fine-tuning. The same example sentence transforms
 across lessons, so the reader sees continuity instead of a new toy each
-time. Pagination is reciprocal — every page’s <em>Next</em> matches the
-following page’s <em>Prev</em> — so nobody falls off the path. Genuinely
+time. Pagination is reciprocal — every page's <em>Next</em> matches the
+following page's <em>Prev</em> — so nobody falls off the path. Genuinely
 optional material (side-quests, code walkthroughs) is reachable but kept
 <em>off</em> the spine, clearly labelled, never blocking the main
 route.</p>
-<p>This sounds like housekeeping. It isn’t. The spine is what lets you
-say “step 7 builds on step 6” and mean it — and it’s what lets a
+<p>This sounds like housekeeping. It isn't. The spine is what lets you
+say "step 7 builds on step 6" and mean it — and it's what lets a
 reviewer, human or machine, check that claim mechanically. A wandering
-course can’t be graded. A spine can.</p>
-<figure>
-<svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The course spine: one running example flows through six stages — text, ids, vectors, attention, a guess, fine-tune — across 13 steps.">
+course can't be graded. A spine can.</p>
+<p><svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The course spine: one running example flows through six stages — text, ids, vectors, attention, a guess, fine-tune — across 13 steps.">
 <rect width="720" height="120" fill="#fff"/>
 <rect x="16.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
 <text x="68.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">text</text>
@@ -128,10 +127,7 @@ course can’t be graded. A spine can.</p>
 <rect x="600.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
 <text x="652.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">fine-tune</text>
 <text x="360" y="104" text-anchor="middle" fill="#6b6b6b" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">One running example · 13 linear steps · reciprocal Prev/Next</text>
-</svg>
-<figcaption aria-hidden="true">One running example, thirteen linear
-steps — from text to a fine-tuned model.</figcaption>
-</figure>
+</svg></p>
 <h2 id="the-real-product-was-the-rubric">The real product was the
 rubric</h2>
 <p>Here is the part nobody warns you about: when your writer is an
@@ -139,8 +135,8 @@ agent, <strong>the writer is not the bottleneck. The grader
 is.</strong></p>
 <p>So we wrote the grader first. Two artifacts sit upstream of every
 lesson. The <strong>principles doc</strong> says what a good page
-<em>is</em> — concrete before abstract, every term earned before it’s
-named, analogies that don’t have to be un-learned later, every cited
+<em>is</em> — concrete before abstract, every term earned before it's
+named, analogies that don't have to be un-learned later, every cited
 number traceable to the companion code. And a <strong>scored
 rubric</strong> turns those principles into something you can argue
 with: each page scored 0–5 on a set of weighted criteria, summed to a
@@ -156,19 +152,18 @@ design choice in the whole project was this: <strong>we built the
 scoring rubric before we trusted the writer.</strong> The rubric is the
 source of truth. The lessons are just the current best attempt to
 satisfy it.</p>
-<p>If your team is shipping AI-generated anything and you don’t have
-this artifact — the explicit, weighted definition of “good” that exists
-<em>independently</em> of the output — you don’t have a quality process.
+<p>If your team is shipping AI-generated anything and you don't have
+this artifact — the explicit, weighted definition of "good" that exists
+<em>independently</em> of the output — you don't have a quality process.
 You have vibes and a fast typist.</p>
-<h2 id="the-loop-score-fix-re-score">The loop: score → fix →
+<h2 id="the-loop-score--fix--re-score">The loop: score → fix →
 re-score</h2>
 <p>With a grader in hand, the work becomes a loop, and the loop has a
 name: <strong>score → fix → re-score.</strong> Read every page cold,
 score each criterion against the rubric, rank worst-first, fix the
 lowest-leverage failures, then score again. Repeat until the number
 stops moving.</p>
-<figure>
-<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The score, fix, re-score loop: read and score every page, fix the worst, then score again — repeat until the number stops moving.">
+<p><svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The score, fix, re-score loop: read and score every page, fix the worst, then score again — repeat until the number stops moving.">
 <rect width="460" height="230" fill="#fff"/>
 <path d="M 300 70 A 120 120 0 0 1 330 150" fill="none" stroke="#b9410a" stroke-width="2.5"/>
 <polygon points="333,143 336,156 324,152" fill="#b9410a"/>
@@ -187,11 +182,8 @@ stops moving.</p>
 <text x="100" y="164" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">check the delta</text>
 <text x="230" y="120" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">until the number</text>
 <text x="230" y="134" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">stops moving</text>
-</svg>
-<figcaption aria-hidden="true">The loop that turns a draft into a
-product — score, fix the worst, re-score, repeat.</figcaption>
-</figure>
-<p>The arc is in the audit reports — and every page’s current score is
+</svg></p>
+<p>The arc is in the audit reports — and every page's current score is
 live on the <a
 href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">scorecard</a>,
 so you can check our marking. The first full pass (v3) averaged
@@ -200,7 +192,7 @@ targeted batch later (v4), the average climbed to <strong>92.8</strong>,
 with nine pages exemplary. Same model. Same writer. The gain came
 entirely from grading what it produced and feeding the worst scores back
 in.</p>
-<p>That’s the mechanism most “AI writes your content” demos skip. The
+<p>That's the mechanism most "AI writes your content" demos skip. The
 first draft is never the product. <strong>The loop is the
 product</strong>, and the rubric is what closes it.</p>
 <h2 id="the-moves-that-make-learning-stick">The moves that make learning
@@ -208,36 +200,37 @@ stick</h2>
 <p>Two house techniques carry most of the pedagogical weight, and both
 are things the rubric explicitly rewards.</p>
 <p>The first is <strong>predict-before-reveal.</strong> Before showing
-any result, the page asks the reader to guess. The “🤔 good guess —
-here’s what actually happens” beat is where understanding lodges, and
+any result, the page asks the reader to guess. The "🤔 good guess —
+here's what actually happens" beat is where understanding lodges, and
 when two pages tie in score, the one with a genuine prediction at the
-key moment ranks higher. It’s the course’s signature move, and it’s
-baked into the grader so the agent can’t forget it.</p>
-<p>The second is the <strong>honest-failure arc</strong> — “it got
-worse, here’s why.” When a change makes accuracy <em>drop</em>, we teach
+key moment ranks higher. It's the course's signature move, and it's
+baked into the grader so the agent can't forget it. (Keep it in mind — a
+few paragraphs from now, we're going to use it on <em>you</em>.)</p>
+<p>The second is the <strong>honest-failure arc</strong> — "it got
+worse, here's why." When a change makes accuracy <em>drop</em>, we teach
 the drop instead of hiding it. A real attention regression in one lesson
 is presented as a regression, then explained. This is a pedagogical
-choice, but it’s also the project’s ethic, and — as you’re about to see
+choice, but it's also the project's ethic, and — as you're about to see
 — we held ourselves to it too.</p>
-<h2 id="the-agent-doesnt-get-bored.-thats-the-asset-and-the-risk.">The
-agent doesn’t get bored. That’s the asset and the risk.</h2>
-<p>There’s a reason this method works better with a machine than it ever
-did with a tired human team: <strong>the agent doesn’t get
+<h2 id="the-agent-doesnt-get-bored-thats-the-asset-and-the-risk">The
+agent doesn't get bored. That's the asset and the risk.</h2>
+<p>There's a reason this method works better with a machine than it ever
+did with a tired human team: <strong>the agent doesn't get
 bored.</strong> It will re-read all thirteen pages on the eleventh pass
 with exactly as much care as the first. It will touch fifteen files to
 fix one cross-reference. The maintenance burden that kills human-run
-quality processes — the bookkeeping, the consistency checks, the “did we
-update that everywhere” — costs the agent almost nothing.</p>
-<p>That’s the asset. The risk is the same sentence read the other way:
+quality processes — the bookkeeping, the consistency checks, the "did we
+update that everywhere" — costs the agent almost nothing.</p>
+<p>That's the asset. The risk is the same sentence read the other way:
 an agent that never gets bored also never gets <em>suspicious</em>. It
-won’t wrinkle its nose at a number that smells wrong. So we made
+won't wrinkle its nose at a number that smells wrong. So we made
 suspicion mechanical. Every cited figure must trace to the companion
 notebook — the recall and precision numbers in the <a
 href="https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html">streaming-churn
 lesson</a> are computed, not asserted. Every inline script must pass
 <code>node --check</code>. Every widget must be keyboard-operable with
 visible focus; every figure must carry a text equivalent. Verification
-isn’t a final step. It’s a gate the loop runs through every time.</p>
+isn't a final step. It's a gate the loop runs through every time.</p>
 <h2 id="when-a-stricter-ruler-makes-the-score-go-down">When a stricter
 ruler makes the score go down</h2>
 <p>And now the wrinkle — because a flawless arc would be exactly the
@@ -250,20 +243,32 @@ between. None of the existing criteria caught it. So we added an
 eleventh, <strong>C11 Pacing</strong>, defined tightly: does each
 genuinely new, load-bearing concept get real runway — <em>plain idea →
 name → micro-example → use</em> — or does it land all at once?</p>
-<p>We carved C11’s eight points out of the most over-weighted criteria
+<p>We carved C11's eight points out of the most over-weighted criteria
 (interactivity dropped from 16 to 12) so the total still summed to 100.
-Then we re-scored. And the average <strong>went down</strong> — to
+Then we re-scored.</p>
+<blockquote>
+<p><strong>🤔 Predict before you read on.</strong> A stricter eleventh
+criterion has just been added to the rubric. The thirteen pages haven't
+changed — only the ruler has. So what happened to the average score: up,
+down, or flat?</p>
+<p><em>Take the guess. The course makes thirteen-year-olds commit to an
+answer before the reveal; an executive can manage the same.</em></p>
+</blockquote>
+<p>If you guessed <strong>down</strong>, you've internalised the whole
+point of this post. The average <strong>fell</strong> — to
 <strong>92.2</strong> — because the new, stricter ruler immediately
-found nine pages with a real pacing gap.</p>
-<p>That drop is the most honest number in the whole project. It’s what a
+found nine pages with a real pacing gap. (And that guess you just made?
+That was <em>predict-before-reveal</em>. You've now taken the
+course.)</p>
+<p>That drop is the most honest number in the whole project. It's what a
 sharper standard is <em>supposed</em> to do: surface problems the old
 standard was blind to. We found the nine spots, fixed each one, and
 re-scored a final time to <strong>93.2</strong>, nine pages exemplary
-again. Here’s one of those fixes, in full:</p>
+again. Here's one of those fixes, in full:</p>
 <blockquote>
 <p><strong>Worked example — a pacing fix, before and after</strong></p>
 <p><em>Before (named in passing):</em> the lesson listed the
-nonlinearities — “ReLU, GELU, softmax” — and moved on. A
+nonlinearities — "ReLU, GELU, softmax" — and moved on. A
 thirteen-year-old just met <em>softmax</em> and watched it leave the
 room.</p>
 <p><em>After (named, then shown):</em> softmax turns a list of scores
@@ -274,8 +279,7 @@ into probabilities. Feed it <code>[2, 1, 0]</code> and it returns
 difference between <strong>C11 = 4</strong> and <strong>C11 =
 5</strong>.</p>
 </blockquote>
-<figure>
-<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of the course average across versions: 86.6 at v3, 92.8 at v4, dipping to 92.2 when an 11th criterion was added, recovering to 93.2 after the pacing fixes.">
+<p><svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of the course average across versions: 86.6 at v3, 92.8 at v4, dipping to 92.2 when an 11th criterion was added, recovering to 93.2 after the pacing fixes.">
 <rect width="720" height="270" fill="#fff"/>
 <line x1="90" y1="112.0" x2="660" y2="112.0" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="5 4"/>
 <text x="660" y="104.0" text-anchor="end" fill="#2e7d32" font-size="12" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Exemplary ≥ 90</text>
@@ -296,10 +300,7 @@ difference between <strong>C11 = 4</strong> and <strong>C11 =
 <text x="660.0" y="40.4" text-anchor="middle" fill="#242424" font-size="15" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">93.2</text>
 <text x="660.0" y="245" text-anchor="middle" fill="#242424" font-size="13" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">v5</text>
 <text x="660.0" y="262" text-anchor="middle" fill="#6b6b6b" font-size="11" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">after pacing fixes</text>
-</svg>
-<figcaption aria-hidden="true">The honest arc — up, then down when the
-ruler got stricter, then up again.</figcaption>
-</figure>
+</svg></p>
 <p>Two pages we deliberately <em>held</em> at four out of five, with the
 residual named in writing rather than rounded up: one still hides its
 full explanation in a collapsed box, the other still introduces two
@@ -308,15 +309,19 @@ implementer, and the report says so. <strong>93.2 is a conservative,
 defensible average — not a ceiling we awarded ourselves.</strong>
 Honesty over polish, even in the scorecard.</p>
 <h2 id="we-graded-this-post-too">We graded this post, too</h2>
-<p>It would be a strange article about scoring your own work that
-didn’t. So we built an <strong>adapted blog rubric</strong> — the
-course’s eleven criteria with the four lesson-only ones (interactive
-widgets, keyboard access, the pill navigation,
-<code>node --check</code>) swapped for blog analogues: <em>visuals</em>,
-<em>skimmability</em>, <em>CxAI voice-match</em>, <em>takeaways</em>.
-Same 0–5 scale, same weights summing to 100, same bands.</p>
-<figure>
-<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The adapted blog rubric: 11 weighted criteria summing to 100 — controlling idea 12, concrete and worked examples 12, visuals 12, accuracy 12, clarity 10, honest framing 8, flow 8, skimmability 8, pacing 6, CxAI voice 6, takeaways 6.">
+<p>By now you may have noticed this article is built like one of the
+lessons it describes: it opened <strong>concrete</strong> (an agent, a
+course, a number) before it got abstract, it made you <strong>predict
+before the reveal</strong>, and — the part you'd expect least from a
+blog — it gets <strong>graded by a rubric</strong>. It would be a
+strange article about scoring your own work that didn't. So we built an
+<strong>adapted blog rubric</strong> — the course's eleven criteria with
+the four lesson-only ones (interactive widgets, keyboard access, the
+pill navigation, <code>node --check</code>) swapped for blog analogues:
+<em>visuals</em>, <em>skimmability</em>, <em>CxAI voice-match</em>,
+<em>takeaways</em>. Same 0–5 scale, same weights summing to 100, same
+bands.</p>
+<p><svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The adapted blog rubric: 11 weighted criteria summing to 100 — controlling idea 12, concrete and worked examples 12, visuals 12, accuracy 12, clarity 10, honest framing 8, flow 8, skimmability 8, pacing 6, CxAI voice 6, takeaways 6.">
 <rect width="720" height="360" fill="#fff"/>
 <text x="14" y="39" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B1  Controlling idea &amp; narrative</text>
 <rect x="270" y="26" width="410" height="16" rx="3" fill="#f2f2ef"/>
@@ -362,10 +367,7 @@ Same 0–5 scale, same weights summing to 100, same bands.</p>
 <rect x="270" y="326" width="410" height="16" rx="3" fill="#f2f2ef"/>
 <rect x="270" y="326" width="205.0" height="16" rx="3" fill="#b9410a"/>
 <text x="483.0" y="339" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
-</svg>
-<figcaption aria-hidden="true">The adapted blog rubric — eleven weighted
-criteria, summing to 100.</figcaption>
-</figure>
+</svg></p>
 <p>Then we scored <em>this very post</em>, cold. The first draft came in
 at <strong>78 / 100 — Strong</strong>. Two criteria dragged it down:
 <strong>Visuals</strong>, at 1 (all prose, no diagrams), and
@@ -374,28 +376,28 @@ fixed the worst first (the diagrams above, the worked-example boxes) —
 and re-scored to <strong>92.8 / 100 — Exemplary</strong>.</p>
 <blockquote>
 <p><strong>Worked example — one row, scored honestly</strong></p>
-<p>Take <strong>B3 Visuals</strong> on the post you’re reading.
+<p>Take <strong>B3 Visuals</strong> on the post you're reading.
 <em>Before</em> these diagrams: a <strong>1</strong> — the whole
 argument rode on prose. <em>After</em> adding four: a
 <strong>4</strong>, not a 5. Why not 5? The course earns its top
 interactivity marks with widgets a reader can <em>drag</em>; a static
-diagram can’t. We named the residual and capped the score. Same
+diagram can't. We named the residual and capped the score. Same
 discipline that holds two course pages at C11 = 4.</p>
 </blockquote>
-<p>Notice what <em>didn’t</em> happen. We didn’t round Clarity, Flow, or
+<p>Notice what <em>didn't</em> happen. We didn't round Clarity, Flow, or
 Pacing up to 5 because the prose felt nice — they sit at 4 with a named
 residual. The rubric, not our affection for our own writing, picked the
 fixes and set the ceiling. (You can read the full per-criterion card in
 <a
 href="https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md"><code>blog_rubric.md</code></a>.)</p>
 <h2 id="what-this-means-if-youre-building-with-ai">What this means if
-you’re building with AI</h2>
+you're building with AI</h2>
 <p>Strip away the Transformers and the thirteen-year-old, and the method
 generalises to any team putting AI-generated work in front of real
 people. Four moves:</p>
 <ol type="1">
 <li><strong>Write the rubric before you trust the writer.</strong> The
-explicit, weighted definition of “good” is the actual product. The
+explicit, weighted definition of "good" is the actual product. The
 output is a candidate.</li>
 <li><strong>Make the artifact verifiable.</strong> If a number can be
 computed, compute it. If a script can be checked, check it — every pass,
@@ -404,23 +406,23 @@ not once.</li>
 loop tirelessly; the human decides <em>what to measure.</em> C11 existed
 because a person noticed something no criterion did.</li>
 <li><strong>Let the loop, not the vibes, decide done.</strong> When the
-score stops climbing and you can’t name the next fix, you’re done. Not
+score stops climbing and you can't name the next fix, you're done. Not
 before.</li>
 </ol>
-<p>The model wrote the course. The method made it honest. Don’t confuse
-the two — and when a stricter ruler makes your numbers drop, that’s not
-a setback. That’s the ruler working.</p>
+<p>The model wrote the course. The method made it honest. Don't confuse
+the two — and when a stricter ruler makes your numbers drop, that's not
+a setback. That's the ruler working.</p>
 <h2 id="see-it-for-yourself">See it for yourself</h2>
-<p>Don’t take our word for it — the whole thing is public. Click around,
+<p>Don't take our word for it — the whole thing is public. Click around,
 break a widget, check our marking:</p>
 <ul>
 <li><strong><a
 href="https://fernfant.github.io/mini-pragma/course/html/index.html">Start
-the course →</a></strong> — the 13-step roadmap, from “a computer can’t
-read” to a fine-tuned model.</li>
+the course →</a></strong> — the 13-step roadmap, from "a computer can't
+read" to a fine-tuned model.</li>
 <li><strong><a
 href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">The
-live scorecard →</a></strong> — every page’s per-criterion scores,
+live scorecard →</a></strong> — every page's per-criterion scores,
 totals, and bands (current average <strong>93.2</strong>).</li>
 <li><strong><a
 href="https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html">The
@@ -430,6 +432,7 @@ numbers are computed, not asserted.</li>
 on GitHub →</a></strong> — the rubric, the audit reports, and all
 thirteen pages.</li>
 </ul>
+<p>Stay tuned! CxAI Team</p>
       <div class="signoff">Stay tuned! — CxAI Team</div>
     </div>
   </article>

@@ -50,3 +50,12 @@ pass were exactly the two this enrichment targeted — **B3 Visuals (1)** and **
 examples (3)** — which is the whole point: the rubric, not taste, picked the fixes.
 Self-scored by the author; B3, B6, B7, B8 held at 4 with a named residual rather than
 rounded up.
+
+**Meta pass (post-92.8).** A later edit made the post *practise* the course's pedagogy,
+not just describe it: a genuine **predict-before-reveal** on the reader (guess whether a
+stricter 11th criterion pushed the average up or down — it fell to 92.2), a one-line
+callback setting it up, and an explicit "this article is built like a lesson — concrete,
+predict-before-reveal, then graded" frame in the self-scorecard section. The device lands
+in **B2** and **B10**, both already at 5, so the total **holds at 92.8** — the meta move
+is qualitative, and the four held-at-4 residuals are still real. Honesty over polish: no
+score was nudged for feeling cleverer.
