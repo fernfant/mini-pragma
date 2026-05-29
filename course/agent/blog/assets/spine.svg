@@ -1,0 +1,26 @@
+<svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The course spine: one running example flows through six stages — text, ids, vectors, attention, a guess, fine-tune — across 13 steps.">
+<rect width="720" height="120" fill="#fff"/>
+<rect x="16.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="68.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">text</text>
+<line x1="122.3" y1="57" x2="130.5" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="130.5,52 138.5,57 130.5,62" fill="#b9410a"/>
+<rect x="132.8" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="184.8" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">ids</text>
+<line x1="239.1" y1="57" x2="247.3" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="247.3,52 255.3,57 247.3,62" fill="#b9410a"/>
+<rect x="249.6" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="301.6" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">vectors</text>
+<line x1="355.9" y1="57" x2="364.1" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="364.1,52 372.1,57 364.1,62" fill="#b9410a"/>
+<rect x="366.4" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="418.4" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">attention</text>
+<line x1="472.7" y1="57" x2="480.9" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="480.9,52 488.9,57 480.9,62" fill="#b9410a"/>
+<rect x="483.2" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="535.2" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">a guess</text>
+<line x1="589.5" y1="57" x2="597.7" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="597.7,52 605.7,57 597.7,62" fill="#b9410a"/>
+<rect x="600.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="652.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">fine-tune</text>
+<text x="360" y="104" text-anchor="middle" fill="#6b6b6b" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">One running example · 13 linear steps · reciprocal Prev/Next</text>
+</svg>

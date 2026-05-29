@@ -5,107 +5,54 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>From Blank Repo to 93/100 — CxAI</title>
 <style>
-  :root {
-    --ink: #1a1a1a;
-    --muted: #6b6b6b;
-    --rule: #e6e6e6;
-    --accent: #b9410a;
-    --bg: #ffffff;
-  }
+  :root { --ink:#1a1a1a; --muted:#6b6b6b; --rule:#e6e6e6; --accent:#b9410a; --accent-light:#f6e9e1; --bg:#ffffff; }
   * { box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; }
-  body {
-    margin: 0;
-    background: #f7f7f5;
-    color: var(--ink);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    line-height: 1.6;
-  }
-  .pub-header { border-bottom: 1px solid var(--rule); background: var(--bg); }
-  .pub-inner {
-    max-width: 1100px; margin: 0 auto; padding: 14px 24px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-  .pub-name { font-weight: 800; letter-spacing: .14em; font-size: 18px; text-transform: uppercase; }
-  .pub-name .dot { color: var(--accent); }
-  .subscribe {
-    background: var(--accent); color: #fff; border: none; border-radius: 6px;
-    padding: 7px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
-  }
-  .article { max-width: 728px; margin: 0 auto; padding: 56px 24px 80px; background: var(--bg); }
-  .kicker {
-    color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .08em;
-    text-transform: uppercase; margin-bottom: 18px;
-  }
-  h1.title {
-    font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -.018em; margin: 0 0 16px;
-  }
-  .subtitle { font-size: 21px; line-height: 1.4; color: var(--muted); font-weight: 400; margin: 0 0 28px; }
-  .byline {
-    display: flex; align-items: center; gap: 12px;
-    padding-bottom: 22px; margin-bottom: 8px; border-bottom: 1px solid var(--rule);
-  }
-  .avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #e08a4a);
-    color: #fff; font-weight: 800; font-size: 17px;
-    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
-  }
-  .byline .who { font-weight: 600; font-size: 15px; }
-  .byline .when { color: var(--muted); font-size: 14px; }
-  .body { font-family: Georgia, "Times New Roman", serif; font-size: 20px; line-height: 1.72; color: #242424; margin-top: 30px; }
-  .body p { margin: 0 0 24px; }
-  .body h2 {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 26px; line-height: 1.25; font-weight: 800; letter-spacing: -.01em; margin: 44px 0 16px;
-  }
-  .body strong { font-weight: 700; color: #111; }
-  .body em { font-style: italic; }
-  .body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(185,65,10,.35); }
-  .body a:hover { border-bottom-color: var(--accent); }
-  .body code {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 16px; background: #f2f2ef; padding: 2px 6px; border-radius: 4px;
-  }
-  .body ol, .body ul { margin: 0 0 24px; padding-left: 28px; }
-  .body li { margin-bottom: 14px; }
-  .signoff {
-    margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--rule);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-weight: 700; font-size: 17px; color: var(--accent);
-  }
-  .footer-note { max-width: 728px; margin: 0 auto; padding: 22px 24px 60px; color: var(--muted); font-size: 13px; line-height: 1.6; }
-  .footer-note a { color: var(--muted); }
-  @media (max-width: 640px) { h1.title { font-size: 30px; } .body { font-size: 18px; } }
-  @media print {
-    body { background: #fff; }
-    .pub-header, .subscribe { background: #fff; }
-    .article { padding-top: 28px; }
-    .body a { border-bottom: none; }
-  }
+  body { margin:0; background:#f7f7f5; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .pub-header { border-bottom:1px solid var(--rule); background:var(--bg); }
+  .pub-inner { max-width:1100px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  .pub-name { font-weight:800; letter-spacing:.14em; font-size:18px; text-transform:uppercase; }
+  .pub-name .dot { color:var(--accent); }
+  .subscribe { background:var(--accent); color:#fff; border:none; border-radius:6px; padding:7px 16px; font-weight:600; font-size:14px; cursor:pointer; }
+  .article { max-width:728px; margin:0 auto; padding:56px 24px 80px; background:var(--bg); }
+  .kicker { color:var(--accent); font-weight:700; font-size:13px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:18px; }
+  h1.title { font-size:40px; line-height:1.15; font-weight:800; letter-spacing:-.018em; margin:0 0 16px; }
+  .subtitle { font-size:21px; line-height:1.4; color:var(--muted); font-weight:400; margin:0 0 28px; }
+  .byline { display:flex; align-items:center; gap:12px; padding-bottom:22px; margin-bottom:8px; border-bottom:1px solid var(--rule); }
+  .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#e08a4a); color:#fff; font-weight:800; font-size:17px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .byline .who { font-weight:600; font-size:15px; }
+  .byline .when { color:var(--muted); font-size:14px; }
+  .body { font-family:Georgia,"Times New Roman",serif; font-size:20px; line-height:1.72; color:#242424; margin-top:30px; }
+  .body p { margin:0 0 24px; }
+  .body h2 { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:26px; line-height:1.25; font-weight:800; letter-spacing:-.01em; margin:44px 0 16px; }
+  .body strong { font-weight:700; color:#111; }
+  .body em { font-style:italic; }
+  .body a { color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(185,65,10,.35); }
+  .body a:hover { border-bottom-color:var(--accent); }
+  .body code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:16px; background:#f2f2ef; padding:2px 6px; border-radius:4px; }
+  .body ol, .body ul { margin:0 0 24px; padding-left:28px; }
+  .body li { margin-bottom:14px; }
+  .body figure { margin:34px 0; }
+  .body figure svg { width:100%; height:auto; display:block; border:1px solid var(--rule); border-radius:10px; background:#fff; padding:14px; }
+  .body figcaption { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14px; color:var(--muted); text-align:center; margin-top:11px; }
+  .body blockquote { margin:30px 0; padding:18px 24px; background:var(--accent-light); border-left:4px solid var(--accent); border-radius:0 10px 10px 0; font-size:18px; line-height:1.62; }
+  .body blockquote p { margin:0 0 12px; }
+  .body blockquote p:last-child { margin-bottom:0; }
+  .body blockquote code { background:#fff; }
+  .signoff { margin-top:40px; padding-top:26px; border-top:1px solid var(--rule); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-weight:700; font-size:17px; color:var(--accent); }
+  .footer-note { max-width:728px; margin:0 auto; padding:22px 24px 60px; color:var(--muted); font-size:13px; line-height:1.6; }
+  .footer-note a { color:var(--muted); }
+  @media (max-width:640px) { h1.title { font-size:30px; } .body { font-size:18px; } }
+  @media print { body { background:#fff; } .pub-header,.subscribe { background:#fff; } .article { padding-top:28px; } .body a { border-bottom:none; } .body figure,.body blockquote { break-inside:avoid; } }
 </style>
 </head>
 <body>
-  <header class="pub-header">
-    <div class="pub-inner">
-      <div class="pub-name">CxAI<span class="dot">.</span></div>
-      <button class="subscribe">Subscribe</button>
-    </div>
-  </header>
-
+  <header class="pub-header"><div class="pub-inner"><div class="pub-name">CxAI<span class="dot">.</span></div><button class="subscribe">Subscribe</button></div></header>
   <article class="article">
     <div class="kicker">Building with AI</div>
     <h1 class="title">From Blank Repo to 93/100: How We Let an AI Build a Course — and a Rubric Keep It Honest</h1>
     <p class="subtitle">Why the method, not the model, is what made an AI-written curriculum worth shipping</p>
-
-    <div class="byline">
-      <div class="avatar">Cx</div>
-      <div>
-        <div class="who">CxAI Team</div>
-        <div class="when">May 29, 2026 · Consumer Experience × AI</div>
-      </div>
-    </div>
-
+    <div class="byline"><div class="avatar">Cx</div><div><div class="who">CxAI Team</div><div class="when">May 29, 2026 · Consumer Experience × AI</div></div></div>
     <div class="body">
 <p>A coding agent wrote a <a
 href="https://fernfant.github.io/mini-pragma/course/html/index.html">thirteen-lesson
@@ -155,6 +102,36 @@ route.</p>
 say “step 7 builds on step 6” and mean it — and it’s what lets a
 reviewer, human or machine, check that claim mechanically. A wandering
 course can’t be graded. A spine can.</p>
+<figure>
+<svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The course spine: one running example flows through six stages — text, ids, vectors, attention, a guess, fine-tune — across 13 steps.">
+<rect width="720" height="120" fill="#fff"/>
+<rect x="16.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="68.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">text</text>
+<line x1="122.3" y1="57" x2="130.5" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="130.5,52 138.5,57 130.5,62" fill="#b9410a"/>
+<rect x="132.8" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="184.8" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">ids</text>
+<line x1="239.1" y1="57" x2="247.3" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="247.3,52 255.3,57 247.3,62" fill="#b9410a"/>
+<rect x="249.6" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="301.6" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">vectors</text>
+<line x1="355.9" y1="57" x2="364.1" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="364.1,52 372.1,57 364.1,62" fill="#b9410a"/>
+<rect x="366.4" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="418.4" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">attention</text>
+<line x1="472.7" y1="57" x2="480.9" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="480.9,52 488.9,57 480.9,62" fill="#b9410a"/>
+<rect x="483.2" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="535.2" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">a guess</text>
+<line x1="589.5" y1="57" x2="597.7" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="597.7,52 605.7,57 597.7,62" fill="#b9410a"/>
+<rect x="600.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="652.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">fine-tune</text>
+<text x="360" y="104" text-anchor="middle" fill="#6b6b6b" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">One running example · 13 linear steps · reciprocal Prev/Next</text>
+</svg>
+<figcaption aria-hidden="true">One running example, thirteen linear
+steps — from text to a fine-tuned model.</figcaption>
+</figure>
 <h2 id="the-real-product-was-the-rubric">The real product was the
 rubric</h2>
 <p>Here is the part nobody warns you about: when your writer is an
@@ -190,6 +167,30 @@ name: <strong>score → fix → re-score.</strong> Read every page cold,
 score each criterion against the rubric, rank worst-first, fix the
 lowest-leverage failures, then score again. Repeat until the number
 stops moving.</p>
+<figure>
+<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The score, fix, re-score loop: read and score every page, fix the worst, then score again — repeat until the number stops moving.">
+<rect width="460" height="230" fill="#fff"/>
+<path d="M 300 70 A 120 120 0 0 1 330 150" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="333,143 336,156 324,152" fill="#b9410a"/>
+<path d="M 330 178 A 120 120 0 0 1 130 178" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="135,184 124,178 134,171" fill="#b9410a"/>
+<path d="M 128 150 A 120 120 0 0 1 160 70" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="166,75 156,66 152,79" fill="#b9410a"/>
+<circle cx="230" cy="46" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="230" y="44" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Score</text>
+<text x="230" y="60" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">read every page cold</text>
+<circle cx="360" cy="150" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="360" y="148" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Fix</text>
+<text x="360" y="164" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">worst-first</text>
+<circle cx="100" cy="150" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="100" y="148" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Re-score</text>
+<text x="100" y="164" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">check the delta</text>
+<text x="230" y="120" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">until the number</text>
+<text x="230" y="134" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">stops moving</text>
+</svg>
+<figcaption aria-hidden="true">The loop that turns a draft into a
+product — score, fix the worst, re-score, repeat.</figcaption>
+</figure>
 <p>The arc is in the audit reports — and every page’s current score is
 live on the <a
 href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">scorecard</a>,
@@ -256,12 +257,49 @@ Then we re-scored. And the average <strong>went down</strong> — to
 found nine pages with a real pacing gap.</p>
 <p>That drop is the most honest number in the whole project. It’s what a
 sharper standard is <em>supposed</em> to do: surface problems the old
-standard was blind to. We found the nine spots, fixed each one — a
-softmax example worked through
-<code>[2,1,0] → [0.66, 0.24, 0.10]</code>, a two-example batch shown
-before the word “batch size”, a plain definition of recall placed
-<em>before</em> the widget that uses it — and re-scored a final time to
-<strong>93.2</strong>, nine pages exemplary again.</p>
+standard was blind to. We found the nine spots, fixed each one, and
+re-scored a final time to <strong>93.2</strong>, nine pages exemplary
+again. Here’s one of those fixes, in full:</p>
+<blockquote>
+<p><strong>Worked example — a pacing fix, before and after</strong></p>
+<p><em>Before (named in passing):</em> the lesson listed the
+nonlinearities — “ReLU, GELU, softmax” — and moved on. A
+thirteen-year-old just met <em>softmax</em> and watched it leave the
+room.</p>
+<p><em>After (named, then shown):</em> softmax turns a list of scores
+into probabilities. Feed it <code>[2, 1, 0]</code> and it returns
+<code>[0.66, 0.24, 0.10]</code> — three numbers that now sum to 1.
+<em>Then</em> we name it.</p>
+<p>Same concept, same spot in the lesson. That edit is the entire
+difference between <strong>C11 = 4</strong> and <strong>C11 =
+5</strong>.</p>
+</blockquote>
+<figure>
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Line chart of the course average across versions: 86.6 at v3, 92.8 at v4, dipping to 92.2 when an 11th criterion was added, recovering to 93.2 after the pacing fixes.">
+<rect width="720" height="270" fill="#fff"/>
+<line x1="90" y1="112.0" x2="660" y2="112.0" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="660" y="104.0" text-anchor="end" fill="#2e7d32" font-size="12" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Exemplary ≥ 90</text>
+<polyline points="90.0,173.2 280.0,61.6 470.0,72.4 660.0,54.4" fill="none" stroke="#b9410a" stroke-width="3" stroke-linejoin="round"/>
+<circle cx="90.0" cy="173.2" r="6" fill="#b9410a"/>
+<text x="90.0" y="159.2" text-anchor="middle" fill="#242424" font-size="15" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">86.6</text>
+<text x="90.0" y="245" text-anchor="middle" fill="#242424" font-size="13" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">v3</text>
+<text x="90.0" y="262" text-anchor="middle" fill="#6b6b6b" font-size="11" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">first full pass</text>
+<circle cx="280.0" cy="61.6" r="6" fill="#b9410a"/>
+<text x="280.0" y="47.6" text-anchor="middle" fill="#242424" font-size="15" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">92.8</text>
+<text x="280.0" y="245" text-anchor="middle" fill="#242424" font-size="13" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">v4</text>
+<text x="280.0" y="262" text-anchor="middle" fill="#6b6b6b" font-size="11" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">after fixes</text>
+<circle cx="470.0" cy="72.4" r="6" fill="#6b6b6b"/>
+<text x="470.0" y="98.4" text-anchor="middle" fill="#242424" font-size="15" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">92.2</text>
+<text x="470.0" y="245" text-anchor="middle" fill="#242424" font-size="13" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">v5 ·</text>
+<text x="470.0" y="262" text-anchor="middle" fill="#6b6b6b" font-size="11" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">+ stricter rule</text>
+<circle cx="660.0" cy="54.4" r="6" fill="#b9410a"/>
+<text x="660.0" y="40.4" text-anchor="middle" fill="#242424" font-size="15" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">93.2</text>
+<text x="660.0" y="245" text-anchor="middle" fill="#242424" font-size="13" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">v5</text>
+<text x="660.0" y="262" text-anchor="middle" fill="#6b6b6b" font-size="11" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">after pacing fixes</text>
+</svg>
+<figcaption aria-hidden="true">The honest arc — up, then down when the
+ruler got stricter, then up again.</figcaption>
+</figure>
 <p>Two pages we deliberately <em>held</em> at four out of five, with the
 residual named in writing rather than rounded up: one still hides its
 full explanation in a collapsed box, the other still introduces two
@@ -269,6 +307,87 @@ terms inside table cells. The whole thing is self-scored by the
 implementer, and the report says so. <strong>93.2 is a conservative,
 defensible average — not a ceiling we awarded ourselves.</strong>
 Honesty over polish, even in the scorecard.</p>
+<h2 id="we-graded-this-post-too">We graded this post, too</h2>
+<p>It would be a strange article about scoring your own work that
+didn’t. So we built an <strong>adapted blog rubric</strong> — the
+course’s eleven criteria with the four lesson-only ones (interactive
+widgets, keyboard access, the pill navigation,
+<code>node --check</code>) swapped for blog analogues: <em>visuals</em>,
+<em>skimmability</em>, <em>CxAI voice-match</em>, <em>takeaways</em>.
+Same 0–5 scale, same weights summing to 100, same bands.</p>
+<figure>
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The adapted blog rubric: 11 weighted criteria summing to 100 — controlling idea 12, concrete and worked examples 12, visuals 12, accuracy 12, clarity 10, honest framing 8, flow 8, skimmability 8, pacing 6, CxAI voice 6, takeaways 6.">
+<rect width="720" height="360" fill="#fff"/>
+<text x="14" y="39" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B1  Controlling idea &amp; narrative</text>
+<rect x="270" y="26" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="26" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="39" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="69" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B2  Concrete / worked examples</text>
+<rect x="270" y="56" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="56" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="69" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="99" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B3  Visuals &amp; diagrams</text>
+<rect x="270" y="86" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="86" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="99" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="129" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B4  Accuracy / verifiable data</text>
+<rect x="270" y="116" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="116" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="129" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="159" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B6  Clarity (exec reader)</text>
+<rect x="270" y="146" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="146" width="341.7" height="16" rx="3" fill="#b9410a"/>
+<text x="619.7" y="159" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">10</text>
+<text x="14" y="189" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B5  Honest framing</text>
+<rect x="270" y="176" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="176" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="189" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="219" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B7  Flow / sequencing</text>
+<rect x="270" y="206" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="206" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="219" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="249" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B9  Skimmability / structure</text>
+<rect x="270" y="236" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="236" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="249" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="279" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B8  Pacing / runway</text>
+<rect x="270" y="266" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="266" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="279" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+<text x="14" y="309" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B10  CxAI voice-match</text>
+<rect x="270" y="296" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="296" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="309" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+<text x="14" y="339" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B11  Takeaways / actionability</text>
+<rect x="270" y="326" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="326" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="339" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+</svg>
+<figcaption aria-hidden="true">The adapted blog rubric — eleven weighted
+criteria, summing to 100.</figcaption>
+</figure>
+<p>Then we scored <em>this very post</em>, cold. The first draft came in
+at <strong>78 / 100 — Strong</strong>. Two criteria dragged it down:
+<strong>Visuals</strong>, at 1 (all prose, no diagrams), and
+<strong>worked examples</strong>, at 3. So we did what the loop says —
+fixed the worst first (the diagrams above, the worked-example boxes) —
+and re-scored to <strong>92.8 / 100 — Exemplary</strong>.</p>
+<blockquote>
+<p><strong>Worked example — one row, scored honestly</strong></p>
+<p>Take <strong>B3 Visuals</strong> on the post you’re reading.
+<em>Before</em> these diagrams: a <strong>1</strong> — the whole
+argument rode on prose. <em>After</em> adding four: a
+<strong>4</strong>, not a 5. Why not 5? The course earns its top
+interactivity marks with widgets a reader can <em>drag</em>; a static
+diagram can’t. We named the residual and capped the score. Same
+discipline that holds two course pages at C11 = 4.</p>
+</blockquote>
+<p>Notice what <em>didn’t</em> happen. We didn’t round Clarity, Flow, or
+Pacing up to 5 because the prose felt nice — they sit at 4 with a named
+residual. The rubric, not our affection for our own writing, picked the
+fixes and set the ceiling. (You can read the full per-criterion card in
+<a
+href="https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md"><code>blog_rubric.md</code></a>.)</p>
 <h2 id="what-this-means-if-youre-building-with-ai">What this means if
 you’re building with AI</h2>
 <p>Strip away the Transformers and the thirteen-year-old, and the method
@@ -314,12 +433,6 @@ thirteen pages.</li>
       <div class="signoff">Stay tuned! — CxAI Team</div>
     </div>
   </article>
-
-  <div class="footer-note">
-    CxAI is a consumer-experience × AI newsletter. Every figure in this piece traces to a project artifact:
-    the scored rubric, the <a href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">live scorecard</a>,
-    and the v3–v5 audit reports. The course itself is public at
-    <a href="https://fernfant.github.io/mini-pragma/course/html/index.html">fernfant.github.io/mini-pragma</a>.
-  </div>
+  <div class="footer-note">CxAI is a consumer-experience × AI newsletter. Every figure in this piece traces to a project artifact: the scored rubric, the <a href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">live scorecard</a>, and the v3–v5 audit reports. The course itself is public at <a href="https://fernfant.github.io/mini-pragma/course/html/index.html">fernfant.github.io/mini-pragma</a>.</div>
 </body>
 </html>

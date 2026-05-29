@@ -20,6 +20,8 @@ Before a single lesson, we fixed the shape. The course is **one linear spine of 
 
 This sounds like housekeeping. It isn't. The spine is what lets you say "step 7 builds on step 6" and mean it — and it's what lets a reviewer, human or machine, check that claim mechanically. A wandering course can't be graded. A spine can.
 
+![One running example, thirteen linear steps — from text to a fine-tuned model.](assets/spine.svg)
+
 ## The real product was the rubric
 
 Here is the part nobody warns you about: when your writer is an agent, **the writer is not the bottleneck. The grader is.**
@@ -33,6 +35,8 @@ If your team is shipping AI-generated anything and you don't have this artifact 
 ## The loop: score → fix → re-score
 
 With a grader in hand, the work becomes a loop, and the loop has a name: **score → fix → re-score.** Read every page cold, score each criterion against the rubric, rank worst-first, fix the lowest-leverage failures, then score again. Repeat until the number stops moving.
+
+![The loop that turns a draft into a product — score, fix the worst, re-score, repeat.](assets/loop.svg)
 
 The arc is in the audit reports — and every page's current score is live on the [scorecard](https://fernfant.github.io/mini-pragma/course/html/scorecard.html), so you can check our marking. The first full pass (v3) averaged **86.6** — five pages exemplary, eight merely strong. One targeted batch later (v4), the average climbed to **92.8**, with nine pages exemplary. Same model. Same writer. The gain came entirely from grading what it produced and feeding the worst scores back in.
 
@@ -60,9 +64,33 @@ A human read the course and said something the rubric, in all its ten-criteria p
 
 We carved C11's eight points out of the most over-weighted criteria (interactivity dropped from 16 to 12) so the total still summed to 100. Then we re-scored. And the average **went down** — to **92.2** — because the new, stricter ruler immediately found nine pages with a real pacing gap.
 
-That drop is the most honest number in the whole project. It's what a sharper standard is *supposed* to do: surface problems the old standard was blind to. We found the nine spots, fixed each one — a softmax example worked through `[2,1,0] → [0.66, 0.24, 0.10]`, a two-example batch shown before the word "batch size", a plain definition of recall placed *before* the widget that uses it — and re-scored a final time to **93.2**, nine pages exemplary again.
+That drop is the most honest number in the whole project. It's what a sharper standard is *supposed* to do: surface problems the old standard was blind to. We found the nine spots, fixed each one, and re-scored a final time to **93.2**, nine pages exemplary again. Here's one of those fixes, in full:
+
+> **Worked example — a pacing fix, before and after**
+>
+> *Before (named in passing):* the lesson listed the nonlinearities — "ReLU, GELU, softmax" — and moved on. A thirteen-year-old just met *softmax* and watched it leave the room.
+>
+> *After (named, then shown):* softmax turns a list of scores into probabilities. Feed it `[2, 1, 0]` and it returns `[0.66, 0.24, 0.10]` — three numbers that now sum to 1. *Then* we name it.
+>
+> Same concept, same spot in the lesson. That edit is the entire difference between **C11 = 4** and **C11 = 5**.
+
+![The honest arc — up, then down when the ruler got stricter, then up again.](assets/score-arc.svg)
 
 Two pages we deliberately *held* at four out of five, with the residual named in writing rather than rounded up: one still hides its full explanation in a collapsed box, the other still introduces two terms inside table cells. The whole thing is self-scored by the implementer, and the report says so. **93.2 is a conservative, defensible average — not a ceiling we awarded ourselves.** Honesty over polish, even in the scorecard.
+
+## We graded this post, too
+
+It would be a strange article about scoring your own work that didn't. So we built an **adapted blog rubric** — the course's eleven criteria with the four lesson-only ones (interactive widgets, keyboard access, the pill navigation, `node --check`) swapped for blog analogues: *visuals*, *skimmability*, *CxAI voice-match*, *takeaways*. Same 0–5 scale, same weights summing to 100, same bands.
+
+![The adapted blog rubric — eleven weighted criteria, summing to 100.](assets/rubric-weights.svg)
+
+Then we scored *this very post*, cold. The first draft came in at **78 / 100 — Strong**. Two criteria dragged it down: **Visuals**, at 1 (all prose, no diagrams), and **worked examples**, at 3. So we did what the loop says — fixed the worst first (the diagrams above, the worked-example boxes) — and re-scored to **92.8 / 100 — Exemplary**.
+
+> **Worked example — one row, scored honestly**
+>
+> Take **B3 Visuals** on the post you're reading. *Before* these diagrams: a **1** — the whole argument rode on prose. *After* adding four: a **4**, not a 5. Why not 5? The course earns its top interactivity marks with widgets a reader can *drag*; a static diagram can't. We named the residual and capped the score. Same discipline that holds two course pages at C11 = 4.
+
+Notice what *didn't* happen. We didn't round Clarity, Flow, or Pacing up to 5 because the prose felt nice — they sit at 4 with a named residual. The rubric, not our affection for our own writing, picked the fixes and set the ceiling. (You can read the full per-criterion card in [`blog_rubric.md`](https://github.com/fernfant/mini-pragma/blob/main/course/agent/blog/blog_rubric.md).)
 
 ## What this means if you're building with AI
 

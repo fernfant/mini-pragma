@@ -1,0 +1,47 @@
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The adapted blog rubric: 11 weighted criteria summing to 100 — controlling idea 12, concrete and worked examples 12, visuals 12, accuracy 12, clarity 10, honest framing 8, flow 8, skimmability 8, pacing 6, CxAI voice 6, takeaways 6.">
+<rect width="720" height="360" fill="#fff"/>
+<text x="14" y="39" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B1  Controlling idea &amp; narrative</text>
+<rect x="270" y="26" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="26" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="39" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="69" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B2  Concrete / worked examples</text>
+<rect x="270" y="56" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="56" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="69" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="99" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B3  Visuals &amp; diagrams</text>
+<rect x="270" y="86" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="86" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="99" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="129" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B4  Accuracy / verifiable data</text>
+<rect x="270" y="116" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="116" width="410.0" height="16" rx="3" fill="#b9410a"/>
+<text x="688.0" y="129" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">12</text>
+<text x="14" y="159" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B6  Clarity (exec reader)</text>
+<rect x="270" y="146" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="146" width="341.7" height="16" rx="3" fill="#b9410a"/>
+<text x="619.7" y="159" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">10</text>
+<text x="14" y="189" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B5  Honest framing</text>
+<rect x="270" y="176" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="176" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="189" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="219" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B7  Flow / sequencing</text>
+<rect x="270" y="206" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="206" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="219" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="249" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B9  Skimmability / structure</text>
+<rect x="270" y="236" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="236" width="273.3" height="16" rx="3" fill="#b9410a"/>
+<text x="551.3" y="249" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">8</text>
+<text x="14" y="279" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B8  Pacing / runway</text>
+<rect x="270" y="266" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="266" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="279" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+<text x="14" y="309" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B10  CxAI voice-match</text>
+<rect x="270" y="296" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="296" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="309" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+<text x="14" y="339" fill="#242424" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">B11  Takeaways / actionability</text>
+<rect x="270" y="326" width="410" height="16" rx="3" fill="#f2f2ef"/>
+<rect x="270" y="326" width="205.0" height="16" rx="3" fill="#b9410a"/>
+<text x="483.0" y="339" fill="#242424" font-size="12" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">6</text>
+</svg>
