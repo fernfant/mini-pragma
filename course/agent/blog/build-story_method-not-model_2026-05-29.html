@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>From Blank Repo to 93/100 — CxAI</title>
+<title>How to build agentically — CxAI</title>
 <style>
   :root { --ink:#1a1a1a; --muted:#6b6b6b; --rule:#e6e6e6; --accent:#b9410a; --accent-light:#f6e9e1; --bg:#ffffff; }
   * { box-sizing: border-box; }
@@ -39,18 +39,26 @@
   .body blockquote p { margin:0 0 12px; }
   .body blockquote p:last-child { margin-bottom:0; }
   .body blockquote code { background:#fff; }
+  .body table { width:100%; border-collapse:collapse; margin:30px 0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14.5px; line-height:1.45; }
+  .body thead th { text-align:left; font-weight:700; color:#111; border-bottom:2px solid var(--accent); padding:8px 11px; }
+  .body tbody td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--rule); vertical-align:top; color:#3a3a3a; }
+  .body tbody tr:nth-child(odd) { background:#faf7f5; }
+  .body th:nth-child(1), .body td:nth-child(1) { color:var(--muted); width:34px; }
+  .body th:nth-child(3), .body td:nth-child(3) { text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; width:64px; }
+  .body table strong { color:#111; }
+  .body table code { font-size:13px; }
   .signoff { margin-top:40px; padding-top:26px; border-top:1px solid var(--rule); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-weight:700; font-size:17px; color:var(--accent); }
   .footer-note { max-width:728px; margin:0 auto; padding:22px 24px 60px; color:var(--muted); font-size:13px; line-height:1.6; }
   .footer-note a { color:var(--muted); }
   @media (max-width:640px) { h1.title { font-size:30px; } .body { font-size:18px; } }
-  @media print { body { background:#fff; } .pub-header,.subscribe { background:#fff; } .article { padding-top:28px; } .body a { border-bottom:none; } .body figure,.body blockquote { break-inside:avoid; } }
+  @media print { body { background:#fff; } .pub-header,.subscribe { background:#fff; } .article { padding-top:28px; } .body a { border-bottom:none; } .body figure,.body blockquote,.body table { break-inside:avoid; } }
 </style>
 </head>
 <body>
   <header class="pub-header"><div class="pub-inner"><div class="pub-name">CxAI<span class="dot">.</span></div><button class="subscribe">Subscribe</button></div></header>
   <article class="article">
     <div class="kicker">Building with AI</div>
-    <h1 class="title">From Blank Repo to 93/100: How We Let an AI Build a Course — and a Rubric Keep It Honest</h1>
+    <h1 class="title">How to build agentically... How We Let an AI Build a Course — and a Rubric Keep It Honest</h1>
     <p class="subtitle">Why the method, not the model, is what made an AI-written curriculum worth shipping</p>
     <div class="byline"><div class="avatar">Cx</div><div><div class="who">CxAI Team</div><div class="when">May 29, 2026 · Consumer Experience × AI</div></div></div>
     <div class="body">
@@ -142,27 +150,123 @@ rubric</strong> turns those principles into something you can argue
 with: each page scored 0–5 on a set of weighted criteria, summed to a
 single number out of 100, with explicit bands (90+ exemplary, 75–89
 strong, and down).</p>
-<p>Today that rubric has <strong>eleven criteria</strong> across
-<strong>thirteen pages</strong> — interactivity (weighted heaviest, at
-12 of 100), age-appropriate clarity, concrete-first pedagogy, numeric
-accuracy, honest framing, narrative continuity, reinforcement,
-structural correctness, technical soundness, accessibility, within-page
-flow. Weights sum to exactly 100, on purpose. The single most important
-design choice in the whole project was this: <strong>we built the
-scoring rubric before we trusted the writer.</strong> The rubric is the
-source of truth. The lessons are just the current best attempt to
-satisfy it.</p>
+<p>Here is the actual instrument. Every one of the thirteen pages is
+scored <strong>0–5 on eleven criteria</strong>, each weighted, summed to
+a single number out of 100:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Criterion</th>
+<th style="text-align: center;">Weight</th>
+<th>A 5/5 page…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Interactivity</strong></td>
+<td style="text-align: center;">12</td>
+<td>has real click/drag/slide/run widgets — and <em>predicts before it
+reveals</em> at the key moment</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Age-appropriate clarity</strong></td>
+<td style="text-align: center;">9</td>
+<td>plain second-person voice; every term earned; a 12–14-year-old
+follows unaided</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Concrete-first</strong></td>
+<td style="text-align: center;">9</td>
+<td>opens with real worked numbers; one idea per step; generalises only
+after</td>
+</tr>
+<tr>
+<td>4a</td>
+<td><strong>Numeric accuracy</strong></td>
+<td style="text-align: center;">8</td>
+<td>every cited figure matches the companion code — or is labelled
+<em>illustrative</em></td>
+</tr>
+<tr>
+<td>4b</td>
+<td><strong>Honest framing</strong></td>
+<td style="text-align: center;">6</td>
+<td>simplifications flagged in-clause; no analogy you must later
+un-learn</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Narrative continuity</strong></td>
+<td style="text-align: center;">8</td>
+<td>re-uses the one running example; connects back and forward along the
+spine</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Reinforcement</strong></td>
+<td style="text-align: center;">8</td>
+<td>inline checks + recap + quiz that test <em>understanding</em>, not
+recall</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Structural correctness</strong></td>
+<td style="text-align: center;">8</td>
+<td>right nav pills, spinebar step/width, reciprocal pagination</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Technical soundness</strong></td>
+<td style="text-align: center;">8</td>
+<td>all inline JS passes <code>node --check</code>; valid data; no
+external deps</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Accessibility</strong></td>
+<td style="text-align: center;">8</td>
+<td>widgets keyboard-operable; every figure has words; colour never the
+sole signal</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Flow / sequencing</strong></td>
+<td style="text-align: center;">8</td>
+<td>reads top-to-bottom <em>once</em>, no backtracking; nothing used
+before it's defined</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Pacing / runway</strong></td>
+<td style="text-align: center;">8</td>
+<td>each new concept gets plain idea → name → micro-example → use</td>
+</tr>
+</tbody>
+</table>
+<p>Weights sum to exactly 100, on purpose — every point a fix earns has
+to come from somewhere. (And that last row, <strong>Pacing</strong>, was
+<em>not</em> in the first draft of the rubric. It's the one a human
+added later — and adding it is where this story gets interesting. Hold
+that thought.) The single most important design choice in the whole
+project was this: <strong>we built the scoring rubric before we trusted
+the writer.</strong> The rubric is the source of truth. The lessons are
+just the current best attempt to satisfy it.</p>
 <p>If your team is shipping AI-generated anything and you don't have
 this artifact — the explicit, weighted definition of "good" that exists
 <em>independently</em> of the output — you don't have a quality process.
 You have vibes and a fast typist.</p>
 <h2 id="the-loop-score--fix--re-score">The loop: score → fix →
 re-score</h2>
-<p>With a grader in hand, the work becomes a loop, and the loop has a
-name: <strong>score → fix → re-score.</strong> Read every page cold,
-score each criterion against the rubric, rank worst-first, fix the
-lowest-leverage failures, then score again. Repeat until the number
-stops moving.</p>
+<p>With a grader in hand, the work stops being "write a course" and
+becomes a loop — and the loop has a name: <strong>score → fix →
+re-score.</strong> Read all thirteen pages cold, score every criterion
+against the rubric, rank the pages <em>worst-first</em>, fix the
+lowest-scoring failures, then score again. Repeat until the number stops
+moving.</p>
 <p><svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The score, fix, re-score loop: read and score every page, fix the worst, then score again — repeat until the number stops moving.">
 <rect width="460" height="230" fill="#fff"/>
 <path d="M 300 70 A 120 120 0 0 1 330 150" fill="none" stroke="#b9410a" stroke-width="2.5"/>
@@ -183,15 +287,29 @@ stops moving.</p>
 <text x="230" y="120" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">until the number</text>
 <text x="230" y="134" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">stops moving</text>
 </svg></p>
-<p>The arc is in the audit reports — and every page's current score is
-live on the <a
+<p>This is where building <em>agentically</em> earns its keep, because
+the loop is tedious in exactly the way an agent doesn't mind. The arc is
+in the audit reports, and every page's current score is live on the <a
 href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">scorecard</a>,
-so you can check our marking. The first full pass (v3) averaged
-<strong>86.6</strong> — five pages exemplary, eight merely strong. One
-targeted batch later (v4), the average climbed to <strong>92.8</strong>,
-with nine pages exemplary. Same model. Same writer. The gain came
-entirely from grading what it produced and feeding the worst scores back
-in.</p>
+so you can check our marking. The first full audit (v3) averaged
+<strong>86.6</strong> — five pages exemplary, eight merely strong.</p>
+<p>Then came the iteration that mattered. The agent ran a single batch
+of roughly <strong>forty targeted fixes across all thirteen pages at
+once</strong> (tracked as tasks #59–#71), each one aimed at a specific
+low score — not "make it better," but instructions with coordinates:
+<em>L5 claims the toy model has ~5,000 parameters; it has ~20,000 — fix
+the number. L5b labels its recall figures "illustrative"; run the
+notebook and use the real ones.</em> Re-scored, the average climbed to
+<strong>92.8</strong>, nine pages now exemplary. Same model, same writer
+— the gain came entirely from grading what it produced and feeding the
+worst scores back in.</p>
+<p>And the <em>audits</em> were agentic too. For the pacing pass that
+came later, <strong>three read-only audit agents ran in
+parallel</strong>, each re-reading all thirteen pages hunting for one
+failure mode and reporting back the exact spots. No human re-reads
+thirteen lessons three times looking for a single kind of mistake. An
+agent does it before lunch — and that asymmetry is the whole reason the
+loop is cheap enough to run again, and again.</p>
 <p>That's the mechanism most "AI writes your content" demos skip. The
 first draft is never the product. <strong>The loop is the
 product</strong>, and the rubric is what closes it.</p>

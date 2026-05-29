@@ -59,3 +59,20 @@ predict-before-reveal, then graded" frame in the self-scorecard section. The dev
 in **B2** and **B10**, both already at 5, so the total **holds at 92.8** — the meta move
 is qualitative, and the four held-at-4 residuals are still real. Honesty over polish: no
 score was nudged for feeling cleverer.
+
+**Agentic-iteration pass (post-meta).** Retitled "How to build agentically…" and expanded
+the loop section to *show* the iterations: the v3→v4 jump as a single batch of ~40
+worst-first fixes across all 13 pages (tasks #59–#71) with two coordinate-level examples
+(L5 param count ~5,000→~20,000; L5b "illustrative"→real notebook recall), plus the v5
+pacing pass run by **three read-only audit agents in parallel**. All figures trace to the
+v4/v5 audit reports. The detail strengthens **B1** (controlling idea now explicitly
+"agentic"), **B4** (more artifact-cited specifics) and **B2** — all already at 5 — so the
+total again **holds at 92.8**; the new paragraphs were kept plain-idea-first to protect
+B8 Pacing, and the four held-at-4 residuals stand.
+
+**Rubric-table pass.** "The real product was the rubric" now *shows* the real instrument —
+the actual 11-criterion / 12-row course rubric from `course/agent/SKILL.md` §8 (Interactivity
+12 … Pacing 8, summing to 100) as a styled table — instead of describing it in a prose list.
+The Pacing row carries a one-line foreshadow ("not in the first draft… hold that thought")
+so the later C11 reveal still lands. Lands in **B2/B4/B9**, all already at 5; total **holds at
+92.8**. (Added table CSS to the HTML template so it renders in the serif column and the PDF.)

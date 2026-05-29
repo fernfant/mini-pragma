@@ -1,4 +1,4 @@
-# From Blank Repo to 93/100: How We Let an AI Build a Course — and a Rubric Keep It Honest
+# How to build agentically... How We Let an AI Build a Course — and a Rubric Keep It Honest
 
 *Why the method, not the model, is what made an AI-written curriculum worth shipping*
 
@@ -28,17 +28,38 @@ Here is the part nobody warns you about: when your writer is an agent, **the wri
 
 So we wrote the grader first. Two artifacts sit upstream of every lesson. The **principles doc** says what a good page *is* — concrete before abstract, every term earned before it's named, analogies that don't have to be un-learned later, every cited number traceable to the companion code. And a **scored rubric** turns those principles into something you can argue with: each page scored 0–5 on a set of weighted criteria, summed to a single number out of 100, with explicit bands (90+ exemplary, 75–89 strong, and down).
 
-Today that rubric has **eleven criteria** across **thirteen pages** — interactivity (weighted heaviest, at 12 of 100), age-appropriate clarity, concrete-first pedagogy, numeric accuracy, honest framing, narrative continuity, reinforcement, structural correctness, technical soundness, accessibility, within-page flow. Weights sum to exactly 100, on purpose. The single most important design choice in the whole project was this: **we built the scoring rubric before we trusted the writer.** The rubric is the source of truth. The lessons are just the current best attempt to satisfy it.
+Here is the actual instrument. Every one of the thirteen pages is scored **0–5 on eleven criteria**, each weighted, summed to a single number out of 100:
+
+| # | Criterion | Weight | A 5/5 page… |
+|---|-----------|:-----:|-------------|
+| 1 | **Interactivity** | 12 | has real click/drag/slide/run widgets — and *predicts before it reveals* at the key moment |
+| 2 | **Age-appropriate clarity** | 9 | plain second-person voice; every term earned; a 12–14-year-old follows unaided |
+| 3 | **Concrete-first** | 9 | opens with real worked numbers; one idea per step; generalises only after |
+| 4a | **Numeric accuracy** | 8 | every cited figure matches the companion code — or is labelled *illustrative* |
+| 4b | **Honest framing** | 6 | simplifications flagged in-clause; no analogy you must later un-learn |
+| 5 | **Narrative continuity** | 8 | re-uses the one running example; connects back and forward along the spine |
+| 6 | **Reinforcement** | 8 | inline checks + recap + quiz that test *understanding*, not recall |
+| 7 | **Structural correctness** | 8 | right nav pills, spinebar step/width, reciprocal pagination |
+| 8 | **Technical soundness** | 8 | all inline JS passes `node --check`; valid data; no external deps |
+| 9 | **Accessibility** | 8 | widgets keyboard-operable; every figure has words; colour never the sole signal |
+| 10 | **Flow / sequencing** | 8 | reads top-to-bottom *once*, no backtracking; nothing used before it's defined |
+| 11 | **Pacing / runway** | 8 | each new concept gets plain idea → name → micro-example → use |
+
+Weights sum to exactly 100, on purpose — every point a fix earns has to come from somewhere. (And that last row, **Pacing**, was *not* in the first draft of the rubric. It's the one a human added later — and adding it is where this story gets interesting. Hold that thought.) The single most important design choice in the whole project was this: **we built the scoring rubric before we trusted the writer.** The rubric is the source of truth. The lessons are just the current best attempt to satisfy it.
 
 If your team is shipping AI-generated anything and you don't have this artifact — the explicit, weighted definition of "good" that exists *independently* of the output — you don't have a quality process. You have vibes and a fast typist.
 
 ## The loop: score → fix → re-score
 
-With a grader in hand, the work becomes a loop, and the loop has a name: **score → fix → re-score.** Read every page cold, score each criterion against the rubric, rank worst-first, fix the lowest-leverage failures, then score again. Repeat until the number stops moving.
+With a grader in hand, the work stops being "write a course" and becomes a loop — and the loop has a name: **score → fix → re-score.** Read all thirteen pages cold, score every criterion against the rubric, rank the pages *worst-first*, fix the lowest-scoring failures, then score again. Repeat until the number stops moving.
 
 ![The loop that turns a draft into a product — score, fix the worst, re-score, repeat.](assets/loop.svg)
 
-The arc is in the audit reports — and every page's current score is live on the [scorecard](https://fernfant.github.io/mini-pragma/course/html/scorecard.html), so you can check our marking. The first full pass (v3) averaged **86.6** — five pages exemplary, eight merely strong. One targeted batch later (v4), the average climbed to **92.8**, with nine pages exemplary. Same model. Same writer. The gain came entirely from grading what it produced and feeding the worst scores back in.
+This is where building *agentically* earns its keep, because the loop is tedious in exactly the way an agent doesn't mind. The arc is in the audit reports, and every page's current score is live on the [scorecard](https://fernfant.github.io/mini-pragma/course/html/scorecard.html), so you can check our marking. The first full audit (v3) averaged **86.6** — five pages exemplary, eight merely strong.
+
+Then came the iteration that mattered. The agent ran a single batch of roughly **forty targeted fixes across all thirteen pages at once** (tracked as tasks #59–#71), each one aimed at a specific low score — not "make it better," but instructions with coordinates: *L5 claims the toy model has ~5,000 parameters; it has ~20,000 — fix the number. L5b labels its recall figures "illustrative"; run the notebook and use the real ones.* Re-scored, the average climbed to **92.8**, nine pages now exemplary. Same model, same writer — the gain came entirely from grading what it produced and feeding the worst scores back in.
+
+And the *audits* were agentic too. For the pacing pass that came later, **three read-only audit agents ran in parallel**, each re-reading all thirteen pages hunting for one failure mode and reporting back the exact spots. No human re-reads thirteen lessons three times looking for a single kind of mistake. An agent does it before lunch — and that asymmetry is the whole reason the loop is cheap enough to run again, and again.
 
 That's the mechanism most "AI writes your content" demos skip. The first draft is never the product. **The loop is the product**, and the rubric is what closes it.
 
