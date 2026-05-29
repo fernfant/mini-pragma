@@ -124,6 +124,8 @@ V = len(vocab)</code></pre>
 
 <h2 class="step" id="encode"><span class="step-num">Sec 3</span> Encoding an event <span class="legend-chip">L2</span></h2>
 
+<p>Same first move as <a href="lesson_02.html">Lesson 2</a>: every token gets an ID, and each ID later looks up a row in the embedding table. Here the "words" are just our event's keys and values.</p>
+
 <pre><code>def encode(event):
     ids = []
     for k, v in event:

@@ -55,6 +55,7 @@
   <summary>Project stages</summary>
   <ol>
     <li><a href="#challenge">The challenge</a></li>
+    <li><a href="#assemble">🧩 Warm-up — assemble the spine</a></li>
     <li><a href="#stage-1">Stage 1 — Synthetic data</a></li>
     <li><a href="#stage-2">Stage 2 — Pre-train the encoder</a></li>
     <li><a href="#stage-3">Stage 3 — Build the fraud classifier</a></li>
@@ -82,6 +83,88 @@
   <li><strong>Train</strong> the classifier on a small labelled set (normal vs. fraud).</li>
   <li><strong>Compare</strong> to a baseline that doesn't pre-train.</li>
 </ol>
+
+<h2 class="step" id="assemble"><span class="step-num">Warm-up</span> 🧩 Assemble the spine (from memory)</h2>
+
+<p>Before you write a line of capstone code, prove you hold the whole pipeline in your head. Click the building blocks in the order data flows through the model — from raw events to a loss the optimiser can shrink. This is every lesson, in one move — and it's exactly the path you're about to build in the four stages below.</p>
+
+<div class="widget">
+  <h3>🧩 Build the pipeline in order</h3>
+  <p style="font-size:13.5px;color:var(--text-dim);">Click a block to add it; click a placed block to remove it. Fully keyboard-operable — Tab to a block, Enter to place it.</p>
+  <div style="font-size:13px;color:var(--text-dim);margin:6px 0;">Blocks to place:</div>
+  <div id="asm-bank" style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px;"></div>
+  <div style="font-size:13px;color:var(--text-dim);margin:6px 0;">Your pipeline (input → output):</div>
+  <div id="asm-seq" style="display:flex;flex-wrap:wrap;gap:8px;min-height:42px;padding:10px;border:1px dashed var(--border);border-radius:8px;"></div>
+  <div style="display:flex;gap:10px;margin-top:14px;">
+    <button id="asm-check" type="button">Check order</button>
+    <button id="asm-reset" type="button">Reset</button>
+  </div>
+  <div id="asm-msg" role="status" aria-live="polite" style="margin-top:12px;font-size:14px;"></div>
+</div>
+
+<script id="asm-data" type="application/json">
+{
+  "order": ["Tokenise events","Embed tokens","Add position","Attention (mix across)","Feed-forward (think per token)","Output head → scores","Cross-entropy loss","Backprop + nudge knobs"],
+  "hint": "Numbers first: raw events become ids, then vectors. Position tags the order. Attention mixes information ACROSS positions; the feed-forward layer thinks about each position on its own. The head turns vectors into scores, the loss measures how wrong, and backprop nudges every knob."
+}
+</script>
+<script>
+(() => {
+  const el = document.getElementById('asm-data');
+  if (!el) return;
+  const cfg = JSON.parse(el.textContent);
+  const order = cfg.order, hint = cfg.hint;
+  const bank = document.getElementById('asm-bank');
+  const seq  = document.getElementById('asm-seq');
+  const msg  = document.getElementById('asm-msg');
+  const shuffled = order.map((t, i) => i).sort(() => Math.random() - 0.5);
+  let picked = [];
+
+  function chip(label, onClick) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = label;
+    b.style.cssText = 'padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:13.5px;';
+    b.addEventListener('click', onClick);
+    return b;
+  }
+  function clearMsg() { msg.innerHTML = ''; msg.style.cssText = 'margin-top:12px;font-size:14px;'; }
+  function render() {
+    bank.innerHTML = '';
+    shuffled.forEach((idx) => {
+      if (picked.includes(idx)) return;
+      bank.appendChild(chip(order[idx], () => { picked.push(idx); render(); }));
+    });
+    seq.innerHTML = '';
+    picked.forEach((idx, pos) => {
+      seq.appendChild(chip((pos + 1) + '. ' + order[idx], () => { picked.splice(pos, 1); render(); }));
+    });
+    clearMsg();
+  }
+  document.getElementById('asm-check').addEventListener('click', () => {
+    if (picked.length < order.length) {
+      msg.innerHTML = 'Place all ' + order.length + ' blocks first.';
+      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#fef3c7;';
+      return;
+    }
+    const firstWrong = picked.findIndex((idx, pos) => idx !== pos);
+    if (firstWrong === -1) {
+      msg.innerHTML = '🎉 <strong>Spot on.</strong> That’s the exact path data takes — the one you’re about to build in code below.';
+      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#dcfce7;';
+    } else {
+      msg.innerHTML = '🤔 <strong>Not quite</strong> — block ' + (firstWrong + 1) + ' is out of place. ' + hint;
+      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#fee2e2;';
+    }
+  });
+  document.getElementById('asm-reset').addEventListener('click', () => { picked = []; render(); });
+  render();
+})();
+</script>
+
+<figure class="figure-wide">
+  <img src="../visuals/data_flow.svg" alt="The full pipeline you just assembled: events become ids then vectors, attention mixes them, the head guesses, the loss trains it.">
+  <figcaption>The whole spine in one picture. Your capstone wires every one of these stages together — tokenise → embed → attention → head → loss → train — exactly the order you placed above.</figcaption>
+</figure>
 
 <h2 class="step" id="stage-1"><span class="step-num">Stage 1</span> Synthetic data</h2>
 
@@ -111,7 +194,9 @@
 
 <h2 class="step" id="stage-2"><span class="step-num">Stage 2</span> Pre-train the encoder</h2>
 
-<p>Create <code>capstone_pretrain.py</code>. Same masked-token training game from <a href="lesson_04.html">L4</a> / <a href="lesson_05.html">L5</a>.</p>
+<p><em>You now have a pile of realistic event sequences. The catch: almost none are labelled. So Stage 2 squeezes everything it can out of the <strong>unlabelled</strong> data — it teaches the encoder what "normal" looks like, before we ever mention fraud.</em></p>
+
+<p>Create <code>capstone_pretrain.py</code>. Same masked-token training game from <a href="lesson_04.html">L4</a> / <a href="lesson_05.html">L5</a> — hide one event in a sequence, make the model guess it.</p>
 
 <p><strong>Key rule:</strong> during pre-training, <strong>ignore the labels completely</strong>. Pre-training cares nothing about whether a user is fraud — it's just learning event structure.</p>
 
@@ -120,6 +205,8 @@
 <p><strong>Success check:</strong> pre-training loss drops to under 0.5.</p>
 
 <h2 class="step" id="stage-3"><span class="step-num">Stage 3</span> Build the fraud classifier</h2>
+
+<p><em>Your encoder now understands event structure — but it has never been told what fraud is. Stage 3 brings in the handful of labels you do have: freeze the encoder and train one tiny layer on top to make the actual fraud call.</em></p>
 
 <p>Create <code>capstone_classify.py</code>:</p>
 <ol>
@@ -142,7 +229,7 @@
 
 <h2 class="step" id="stage-4"><span class="step-num">Stage 4</span> The crucial comparison</h2>
 
-<p>A model doing well doesn't prove pre-training mattered. Build a baseline:</p>
+<p><em>You've got a working fraud detector — but how do you know the pre-training in Stage 2 was worth it?</em> A model doing well doesn't prove pre-training mattered. Build a baseline:</p>
 <ul>
   <li>Same architecture, same head, same data.</li>
   <li>Start the encoder with <strong>random weights</strong> (skip Stage 2).</li>
@@ -169,7 +256,7 @@
 <ol>
   <li><strong>Real time encoding.</strong> Give each event a timestamp. Use PRAGMA's <code>8 * log(1 + t/8)</code>.</li>
   <li><strong>Profile state.</strong> Add static user attributes (country, plan).</li>
-  <li><strong>LoRA fine-tuning</strong> instead of freeze + probe. Tune ~2-4% of weights.</li>
+  <li><strong>LoRA fine-tuning</strong> (a trick that nudges a tiny slice of the encoder's weights instead of freezing it completely) instead of freeze + probe. Tune ~2-4% of weights.</li>
   <li><strong>Multi-task.</strong> Two heads on the same frozen encoder.</li>
   <li><strong>Scale.</strong> Increase to 20k, 100k users.</li>
 </ol>
@@ -331,93 +418,12 @@ encoder.load_state_dict(torch.load("encoder.pt"))  # load Stage 2's weights
 </div>
 
 
-<h2 class="step" id="assemble"><span class="step-num">Recap</span> 🧩 Assemble the spine (from memory)</h2>
-
-<p>Before you write a line of capstone code, prove you hold the whole pipeline in your head. Click the building blocks in the order data flows through the model — from raw events to a loss the optimiser can shrink. This is every lesson, in one move.</p>
-
-<div class="widget">
-  <h3>🧩 Build the pipeline in order</h3>
-  <p style="font-size:13.5px;color:var(--text-dim);">Click a block to add it; click a placed block to remove it. Fully keyboard-operable — Tab to a block, Enter to place it.</p>
-  <div style="font-size:13px;color:var(--text-dim);margin:6px 0;">Blocks to place:</div>
-  <div id="asm-bank" style="display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px;"></div>
-  <div style="font-size:13px;color:var(--text-dim);margin:6px 0;">Your pipeline (input → output):</div>
-  <div id="asm-seq" style="display:flex;flex-wrap:wrap;gap:8px;min-height:42px;padding:10px;border:1px dashed var(--border);border-radius:8px;"></div>
-  <div style="display:flex;gap:10px;margin-top:14px;">
-    <button id="asm-check" type="button">Check order</button>
-    <button id="asm-reset" type="button">Reset</button>
-  </div>
-  <div id="asm-msg" role="status" aria-live="polite" style="margin-top:12px;font-size:14px;"></div>
-</div>
-
-<script id="asm-data" type="application/json">
-{
-  "order": ["Tokenise events","Embed tokens","Add position","Attention (mix across)","Feed-forward (think per token)","Output head → scores","Cross-entropy loss","Backprop + nudge knobs"],
-  "hint": "Numbers first: raw events become ids, then vectors. Position tags the order. Attention mixes information ACROSS positions; the feed-forward layer thinks about each position on its own. The head turns vectors into scores, the loss measures how wrong, and backprop nudges every knob."
-}
-</script>
-<script>
-(() => {
-  const el = document.getElementById('asm-data');
-  if (!el) return;
-  const cfg = JSON.parse(el.textContent);
-  const order = cfg.order, hint = cfg.hint;
-  const bank = document.getElementById('asm-bank');
-  const seq  = document.getElementById('asm-seq');
-  const msg  = document.getElementById('asm-msg');
-  const shuffled = order.map((t, i) => i).sort(() => Math.random() - 0.5);
-  let picked = [];
-
-  function chip(label, onClick) {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.textContent = label;
-    b.style.cssText = 'padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#fff;cursor:pointer;font-size:13.5px;';
-    b.addEventListener('click', onClick);
-    return b;
-  }
-  function clearMsg() { msg.innerHTML = ''; msg.style.cssText = 'margin-top:12px;font-size:14px;'; }
-  function render() {
-    bank.innerHTML = '';
-    shuffled.forEach((idx) => {
-      if (picked.includes(idx)) return;
-      bank.appendChild(chip(order[idx], () => { picked.push(idx); render(); }));
-    });
-    seq.innerHTML = '';
-    picked.forEach((idx, pos) => {
-      seq.appendChild(chip((pos + 1) + '. ' + order[idx], () => { picked.splice(pos, 1); render(); }));
-    });
-    clearMsg();
-  }
-  document.getElementById('asm-check').addEventListener('click', () => {
-    if (picked.length < order.length) {
-      msg.innerHTML = 'Place all ' + order.length + ' blocks first.';
-      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#fef3c7;';
-      return;
-    }
-    const firstWrong = picked.findIndex((idx, pos) => idx !== pos);
-    if (firstWrong === -1) {
-      msg.innerHTML = '🎉 <strong>Spot on.</strong> That’s the exact path data takes — the one you’re about to build in code below.';
-      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#dcfce7;';
-    } else {
-      msg.innerHTML = '🤔 <strong>Not quite</strong> — block ' + (firstWrong + 1) + ' is out of place. ' + hint;
-      msg.style.cssText = 'margin-top:12px;font-size:14px;padding:12px 16px;border-radius:8px;background:#fee2e2;';
-    }
-  });
-  document.getElementById('asm-reset').addEventListener('click', () => { picked = []; render(); });
-  render();
-})();
-</script>
-
-<figure class="figure-wide">
-  <img src="../visuals/data_flow.svg" alt="The full pipeline you just assembled: events become ids then vectors, attention mixes them, the head guesses, the loss trains it.">
-  <figcaption>The whole spine in one picture. Your capstone wires every one of these stages together — tokenise → embed → attention → head → loss → train — exactly the order you placed above.</figcaption>
-</figure>
-
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
-    <li>Pre-training is label-free; the fraud labels are only for the final head.</li>
-    <li>For rare fraud, report <em>recall</em> — and you now know every piece needed to build it.</li>
+    <li>I can build the whole PRAGMA recipe end to end: synthetic data → label-free pre-training → freeze → tiny classifier head → honest baseline comparison.</li>
+    <li>A pre-trained encoder wins on rare-class problems like fraud because it learns "normal" from millions of unlabelled events before it ever sees a single label.</li>
+    <li>The same five-line training loop from <a href="lesson_01.html">L1</a> powered every model in this course — including the one I just designed.</li>
   </ul>
 </div>
 

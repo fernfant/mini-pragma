@@ -252,7 +252,7 @@ We know't, we know't.
   </div>
 </div>
 
-<p>Now we run the grown-up loop: <strong>AdamW</strong> + weight decay, a <strong>cosine learning-rate schedule with warmup</strong>, gradient clipping. The actual run from the notebook, on the Mac's GPU:</p>
+<p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each knob, nudge them, repeat. We just dress it up with <strong>AdamW</strong> + weight decay, a <strong>cosine learning-rate schedule with warmup</strong>, and gradient clipping. The actual run from the notebook, on the Mac's GPU:</p>
 
 <pre class="gw-code">device = "mps" if torch.backends.mps.is_available() else "cpu"   <span class="c"># Apple GPU</span>
 for it in range(601):

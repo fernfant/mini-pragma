@@ -320,7 +320,15 @@ AFTER MASKING (random 30%):
   garage→1car    pool→&lt;MASK&gt;      garden→largegarden       schools→avgschool
   condition→&lt;MASK&gt;</code></pre>
 
-<p>The model looks at the visible context — <em>rural, vintage, 1car, largegarden, avgschool</em> — and uses <a href="lesson_03.html">attention</a> to figure out:</p>
+<div id="pred-l5a-mask" style="margin:18px 0;"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a-mask",{
+  q:"Before training, the model's knobs are random — so on its very first try, what does it guess for the three masked slots?",
+  options:["Garbage — random tokens, because nothing has been learned yet","The correct values, because the context makes them obvious","Nothing — it skips masked slots"],
+  correct:0,
+  reveal:"Random garbage at first. The context only <em>becomes</em> a useful clue after thousands of training rounds nudge the knobs. A fresh model has no idea that 'rural + vintage' hints at 'small' — that's exactly the structure it has to learn."
+});});</script>
+
+<p>The model looks at the visible context — <em>rural, vintage, 1car, largegarden, avgschool</em> — and uses <a href="lesson_03.html">attention</a> to figure out (once trained):</p>
 
 <ul>
   <li><code>size→&lt;MASK&gt;</code> → rural cottage context → probably <code>small</code></li>

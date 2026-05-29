@@ -517,6 +517,16 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   <strong>🎉 That's the lesson — you made it to the end of the main path.</strong> You now know how a model writes one word at a time, why the causal mask matters, and how temperature changes its mood. <strong>Want to go deeper?</strong> The optional next page, <a href="lesson_04g.html">Lesson 4g</a>, has two bonus deep-dives: the first ("the whole brain, drawn to scale") lets you <em>see</em> the real size of the network; the second ("from memorizer to general-purpose") shows the leap from whole-word toys to ChatGPT-style models. Totally optional — dip in if you're curious, or head straight on to <a href="lesson_04h.html">Lesson 4h</a>.
 </div>
 
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>A next-word model is trained by <strong>shifting the labels by one</strong> — every position learns to predict the token that comes after it.</li>
+    <li>The <strong>causal mask</strong> stops a position from peeking at the future, so the model can't cheat by reading the answer.</li>
+    <li>Generation is just <strong>predict → append → repeat</strong>, and <strong>temperature</strong> controls how adventurous each pick is.</li>
+    <li>ChatGPT is this <em>exact</em> loop, scaled up — same pipeline, bigger vocab, more layers, wider vectors.</li>
+  </ul>
+</div>
+
 <div id="quiz-l4f"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l4f",[
   {"q":"What two changes turn the fill-in-the-blank model into a next-word writer?","options":["A bigger vocab and more layers","A causal mask + shifted (predict-next) labels","A new loss function and GPUs"],"answer":1,"explain":"Causal mask (look left only) + shifted labels (predict the next token). Everything else is unchanged."},

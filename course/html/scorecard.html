@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Course Scorecard — Mini PRAGMA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .sc-wrap { overflow-x: auto; margin: 22px 0; }
+  table.sc { border-collapse: collapse; font-size: 13px; width: 100%; min-width: 760px; }
+  table.sc th, table.sc td { border: 1px solid var(--border); padding: 7px 8px; text-align: center; }
+  table.sc th { background: var(--bg-card); position: sticky; top: 0; font-weight: 600; }
+  table.sc th.page-h, table.sc td.page-c { text-align: left; white-space: nowrap; font-weight: 600; }
+  table.sc th .w { display: block; font-size: 10.5px; color: var(--text-dim); font-weight: 400; }
+  td.s5 { background: #bbf7d0; }   /* exemplary */
+  td.s4 { background: #dcfce7; }   /* strong    */
+  td.s3 { background: #fef3c7; }   /* acceptable */
+  td.s2 { background: #fee2e2; }   /* weak       */
+  td.tot { font-weight: 700; }
+  .band-ex  { color: #047857; font-weight: 600; }
+  .band-st  { color: #1d4ed8; font-weight: 600; }
+  .band-ac  { color: #b45309; font-weight: 600; }
+  .crit-tbl td { vertical-align: top; }
+  .crit-tbl td.w-c { text-align: center; font-weight: 700; white-space: nowrap; }
+  .legend span { display: inline-block; padding: 2px 9px; border-radius: 5px; margin-right: 8px; font-size: 12.5px; }
+  .stat-row { display: flex; gap: 14px; flex-wrap: wrap; margin: 18px 0; }
+  .stat { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; flex: 1; min-width: 140px; }
+  .stat .big { font-size: 30px; font-weight: 800; line-height: 1; }
+  .stat .lbl { color: var(--text-dim); font-size: 12.5px; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>Course Scorecard</h1>
+<p class="subtitle">Full-spine audit against the 10-criterion rubric · <strong>2026-05-29</strong> (v3, post-fix batch). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+
+<div class="stat-row">
+  <div class="stat"><div class="big">86.6</div><div class="lbl">Course average / 100 — <span class="band-st">Strong</span></div></div>
+  <div class="stat"><div class="big">5</div><div class="lbl">Exemplary pages (90+)</div></div>
+  <div class="stat"><div class="big">8</div><div class="lbl">Strong pages (75–89)</div></div>
+  <div class="stat"><div class="big">0</div><div class="lbl">Acceptable / weak / failing</div></div>
+</div>
+
+<div class="callout info">
+  <strong>Reading the heatmap.</strong> Cells are coloured by score:
+  <span class="legend">
+    <span style="background:#bbf7d0;">5 exemplary</span>
+    <span style="background:#dcfce7;">4 strong</span>
+    <span style="background:#fef3c7;">3 acceptable</span>
+    <span style="background:#fee2e2;">≤2 weak</span>
+  </span>
+  Pages are listed worst-first. A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
+</div>
+
+<h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
+
+<div class="sc-wrap">
+  <table class="sc" id="sc-table" aria-label="Scorecard: 13 lesson pages scored 0 to 5 across 10 criteria, with weighted total out of 100 and band."></table>
+</div>
+<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 16 · Clarity 10 · Concrete-first 10 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 10 · Technical 8 · Accessibility 8 · Flow 8.</p>
+
+<div class="callout">
+  ⚠️ <strong>Confidence note.</strong> <a href="lesson_04f.html">L4f</a> and <a href="lesson_04g.html">L4g</a> are ~880-line pages and were only partially read in this pass, so their <strong>78</strong> totals are conservative floors — a full read may move them. Every other page was read end-to-end.
+</div>
+
+<h2 class="step"><span class="step-num">Rubric</span> The 10 criteria</h2>
+
+<div class="sc-wrap">
+<table class="sc crit-tbl">
+  <thead><tr><th>#</th><th class="page-h">Criterion</th><th>Weight</th><th class="page-h">What 5/5 looks like</th></tr></thead>
+  <tbody>
+    <tr><td>1</td><td class="page-c">Interactivity</td><td class="w-c">16</td><td style="text-align:left">Multiple meaningful click/drag/slide/run widgets; predict-before-reveal at the key moment.</td></tr>
+    <tr><td>2</td><td class="page-c">Age-appropriate clarity</td><td class="w-c">10</td><td style="text-align:left">Plain second-person voice; every term earned; short sentences; a 12–14-yo follows unaided.</td></tr>
+    <tr><td>3</td><td class="page-c">Concrete-first pedagogy</td><td class="w-c">10</td><td style="text-align:left">Opens with a real worked example/numbers; one idea per step; generalises only after.</td></tr>
+    <tr><td>4a</td><td class="page-c">Numeric / factual accuracy</td><td class="w-c">8</td><td style="text-align:left">Every cited figure matches the companion code or is labelled "illustrative"; zero unverified claims.</td></tr>
+    <tr><td>4b</td><td class="page-c">Honest framing</td><td class="w-c">6</td><td style="text-align:left">Simplifications flagged in-clause; no analogy sold as fact the reader must later un-learn.</td></tr>
+    <tr><td>5</td><td class="page-c">Narrative continuity</td><td class="w-c">8</td><td style="text-align:left">Re-uses the running example; connects back/forward; fits the spine story.</td></tr>
+    <tr><td>6</td><td class="page-c">Reinforcement</td><td class="w-c">8</td><td style="text-align:left">Inline checks + recap + quiz; questions test understanding, not recall.</td></tr>
+    <tr><td>7</td><td class="page-c">Structural correctness</td><td class="w-c">10</td><td style="text-align:left">Correct pills, spinebar step/width, reciprocal pagination, recap→quiz→pager order.</td></tr>
+    <tr><td>8</td><td class="page-c">Technical soundness</td><td class="w-c">8</td><td style="text-align:left">All inline JS passes <code>node --check</code>; widgets guarded; JSON valid; no external deps.</td></tr>
+    <tr><td>9</td><td class="page-c">Accessibility</td><td class="w-c">8</td><td style="text-align:left">Widgets keyboard-operable with visible focus; every figure/SVG has a text equivalent; colour never the sole signal.</td></tr>
+    <tr><td>10</td><td class="page-c">Flow / sequencing</td><td class="w-c">8</td><td style="text-align:left">A 12–14-yo reads top-to-bottom <em>once</em> with no backtracking: terms defined before use, one new idea per step, concrete→abstract order. <em>(New criterion — scored by cold-read trace.)</em></td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="step"><span class="step-num">Next</span> Highest-leverage fixes across the spine</h2>
+<ol>
+  <li><strong>Full read + technical audit of L4f and L4g.</strong> The two lowest scores rest on ~25% of their content — the dominant uncertainty in the whole scorecard.</li>
+  <li><strong>L4 <code>#mask-word</code>: keyboard-enable the masking spans.</strong> Add <code>tabindex</code>/<code>role</code>/<code>onkeydown</code> — the only confirmed mouse-only interaction left (C9 3→4).</li>
+  <li><strong>Add one quiz question each to L5, L5b, and a formal quiz to L6.</strong> Three pages sit below the 3-question minimum (C6 3→4).</li>
+  <li><strong>L1.5: rename the 7.5 / 7.6 / 7.7 sub-steps</strong> so they don't fight the "Step N of 13" spinebar, and add an <code>aria-label</code> to <code>#grow-svg</code> (C9 &amp; C10 3→4).</li>
+  <li><strong>L4h: add a tick-by-tick loss-curve slider</strong> (10.836 → 5.040) — makes the page's central quantitative claim interactive (C1 3→4).</li>
+</ol>
+
+<p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v3.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
+
+</div>
+
+<script id="sc-data" type="application/json">
+{
+  "criteria": [
+    {"k":"C1","name":"Interactivity","w":16},
+    {"k":"C2","name":"Clarity","w":10},
+    {"k":"C3","name":"Concrete","w":10},
+    {"k":"C4a","name":"Accuracy","w":8},
+    {"k":"C4b","name":"Honesty","w":6},
+    {"k":"C5","name":"Narrative","w":8},
+    {"k":"C6","name":"Reinforce","w":8},
+    {"k":"C7","name":"Structure","w":10},
+    {"k":"C8","name":"Technical","w":8},
+    {"k":"C9","name":"Access","w":8},
+    {"k":"C10","name":"Flow","w":8}
+  ],
+  "pages": [
+    {"p":"L4f","href":"lesson_04f.html","s":[4,4,4,4,5,4,4,4,3,3,4],"total":78,"band":"Strong"},
+    {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,4,5,4,3,4,3,4,4],"total":78,"band":"Strong"},
+    {"p":"L5","href":"lesson_05.html","s":[3,4,4,5,4,5,4,4,4,4,4],"total":80,"band":"Strong"},
+    {"p":"L1","href":"lesson_01.html","s":[4,4,4,5,5,4,5,4,4,4,4],"total":84,"band":"Strong"},
+    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,3,3],"total":85,"band":"Strong"},
+    {"p":"L4h","href":"lesson_04h.html","s":[3,4,4,5,5,5,4,5,5,4,5],"total":86,"band":"Strong"},
+    {"p":"L2a","href":"lesson_02a.html","s":[4,4,4,5,5,5,5,5,4,4,4],"total":88,"band":"Strong"},
+    {"p":"L5b","href":"lesson_05b.html","s":[4,5,5,4,5,5,3,4,5,5,4],"total":88,"band":"Strong"},
+    {"p":"L2","href":"lesson_02.html","s":[5,4,5,4,5,5,4,5,4,4,4],"total":90,"band":"Exemplary"},
+    {"p":"L6","href":"lesson_06.html","s":[4,4,4,4,5,5,4,5,5,5,5],"total":90,"band":"Exemplary"},
+    {"p":"L4","href":"lesson_04.html","s":[5,4,5,5,5,5,5,5,4,3,4],"total":92,"band":"Exemplary"},
+    {"p":"L5a","href":"lesson_05a.html","s":[4,5,5,4,5,5,4,4,5,5,5],"total":92,"band":"Exemplary"},
+    {"p":"L3","href":"lesson_03.html","s":[5,4,5,5,5,5,5,5,4,4,5],"total":95,"band":"Exemplary"}
+  ]
+}
+</script>
+<script>
+(function(){
+  var el = document.getElementById('sc-table');
+  if (!el) return;
+  var data;
+  try { data = JSON.parse(document.getElementById('sc-data').textContent); }
+  catch (e) { return; }
+  var bandClass = {Exemplary:'band-ex', Strong:'band-st', Acceptable:'band-ac'};
+
+  var head = '<thead><tr><th class="page-h">Page</th>';
+  data.criteria.forEach(function(c){ head += '<th>'+c.k+'<span class="w">'+c.name+'<br>('+c.w+')</span></th>'; });
+  head += '<th>Total<span class="w">/100</span></th><th>Band</th></tr></thead>';
+
+  var body = '<tbody>';
+  data.pages.forEach(function(pg){
+    body += '<tr><td class="page-c"><a href="'+pg.href+'">'+pg.p+'</a></td>';
+    pg.s.forEach(function(v){
+      var cls = v>=5?'s5':v>=4?'s4':v>=3?'s3':'s2';
+      body += '<td class="'+cls+'">'+v+'</td>';
+    });
+    body += '<td class="tot">'+pg.total+'</td>';
+    body += '<td class="'+(bandClass[pg.band]||'')+'">'+pg.band+'</td></tr>';
+  });
+  body += '</tbody>';
+  el.innerHTML = head + body;
+})();
+</script>
+
+</body>
+</html>

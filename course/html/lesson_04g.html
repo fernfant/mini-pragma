@@ -44,7 +44,7 @@
 <div class="wrap">
 
 <h1>Lesson 4g — Bonus: the whole brain, drawn to scale</h1>
-<p class="subtitle">Two optional deep-dives that build on <a href="lesson_04f.html">Lesson 4f</a>. First we draw the real network <em>to scale</em> so you can see where its 11,071 parameters live; then we make the leap from a 31-word memorizer to a general-purpose model that spells any word from scratch.</p>
+<p class="subtitle">Two deeper dives that build on <a href="lesson_04f.html">Lesson 4f</a>. First we draw the real network <em>to scale</em> so you can see where its 11,071 parameters live; then we make the leap from a 31-word memorizer to a general-purpose model that spells any word from scratch.</p>
 
 <div class="lesson-links">
   <a href="http://localhost:8011/notebooks/lesson_04g_char_rhymes.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook (character / rhymes)</a>
@@ -53,7 +53,7 @@
 </div>
 
 <div class="callout info">
-  <strong>This page is optional.</strong> You already finished the main path in <a href="lesson_04f.html">Lesson 4f</a> — these two sections are for when you're curious how big the network really is and how the jump to ChatGPT-style models works. Every number here is the genuine spec of the models we trained.
+  <strong>This is a "go deeper" step.</strong> You already saw the model <em>work</em> in <a href="lesson_04f.html">Lesson 4f</a> — here we slow down to see exactly how big the network really is and how the jump to ChatGPT-style models works. Nothing new to memorize; it's the same model, examined up close. Every number here is the genuine spec of the models we trained.
 </div>
 
 <h2 class="step" id="anatomy"><span class="step-num">Bonus 1</span> 🔬 The whole brain, drawn to scale</h2>
@@ -71,9 +71,17 @@
 <h3 style="margin-bottom:4px;">① How wide is one word? — 32 dimensions</h3>
 <p style="margin-top:4px;">Each word becomes a <strong>vector</strong>: a list of <strong>32 numbers</strong>. Each number is one <strong>dimension</strong> — a separate little dial the model uses to record some shade of meaning. So we say this model has an <strong>embedding dimension of 32</strong> (written <code>d = 32</code>). That number is the "thickness" of every pipe in the network — every vector flowing through it is 32 dimensions wide. Here are all 32 dimensions of one word, to scale:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
-  <div id="anat-vec" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+  <div id="anat-vec" role="img" aria-label="A grid of 32 small boxes, one per dimension of a single word's vector." style="display:flex;flex-wrap:wrap;gap:4px;"></div>
   <div style="color:#94a3b8;font-size:12.5px;margin-top:10px;font-style:italic;">32 boxes = 32 dimensions = one word's meaning. ChatGPT-3 gives each word <strong style="color:#fca5a5;">12,288 dimensions</strong> — that row would be ~25× wider than your screen.</div>
 </div>
+
+<div id="pred-04g-layer" style="margin-top:22px;"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-04g-layer",{
+  q:"A word vector is 32 numbers wide going INTO the encoder layer. After attention + feed-forward have done their work, how wide is the vector that comes OUT?",
+  options:["16 — the layer compresses it","32 — same width in, same width out","64 — it keeps the expanded size"],
+  correct:1,
+  reveal:"Still 32. A layer reshapes the <em>meaning</em> inside each vector but keeps the width the same — that's exactly why you can stack layer after layer (GPT-3 stacks 96). The 64 you'll see below only appears <em>inside</em> the feed-forward step, then gets squeezed back to 32."
+});});</script>
 
 <h3 style="margin-bottom:4px;margin-top:22px;">② Inside the one encoder layer — to scale</h3>
 <p style="margin-top:4px;">Our model has exactly <strong>one</strong> encoder layer (large models stack dozens). A layer does two jobs, in order: first the words <strong>look at each other</strong> (attention), then each word is <strong>processed on its own</strong> (a small feed-forward network). Here's the actual network for each step — watch what happens to the numbers.</p>
@@ -159,7 +167,7 @@
 <h3 style="margin-bottom:4px;margin-top:22px;">③ Where do the 11,071 parameters actually live?</h3>
 <p style="margin-top:4px;"><strong>Parameter</strong> is the official word for one adjustable number the model learns (you'll also hear <strong>weight</strong>). Every box above is made of these. Here's the real split — with a plain-English example of what each group <em>does</em> — and the surprise is that <strong>attention's Q/K/V</strong>, not the feed-forward, is the single biggest piece:</p>
 <div class="widget" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">
-  <div id="anat-bar" style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid #334155;"></div>
+  <div id="anat-bar" role="img" aria-label="A horizontal stacked bar showing how the 11,071 parameters split across the model's parts, with attention's Q/K/V the largest segment. Full breakdown in the legend below." style="display:flex;height:34px;border-radius:8px;overflow:hidden;border:1px solid #334155;"></div>
   <div id="anat-legend" style="display:flex;flex-direction:column;gap:11px;margin-top:14px;font-size:12.5px;"></div>
 </div>
 
@@ -225,7 +233,7 @@
 })});</script>
 
 <h2 class="step" id="general" style="margin-top:34px;"><span class="step-num">Bonus 2</span> 🚀 The real leap: from <em>memorizer</em> to <em>general-purpose</em></h2>
-<p>So far our model only knows <strong>31 whole words</strong>. That's the ceiling. ChatGPT is "general purpose" because it can read and write <em>any</em> text — words it has never seen, made-up words, names, code. How? It doesn't store whole words at all. It works in <strong>tiny pieces</strong> (characters, or "subword" chunks). Let's make that exact leap and watch what changes.</p>
+<p>Bonus 1 showed you every part of the machine, and that turning the dials up is <em>most</em> of how ChatGPT got so big. But there's one wall that no amount of scaling can break — and it's hiding in the very first step we looked at, the embedding table. So far our model only knows <strong>31 whole words</strong>. That's the ceiling. ChatGPT is "general purpose" because it can read and write <em>any</em> text — words it has never seen, made-up words, names, code. How? It doesn't store whole words at all. It works in <strong>tiny pieces</strong> (characters, or "subword" chunks). Let's make that exact leap and watch what changes.</p>
 
 <h3 style="margin-bottom:4px;margin-top:20px;">① First, feel the ceiling — the 31-word wall</h3>
 <p style="margin-top:4px;">Our whole-word model has a fixed dictionary of 31 entries. If a word isn't in it, the model literally has <em>no box</em> for it — it can't even read the input. Type a word and see:</p>

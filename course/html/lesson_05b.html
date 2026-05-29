@@ -166,7 +166,7 @@
 })();
 </script>
 
-<p>Drag it across all four stops. The story:</p>
+<p>Drag it across all four stops. Remember the setup: the <strong>pre-trained</strong> side <strong>freezes</strong> the encoder and trains only a tiny <strong>probe</strong> on top, while the baseline learns everything from scratch using just these labels. The story:</p>
 <ul>
   <li><strong>20 labels: both fail.</strong> Too few examples of the rare class.</li>
   <li><strong>50 labels: pre-training wins dramatically.</strong> Frozen probe catches <strong>100% of churners</strong>; baseline only 63%.</li>

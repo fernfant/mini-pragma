@@ -77,9 +77,9 @@
 </figure>
 
 
-<h2 id="big-idea">The fill-in-the-blank game</h2>
+<h2 class="step" id="big-idea"><span class="step-num">Idea</span> The fill-in-the-blank game</h2>
 
-<p>Pick a sentence with a word missing. Have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
+<p>In <a href="lesson_03.html">L3</a> you saw <em>how</em> a Transformer lets words look at each other with attention. But what are all those knobs actually trained to <em>do</em>? Here's the game BERT plays: pick a sentence with a word missing, and have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
 
 <p>If you have <em>"The cat sat on the mat"</em>, you get 6 training examples from one sentence:</p>
 
@@ -97,7 +97,7 @@
 
 <p><strong>Free training data!</strong> This is why BERT (and PRAGMA) can be trained on the whole internet without humans labelling anything. The fancy name is <em>masked language modelling</em> (MLM).</p>
 
-<h2 id="why-mask"><span style="background:var(--code-bg);color:var(--accent);padding:2px 8px;border-radius:4px;font-family:ui-monospace,monospace;font-size:14px;letter-spacing:0.04em;text-transform:uppercase;">Why?</span> So what is masking actually FOR?</h2>
+<h2 class="step" id="why-mask"><span class="step-num">Why?</span> So what is masking actually FOR?</h2>
 
 <p>This is the question that trips everyone up. We're not masking <em>because</em> we want to fill in blanks — we're masking <strong>to manufacture a training task out of regular text</strong>. Look at the chain:</p>
 
@@ -332,7 +332,7 @@ answer:     <span class="pg-ans">${answer}</span>  (id ${tok2id[answer]})`;
   <div id="predictions" style="margin-top:14px;"></div>
 </div>
 
-<h2>How the model plays the game (step by step)</h2>
+<h2 class="step" id="how-plays"><span class="step-num">How</span> How the model plays the game (step by step)</h2>
 
 <ol>
   <li><strong>Tokenise + embed</strong> (<a href="lesson_02.html">L2</a>) — each word becomes a vector of numbers.</li>
@@ -671,7 +671,7 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 </details>
 
 <!-- ════════════════════ THE DATA JOURNEY ════════════════════ -->
-<h2 id="data-journey">🚀 The data journey — predict the next word, like ChatGPT</h2>
+<h2 class="step" id="data-journey"><span class="step-num">Journey</span> 🚀 The data journey — predict the next word, like ChatGPT</h2>
 
 <p>In Lesson 1.5 you walked the word <code>dog</code> through 18 layers and watched its "knowledge bundle" fill up. Now let's do the same thing for a <strong>whole sentence you choose</strong> — and instead of filling in a blank, we'll do the trick that makes ChatGPT feel alive: <strong>predict the very next word</strong>, then add it, then predict again, then again… until the model has written a sentence on its own.</p>
 
@@ -742,10 +742,11 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   <a href="lesson_04f.html" style="white-space:nowrap;font-size:16px;font-weight:700;padding:12px 20px;background:var(--accent);color:white;border-radius:8px;text-decoration:none;">Go deep → predict the next word</a>
 </div>
 
-<h2 id="whats-different">What's different in real PRAGMA?</h2>
+<h2 class="step" id="whats-different"><span class="step-num">Real</span> What's different in real PRAGMA?</h2>
 
 <figure class="figure-wide">
   <img src="../visuals/architecture_comparison.svg" alt="Architecture comparison: TinyMLM vs real PRAGMA">
+  <figcaption>Same shape, different scale: our TinyMLM and real PRAGMA share the exact pipeline — embed → attention → feed-forward → head — PRAGMA just stacks more layers, wider vectors, and a far bigger vocabulary.</figcaption>
 </figure>
 
 <p>You actually built <strong>two</strong> tiny models in this lesson: <strong>TinyMLM</strong> (Step 5 — the fill-in-the-blank / masked model) and its next-word cousin from the <a href="#data-journey">data journey</a>. They play different games but are almost the same size — and both sit a <em>long</em> way from real PRAGMA:</p>

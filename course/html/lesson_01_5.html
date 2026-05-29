@@ -88,13 +88,13 @@
   <li><strong>When do you need a neural network instead of linear regression?</strong></li>
 </ol>
 
-<p>One dataset, four models, same training loop:</p>
+<p>Here's a <strong>roadmap of where this lesson is heading</strong> — one dataset, four models, same training loop. Don't worry if the last two rows look unfamiliar; you'll build up to them by the end of the page. It's a spoiler, not a quiz:</p>
 
 <table>
   <thead><tr><th>Approach</th><th>Parameters</th><th>Can it fit a curve?</th></tr></thead>
   <tbody>
     <tr><td>Linear regression (L1: <code>y = w*x + b</code>)</td><td>2</td><td>❌ No</td></tr>
-    <tr><td>Polynomial regression (handcrafted <code>x²</code> feature)</td><td>3</td><td>✅ Yes</td></tr>
+    <tr><td>Polynomial regression (you hand it an <code>x²</code> column to work with)</td><td>3</td><td>✅ Yes</td></tr>
     <tr><td>Neural net (Linear → ReLU → Linear)</td><td>~30</td><td>✅ Yes (no handcrafting)</td></tr>
     <tr><td>Transformer (BERT, PRAGMA)</td><td>thousands–billions</td><td>✅ Yes, on sequences</td></tr>
   </tbody>
