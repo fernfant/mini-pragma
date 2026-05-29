@@ -52,11 +52,15 @@ specific section id within it. If no target is given, ask which page; do not gue
    the page (exclude `src=` scripts and `type="application/json"` blocks) and run
    `node --check` on each; validate every `application/json` data block parses.
    Confirm pill count (20) and `current` marker, spinebar "Step N of 13" + fill
-   width, and reciprocal pagination with both neighbours. Report findings; do not
-   fix.
+   width, and reciprocal pagination with both neighbours. Additionally: confirm
+   every interactive control is reachable via a `<button>`/`<input>`/`tabindex`
+   (not a click-only `<div>`) and that every `<figure>`/inline `<svg>` carries a
+   `<figcaption>` or `aria-label`. Flag any mouse-only widget or wordless figure as
+   a technical defect. Report findings; do not fix.
 
-6. **Rate against the rubric.** Score all 8 criteria 0–5, justify each with a
-   concrete page reference, compute the weighted total /100, and state the band.
+6. **Rate against the rubric.** Score every rubric criterion 0–5 (the criteria and
+   weights live in SKILL.md §8), justify each with a concrete page reference,
+   compute the weighted total /100, and state the band.
 
 ## Output format
 

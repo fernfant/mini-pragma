@@ -64,6 +64,11 @@ but **these principles are about the HTML lesson pages.**
 9. **Every claim is verifiable.** Prefer numbers that come from the companion
    `.py`/notebook. If you cite a figure (params, accuracy, layer count), it must
    match the code or be labelled illustrative.
+10. **Every widget works without a mouse, every figure has words.** Click/drag/slide
+   controls must be keyboard-operable and focus-visible; an interaction a kid can't
+   reach with Tab/Enter isn't "learn-by-doing" for everyone. Every meaningful
+   SVG/figure carries a `<figcaption>` or text equivalent so the idea survives if
+   the image doesn't render.
 
 ## 4. Structure: the 13-step spine
 
@@ -142,7 +147,8 @@ if (!el) return;`). Widgets must degrade silently if their host node is absent.
 - An analogy that the reader must later un-learn, presented as fact.
 - Broken nav: wrong pill count, missing `current`, wrong "Step N of 13", or
   non-reciprocal pagination.
-- A widget that throws (no guard) or has malformed JSON data.
+- A widget that throws (no guard), has malformed JSON data, or can only be operated
+  with a mouse (no keyboard path, no visible focus).
 - Optional digressions that block the main path, or duplicated content that
   drifts between pages.
 
@@ -154,15 +160,23 @@ reference (section id / line).
 
 | # | Criterion | Weight | What 5/5 looks like |
 |---|---|---|---|
-| 1 | **Interactivity** | 20 | Multiple meaningful click/drag/slide/run widgets; predict-before-reveal used at the key moment. |
-| 2 | **Age-appropriate clarity** | 18 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
+| 1 | **Interactivity** | 16 | Multiple meaningful click/drag/slide/run widgets; predict-before-reveal used at the key moment. |
+| 2 | **Age-appropriate clarity** | 14 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
 | 3 | **Concrete-first pedagogy** | 14 | Opens with a real worked example/numbers; one idea per step; generalises only after. |
-| 4 | **Honesty & accuracy** | 14 | Numbers match the code or are labelled illustrative; simplifications flagged; no leaky analogies sold as truth. |
+| 4a | **Numeric/factual accuracy** | 8 | Every cited figure (params, accuracy, layer counts, demo numbers) matches the companion code or is explicitly labelled "illustrative"; zero unverified assertions. |
+| 4b | **Honest framing** | 6 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
 | 5 | **Narrative continuity** | 8 | Re-uses the running example; connects back/forward; fits the spine story. |
 | 6 | **Reinforcement** | 8 | Inline checks + recap + quiz; questions test understanding, not recall. |
 | 7 | **Structural correctness** | 10 | Correct pills (20, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
 | 8 | **Technical soundness** | 8 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
+| 9 | **Accessibility** | 8 | Every interactive widget is keyboard-operable with visible focus; every figure/SVG has a text equivalent (`<figcaption>` or aria-label); colour is never the sole signal (callout `good`/`bad` also carry a word/icon). |
 
 **Total /100.** Bands: 90–100 exemplary · 75–89 strong · 60–74 acceptable ·
 40–59 weak · <40 failing. Report per-criterion score, weighted subtotal, total,
 band, and the top 3 highest-leverage fixes.
+
+A score of 5/5 on any criterion is reserved for pages that are exemplary *and*
+could not be improved on that axis — if you can name a concrete improvement, the
+ceiling is 4. "Acceptable, nothing wrong" is 3, not 4. When two pages tie within a
+band, rank the one with a genuine predict-before-reveal at the key moment higher
+(the course's signature move).
