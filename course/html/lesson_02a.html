@@ -50,6 +50,14 @@
   <strong>This page is optional.</strong> You already learned the core idea in <a href="lesson_02.html">Lesson 2</a>: words become vectors, and training pulls related words together. Everything below just re-runs that same experiment at bigger scale — great if you're curious how it improves, and it sets up <em>why</em> we need attention next.
 </div>
 
+<div id="pred-02a-avg"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-02a-avg",{
+  q:"This model guesses the missing word from its neighbours. To turn the context <code>the · dog · says</code> into one vector to predict from, how does it combine the three neighbour vectors?",
+  options:["Multiplies them together","Averages them — every context word counts equally","Keeps only the biggest one"],
+  correct:1,
+  reveal:"It <strong>averages</strong> them — each neighbour counts the same. That's the whole trick (it's why this is called a <em>bag</em> of words: order and importance are thrown away). Keep that flat average in mind — it's exactly the ceiling attention will break in Lesson 3."
+});});</script>
+
 <h3 id="try2">🔬 Try 2 — what if we just throw more data at it?</h3>
 
 <p>You probably noticed, back in <a href="lesson_02.html">Lesson 2's first widget</a>, that the loss never quite settled — it bounces around 2.0–3.0 even at step 3,000, and inference sometimes guesses wrong. That's a real symptom: <strong>20 sentences and 8 numbers per word just isn't enough signal</strong>. The model can almost learn the patterns, but not quite.</p>
@@ -224,6 +232,22 @@
 </div>
 
 <p>So everything you just learned is real: <strong>pre-training shapes embeddings by playing fill-in-the-blank.</strong> Real BERT does <em>exactly</em> this — same training game, same gradient descent — just on billions of sentences and with attention layers on top so the model can be smarter about <em>which</em> context words matter for each blank. We'll see attention in <a href="lesson_03.html">Lesson 3</a> and the full tiny-BERT in <a href="lesson_04.html">Lesson 4</a>.</p>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>This bag-of-words model predicts a missing word by <strong>averaging its neighbour vectors</strong> — every context word counts equally.</li>
+    <li><strong>Scale genuinely helps:</strong> more data, bigger vectors and batches doubled the accuracy (20% → 40%) on the same questions. That's the LLM playbook.</li>
+    <li>But averaging has a <strong>ceiling</strong>: it can't tell "says" matters more than "the". Only <strong>attention</strong> — weighting neighbours instead of averaging them — breaks it. That's Lesson 3.</li>
+  </ul>
+</div>
+
+<div id="quiz-02a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-02a",[
+  {"q":"How does this bag-of-words model turn three context words into one vector to predict from?","options":["It averages their vectors","It multiplies their vectors","It uses only the last word"],"answer":0,"explain":"It averages the neighbour vectors — every context word counts equally."},
+  {"q":"Throwing more data, bigger embeddings and batches at it took accuracy from 20% to 40%. The lesson is…","options":["Scale is useless for this model","Scale genuinely helps — same algorithm, more of everything","Only a new algorithm could ever help"],"answer":1,"explain":"Same recipe at bigger scale doubled accuracy. That's exactly the real LLM playbook."},
+  {"q":"Why does <code>\"the dog says ___\"</code> still come out as <code>cat</code> instead of <code>bark</code>?","options":["The model needs a faster computer","Averaging mixes 'animal-flavour' in equally, so it lands nearer another animal","There wasn't a dog in the training data"],"answer":1,"explain":"Flat averaging can't down-weight 'the' and 'dog' and lean on 'says'. That's the ceiling attention removes by weighting neighbours."}
+]);});</script>
 
 <div class="pagination">
   <a href="lesson_02.html">

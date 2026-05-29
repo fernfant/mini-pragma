@@ -57,6 +57,7 @@
   <ol>
     <li><a href="#plan">The 5-step plan</a></li>
     <li><a href="#headline">Headline result</a></li>
+    <li><a href="#threshold">Recall vs false alarms</a></li>
     <li><a href="#data">The data: engaged vs churning</a></li>
     <li><a href="#arch">The architecture (Encoder + ChurnHead)</a></li>
     <li><a href="#pretrain">Pre-training (MLM)</a></li>
@@ -97,7 +98,8 @@
     <span id="l5b-labels" style="font-family:ui-monospace,monospace;font-weight:700;font-size:18px;min-width:60px;text-align:right;color:var(--accent-strong);">50</span>
   </div>
 
-  <canvas id="l5b-canvas" width="720" height="200" style="max-width:100%;"></canvas>
+  <canvas id="l5b-canvas" width="720" height="200" style="max-width:100%;" aria-label="Two bars comparing recall of the pre-trained model versus the from-scratch baseline at the selected number of labelled users; a dashed line marks the gap between them."></canvas>
+  <figcaption>Recall of the pre-trained model vs the from-scratch baseline at the chosen label count. The dashed line marks the gap — widest when labels are scarce, gone by 1000 labels.</figcaption>
 
   <div id="l5b-takeaway" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
 
@@ -173,6 +175,112 @@
 
 <div class="callout good">
   🔑 <strong>The pre-trained encoder is most valuable when labelled data is scarce.</strong> This is the entire foundation-model pitch — and the reason Revolut built PRAGMA. Labels are expensive; raw events are free.
+</div>
+
+<h2 class="step" id="threshold"><span class="step-num">Tradeoff</span> Recall vs false alarms — pick the alarm line</h2>
+
+<p>The model gives every user a <strong>churn-risk score</strong>. You decide the cut-off: flag everyone at or above it. Set it low and you catch every leaver — but you also pester loads of happy customers. Set it high and you only bother the obvious cases — but miss the quiet leavers. There is no free lunch; there's a <em>threshold</em>.</p>
+
+<div id="pred-l5b-thr"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5b-thr",{
+  q:"To catch EVERY churner, you drag the alarm line all the way down. What goes wrong?",
+  options:["Tons of false alarms — you bug happy customers who weren’t leaving","Nothing — a low line is always best","You somehow catch fewer churners"],
+  correct:0,
+  reveal:"Catching everyone means flagging almost everyone: recall hits 100% but precision craters, so you spam loyal users with ‘please stay’ offers. The skill is picking a line that balances the two."
+});});</script>
+
+<div class="widget">
+  <h3>🎯 Drag the alarm line</h3>
+  <p style="font-size:13.5px;color:var(--text-dim);">Each dot is a user, placed by churn-risk score. <span style="color:#ef4444;font-weight:700;">Red = really churned</span>, <span style="color:#3b82f6;font-weight:700;">blue = stayed</span>. Everyone to the right of the line gets flagged. Drag the slider and watch who you catch.</p>
+
+  <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0;">
+    <label for="thr-slider" style="font-family:ui-sans-serif,system-ui;">alarm line:</label>
+    <input id="thr-slider" type="range" min="5" max="100" step="5" value="50" style="flex:1;min-width:200px;">
+    <span id="thr-val" style="font-family:ui-monospace,monospace;font-weight:700;font-size:18px;min-width:48px;text-align:right;color:var(--accent-strong);">50</span>
+  </div>
+
+  <canvas id="thr-canvas" width="720" height="180" style="max-width:100%;" aria-label="Users plotted left to right by churn-risk score, red dots are real churners and blue dots stayed; a vertical line marks the alarm threshold and everyone to its right is flagged."></canvas>
+  <figcaption>Users by churn-risk score (red = churned, blue = stayed). The vertical line is your threshold; everyone to its right is flagged. Slide it and the counts below update.</figcaption>
+
+  <div id="thr-stats" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:14px;font-size:14px;"></div>
+  <div id="thr-msg" role="status" aria-live="polite" style="margin-top:12px;padding:12px 16px;border-radius:8px;font-size:14px;"></div>
+</div>
+
+<script>
+(() => {
+  const cv = document.getElementById('thr-canvas');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const slider = document.getElementById('thr-slider');
+  // fixed illustrative cohort: churn=1 (real leavers) cluster high, stayers low, with overlap
+  const USERS = [
+    {s:12,c:0},{s:18,c:0},{s:23,c:0},{s:28,c:0},{s:31,c:0},{s:35,c:1},{s:38,c:0},{s:42,c:0},
+    {s:46,c:1},{s:51,c:0},{s:54,c:1},{s:58,c:0},{s:62,c:1},{s:66,c:1},{s:71,c:0},{s:74,c:1},
+    {s:79,c:1},{s:83,c:1},{s:88,c:1},{s:93,c:1}
+  ];
+  const churners = USERS.filter(u => u.c === 1).length;
+  const x0 = 40, x1 = 680;
+  function sx(score) { return x0 + (x1 - x0) * (score / 100); }
+  function render() {
+    const thr = +slider.value;
+    document.getElementById('thr-val').textContent = thr;
+    let tp = 0, fp = 0, fn = 0;
+    USERS.forEach(u => {
+      const flagged = u.s >= thr;
+      if (u.c === 1 && flagged) tp++;
+      else if (u.c === 1 && !flagged) fn++;
+      else if (u.c === 0 && flagged) fp++;
+    });
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    // axis
+    ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x0, 130); ctx.lineTo(x1, 130); ctx.stroke();
+    ctx.fillStyle = '#888'; ctx.font = '12px ui-sans-serif,system-ui'; ctx.textAlign = 'center';
+    ctx.fillText('churn-risk score →', (x0 + x1) / 2, 165);
+    // dots: churners on upper row, stayers on lower row
+    USERS.forEach(u => {
+      const x = sx(u.s), y = u.c === 1 ? 55 : 105;
+      const flagged = u.s >= thr;
+      ctx.beginPath(); ctx.arc(x, y, 8, 0, Math.PI * 2);
+      ctx.fillStyle = u.c === 1 ? '#ef4444' : '#3b82f6';
+      ctx.globalAlpha = flagged ? 1 : 0.28; ctx.fill(); ctx.globalAlpha = 1;
+    });
+    // threshold line
+    const tx = sx(thr);
+    ctx.strokeStyle = '#f59e0b'; ctx.setLineDash([5, 4]); ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(tx, 20); ctx.lineTo(tx, 140); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = '#b45309'; ctx.font = 'bold 12px ui-sans-serif,system-ui'; ctx.textAlign = 'left';
+    ctx.fillText('flag →', tx + 6, 28);
+    // stats
+    const recall = Math.round(100 * tp / churners);
+    const precision = (tp + fp) > 0 ? Math.round(100 * tp / (tp + fp)) : 0;
+    const cell = (label, val, sub) =>
+      '<div style="padding:10px 12px;border:1px solid var(--border);border-radius:8px;">' +
+      '<div style="font-size:12px;color:var(--text-dim);">' + label + '</div>' +
+      '<div style="font-size:22px;font-weight:800;">' + val + '</div>' +
+      '<div style="font-size:12px;color:var(--text-dim);">' + sub + '</div></div>';
+    document.getElementById('thr-stats').innerHTML =
+      cell('recall (churners caught)', recall + '%', tp + ' of ' + churners + ' real churners') +
+      cell('precision (alarms that were right)', precision + '%', fp + ' false alarm' + (fp === 1 ? '' : 's'));
+    const msg = document.getElementById('thr-msg');
+    if (recall === 100) {
+      msg.innerHTML = '<strong>You caught every churner</strong> — but at ' + fp + ' false alarms, precision is only ' + precision + '%. You’re pestering loyal users.';
+      msg.style.background = '#fef3c7';
+    } else if (precision === 100 && tp > 0) {
+      msg.innerHTML = '<strong>Every alarm was right</strong> (precision 100%) — but you missed ' + fn + ' real churners (recall ' + recall + '%). They quietly left.';
+      msg.style.background = '#fee2e2';
+    } else {
+      msg.innerHTML = 'Caught ' + tp + '/' + churners + ' churners (recall ' + recall + '%) with ' + fp + ' false alarm' + (fp === 1 ? '' : 's') + ' (precision ' + precision + '%). Move the line to trade one for the other.';
+      msg.style.background = '#f4f4f5';
+    }
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+</script>
+
+<div class="callout good">
+  🔑 <strong>Recall and precision pull against each other.</strong> Lowering the line raises recall (catch more) but lowers precision (more false alarms). Real teams pick the line that fits the cost: a cheap "we miss you" email can afford false alarms; an expensive intervention can't.
 </div>
 
 <h2 class="step" id="data"><span class="step-num">Data</span> The data: engaged vs churning</h2>
