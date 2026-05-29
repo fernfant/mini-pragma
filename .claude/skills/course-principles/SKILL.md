@@ -1,0 +1,1 @@
+../../../course/agent/SKILL.md

@@ -1,0 +1,12 @@
+# Ignore everything in .claude by default — it holds machine-local state
+# (settings.local.json, launch.json, worktrees/, session caches).
+*
+
+# ...except the skills and agents, which should travel with the repo so they
+# work on other machines. (course-principles/SKILL.md and agents/course-improver.md
+# are symlinks into the tracked course/agent/ tree; course-build-blog is a real file.)
+!.gitignore
+!skills/
+!skills/**
+!agents/
+!agents/**
