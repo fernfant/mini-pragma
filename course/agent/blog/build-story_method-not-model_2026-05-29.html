@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Blank Repo to 93/100 — CxAI</title>
+<style>
+  :root {
+    --ink: #1a1a1a;
+    --muted: #6b6b6b;
+    --rule: #e6e6e6;
+    --accent: #b9410a;
+    --bg: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: #f7f7f5;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+  }
+  /* publication masthead */
+  .pub-header {
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+  }
+  .pub-inner {
+    max-width: 1100px; margin: 0 auto; padding: 14px 24px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pub-name {
+    font-weight: 800; letter-spacing: .14em; font-size: 18px; text-transform: uppercase;
+  }
+  .pub-name .dot { color: var(--accent); }
+  .subscribe {
+    background: var(--accent); color: #fff; border: none; border-radius: 6px;
+    padding: 7px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
+  }
+  /* article shell */
+  .article {
+    max-width: 728px; margin: 0 auto; padding: 56px 24px 80px;
+    background: var(--bg);
+  }
+  .kicker {
+    color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .08em;
+    text-transform: uppercase; margin-bottom: 18px;
+  }
+  h1.title {
+    font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -.018em;
+    margin: 0 0 16px;
+  }
+  .subtitle {
+    font-size: 21px; line-height: 1.4; color: var(--muted); font-weight: 400;
+    margin: 0 0 28px;
+  }
+  .byline {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 22px; margin-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #e08a4a);
+    color: #fff; font-weight: 800; font-size: 17px;
+    display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+  }
+  .byline .who { font-weight: 600; font-size: 15px; }
+  .byline .when { color: var(--muted); font-size: 14px; }
+  /* body copy — Substack reading serif */
+  .body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 20px; line-height: 1.72; color: #242424;
+    margin-top: 30px;
+  }
+  .body p { margin: 0 0 24px; }
+  .body h2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 26px; line-height: 1.25; font-weight: 800; letter-spacing: -.01em;
+    margin: 44px 0 16px;
+  }
+  .body strong { font-weight: 700; color: #111; }
+  .body em { font-style: italic; }
+  .body code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 16px; background: #f2f2ef; padding: 2px 6px; border-radius: 4px;
+  }
+  .body ol { margin: 0 0 24px; padding-left: 28px; }
+  .body ol li { margin-bottom: 14px; }
+  .signoff {
+    margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--rule);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 700; font-size: 17px; color: var(--accent);
+  }
+  .footer-note {
+    max-width: 728px; margin: 0 auto; padding: 22px 24px 60px;
+    color: var(--muted); font-size: 13px; line-height: 1.6;
+  }
+  @media (max-width: 640px) {
+    h1.title { font-size: 30px; }
+    .body { font-size: 18px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .pub-header, .subscribe { background: #fff; }
+    .article { padding-top: 28px; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="pub-header">
+    <div class="pub-inner">
+      <div class="pub-name">CxAI<span class="dot">.</span></div>
+      <button class="subscribe">Subscribe</button>
+    </div>
+  </header>
+
+  <article class="article">
+    <div class="kicker">Building with AI</div>
+    <h1 class="title">From Blank Repo to 93/100: How We Let an AI Build a Course — and a Rubric Keep It Honest</h1>
+    <p class="subtitle">Why the method, not the model, is what made an AI-written curriculum worth shipping</p>
+
+    <div class="byline">
+      <div class="avatar">Cx</div>
+      <div>
+        <div class="who">CxAI Team</div>
+        <div class="when">May 29, 2026 · Consumer Experience × AI</div>
+      </div>
+    </div>
+
+    <div class="body">
+<p>A coding agent wrote a thirteen-lesson course on how Transformers
+work — the real machinery behind BERT, GPT, and Revolut’s PRAGMA —
+pitched at a curious thirteen-year-old. It did it fast. Static HTML, no
+build step, interactive widgets, a running example carried from “a
+computer can’t read, it only does math on numbers” all the way to a
+fine-tuned model. Impressive. Then came the uncomfortable question, the
+one every team shipping AI-generated content eventually has to answer
+out loud:</p>
+<p><strong>Is it any good?</strong></p>
+<p>Not “does it run.” Not “does it look finished.” Is it
+<em>honest</em>, is it <em>clear</em>, would a kid actually learn from
+it — and how would we know, across thirteen pages, without simply
+reading each one and nodding along? That question is the whole story.
+Because the thing that made this course defensible wasn’t the model that
+wrote it. It was the method we wrapped around the model. This is that
+method.</p>
+<h2 id="the-bet-learn-by-doing-taught-by-a-machine">The bet: learn by
+doing, taught by a machine</h2>
+<p>What we set out to build was deliberately narrow. A self-contained,
+interactive, no-build static-HTML course that teaches a bright
+12–14-year-old how Transformers actually work — starting from
+arithmetic, ending at a working classifier — with no calculus, no linear
+algebra, and no jargon assumed. The house bet is one line: <strong>you
+learn more in 30 seconds of playing than 5 minutes of reading.</strong>
+Every page has something to click, drag, slide, or run. A page that is
+all prose is, by our own rule, a <em>failing</em> page.</p>
+<p>That bet matters here because it’s exactly the kind of standard an AI
+writer will quietly violate. Models love prose. They will happily
+generate four tidy paragraphs explaining attention and call it a lesson.
+Holding the line against that — page after page — is not a writing
+problem. It’s a <em>measurement</em> problem.</p>
+<h2
+id="structure-is-a-product-decision-not-a-table-of-contents">Structure
+is a product decision, not a table of contents</h2>
+<p>Before a single lesson, we fixed the shape. The course is <strong>one
+linear spine of thirteen steps</strong>: text → ids → vectors →
+attention → a guess → fine-tuning. The same example sentence transforms
+across lessons, so the reader sees continuity instead of a new toy each
+time. Pagination is reciprocal — every page’s <em>Next</em> matches the
+following page’s <em>Prev</em> — so nobody falls off the path. Genuinely
+optional material (side-quests, code walkthroughs) is reachable but kept
+<em>off</em> the spine, clearly labelled, never blocking the main
+route.</p>
+<p>This sounds like housekeeping. It isn’t. The spine is what lets you
+say “step 7 builds on step 6” and mean it — and it’s what lets a
+reviewer, human or machine, check that claim mechanically. A wandering
+course can’t be graded. A spine can.</p>
+<h2 id="the-real-product-was-the-rubric">The real product was the
+rubric</h2>
+<p>Here is the part nobody warns you about: when your writer is an
+agent, <strong>the writer is not the bottleneck. The grader
+is.</strong></p>
+<p>So we wrote the grader first. Two artifacts sit upstream of every
+lesson. The <strong>principles doc</strong> says what a good page
+<em>is</em> — concrete before abstract, every term earned before it’s
+named, analogies that don’t have to be un-learned later, every cited
+number traceable to the companion code. And a <strong>scored
+rubric</strong> turns those principles into something you can argue
+with: each page scored 0–5 on a set of weighted criteria, summed to a
+single number out of 100, with explicit bands (90+ exemplary, 75–89
+strong, and down).</p>
+<p>Today that rubric has <strong>eleven criteria</strong> across
+<strong>thirteen pages</strong> — interactivity (weighted heaviest, at
+12 of 100), age-appropriate clarity, concrete-first pedagogy, numeric
+accuracy, honest framing, narrative continuity, reinforcement,
+structural correctness, technical soundness, accessibility, within-page
+flow. Weights sum to exactly 100, on purpose. The single most important
+design choice in the whole project was this: <strong>we built the
+scoring rubric before we trusted the writer.</strong> The rubric is the
+source of truth. The lessons are just the current best attempt to
+satisfy it.</p>
+<p>If your team is shipping AI-generated anything and you don’t have
+this artifact — the explicit, weighted definition of “good” that exists
+<em>independently</em> of the output — you don’t have a quality process.
+You have vibes and a fast typist.</p>
+<h2 id="the-loop-score-fix-re-score">The loop: score → fix →
+re-score</h2>
+<p>With a grader in hand, the work becomes a loop, and the loop has a
+name: <strong>score → fix → re-score.</strong> Read every page cold,
+score each criterion against the rubric, rank worst-first, fix the
+lowest-leverage failures, then score again. Repeat until the number
+stops moving.</p>
+<p>The arc is in the audit reports, and the numbers are real. The first
+full pass (v3) averaged <strong>86.6</strong> — five pages exemplary,
+eight merely strong. One targeted batch later (v4), the average climbed
+to <strong>92.8</strong>, with nine pages exemplary. Same model. Same
+writer. The gain came entirely from grading what it produced and feeding
+the worst scores back in.</p>
+<p>That’s the mechanism most “AI writes your content” demos skip. The
+first draft is never the product. <strong>The loop is the
+product</strong>, and the rubric is what closes it.</p>
+<h2 id="the-moves-that-make-learning-stick">The moves that make learning
+stick</h2>
+<p>Two house techniques carry most of the pedagogical weight, and both
+are things the rubric explicitly rewards.</p>
+<p>The first is <strong>predict-before-reveal.</strong> Before showing
+any result, the page asks the reader to guess. The “🤔 good guess —
+here’s what actually happens” beat is where understanding lodges, and
+when two pages tie in score, the one with a genuine prediction at the
+key moment ranks higher. It’s the course’s signature move, and it’s
+baked into the grader so the agent can’t forget it.</p>
+<p>The second is the <strong>honest-failure arc</strong> — “it got
+worse, here’s why.” When a change makes accuracy <em>drop</em>, we teach
+the drop instead of hiding it. A real attention regression in one lesson
+is presented as a regression, then explained. This is a pedagogical
+choice, but it’s also the project’s ethic, and — as you’re about to see
+— we held ourselves to it too.</p>
+<h2 id="the-agent-doesnt-get-bored.-thats-the-asset-and-the-risk.">The
+agent doesn’t get bored. That’s the asset and the risk.</h2>
+<p>There’s a reason this method works better with a machine than it ever
+did with a tired human team: <strong>the agent doesn’t get
+bored.</strong> It will re-read all thirteen pages on the eleventh pass
+with exactly as much care as the first. It will touch fifteen files to
+fix one cross-reference. The maintenance burden that kills human-run
+quality processes — the bookkeeping, the consistency checks, the “did we
+update that everywhere” — costs the agent almost nothing.</p>
+<p>That’s the asset. The risk is the same sentence read the other way:
+an agent that never gets bored also never gets <em>suspicious</em>. It
+won’t wrinkle its nose at a number that smells wrong. So we made
+suspicion mechanical. Every cited figure must trace to the companion
+notebook — the recall and precision numbers in the streaming-churn
+lesson are computed, not asserted. Every inline script must pass
+<code>node --check</code>. Every widget must be keyboard-operable with
+visible focus; every figure must carry a text equivalent. Verification
+isn’t a final step. It’s a gate the loop runs through every time.</p>
+<h2 id="when-a-stricter-ruler-makes-the-score-go-down">When a stricter
+ruler makes the score go down</h2>
+<p>And now the wrinkle — because a flawless arc would be exactly the
+kind of dishonesty this course was built to avoid.</p>
+<p>A human read the course and said something the rubric, in all its
+ten-criteria precision, had missed: <em>concepts are introduced too
+fast.</em> Not wrong, not out of order, not unclear sentence-by-sentence
+— just named and used in the same breath, with no micro-example in
+between. None of the existing criteria caught it. So we added an
+eleventh, <strong>C11 Pacing</strong>, defined tightly: does each
+genuinely new, load-bearing concept get real runway — <em>plain idea →
+name → micro-example → use</em> — or does it land all at once?</p>
+<p>We carved C11’s eight points out of the most over-weighted criteria
+(interactivity dropped from 16 to 12) so the total still summed to 100.
+Then we re-scored. And the average <strong>went down</strong> — to
+<strong>92.2</strong> — because the new, stricter ruler immediately
+found nine pages with a real pacing gap.</p>
+<p>That drop is the most honest number in the whole project. It’s what a
+sharper standard is <em>supposed</em> to do: surface problems the old
+standard was blind to. We found the nine spots, fixed each one — a
+softmax example worked through
+<code>[2,1,0] → [0.66, 0.24, 0.10]</code>, a two-example batch shown
+before the word “batch size”, a plain definition of recall placed
+<em>before</em> the widget that uses it — and re-scored a final time to
+<strong>93.2</strong>, nine pages exemplary again.</p>
+<p>Two pages we deliberately <em>held</em> at four out of five, with the
+residual named in writing rather than rounded up: one still hides its
+full explanation in a collapsed box, the other still introduces two
+terms inside table cells. The whole thing is self-scored by the
+implementer, and the report says so. <strong>93.2 is a conservative,
+defensible average — not a ceiling we awarded ourselves.</strong>
+Honesty over polish, even in the scorecard.</p>
+<h2 id="what-this-means-if-youre-building-with-ai">What this means if
+you’re building with AI</h2>
+<p>Strip away the Transformers and the thirteen-year-old, and the method
+generalises to any team putting AI-generated work in front of real
+people. Four moves:</p>
+<ol type="1">
+<li><strong>Write the rubric before you trust the writer.</strong> The
+explicit, weighted definition of “good” is the actual product. The
+output is a candidate.</li>
+<li><strong>Make the artifact verifiable.</strong> If a number can be
+computed, compute it. If a script can be checked, check it — every pass,
+not once.</li>
+<li><strong>Keep a human holding the taste.</strong> The agent runs the
+loop tirelessly; the human decides <em>what to measure.</em> C11 existed
+because a person noticed something no criterion did.</li>
+<li><strong>Let the loop, not the vibes, decide done.</strong> When the
+score stops climbing and you can’t name the next fix, you’re done. Not
+before.</li>
+</ol>
+<p>The model wrote the course. The method made it honest. Don’t confuse
+the two — and when a stricter ruler makes your numbers drop, that’s not
+a setback. That’s the ruler working.</p>
+      <div class="signoff">Stay tuned! — CxAI Team</div>
+    </div>
+  </article>
+
+  <div class="footer-note">
+    CxAI is a consumer-experience × AI newsletter. Every figure in this piece traces to a project artifact:
+    the scored rubric, the live scorecard, and the v3–v5 audit reports.
+  </div>
+</body>
+</html>
