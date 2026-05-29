@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 5c — Watch it think</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .fp{--fp-warm:#ff6a2b;--fp-cool:#4aa3ff;--fp-good:#46d39a;--fp-neu:#c9a0ff;
+    background:linear-gradient(180deg,#0f1018,#0b0c11);border-radius:14px;padding:14px;
+    color:#ece9e3;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 50px -28px #000}
+  .fp canvas{display:block;width:100%;height:auto;border-radius:10px;background:#0c0d12}
+  .fp .fp-panel{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;margin-top:14px}
+  .fp .fp-group{display:flex;flex-direction:column;gap:7px}
+  .fp .fp-lbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:#8b8c98}
+  .fp .fp-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .fp button,.fp .chip{appearance:none;border:1px solid #2a2c39;background:#171925;color:#ece9e3;
+    padding:7px 13px;border-radius:9px;font:inherit;font-size:13px;cursor:pointer;transition:.15s}
+  .fp button:hover,.fp .chip:hover{border-color:var(--fp-warm);color:#fff}
+  .fp .chip[aria-pressed=true]{border-color:var(--fp-warm);background:#241a16;color:#ffd9c7}
+  .fp button:focus-visible,.fp .chip:focus-visible,.fp input:focus-visible{outline:2px solid var(--fp-warm);outline-offset:2px}
+  .fp .fp-sliders{display:flex;flex-direction:column;gap:6px;min-width:240px}
+  .fp .fp-s{display:grid;grid-template-columns:56px 1fr 42px;gap:8px;align-items:center;font-size:13px}
+  .fp .fp-s b{color:#ffd9c7;font-weight:600;text-align:right}
+  .fp input[type=range]{accent-color:var(--fp-warm);width:100%}
+  .fp .fp-legend{display:flex;gap:14px;flex-wrap:wrap;color:#8b8c98;font-size:12px;margin-left:auto;align-self:flex-end}
+  .fp .fp-legend span{display:inline-flex;gap:6px;align-items:center}
+  .fp .fp-dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .fp .fp-cap{color:#b8b9c4;font-size:13px;margin-top:12px;min-height:34px}
+  .fp .fp-cap b{color:#ece9e3}
+  .fp .fp-auto{padding:2px 8px;font-size:11px;margin-left:6px}
+  .fp:focus-visible{outline:2px solid var(--fp-warm);outline-offset:3px}
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt current">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar branch">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Optional side-quest · the whole forward pass</span>
+  <span class="sb-step">Side-quest</span>
+</div>
+
+<div class="wrap">
+
+<h1>Lesson 5c — Watch it think</h1>
+<p class="subtitle">Every piece you've built — embeddings, attention, the feed-forward net — wired into one machine. Watch a single thought flow left to right, or grab the attention dials and become the model.</p>
+
+<div class="lesson-links">
+  <a href="lesson_05.html"><span class="ico">←</span> L5 putting it together</a>
+  <a href="lesson_03.html"><span class="ico">🎯</span> L3 attention</a>
+</div>
+
+<p>You've met every part separately: a word becomes a <strong>vector of numbers</strong> (L2), <strong>attention</strong> lets each word gather meaning from the others (L3), and a little <strong>feed-forward net</strong> of neurons does the thinking (L1.5, L4). Here they're all wired together, running on three words — <em>"the cat sat"</em> — as the model guesses the next word. Press play and watch one thought travel through.</p>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before you watch</h2>
+
+<div id="pred-l5c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5c",{
+  q: "In the demo you can slide all the attention onto a single word. What happens to the model's next-word guess when you do?",
+  options: ["Nothing — attention doesn't touch the output", "The blend changes, the neurons fire differently, and the guess can shift", "It always lands on the same word no matter what"],
+  correct: 1,
+  reveal: "Attention decides which words get mixed into the blend. Change the blend and you change what the neurons see — so the firing pattern, and the guess, can move. Try it below: drag a dial to 100% and watch the bars on the right re-shape."
+});});</script>
+
+<h2 class="step" id="flow"><span class="step-num">Flow</span> The forward pass, on one screen</h2>
+
+<p>Hit <strong>▶ Play</strong> for the full sweep, <strong>⏭ Step</strong> to walk it one stage at a time, or drag the <strong>attention dials</strong> to set the blend yourself and watch the whole chain recompute.</p>
+
+<figure class="figure-wide">
+  <div class="fp" id="fp" tabindex="0" aria-label="Interactive forward-pass animation. Press space to play or pause, right arrow to step through stages, R to restart. Use the attention sliders to set the blend.">
+    <canvas id="fpCanvas" width="1180" height="560" role="img"
+      aria-label="A forward pass: the words 'the cat sat' are encoded into number vectors; attention beams blend them weighted by relevance; a layer of neurons fires; an output distribution over candidate next-words resolves to a single winning prediction."></canvas>
+    <div class="fp-panel">
+      <div class="fp-group">
+        <span class="fp-lbl">Sentence</span>
+        <div class="fp-row" id="fpSentences"></div>
+      </div>
+      <div class="fp-group">
+        <span class="fp-lbl">Run</span>
+        <div class="fp-row">
+          <button id="fpPlay">▶ Play</button>
+          <button id="fpStep">⏭ Step</button>
+          <button id="fpRestart">↺ Restart</button>
+        </div>
+      </div>
+      <div class="fp-group fp-sliders">
+        <span class="fp-lbl">Attention — you set the blend <button id="fpAuto" class="fp-auto">auto</button></span>
+        <div class="fp-s"><span id="fpT0n">the</span><input type="range" id="fpA0" min="0" max="100" value="33" aria-label="attention weight on word 1"><b id="fpA0v">33%</b></div>
+        <div class="fp-s"><span id="fpT1n">cat</span><input type="range" id="fpA1" min="0" max="100" value="17" aria-label="attention weight on word 2"><b id="fpA1v">17%</b></div>
+        <div class="fp-s"><span id="fpT2n">sat</span><input type="range" id="fpA2" min="0" max="100" value="49" aria-label="attention weight on word 3"><b id="fpA2v">49%</b></div>
+      </div>
+      <div class="fp-legend">
+        <span><i class="fp-dot" style="background:var(--fp-cool)"></i>encode</span>
+        <span><i class="fp-dot" style="background:var(--fp-warm)"></i>attention</span>
+        <span><i class="fp-dot" style="background:var(--fp-neu)"></i>neurons fire</span>
+        <span><i class="fp-dot" style="background:var(--fp-good)"></i>prediction</span>
+      </div>
+    </div>
+    <p class="fp-cap" id="fpCap">Numbers are real for the mechanism; the weights are <em>illustrative</em> — watch how signal flows and blends, not the exact word it lands on. Focus the panel, then <kbd>Space</kbd> play/pause · <kbd>&rarr;</kbd> step · <kbd>R</kbd> restart.</p>
+  </div>
+  <figcaption>One forward pass end to end. <strong>Encode:</strong> each word becomes a vector (blue↔orange cells = the numbers). <strong>Attention:</strong> beams blend the words into the focus word, thickness = weight. <strong>Neurons:</strong> a ReLU layer fires (bright = active, grey = silenced). <strong>Output:</strong> scores over candidate words, softmaxed; the brightest wins. The attention weights are real softmax values; the network weights are illustrative.</figcaption>
+</figure>
+
+<h2 class="step" id="seeing"><span class="step-num">Seeing</span> What each stage is doing</h2>
+
+<ul>
+  <li><strong>Words come in.</strong> Three tokens, with the last one ("sat") ringed — that's the <em>focus</em> word doing the predicting.</li>
+  <li><strong>They become numbers.</strong> Each word lights up as its embedding: a short column of values, colour showing sign and size.</li>
+  <li><strong>Attention routes meaning.</strong> The focus word pulls a weighted mix of every word into one <em>blend</em>. The percentages are a real softmax over the word-to-word scores.</li>
+  <li><strong>Neurons fire.</strong> The blend runs through a layer of neurons; ReLU zeroes the ones that don't activate, leaving a sparse pattern — the "thinking".</li>
+  <li><strong>The answer blooms.</strong> That pattern becomes scores over candidate next-words; softmax squashes them to add to 100%, and the model commits to the brightest.</li>
+</ul>
+
+<div class="callout info">
+  <strong>Why "illustrative"?</strong> The embeddings and attention weights are computed for real, so the <em>flow</em> is honest. The neuron and output weights are fixed random numbers — enough to show the mechanism, not a trained model. Don't read meaning into <em>which</em> word wins; read meaning into <em>how</em> changing the blend changes the firing and the guess.
+</div>
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>A forward pass is one left-to-right trip: <strong>encode → attention → feed-forward → output</strong>.</li>
+    <li>Attention builds a <strong>weighted blend</strong> of the words; change the weights and you change what the rest of the network sees.</li>
+    <li>The output is a <strong>probability distribution</strong> over next words — the model picks the highest.</li>
+  </ul>
+</div>
+
+<div id="quiz-l5c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l5c",[
+  {"q":"In a forward pass, what does attention produce for the focus word?","options":["A single winning word","A weighted blend of all the word vectors","The loss value"],"answer":1,"explain":"Attention mixes every word's vector into one blended vector, weighted by relevance — that blend is what flows onward."},
+  {"q":"Why do some neurons stay grey (off) in the demo?","options":["They're broken","ReLU sets any negative activation to zero","They ran out of memory"],"answer":1,"explain":"ReLU keeps positives and zeroes negatives, so only some neurons 'fire' — that sparse pattern is the layer's response to this input."},
+  {"q":"The output bars add up to 100%. What turned the raw scores into those percentages?","options":["Attention","Softmax","The embedding table"],"answer":1,"explain":"Softmax squashes the raw scores (logits) into a probability distribution that sums to 1."}
+]);});</script>
+
+<div class="pagination">
+  <a href="lesson_05.html">
+    <span class="dir">← Branches from</span>
+    <span class="ttl">L5 — Putting it together</span>
+  </a>
+  <a href="lesson_06.html" class="next">
+    <span class="dir">↩ Back to the path</span>
+    <span class="ttl">L6 — Capstone</span>
+  </a>
+</div>
+
+</div>
+
+<script>
+(function(){
+  const cont=document.getElementById('fp'); if(!cont) return;
+  const cv=document.getElementById('fpCanvas'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height, dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr); cv.style.aspectRatio=W+'/'+H;
+
+  const D=6,V=5,H1=10;
+  const presets=[
+    {tokens:["the","cat","sat"], cand:["mat","rug","floor","grass","step"],
+     E:[[.8,-.3,.5,-.6,.2,.1],[-.4,.9,-.2,.7,-.5,.6],[.3,.2,.9,-.1,.8,-.4]]},
+    {tokens:["she","loves","code"], cand:["python","jazz","cats","rain","you"],
+     E:[[.5,.6,-.4,.2,-.7,.3],[.7,-.2,.6,-.5,.4,.1],[-.3,.8,.2,.6,-.1,-.6]]},
+    {tokens:["dogs","chase","balls"], cand:["fast","home","tails","cats","far"],
+     E:[[-.6,.4,.7,-.2,.5,-.3],[.2,-.5,.4,.8,-.6,.3],[.6,.3,-.4,-.1,.7,.5]]},
+  ];
+  let pi=0;
+  function rng(s){return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296-.5;};}
+  const r=rng(7);
+  const W1=Array.from({length:D},()=>Array.from({length:H1},()=>r()*1.6));
+  const b1=Array.from({length:H1},()=>r()*.4);
+  const W2=Array.from({length:H1},()=>Array.from({length:V},()=>r()*1.6));
+  const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+  const softmax=a=>{const m=Math.max(...a),e=a.map(x=>Math.exp(x-m)),s=e.reduce((x,y)=>x+y,0);return e.map(x=>x/s);};
+
+  let comp={}, attnAuto=true, attnUser=[33,17,49];
+  function recompute(){
+    const P=presets[pi], E=P.E, focus=2;
+    const scores=E.map(ej=>dot(E[focus],ej)/Math.sqrt(D));
+    const auto=softmax(scores);
+    let attn;
+    if(attnAuto){ attn=auto; attnUser=auto.map(x=>Math.round(x*100)); syncSliders(); }
+    else { const s=attnUser.reduce((a,b)=>a+b,0)||1; attn=attnUser.map(x=>x/s); }
+    const blend=Array.from({length:D},(_,d)=>E.reduce((s,ej,j)=>s+attn[j]*ej[d],0));
+    const pre=Array.from({length:H1},(_,h)=>blend.reduce((s,x,d)=>s+x*W1[d][h],0)+b1[h]);
+    const hid=pre.map(x=>Math.max(0,x));
+    const logits=Array.from({length:V},(_,v)=>hid.reduce((s,x,h)=>s+x*W2[h][v],0));
+    const probs=softmax(logits);
+    comp={E,attn,auto,blend,hid,logits,probs,winner:probs.indexOf(Math.max(...probs)),tokens:P.tokens,cand:P.cand,focus};
+  }
+
+  const lane=[150,280,410];
+  const colX={tok:90,emb:300,att:545,mlp:800,out:1045};
+  const cellH=13,cellW=22;
+  const stageX=[colX.emb,colX.att,colX.mlp,colX.out,colX.out+30];
+  const caps=[
+    'Each word becomes a <b>vector of numbers</b> — its meaning written as coordinates.',
+    'The focus word <b>gathers meaning</b> from every word, weighted by relevance. Drag the dials to re-route it.',
+    'A layer of <b>neurons fires</b>; ReLU silences the rest. This sparse pattern is the "thinking".',
+    'The firing pattern becomes <b>scores over candidate words</b>, squashed by softmax to add to 100%.',
+    'The model <b>commits</b>: the brightest word wins.'
+  ];
+  const capEl=document.getElementById('fpCap');
+  const defaultCap=capEl.innerHTML;
+
+  function vcol(v,a){a=a==null?1:a;const t=Math.max(-1,Math.min(1,v));let R,G,B;
+    if(t>=0){R=74+(255-74)*t;G=163+(106-163)*t;B=255+(43-255)*t;}
+    else{const u=-t;R=74+(20-74)*u;G=163+(120-163)*u;B=255+(80-255)*u;}
+    return`rgba(${R|0},${G|0},${B|0},${a})`;}
+
+  let mode='play', playing=true, speed=1, stepIdx=-1, T=0;
+  let t0=performance.now(), pausedPhase=0, stepT0=performance.now();
+  const PXPS=185, SWEEP=(W+130)/PXPS, BLOOM=2.0, CYCLE=SWEEP+BLOOM;
+  let wf=-40, bloomT=0;
+  const motes=Array.from({length:36},()=>({x:Math.random()*W,y:80+Math.random()*(H-160),s:.2+Math.random()*.5,r:.6+Math.random()*1.4}));
+
+  function reveal(x){return Math.max(0,Math.min(1,(wf-x+30)/95));}
+  function phaseNow(){const p=playing?((performance.now()-t0)*speed/1000):pausedPhase;return((p%CYCLE)+CYCLE)%CYCLE;}
+  function updateState(){
+    if(mode==='step'){wf=stepIdx<0?-40:stageX[Math.min(stepIdx,stageX.length-1)];
+      bloomT=stepIdx>=3?Math.min(1,(performance.now()-stepT0)/1200):0;return;}
+    const ph=phaseNow();
+    if(ph<SWEEP){wf=-40+(ph/SWEEP)*(W+130);bloomT=0;}
+    else{wf=W+90;bloomT=Math.min(1,(ph-SWEEP)/BLOOM);}
+  }
+
+  function draw(ts){
+    updateState();
+    ctx.clearRect(0,0,W,H);
+    drawMotes(ts);
+    ctx.save();ctx.globalAlpha=.55;ctx.fillStyle='#5c5e6e';ctx.font='11px -apple-system,sans-serif';ctx.textAlign='center';
+    [['encode',colX.emb],['attention',colX.att],['neurons',colX.mlp],['output',colX.out]].forEach(([l,x])=>ctx.fillText(l.toUpperCase(),x,34));
+    ctx.restore();
+    edgesTokEmb(ts); attention(ts); embToNeurons(ts); output(ts); tokensDraw(); embeddings(ts);
+    const sweepDone=mode==='play'?wf>=colX.out:stepIdx>=3;
+    if(!sweepDone&&wf>colX.tok&&wf<colX.out-100){const fade=Math.min(1,(colX.out-100-wf)/130);
+      ctx.save();ctx.globalAlpha=.55*fade;ctx.strokeStyle='rgba(255,170,110,.9)';ctx.lineWidth=2;
+      ctx.shadowBlur=16;ctx.shadowColor='rgba(255,140,80,.9)';
+      ctx.beginPath();ctx.moveTo(wf,72);ctx.lineTo(wf,H-60);ctx.stroke();ctx.restore();}
+  }
+
+  function drawMotes(ts){ctx.save();
+    motes.forEach(m=>{m.x+=m.s*0.15;if(m.x>W+5)m.x=-5;
+      ctx.globalAlpha=.06+.05*Math.sin(ts/1400+m.x);ctx.fillStyle='#9fb0ff';
+      ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,7);ctx.fill();});ctx.restore();}
+
+  function tokensDraw(){ctx.textAlign='center';ctx.textBaseline='middle';
+    comp.tokens.forEach((w,i)=>{const a=reveal(colX.tok);const slide=(1-a)*-26;
+      ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle='#171a26';ctx.strokeStyle=i===comp.focus?'rgba(255,106,43,.85)':'#2c2f3d';ctx.lineWidth=1.5;
+      rr(colX.tok-42+slide,lane[i]-18,84,36,9);ctx.fill();ctx.stroke();
+      ctx.fillStyle=i===comp.focus?'#ffd9c7':'#ece9e3';ctx.font='15px -apple-system,sans-serif';
+      ctx.fillText('"'+w+'"',colX.tok+slide,lane[i]);ctx.restore();});}
+
+  function embeddings(ts){comp.E.forEach((vec,i)=>{const a=reveal(colX.emb);const y0=lane[i]-(D*cellH)/2;
+    vec.forEach((val,d)=>{const rise=Math.max(0,Math.min(1,(wf-(colX.emb-20))/60));
+      ctx.save();ctx.globalAlpha=a;ctx.fillStyle=vcol(val,.35+.6*Math.min(1,Math.abs(val)));
+      ctx.shadowBlur=9*rise;ctx.shadowColor=vcol(val,.6);
+      rr(colX.emb-cellW/2,y0+d*cellH,cellW,cellH-2,3);ctx.fill();ctx.restore();});});}
+
+  function edgesTokEmb(ts){comp.tokens.forEach((w,i)=>{const a=reveal(colX.emb-40)*.5;if(a<=0)return;
+    ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='rgba(74,163,255,.5)';ctx.lineWidth=1;
+    ln(colX.tok+44,lane[i],colX.emb-cellW/2-4,lane[i]);
+    flowParticles(colX.tok+44,lane[i],colX.emb-cellW/2-4,lane[i],ts,a,i);ctx.restore();});}
+
+  function attention(ts){const bx=colX.att,by=lane[comp.focus],a=reveal(colX.att);if(a<=0)return;
+    comp.attn.forEach((w,j)=>{const sx=colX.emb+cellW/2+2,sy=lane[j];
+      ctx.save();ctx.globalAlpha=a*Math.min(1,.25+w);
+      ctx.strokeStyle=`rgba(255,106,43,${.18+.7*w})`;ctx.lineWidth=1+11*w;
+      ctx.shadowBlur=14*w;ctx.shadowColor='rgba(255,106,43,.6)';
+      cv2(sx,sy,bx-30,by);ctx.stroke();ctx.restore();
+      flowParticlesBez(sx,sy,(sx+bx)/2,sy,(sx+bx)/2,by,bx-30,by,ts,w,a,j);
+      ctx.save();ctx.globalAlpha=a;ctx.fillStyle='rgba(255,170,120,'+a+')';ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText((w*100|0)+'%',(sx+bx)/2,sy+(j<comp.focus?-9:15));ctx.restore();});
+    const y0=by-(D*cellH)/2;
+    comp.blend.forEach((val,d)=>{ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle=vcol(val,.4+.6*Math.min(1,Math.abs(val)));ctx.shadowBlur=12;ctx.shadowColor=vcol(val,.7);
+      rr(bx-cellW/2,y0+d*cellH,cellW,cellH-2,3);ctx.fill();ctx.restore();});
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#8b8c98';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('blend',bx,y0-12);ctx.restore();}
+
+  function embToNeurons(ts){const bx=colX.att,by=lane[comp.focus],mx=colX.mlp,a=reveal(colX.mlp);if(a<=0)return;
+    const ny0=130,nstep=360/(H1-1);
+    for(let h=0;h<H1;h++){const act=comp.hid[h],na=Math.min(1,act/2.2);
+      ctx.save();ctx.globalAlpha=a*(.08+.5*na);
+      ctx.strokeStyle=`rgba(201,160,255,${.1+.6*na})`;ctx.lineWidth=.6+2.4*na;
+      cv2(bx+cellW/2,by,mx-14,ny0+h*nstep);ctx.stroke();
+      if(na>0.05) flowParticlesBez(bx+cellW/2,by,(bx+mx)/2,by,(bx+mx)/2,ny0+h*nstep,mx-14,ny0+h*nstep,ts,na*.5,a,h+3,'rgba(210,180,255,');
+      ctx.restore();}
+    for(let h=0;h<H1;h++){const act=comp.hid[h],na=Math.min(1,act/2.2),fired=act>0;
+      const pulse=fired?(.6+.4*Math.sin(ts*speed/240+h)):.15;
+      const rev=Math.max(0,Math.min(1,(wf-(mx-20)-h*5)/45));
+      ctx.save();ctx.globalAlpha=a*Math.max(.2,rev);
+      ctx.fillStyle=fired?`rgba(201,160,255,${.25+.7*na*pulse})`:'rgba(70,72,86,.5)';
+      ctx.shadowBlur=fired?18*na*pulse:0;ctx.shadowColor='rgba(201,160,255,.9)';
+      ctx.beginPath();ctx.arc(mx,ny0+h*nstep,(7+6*na)*(.6+.4*rev),0,7);ctx.fill();ctx.restore();}
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#8b8c98';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('ReLU layer',mx,ny0-18);ctx.restore();}
+
+  function output(ts){const mx=colX.mlp,ox=colX.out,a=reveal(ox);if(a<=0)return;
+    const ny0=130,nstep=360/(H1-1),by0=120,barH=64,gap=14;
+    for(let h=0;h<H1;h++){if(comp.hid[h]<=0)continue;
+      for(let v=0;v<V;v++){const st=comp.probs[v];
+        ctx.save();ctx.globalAlpha=a*.07*(.4+st);ctx.strokeStyle='rgba(70,211,154,.5)';ctx.lineWidth=.5;
+        ln(mx+8,ny0+h*nstep,ox-90,by0+v*(barH+gap)+barH/2);ctx.stroke();ctx.restore();}}
+    for(let v=0;v<V;v++){const y=by0+v*(barH+gap),isWin=v===comp.winner;
+      const grow=isWin?a*(.55+.45*bloomT):a;const len=20+260*comp.probs[v]*grow;
+      ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle='#171a26';rr(ox-90,y+barH/2-9,300,18,9);ctx.fill();
+      ctx.fillStyle=isWin?'rgba(70,211,154,.9)':'rgba(120,124,140,.7)';
+      if(isWin){ctx.shadowBlur=24*bloomT+6;ctx.shadowColor='rgba(70,211,154,.9)';}
+      rr(ox-90,y+barH/2-9,len,18,9);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle=isWin?'#bff5dd':'#a9abb8';ctx.font=(isWin?'600 ':'')+(14+(isWin?2*bloomT:0))+'px -apple-system,sans-serif';
+      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('"'+comp.cand[v]+'"',ox-90+8,y+barH/2);
+      ctx.textAlign='right';ctx.fillStyle=isWin?'#bff5dd':'#7c7e8c';
+      ctx.fillText((comp.probs[v]*100).toFixed(0)+'%',ox+208,y+barH/2);ctx.restore();}
+    if(bloomT>0){ctx.save();ctx.globalAlpha=bloomT;ctx.textAlign='center';
+      ctx.fillStyle='rgba(70,211,154,'+bloomT+')';ctx.font='600 16px -apple-system,sans-serif';
+      ctx.fillText('predicted next word',ox+60,by0-26);ctx.restore();}}
+
+  function flowParticles(x1,y1,x2,y2,ts,a,seed){const n=2;
+    for(let k=0;k<n;k++){const p=((ts*speed/1100)+seed*.4+k/n)%1;const x=x1+(x2-x1)*p,y=y1+(y2-y1)*p;
+      ctx.beginPath();ctx.fillStyle='rgba(120,180,255,'+(a*.7)+')';ctx.arc(x,y,1.6,0,7);ctx.fill();}}
+  function flowParticlesBez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,ts,w,a,seed,col){
+    col=col||'rgba(255,200,150,';const n=Math.max(1,Math.round(1+w*4));
+    for(let k=0;k<n;k++){const p=((ts*speed/950)+seed*.33+k/n)%1;const pt=bez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,p);
+      ctx.beginPath();ctx.fillStyle=col+(a*(.4+.6*w))+')';ctx.arc(pt.x,pt.y,1.5+3*w,0,7);ctx.fill();}}
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function ln(a,b,c,d){ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();}
+  function cv2(x1,y1,x2,y2){const m=(x1+x2)/2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.bezierCurveTo(m,y1,m,y2,x2,y2);}
+  function bez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,t){const u=1-t;
+    return{x:u*u*u*x1+3*u*u*t*cx1+3*u*t*t*cx2+t*t*t*x2,y:u*u*u*y1+3*u*u*t*cy1+3*u*t*t*cy2+t*t*t*y2};}
+
+  const playBtn=document.getElementById('fpPlay');
+  let raf=0;
+  function loopStart(){if(raf)return;(function go(ts){T=ts||performance.now();draw(T);raf=requestAnimationFrame(go);})();}
+  function setCap(){capEl.innerHTML=(mode==='step'&&stepIdx>=0)?caps[Math.min(stepIdx,caps.length-1)]:defaultCap;}
+  function play(){if(mode==='step'){mode='play';t0=performance.now();}else{t0=performance.now()-pausedPhase*1000/speed;}
+    playing=true;playBtn.textContent='⏸ Pause';setCap();}
+  function pause(){pausedPhase=phaseNow();playing=false;playBtn.textContent='▶ Play';}
+  function restart(){mode='play';t0=performance.now();pausedPhase=0;bloomT=0;stepIdx=-1;playing=true;playBtn.textContent='⏸ Pause';setCap();}
+  function stepFwd(){mode='step';playing=false;playBtn.textContent='▶ Play';stepIdx=Math.min(stepIdx+1,stageX.length-1);stepT0=performance.now();setCap();}
+  playBtn.addEventListener('click',()=>playing?pause():play());
+  document.getElementById('fpStep').addEventListener('click',stepFwd);
+  document.getElementById('fpRestart').addEventListener('click',restart);
+  cont.addEventListener('keydown',e=>{
+    if(e.code==='Space'){e.preventDefault();playing?pause():play();}
+    else if(e.key==='ArrowRight'){e.preventDefault();stepFwd();}
+    else if(e.key==='r'||e.key==='R'){restart();}});
+
+  const sc=document.getElementById('fpSentences');
+  presets.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';
+    b.textContent=p.tokens.join(' ');b.setAttribute('aria-pressed',i===0);
+    b.onclick=()=>{pi=i;attnAuto=true;[...sc.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i));
+      recompute();labelSliders();restart();};
+    sc.appendChild(b);});
+
+  const aEls=[0,1,2].map(i=>document.getElementById('fpA'+i));
+  const aVs=[0,1,2].map(i=>document.getElementById('fpA'+i+'v'));
+  function syncSliders(){aEls.forEach((el,i)=>{el.value=attnUser[i];aVs[i].textContent=Math.round(comp.attn?comp.attn[i]*100:attnUser[i])+'%';});}
+  function labelSliders(){const t=presets[pi].tokens;document.getElementById('fpT0n').textContent=t[0];
+    document.getElementById('fpT1n').textContent=t[1];document.getElementById('fpT2n').textContent=t[2];}
+  aEls.forEach((el,i)=>el.addEventListener('input',()=>{attnAuto=false;attnUser[i]=+el.value;recompute();
+    const s=attnUser.reduce((a,b)=>a+b,0)||1;aVs.forEach((v,k)=>v.textContent=Math.round(attnUser[k]/s*100)+'%');}));
+  document.getElementById('fpAuto').addEventListener('click',()=>{attnAuto=true;recompute();});
+
+  recompute();labelSliders();syncSliders();loopStart();play();
+})();
+</script>
+
+<script src="course.js"></script>
+</body>
+</html>

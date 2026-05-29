@@ -160,17 +160,20 @@ reference (section id / line).
 
 | # | Criterion | Weight | What 5/5 looks like |
 |---|---|---|---|
-| 1 | **Interactivity** | 16 | Multiple meaningful click/drag/slide/run widgets; predict-before-reveal used at the key moment. |
-| 2 | **Age-appropriate clarity** | 10 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
-| 3 | **Concrete-first pedagogy** | 10 | Opens with a real worked example/numbers; one idea per step; generalises only after. |
+| 1 | **Interactivity** | 12 | Multiple meaningful click/drag/slide/run widgets; predict-before-reveal used at the key moment. |
+| 2 | **Age-appropriate clarity** | 9 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
+| 3 | **Concrete-first pedagogy** | 9 | Opens with a real worked example/numbers; one idea per step; generalises only after. |
 | 4a | **Numeric/factual accuracy** | 8 | Every cited figure (params, accuracy, layer counts, demo numbers) matches the companion code or is explicitly labelled "illustrative"; zero unverified assertions. |
 | 4b | **Honest framing** | 6 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
 | 5 | **Narrative continuity** | 8 | Re-uses the running example; connects back/forward; fits the spine story. |
 | 6 | **Reinforcement** | 8 | Inline checks + recap + quiz; questions test understanding, not recall. |
-| 7 | **Structural correctness** | 10 | Correct pills (20, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
+| 7 | **Structural correctness** | 8 | Correct pills (20, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
 | 8 | **Technical soundness** | 8 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
 | 9 | **Accessibility** | 8 | Every interactive widget is keyboard-operable with visible focus; every figure/SVG has a text equivalent (`<figcaption>` or aria-label); colour is never the sole signal (callout `good`/`bad` also carry a word/icon). |
 | 10 | **Flow / sequencing** | 8 | A 12–14-yo can read top-to-bottom *once*, never backtracking: every term is defined before first use, each step says how it builds on the last, one new idea per step, order goes concrete→abstract / simple→hard. Distinct from #2 (per-sentence pitch) and #5 (cross-lesson threading) — this is *within-page* logical flow. |
+| 11 | **Pacing / gradual build-up** | 8 | Every genuinely new, load-bearing concept gets real runway: plain idea → name → micro-example → use. A concept is never named-and-used inside a single clause or parenthetical. Distinct from #2 (per-sentence pitch), #3 (concrete *opening*) and #10 (ordering / used-before-defined) — this is *how much runway each new idea gets*. |
+
+**Scoring #11 (Pacing).** For each genuinely new, load-bearing concept on the page, check the four-beat runway: (1) plain-idea sentence, (2) name introduced, (3) a micro-example or worked instance, (4) use. Score = how consistently concepts get all four: every load-bearing concept gets full runway → 5; one concept named-and-used in a single clause/parenthetical with no micro-example → 4; several rushed → 3; most concepts compressed → ≤2. Justify by citing the rushed concept and its section id (e.g. "`#train`: cross-entropy named and used in one line"). A concept that is a deliberate *callback* to an earlier full treatment does not need re-runway — a one-line re-gloss suffices.
 
 **Scoring #10 (Flow).** Do a **cold read**: simulate a 13-year-old reading the page once, top-to-bottom, *no scrolling back*. Log every point where they'd get confused or have to re-read. The score is the inverse of confusion points: 0 points → 5; 1–2 minor stumbles → 4; one place you genuinely *must* backtrack → 3; several backtracks → 2; the order fights the reader throughout → ≤1. Justify the score by citing the **checklist probes** that fail (section id / line): (a) a term used before it's defined; (b) a step with no transition saying how it builds on the prior one; (c) a step introducing more than one new idea; (d) a current step that depends on an "as we'll see later" hand-wave; (e) abstract-before-concrete ordering. Optionally report an unweighted Flesch-Kincaid grade (target 6–8) as a sanity floor — it does **not** set the score (it's blind to ordering).
 

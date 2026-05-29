@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -821,6 +822,8 @@ Linear(2048, 512)</code></pre>
   <li><strong>Linear regression / polynomial regression</strong> — no nonlinearity. Just <code>y = Σ wᵢ · feature_i + b</code>.</li>
   <li><strong>Neural networks</strong> — at least one nonlinearity (ReLU, GELU, softmax).</li>
 </ul>
+
+<p>You've met ReLU and GELU. <strong>Softmax</strong> is the one nonlinearity you haven't built yet, so here's the plain idea: it takes a handful of raw scores and squashes them into fractions that add up to 1 — one tidy probability per option. For example, scores <code>[2, 1, 0]</code> come out as roughly <code>[0.66, 0.24, 0.10]</code> (biggest score → biggest share, and they sum to 1). That's all it is; you'll put it to work inside attention in L3.</p>
 
 <p><strong>Embeddings and attention are NOT model classes.</strong> They're building blocks that plug into either kind of model. You can use an embedding inside a linear-regression-style head, or inside a neural-net head. Same for attention.</p>
 

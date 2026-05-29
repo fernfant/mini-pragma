@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -145,6 +146,8 @@
     loss.backward()                          # 4. which way is "less wrong"?
     opt.step()                               # 5. nudge w and b a little</code></pre>
 
+<p>That step-4 line computes the <strong>gradient</strong>. Don't let the word scare you — a gradient is just <em>"which way to nudge each knob, and how hard, to make the loss smaller."</em> Step 5 then takes exactly that nudge. (We unpack it slowly later; for now, "gradient = the downhill direction" is all you need.)</p>
+
 <p>Memorise these five lines. You will see them again — unchanged — in <a href="lesson_02.html">Lesson 2</a>, <a href="lesson_04.html">Lesson 4</a>, and PRAGMA itself.</p>
 
 <div id="chk-l1-loop"></div>
@@ -169,7 +172,7 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 
 <h3>The optimiser</h3>
 <pre><code>opt = torch.optim.SGD([w, b], lr=0.05)</code></pre>
-<p>SGD = <strong>Stochastic Gradient Descent</strong>. It just walks downhill on the loss landscape. The <code>lr</code> is the size of each step.</p>
+<p>You just met the gradient — the downhill direction. <strong>SGD</strong> is simply the rule that takes a step that way, over and over, until the loss stops dropping. (It stands for <em>Stochastic Gradient Descent</em>; "stochastic" just means it can use a few examples at a time rather than all of them.) The <code>lr</code> — <em>learning rate</em> — is how big each downhill step is.</p>
 
 <h3 id="loss">The loss (Step 3)</h3>
 <p>The widget above (and the playground below) use the first <strong>5</strong> points <code>x = [1,2,3,4,5]</code>, so <code>y_true = [3, 5, 7, 9, 11]</code>. At step 0 (with <code>w=0, b=0</code>) the model predicts all zeros. The errors are <code>[-3, -5, -7, -9, -11]</code>, squared <code>[9, 25, 49, 81, 121]</code>, summed <code>285</code>, averaged <code>285 / 5 =</code> <strong>57</strong> — exactly the "loss" the widget shows at the start. (The full notebook uses all 8 points, which averages to 62.5 — same idea, a few more points.)</p>

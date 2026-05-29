@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -615,7 +616,11 @@ right answer (saved aside, not shown to the model):  dog  (id 7)</code></pre>
 
 <h4>④ Squish the visible cards into ONE summary card</h4>
 
-<p>The model has two visible embeddings. To make a single guess, it has to combine them into a single summary. The simple way — called <strong>CBOW</strong> (Continuous Bag of Words: hide one word, then guess it from the average of its neighbours) — is to <strong>average them slot by slot</strong>.</p>
+<p>The model has two visible embeddings. To make a single guess, it has to combine them into one summary card.</p>
+
+<p>Here's the game we're playing: <em>hide one word in a sentence, then guess it from the words around it.</em> That predict-the-missing-word game has a name — <strong>CBOW</strong>, short for <em>Continuous Bag of Words</em>. ("Bag" because the order of the neighbours won't matter — they just get tipped into a bag and mixed together.)</p>
+
+<p>And the way CBOW mixes the neighbours is the simplest thing you could do: <strong>average them slot by slot.</strong></p>
 
 <pre><code>summary = ( [0.1, 0.2]  +  [0.3, 0.9] ) / 2
 
@@ -650,11 +655,7 @@ summary = [0.20, 0.55]</code></pre>
 
 <p>The right answer is <code>dog</code>. We want <code>dog</code>'s score to be the highest of all 19 scores. Right now it isn't — <code>runs</code> beat it. So the model's confidence in the right answer is too low, and the <strong>loss</strong> reflects that.</p>
 
-<p>The formula used here is <strong>cross-entropy</strong> (same one we work through by hand in <a href="lesson_04.html#step-4">L4 Step 4</a>). Don't sweat the formula — the only thing to remember is the rule it follows:</p>
-
-<div class="callout">
-  <strong>The loss rule (cross-entropy in one sentence):</strong> small when the right answer's score is the biggest by a lot. Big when the right answer is buried below other words.
-</div>
+<p>So how do we turn "<code>dog</code> scored too low" into one loss number? We want a rule that's <strong>small when the right answer's score is the biggest by a lot, and big when the right answer is buried below other words.</strong> The standard formula that follows exactly that rule has a name — <strong>cross-entropy</strong> (it's the same one we work through by hand in <a href="lesson_04.html#step-4">L4 Step 4</a>). Don't sweat the formula; the rule in bold above is the whole idea.</p>
 
 <p>Right now <code>dog</code> (0.48) is <em>below</em> <code>runs</code> (0.56), so the loss is bigger than zero — meaningfully wrong, but not catastrophic.</p>
 

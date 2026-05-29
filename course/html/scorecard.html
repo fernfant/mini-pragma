@@ -47,6 +47,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -55,10 +56,10 @@
 <div class="wrap">
 
 <h1>Course Scorecard</h1>
-<p class="subtitle">Full-spine audit against the 10-criterion rubric · <strong>2026-05-29</strong> (v4, post-fix batch). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+<p class="subtitle">Full-spine audit against the 11-criterion rubric · <strong>2026-05-29</strong> (v5 — adds C11 Pacing). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
 
 <div class="stat-row">
-  <div class="stat"><div class="big">92.8</div><div class="lbl">Course average / 100 — <span class="band-ex">Exemplary</span></div></div>
+  <div class="stat"><div class="big">93.5</div><div class="lbl">Course average / 100 — <span class="band-ex">Exemplary</span></div></div>
   <div class="stat"><div class="big">9</div><div class="lbl">Exemplary pages (90+)</div></div>
   <div class="stat"><div class="big">4</div><div class="lbl">Strong pages (75–89)</div></div>
   <div class="stat"><div class="big">0</div><div class="lbl">Acceptable / weak / failing</div></div>
@@ -78,77 +79,88 @@
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
 
 <div class="sc-wrap">
-  <table class="sc" id="sc-table" aria-label="Scorecard: 13 lesson pages scored 0 to 5 across 10 criteria, with weighted total out of 100 and band."></table>
+  <table class="sc" id="sc-table" aria-label="Scorecard: 13 lesson pages scored 0 to 5 across 11 criteria, with weighted total out of 100 and band."></table>
 </div>
-<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 16 · Clarity 10 · Concrete-first 10 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 10 · Technical 8 · Accessibility 8 · Flow 8.</p>
+<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 8 · Technical 8 · Accessibility 8 · Flow 8 · <strong>Pacing 8</strong>.</p>
 
 <div class="callout">
-  ✅ <strong>What changed in v4.</strong> A targeted fix batch touched all 13 spine pages — keyboard-operable widgets and figure/SVG text equivalents (C9), a predict-before-reveal at each page's key moment plus a third quiz question where one was missing (C1/C6), every cited figure either tied to its companion notebook or de-specified (C4a), and several flow/structure repairs. The course average rose from <strong>86.6 → 92.8</strong>; the three remaining 86s (L4f, L4g, L5) are now the highest-leverage targets.
+  🆕 <strong>What changed in v5.</strong> Added <strong>C11 Pacing / gradual build-up</strong> — does each genuinely new, load-bearing concept get enough runway (plain idea → name → micro-example → use), or is it named-and-used inside a single clause? Its 8 points were carved from Interactivity (16→12, it was the single highest weight), Structure (10→8), Clarity (10→9) and Concrete-first (10→9). The initial v5 audit found pacing gaps on 9 pages (avg dipped to 92.2). <strong>Those gaps have now been fixed</strong> — a plain-idea-first sentence, micro-example, or unpacked list added at each spot (see below) — lifting C11 to 5 on <strong>all 9</strong> and the average to <strong>93.5</strong> (9 exemplary / 4 strong). The last two residuals were closed in a follow-up pass: <strong>L3</strong> moved the √d treatment out of a collapsed box into the main flow, and <strong>L4h</strong> now introduces pre-LayerNorm and GELU in prose before the code.
 </div>
 
-<h2 class="step"><span class="step-num">Rubric</span> The 10 criteria</h2>
+<h2 class="step"><span class="step-num">Rubric</span> The 11 criteria</h2>
 
 <div class="sc-wrap">
 <table class="sc crit-tbl">
   <thead><tr><th>#</th><th class="page-h">Criterion</th><th>Weight</th><th class="page-h">What 5/5 looks like</th></tr></thead>
   <tbody>
-    <tr><td>1</td><td class="page-c">Interactivity</td><td class="w-c">16</td><td style="text-align:left">Multiple meaningful click/drag/slide/run widgets; predict-before-reveal at the key moment.</td></tr>
-    <tr><td>2</td><td class="page-c">Age-appropriate clarity</td><td class="w-c">10</td><td style="text-align:left">Plain second-person voice; every term earned; short sentences; a 12–14-yo follows unaided.</td></tr>
-    <tr><td>3</td><td class="page-c">Concrete-first pedagogy</td><td class="w-c">10</td><td style="text-align:left">Opens with a real worked example/numbers; one idea per step; generalises only after.</td></tr>
+    <tr><td>1</td><td class="page-c">Interactivity</td><td class="w-c">12</td><td style="text-align:left">Multiple meaningful click/drag/slide/run widgets; predict-before-reveal at the key moment.</td></tr>
+    <tr><td>2</td><td class="page-c">Age-appropriate clarity</td><td class="w-c">9</td><td style="text-align:left">Plain second-person voice; every term earned; short sentences; a 12–14-yo follows unaided.</td></tr>
+    <tr><td>3</td><td class="page-c">Concrete-first pedagogy</td><td class="w-c">9</td><td style="text-align:left">Opens with a real worked example/numbers; one idea per step; generalises only after.</td></tr>
     <tr><td>4a</td><td class="page-c">Numeric / factual accuracy</td><td class="w-c">8</td><td style="text-align:left">Every cited figure matches the companion code or is labelled "illustrative"; zero unverified claims.</td></tr>
     <tr><td>4b</td><td class="page-c">Honest framing</td><td class="w-c">6</td><td style="text-align:left">Simplifications flagged in-clause; no analogy sold as fact the reader must later un-learn.</td></tr>
     <tr><td>5</td><td class="page-c">Narrative continuity</td><td class="w-c">8</td><td style="text-align:left">Re-uses the running example; connects back/forward; fits the spine story.</td></tr>
     <tr><td>6</td><td class="page-c">Reinforcement</td><td class="w-c">8</td><td style="text-align:left">Inline checks + recap + quiz; questions test understanding, not recall.</td></tr>
-    <tr><td>7</td><td class="page-c">Structural correctness</td><td class="w-c">10</td><td style="text-align:left">Correct pills, spinebar step/width, reciprocal pagination, recap→quiz→pager order.</td></tr>
+    <tr><td>7</td><td class="page-c">Structural correctness</td><td class="w-c">8</td><td style="text-align:left">Correct pills, spinebar step/width, reciprocal pagination, recap→quiz→pager order.</td></tr>
     <tr><td>8</td><td class="page-c">Technical soundness</td><td class="w-c">8</td><td style="text-align:left">All inline JS passes <code>node --check</code>; widgets guarded; JSON valid; no external deps.</td></tr>
     <tr><td>9</td><td class="page-c">Accessibility</td><td class="w-c">8</td><td style="text-align:left">Widgets keyboard-operable with visible focus; every figure/SVG has a text equivalent; colour never the sole signal.</td></tr>
-    <tr><td>10</td><td class="page-c">Flow / sequencing</td><td class="w-c">8</td><td style="text-align:left">A 12–14-yo reads top-to-bottom <em>once</em> with no backtracking: terms defined before use, one new idea per step, concrete→abstract order. <em>(New criterion — scored by cold-read trace.)</em></td></tr>
+    <tr><td>10</td><td class="page-c">Flow / sequencing</td><td class="w-c">8</td><td style="text-align:left">A 12–14-yo reads top-to-bottom <em>once</em> with no backtracking: terms defined before use, one new idea per step, concrete→abstract order. Scored by cold-read trace.</td></tr>
+    <tr><td>11</td><td class="page-c">Pacing / gradual build-up</td><td class="w-c">8</td><td style="text-align:left">Every genuinely new, load-bearing concept gets real runway — plain idea → name → micro-example → use — never named-and-used inside a single clause or parenthetical. Distinct from clarity (per-sentence pitch), concrete-first (the opening), and flow (ordering). <em>(New criterion.)</em></td></tr>
   </tbody>
 </table>
 </div>
 
-<h2 class="step"><span class="step-num">Next</span> Highest-leverage fixes remaining</h2>
-<ol>
-  <li><strong>L4f — convert one explanatory passage to a predict-before-reveal and add a worked numeric opener (C3).</strong> The narrative (C5) and reinforcement now hold; the remaining gap is a touch more concrete-first framing.</li>
-  <li><strong>L4g — add a second hands-on widget and a third reinforcement check (C1/C6).</strong> Currently it leans on one interactive; a second meaningful widget would clear the last 4s.</li>
-  <li><strong>L5 — lift interactivity beyond the single playground (C1) and tighten the toy-model architecture walk-through (C7).</strong></li>
-  <li><strong>Sweep C8 across L1, L1.5, L4, L3.</strong> Inline JS passes <code>node --check</code> cleanly, but a couple of widgets could add explicit guards/empty-state handling to earn the 5.</li>
-  <li><strong>Flow polish on L2 / L5b (C10).</strong> Both have one dense section (the embedding-widget block on L2, the architecture section on L5b) that a cold reader hits before its setup.</li>
-</ol>
+<h2 class="step"><span class="step-num">Pacing</span> Concepts introduced too fast (C11 gaps) — now fixed</h2>
+<p>The v5 audit flagged 9 spots where a genuinely new, load-bearing concept was <strong>named-and-used inside a single clause</strong> instead of getting the full <em>plain idea → name → micro-example → use</em> runway. Each has now been fixed in the page; the table records the gap and the exact fix applied. <strong>All nine moved to C11 = 5</strong> (L3 and L4h closed in a follow-up pass).</p>
+<table class="sc crit-tbl">
+  <thead><tr><th class="page-h">Page</th><th>C11</th><th class="page-h">Concept that was rushed</th><th class="page-h">Fix applied</th></tr></thead>
+  <tbody>
+    <tr><td class="page-c">L1</td><td>4→5</td><td style="text-align:left"><code>#loop</code>/<code>#data</code>: the <strong>gradient</strong> appeared as a code comment then was used immediately; <strong>SGD</strong> was named and used in the same clause.</td><td style="text-align:left">✓ Added a plain "gradient = which way to nudge, and how hard" line right after the loop; SGD now introduced <em>after</em> the gradient, tied to it ("the rule that takes a step that way"), with <code>lr</code> glossed.</td></tr>
+    <tr><td class="page-c">L1.5</td><td>4→5</td><td style="text-align:left"><code>#step-77</code>: <strong>softmax</strong> appeared only inside a parenthetical list "(ReLU, GELU, softmax)".</td><td style="text-align:left">✓ Added a standalone paragraph with a worked micro-example: scores <code>[2,1,0]</code> → <code>[0.66, 0.24, 0.10]</code> (sums to 1).</td></tr>
+    <tr><td class="page-c">L2</td><td>4→5</td><td style="text-align:left"><code>#train</code>: <strong>CBOW</strong> defined+used in one parenthetical; <strong>cross-entropy</strong> named+used in a single line.</td><td style="text-align:left">✓ CBOW now leads with the predict-the-missing-word game, then the name, then the averaging. Cross-entropy now states its plain rule first, names the formula second.</td></tr>
+    <tr><td class="page-c">L2a</td><td>4→5</td><td style="text-align:left"><code>#try3</code>: <strong>batch / batch size</strong> introduced then used with no micro-example.</td><td style="text-align:left">✓ Added a worked 2-example batch (g₁, g₂ → one averaged nudge) before defining "batch size".</td></tr>
+    <tr><td class="page-c">L3</td><td>4→5</td><td style="text-align:left"><code>#multi</code>/<code>#qkv</code>: <strong>multi-head attention</strong> compressed into one clause; <strong>√d</strong> appeared in the formula before it's explained.</td><td style="text-align:left">✓ Multi-head now opens with the "why ask several questions at once" idea and glosses <em>concatenate</em>. The full √d treatment was pulled out of the collapsed box into a main-flow "Why divide by √d?" subsection — plain idea (big dot products spike softmax) → the name (scaling factor) → worked micro-example (<code>[2,1,0]</code> vs <code>[20,10,0]</code>) → back to the formula.</td></tr>
+    <tr><td class="page-c">L4g</td><td>4→5</td><td style="text-align:left">Bonus 1: <strong>LayerNorm</strong> used in tables with no gloss.</td><td style="text-align:left">✓ Added a gloss right under the parameter table ("rescales a vector so its numbers don't balloon or vanish… 2 numbers each, hence 128").</td></tr>
+    <tr><td class="page-c">L4h</td><td>4→5</td><td style="text-align:left">Part 3/4: <strong>AdamW + cosine LR + grad clipping</strong> crammed into one clause; <strong>pre-LayerNorm</strong>/<strong>GELU</strong> in table cells.</td><td style="text-align:left">✓ Unpacked the three training tricks into a bulleted list, one plain-idea line each. Added a prose gloss for <strong>pre-LayerNorm</strong> (rescale the vector before attention/MLP to keep deep stacks stable) and <strong>GELU</strong> (a smoother ReLU-style bend) right after the upgrade table, before either recurs in the code.</td></tr>
+    <tr><td class="page-c">L5</td><td>4→5</td><td style="text-align:left"><code>#vocab</code>: <strong>key-value tokenisation</strong> named then built, but <em>why</em> it's key-value landed late.</td><td style="text-align:left">✓ Now opens with the plain idea (an event is fields paired with values, <code>merchant=Tesco</code>, <code>amount=14.99</code>) <em>before</em> the code and the name.</td></tr>
+    <tr><td class="page-c">L5b</td><td>4→5</td><td style="text-align:left"><code>#headline</code>/<code>#threshold</code>: <strong>recall</strong> defined only inside a predict reveal; <strong>precision</strong> first appeared as a bare canvas label.</td><td style="text-align:left">✓ Added a standalone recall definition in body text before the widget, and a precision definition (with a worked "6 of 10 flagged really left = 60%") before the threshold widget.</td></tr>
+  </tbody>
+</table>
+<p style="font-size:13px;color:var(--text-dim);">Pages already at C11 = 5 before this pass (concepts got full runway): <strong>L4</strong> (cross-entropy/softmax/logits/MLM each unpacked), <strong>L4f</strong> (causal mask / position embeddings / temperature each get a dedicated step), <strong>L5a</strong> (pre-train / freeze / mean-pooling / baseline / LoRA all built up), <strong>L6</strong> (recall re-glossed inline; everything else a deliberate callback).</p>
 
-<p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v4.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
+<p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v5.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
 
 </div>
 
 <script id="sc-data" type="application/json">
 {
   "criteria": [
-    {"k":"C1","name":"Interactivity","w":16},
-    {"k":"C2","name":"Clarity","w":10},
-    {"k":"C3","name":"Concrete","w":10},
+    {"k":"C1","name":"Interactivity","w":12},
+    {"k":"C2","name":"Clarity","w":9},
+    {"k":"C3","name":"Concrete","w":9},
     {"k":"C4a","name":"Accuracy","w":8},
     {"k":"C4b","name":"Honesty","w":6},
     {"k":"C5","name":"Narrative","w":8},
     {"k":"C6","name":"Reinforce","w":8},
-    {"k":"C7","name":"Structure","w":10},
+    {"k":"C7","name":"Structure","w":8},
     {"k":"C8","name":"Technical","w":8},
     {"k":"C9","name":"Access","w":8},
-    {"k":"C10","name":"Flow","w":8}
+    {"k":"C10","name":"Flow","w":8},
+    {"k":"C11","name":"Pacing","w":8}
   ],
   "pages": [
-    {"p":"L4f","href":"lesson_04f.html","s":[5,4,4,4,5,4,5,4,4,4,4],"total":86,"band":"Strong"},
-    {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,5,5,5,4,4,4,4,5],"total":86,"band":"Strong"},
-    {"p":"L5","href":"lesson_05.html","s":[4,4,4,5,4,5,5,4,4,4,5],"total":86,"band":"Strong"},
-    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,4,4],"total":88,"band":"Strong"},
-    {"p":"L1","href":"lesson_01.html","s":[4,4,4,5,5,5,5,5,4,4,5],"total":90,"band":"Exemplary"},
-    {"p":"L4h","href":"lesson_04h.html","s":[4,4,4,5,5,5,5,5,5,5,5],"total":93,"band":"Exemplary"},
-    {"p":"L2a","href":"lesson_02a.html","s":[5,4,4,5,5,5,5,5,4,5,5],"total":94,"band":"Exemplary"},
-    {"p":"L4","href":"lesson_04.html","s":[5,5,5,5,5,5,5,5,4,4,4],"total":95,"band":"Exemplary"},
-    {"p":"L2","href":"lesson_02.html","s":[5,5,5,5,5,5,5,5,4,5,4],"total":97,"band":"Exemplary"},
-    {"p":"L5b","href":"lesson_05b.html","s":[5,5,5,5,5,5,4,5,5,5,4],"total":97,"band":"Exemplary"},
-    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5],"total":98,"band":"Exemplary"},
-    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5],"total":98,"band":"Exemplary"},
-    {"p":"L6","href":"lesson_06.html","s":[5,5,5,5,5,5,4,5,5,5,5],"total":98,"band":"Exemplary"}
+    {"p":"L4f","href":"lesson_04f.html","s":[5,4,4,4,5,4,5,4,4,4,4,5],"total":87,"band":"Strong"},
+    {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,5,5,5,4,4,4,4,5,5],"total":88,"band":"Strong"},
+    {"p":"L5","href":"lesson_05.html","s":[4,4,4,5,4,5,5,4,4,4,5,5],"total":88,"band":"Strong"},
+    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,4,4,5],"total":89,"band":"Strong"},
+    {"p":"L1","href":"lesson_01.html","s":[4,4,4,5,5,5,5,5,4,4,5,5],"total":91,"band":"Exemplary"},
+    {"p":"L4h","href":"lesson_04h.html","s":[4,4,4,5,5,5,5,5,5,5,5,5],"total":94,"band":"Exemplary"},
+    {"p":"L2a","href":"lesson_02a.html","s":[5,4,4,5,5,5,5,5,4,5,5,5],"total":95,"band":"Exemplary"},
+    {"p":"L4","href":"lesson_04.html","s":[5,5,5,5,5,5,5,5,4,4,4,5],"total":95,"band":"Exemplary"},
+    {"p":"L2","href":"lesson_02.html","s":[5,5,5,5,5,5,5,5,4,5,4,5],"total":97,"band":"Exemplary"},
+    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5,5],"total":98,"band":"Exemplary"},
+    {"p":"L5b","href":"lesson_05b.html","s":[5,5,5,5,5,5,4,5,5,5,4,5],"total":97,"band":"Exemplary"},
+    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"},
+    {"p":"L6","href":"lesson_06.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"}
   ]
 }
 </script>

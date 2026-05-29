@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -313,6 +314,8 @@ scores:`;
 
 <pre><code>Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V</code></pre>
 
+<p>Don't stall on the <code>/ √d</code> bit yet — it's just a stabiliser, and we unpack it in a moment (<a href="#scale">Why divide by √d?</a>, just below). The heart of the formula is everything else:</p>
+
 <ul>
   <li><strong>Q (query)</strong> — "what am I looking for?"</li>
   <li><strong>K (key)</strong> — "what do I offer to others looking?"</li>
@@ -333,11 +336,18 @@ scores:`;
   <strong>One word, three jobs.</strong> Q, K, and V are just three different views of the same word vector, each made by multiplying it by a learned matrix. Think of it as the word putting on a different hat depending on whether it's <em>asking</em> (Q), <em>being asked</em> (K), or <em>handing over its meaning</em> (V).
 </div>
 
-<details class="go-deeper">
-  <summary>Go deeper: what's the <code>√d</code> for?</summary>
-  <p>Before softmax we divide the scores by <code>√d</code> (the square root of the vector size). Here's why: as vectors get longer (more features), their dot products grow bigger and bigger. Feed huge numbers into softmax and it becomes <strong>too spiky</strong> — one word grabs ~100% of the attention and everyone else gets ~0%, so the model stops blending information.</p>
-  <p>See it on plain numbers: <code>softmax([2, 1, 0]) ≈ [0.66, 0.24, 0.09]</code> (nicely shared) but <code>softmax([20, 10, 0]) ≈ [1.00, 0.00, 0.00]</code> (one word hogs everything). Dividing by <code>√d</code> keeps the scores in the gentle range. It's a small stabiliser, not a deep idea — but it matters in practice.</p>
-</details>
+<h3 id="scale">Why divide by √d?</h3>
+
+<p>Here's the problem the <code>/ √d</code> solves. Longer word vectors (more features, <code>d</code> of them) have bigger dot products — add up more numbers and you get a bigger total. Feed those big scores into softmax and it turns <strong>too spiky</strong>: one word grabs almost 100% of the attention and everyone else gets ~0%, so the model stops blending information across words.</p>
+
+<p>The fix is one division. We take the square root of the vector size — call it <strong>√d</strong> — and divide every score by it before softmax. That's the <strong>scaling factor</strong>: it shrinks the scores back into a gentle range so softmax stays soft.</p>
+
+<p>See it on plain numbers. With small scores softmax shares attention nicely; with big ones it collapses onto a single word:</p>
+
+<pre><code>softmax([2, 1, 0])    ≈ [0.66, 0.24, 0.09]   ← nicely shared
+softmax([20, 10, 0])  ≈ [1.00, 0.00, 0.00]   ← one word hogs everything</code></pre>
+
+<p>So in <code>softmax(Q · Kᵀ / √d) · V</code>, the <code>/ √d</code> is just that shrink step keeping the left example from turning into the right one. It's a small stabiliser, not a deep idea — but every real Transformer uses it.</p>
 
 <details class="go-deeper">
   <summary>Go deeper: what if every word has the IDENTICAL vector?</summary>
@@ -352,7 +362,7 @@ cat         0.25    0.25    0.25    0.25</code></pre>
 
 <h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>
 
-<p>Instead of running the attention formula once, you run it several times in parallel with different Q/K/V matrices, then concatenate the outputs. Each "head" can specialise — one might learn grammar, another might learn subject-object pairing, another might learn nearby words. PRAGMA-L uses 16 attention heads in its <strong>history encoder</strong> — the part of the model that reads a customer's whole stream of past banking events (the same kind of key-value sequences you'll build in L5) and blends them into one understanding of that person, exactly the way attention here blends words in a sentence.</p>
+<p>One set of Q/K/V lets each word ask just <em>one</em> kind of question. But a word often needs to track several things at once — grammar <em>and</em> meaning <em>and</em> which noun it refers to. So why not let it ask several questions in parallel? That's the whole idea of <strong>multi-head attention</strong>: run the attention formula several times side by side, each run with its own Q/K/V matrices, then <em>concatenate</em> the outputs (just lay them next to each other into one longer vector). Each parallel run is called a <strong>head</strong>, and each head can specialise — one might learn grammar, another subject-object pairing, another nearby words. PRAGMA-L uses 16 attention heads in its <strong>history encoder</strong> — the part of the model that reads a customer's whole stream of past banking events (the same kind of key-value sequences you'll build in L5) and blends them into one understanding of that person, exactly the way attention here blends words in a sentence.</p>
 
 <p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;"><strong>Heads-up on the word "head."</strong> An <strong>attention head</strong> is one of these parallel question-askers — that's the real industry term, straight from the 2017 paper <em>Attention Is All You Need</em>. Later (in <a href="lesson_04.html">Lesson 4</a>) you'll meet the <strong>output head</strong>: the final layer that turns vectors into word scores. Same word, completely different job — don't let them blur together.</p>
 

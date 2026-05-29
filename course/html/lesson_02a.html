@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -143,7 +144,14 @@
 
 <p>One more turn of the dial. Same recipe, but this time we add even <em>more</em> sentences (with new shared contexts so animals/sounds/places have stronger category signal), bigger embeddings, and we process examples in <strong>batches</strong> of 8 per step.</p>
 
-<p>What's a batch? Instead of nudging the knobs after every single example, each step now picks <strong>8 random (sentence, mask) examples</strong>, averages their gradients, and does one combined nudge. That's exactly what real BERT does to keep training stable. Here's how the three runs stack up:</p>
+<p>What's a batch? Instead of nudging the knobs after every single example, each step looks at a small handful of examples at once. Picture the smallest possible batch — just <strong>2</strong> examples going through one step together:</p>
+
+<pre><code>example 1:  "the dog ___"  → wants "runs"  → gradient g₁
+example 2:  "the cat ___"  → wants "meow"  → gradient g₂
+
+one nudge  =  average(g₁, g₂)      ← knobs move ONCE, using both</code></pre>
+
+<p>The number of examples in that handful is the <strong>batch size</strong>. With batch size 1 (Try 1 and Try 2) the knobs lurched after every single example; with batch size <strong>8</strong> they move on the smoothed average of 8 examples at a time — steadier steps, less zig-zag. That's exactly what real BERT does to keep training stable, and you'll see the smoother loss line below. Here's how the three runs stack up:</p>
 
 <table class="compact" style="max-width:620px;">
   <thead><tr><th></th><th>Try 1</th><th>Try 2</th><th>Try 3 (this one)</th></tr></thead>

@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -224,6 +225,7 @@
     <tr style="background:#dcfce7"><td><strong>one extra layer</strong></td><td><strong>8,544</strong></td></tr>
   </tbody>
 </table>
+<p style="font-size:13px;color:var(--text-dim);margin-top:6px;">New word in that list: <strong>LayerNorm</strong> ("layer normalisation") is just a tiny clean-up step that sits between the big blocks. It rescales a vector so its numbers don't balloon too large or shrink to nothing as they flow through the layer — which keeps training stable. It only has 2 small numbers to learn per copy (a scale and a shift), so the "2× LayerNorm" line costs just 128 parameters.</p>
 
 <div class="callout info" style="margin-top:12px;">
   <strong>The honest result: +77% more parameters, and the model writes <em>exactly the same sentences</em>.</strong> The loss barely budged (0.546 → 0.539). Why? Our 29-sentence corpus is so simple that <strong>one layer already captures every pattern in it</strong> — there's nothing left for a second layer to learn. Depth only pays off when the task has deeper structure that a single layer <em>can't</em> hold. That's the real lesson: more layers ≠ automatically smarter — they help when the data is hard enough to need them. GPT-3 stacks <strong>96</strong> layers because human language genuinely is that deep; our toy corpus isn't. <em>(Try it: add 30 trickier, longer sentences to the corpus and the 2-layer model should start to pull ahead.)</em>

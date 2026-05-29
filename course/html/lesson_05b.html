@@ -29,6 +29,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html" class="current">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -87,6 +88,8 @@
 });});</script>
 
 <h2 class="step" id="headline"><span class="step-num">Result</span> The headline result</h2>
+
+<p>That gives us the one metric this whole lesson hinges on. <strong>Recall</strong> answers a single question: <em>of all the users who really did churn, what fraction did we actually catch?</em> Catch 8 of every 10 real leavers and you have 80% recall. Accuracy can hide a useless model (the lazy "everyone stays" model scores 90%); recall can't (that same model has 0% recall — it catches nobody). So from here on we watch recall, not accuracy.</p>
 
 <div class="widget">
   <h3>📊 Pre-trained vs baseline — drag the labels slider</h3>
@@ -181,6 +184,8 @@
 <h2 class="step" id="threshold"><span class="step-num">Tradeoff</span> Recall vs false alarms — pick the alarm line</h2>
 
 <p>The model gives every user a <strong>churn-risk score</strong>. You decide the cut-off: flag everyone at or above it. Set it low and you catch every leaver — but you also pester loads of happy customers. Set it high and you only bother the obvious cases — but miss the quiet leavers. There is no free lunch; there's a <em>threshold</em>.</p>
+
+<p>This introduces recall's partner, <strong>precision</strong>: <em>of all the users you flagged, what fraction really did churn?</em> Flag 10 people and 6 of them actually leave, and your precision is 60% — the other 4 were false alarms. Recall asks "did I catch the leavers?"; precision asks "were my alarms right?" The slider below makes them fight.</p>
 
 <div id="pred-l5b-thr"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5b-thr",{

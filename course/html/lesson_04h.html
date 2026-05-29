@@ -75,6 +75,7 @@
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
     <a href="lesson_06.html">L6</a>
     <a href="glossary.html">📖</a>
   </div>
@@ -173,6 +174,12 @@ for s in ["the cat sat", "dinosaur", "antidisestablishmentarianism"]:
   </tbody>
 </table>
 
+<p>Two of those rows are new words, so meet them before they show up in the code below:</p>
+<ul>
+  <li><strong>pre-LayerNorm.</strong> <em>LayerNorm</em> rescales a vector so its numbers don't balloon or vanish — like resetting the volume to a sane level. "Pre" just means we do that rescaling <em>before</em> attention and the feed-forward, not after. Doing it first keeps the signal steady all the way down a deep stack of layers, so training doesn't blow up.</li>
+  <li><strong>GELU.</strong> The activation function — the bend that lets a network learn curves, the job ReLU did back in <a href="lesson_01_5.html">Lesson 1.5</a>. GELU is just a smoother version of that same bend (no sharp corner at zero), and in practice it trains a touch better. Same role, gentler shape.</li>
+</ul>
+
 <p>The <strong>config</strong> is the GPT-3 family table as code — every dial in one place:</p>
 <pre class="gw-code">@dataclass
 class GPTConfig:
@@ -252,7 +259,13 @@ We know't, we know't.
   </div>
 </div>
 
-<p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each knob, nudge them, repeat. We just dress it up with <strong>AdamW</strong> + weight decay, a <strong>cosine learning-rate schedule with warmup</strong>, and gradient clipping. The actual run from the notebook, on the Mac's GPU:</p>
+<p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each knob, nudge them, repeat. We just add three real-world training tricks on top. None of them changes <em>what</em> the loop does; they just make the downhill walk smoother so a big model trains without blowing up:</p>
+<ul>
+  <li><strong>AdamW</strong> — a smarter optimiser than the plain SGD from L1. Instead of one fixed step size for every knob, it gives each knob its own adaptive step based on how it's been moving. (The "W" adds <em>weight decay</em>: a gentle pull keeping the knobs from growing too large.)</li>
+  <li><strong>Cosine learning-rate schedule with warmup</strong> — the step size isn't constant. It <em>warms up</em> (starts tiny so early steps don't lurch), then eases down along a cosine curve toward the end so the model settles gently instead of overshooting.</li>
+  <li><strong>Gradient clipping</strong> — if a gradient ever comes back huge, it gets capped to a maximum size before the nudge. One freak example can't yank the whole model off a cliff.</li>
+</ul>
+<p>The actual run from the notebook, on the Mac's GPU:</p>
 
 <pre class="gw-code">device = "mps" if torch.backends.mps.is_available() else "cpu"   <span class="c"># Apple GPU</span>
 for it in range(601):
