@@ -58,7 +58,7 @@
   reveal:"It <strong>averages</strong> them — each neighbour counts the same. That's the whole trick (it's why this is called a <em>bag</em> of words: order and importance are thrown away). Keep that flat average in mind — it's exactly the ceiling attention will break in Lesson 3."
 });});</script>
 
-<h3 id="try2">🔬 Try 2 — what if we just throw more data at it?</h3>
+<h2 class="step" id="try2"><span class="step-num">Try 2</span> 🔬 What if we just throw more data at it?</h2>
 
 <p>You probably noticed, back in <a href="lesson_02.html">Lesson 2's first widget</a>, that the loss never quite settled — it bounces around 2.0–3.0 even at step 3,000, and inference sometimes guesses wrong. That's a real symptom: <strong>20 sentences and 8 numbers per word just isn't enough signal</strong>. The model can almost learn the patterns, but not quite.</p>
 
@@ -83,7 +83,7 @@
   </div>
 
   <div class="widget-row two">
-    <canvas id="cb2-canvas" width="500" height="360"></canvas>
+    <canvas id="cb2-canvas" width="500" height="360" aria-label="2D scatter of word vectors for the Try 2 run; animals, sounds and places drift into coloured clusters as training proceeds."></canvas>
     <div class="controls">
       <div style="margin-bottom:12px;">
         <button id="cb2-train">▶ Train</button>
@@ -107,7 +107,7 @@
       <strong style="font-size:13px;">📉 Loss over training (real numbers from a 5,000-step run)</strong>
       <span style="font-size:12px;color:var(--text-dim);">Notice: now it actually flattens.</span>
     </div>
-    <canvas id="cb2-loss-cv" width="780" height="100" style="margin-top:6px;"></canvas>
+    <canvas id="cb2-loss-cv" width="780" height="100" style="margin-top:6px;" aria-label="Training-loss curve for the Try 2 run, falling and then flattening over 5,000 steps."></canvas>
   </div>
 
   <div id="cb2-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">
@@ -130,7 +130,15 @@
   <p style="margin:8px 0 0;">PRAGMA-L isn't a fundamentally different idea from your toy here. It's the same recipe with <em>billions of sentences</em>, <em>1024-dimensional embeddings</em>, and <em>18 stacked layers of attention</em>. The reason GPT-4 feels like magic isn't a magic algorithm — it's that the recipe scales beautifully.</p>
 </div>
 
-<h3 id="try3">🚀 Try 3 — push it harder. More data, bigger embeddings, batches.</h3>
+<div id="chk-02a-scale"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-02a-scale",{
+  q:"Try 2 used the SAME training loop as Lesson 2 — only more sentences and bigger vectors. So why did accuracy improve?",
+  options:["More data gave the model more signal to shape the vectors with","The algorithm was secretly changed","Bigger vectors just memorise the answers"],
+  answer:0,
+  explain:"Nothing about the recipe changed — only the amount of data and the room per word. More signal lets the same loop carve cleaner structure. That's the scale lesson."
+});});</script>
+
+<h2 class="step" id="try3"><span class="step-num">Try 3</span> 🚀 Push it harder — more data, bigger embeddings, batches.</h2>
 
 <p>One more turn of the dial. Same recipe, but this time we add even <em>more</em> sentences (with new shared contexts so animals/sounds/places have stronger category signal), bigger embeddings, and we process examples in <strong>batches</strong> of 8 per step (averaging gradients across 8 examples per step instead of just 1).</p>
 
@@ -146,6 +154,14 @@
 </table>
 
 <p>Each step now picks <strong>8 random (sentence, mask) examples</strong>, averages their gradients, and does one combined nudge. That's exactly what real BERT does to keep training stable. The loss curve below will look way smoother than Try 1 or Try 2 — and it actually <em>flattens</em> for real.</p>
+
+<div id="pred-02a-scale"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-02a-scale",{
+  q:"We're about to 10× the steps and add batches. Does accuracy keep climbing forever, or hit a wall?",
+  options:["Keep climbing forever — more scale always wins","Climb, then hit a ceiling this architecture can't pass","Get worse with more data"],
+  correct:1,
+  reveal:"It climbs (20% → 40%) and then plateaus: averaging the context flat can't tell that 'says' matters more than 'the'. That ceiling is exactly what attention breaks in Lesson 3."
+});});</script>
 
 <p>I ran exactly this in the venv and measured accuracy on a fixed set of 10 demo sentences (the same set used to compare against Try 2). Real numbers:</p>
 
@@ -166,7 +182,7 @@
   </div>
 
   <div class="widget-row two">
-    <canvas id="cb3-canvas" width="500" height="360"></canvas>
+    <canvas id="cb3-canvas" width="500" height="360" aria-label="2D scatter of word vectors for the Try 3 run; with more data and batches the coloured category clusters are tighter and better separated."></canvas>
     <div class="controls">
       <div style="margin-bottom:12px;">
         <button id="cb3-train">▶ Train</button>
@@ -190,7 +206,7 @@
       <strong style="font-size:13px;">📉 Loss with batches (much smoother than Try 1/2)</strong>
       <span style="font-size:12px;color:var(--text-dim);">Averaging 8 examples per step removes the noise.</span>
     </div>
-    <canvas id="cb3-loss-cv" width="780" height="100" style="margin-top:6px;"></canvas>
+    <canvas id="cb3-loss-cv" width="780" height="100" style="margin-top:6px;" aria-label="Training-loss curve for the Try 3 run with batches of 8; much smoother than Try 1 and Try 2 and clearly flattening."></canvas>
   </div>
 
   <div id="cb3-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">

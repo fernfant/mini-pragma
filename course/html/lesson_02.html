@@ -418,7 +418,7 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
   </div>
 
   <div class="widget-row two">
-    <canvas id="emb-train" width="500" height="320"></canvas>
+    <canvas id="emb-train" width="500" height="320" aria-label="2D scatter of word vectors. Partner words share a colour and drift toward each other as training runs; hollow rings mark where each word started."></canvas>
     <div class="controls">
       <div style="margin-bottom:12px;">
         <button id="et-train">▶ Train</button>
@@ -444,7 +444,7 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
       <strong style="font-size:13px;">📉 Loss over time</strong>
       <span style="font-size:12px;color:var(--text-dim);">Average distance between partners. When it flattens, training's done.</span>
     </div>
-    <canvas id="emb-loss" width="780" height="100" style="margin-top:6px;"></canvas>
+    <canvas id="emb-loss" width="780" height="100" style="margin-top:6px;" aria-label="Training-loss curve falling over steps and flattening out as the embeddings finish reorganising."></canvas>
   </div>
 
   <!-- Inference panel (hidden during training) -->
@@ -475,6 +475,14 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
   <p style="margin:8px 0 0;">But our model can only relate words <strong>one to one</strong>. It can't yet handle a whole sentence like <em>"the dog barked at the cat near the tree"</em> — it has no way to ask <em>"which of the OTHER words in this sentence matter most for understanding 'dog' right now?"</em></p>
   <p style="margin:8px 0 0;">That question is exactly what <strong><a href="lesson_03.html">attention</a></strong> answers. Instead of squishing every context word equally (as the CBOW walkthrough above did), attention learns to <em>weight</em> the context words — paying more attention to the ones that matter. Same training game, smarter model. That's where we go next.</p>
 </div>
+
+<div id="chk-l2emb"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l2emb",{
+  q:"After training, two words ended up with vectors pointing the same way (high dot product). What does that tell you about the training sentences?",
+  options:["The two words showed up in similar contexts — surrounded by the same kinds of words","The two words are spelled similarly","Nothing — the positions are random"],
+  answer:0,
+  explain:"Embeddings are shaped only by context. Words that keep appearing among the same neighbours get pulled into the same direction — that's why partners end up close."
+});});</script>
 
 <details class="go-deeper">
   <summary>Go deeper: what if I train 10× longer? Does dog·bark keep climbing?</summary>
@@ -769,7 +777,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
   </div>
 
   <div class="widget-row two">
-    <canvas id="cb-canvas" width="500" height="360"></canvas>
+    <canvas id="cb-canvas" width="500" height="360" aria-label="2D scatter of word vectors after BERT-style fill-in-the-blank training; animals, sounds, places and function words cluster into separate coloured groups."></canvas>
     <div class="controls">
       <div style="margin-bottom:12px;">
         <button id="cb-train">▶ Train</button>
@@ -793,7 +801,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
       <strong style="font-size:13px;">📉 Loss over training (real numbers from a 3,000-step run)</strong>
       <span style="font-size:12px;color:var(--text-dim);">Drops from ~7 to ~2 as embeddings reorganise.</span>
     </div>
-    <canvas id="cb-loss-cv" width="780" height="100" style="margin-top:6px;"></canvas>
+    <canvas id="cb-loss-cv" width="780" height="100" style="margin-top:6px;" aria-label="Training-loss curve from a 3,000-step run, dropping from about 7 to about 2 as embeddings reorganise."></canvas>
   </div>
 
   <div id="cb-inference" style="display:none;margin-top:18px;padding:14px 18px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;">

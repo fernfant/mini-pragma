@@ -211,6 +211,19 @@
   <strong>The honest result: +77% more parameters, and the model writes <em>exactly the same sentences</em>.</strong> The loss barely budged (0.546 → 0.539). Why? Our 29-sentence corpus is so simple that <strong>one layer already captures every pattern in it</strong> — there's nothing left for a second layer to learn. Depth only pays off when the task has deeper structure that a single layer <em>can't</em> hold. That's the real lesson: more layers ≠ automatically smarter — they help when the data is hard enough to need them. GPT-3 stacks <strong>96</strong> layers because human language genuinely is that deep; our toy corpus isn't. <em>(Try it: add 30 trickier, longer sentences to the corpus and the 2-layer model should start to pull ahead.)</em>
 </div>
 
+<div id="chk-04g-depth"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-04g-depth",{
+  q:"A friend doubles the layers in their model and the loss barely moves. Based on what you just saw, what's the most likely reason — and what should they change first?",
+  options:[
+    "The extra layers are broken — they should add even more layers until loss drops",
+    "Their training data is too simple for the depth they already have; make the data harder/bigger before adding layers",
+    "Loss never responds to layers; only embedding width matters",
+    "They need a faster computer — depth always helps if you train long enough"
+  ],
+  answer:1,
+  explain:"Same lesson as our 2-layer experiment: depth only pays off when the data has structure a single layer can't hold. If loss stalls, the bottleneck is usually the task/data, not more layers. This is exactly the Chinchilla idea — params and data have to grow together."
+})});</script>
+
 <h2 class="step" id="general" style="margin-top:34px;"><span class="step-num">Bonus 2</span> 🚀 The real leap: from <em>memorizer</em> to <em>general-purpose</em></h2>
 <p>So far our model only knows <strong>31 whole words</strong>. That's the ceiling. ChatGPT is "general purpose" because it can read and write <em>any</em> text — words it has never seen, made-up words, names, code. How? It doesn't store whole words at all. It works in <strong>tiny pieces</strong> (characters, or "subword" chunks). Let's make that exact leap and watch what changes.</p>
 
