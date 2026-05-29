@@ -170,6 +170,51 @@ for _ in range(1000):
   <li><strong>Decide</strong> — if the total clears the line, the neuron <strong>fires</strong> (outputs&nbsp;1). If not, it stays quiet (outputs&nbsp;0).</li>
 </ol>
 
+<figure class="figure-wide" style="margin:22px 0;">
+  <svg viewBox="0 0 770 330" width="100%" style="background:#f8fafc;border:1px solid #e5e5e5;border-radius:12px;max-width:770px;display:block;">
+    <defs><marker id="nh-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#475569"/></marker></defs>
+
+    <!-- inputs -->
+    <circle cx="78" cy="118" r="26" fill="#3b82f6"/>
+    <text x="78" y="125" fill="#fff" font-size="20" font-weight="700" text-anchor="middle">A</text>
+    <circle cx="78" cy="223" r="26" fill="#3b82f6"/>
+    <text x="78" y="230" fill="#fff" font-size="20" font-weight="700" text-anchor="middle">B</text>
+    <text x="78" y="285" fill="#475569" font-size="13" text-anchor="middle">your inputs (0 or 1)</text>
+
+    <!-- weighted arrows into the sum -->
+    <line x1="104" y1="120" x2="333" y2="162" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
+    <line x1="104" y1="221" x2="333" y2="188" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
+    <text x="212" y="126" fill="#1d4ed8" font-size="15" font-weight="700" text-anchor="middle">× wA</text>
+    <text x="212" y="216" fill="#1d4ed8" font-size="15" font-weight="700" text-anchor="middle">× wB</text>
+    <text x="208" y="252" fill="#64748b" font-size="12" text-anchor="middle">weights = how loud each input gets to vote</text>
+
+    <!-- bias -->
+    <circle cx="383" cy="58" r="24" fill="#a855f7"/>
+    <text x="383" y="65" fill="#fff" font-size="19" font-weight="700" text-anchor="middle">b</text>
+    <text x="415" y="52" fill="#7e22ce" font-size="13">bias — a thumb on the scale</text>
+    <line x1="383" y1="82" x2="383" y2="128" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
+
+    <!-- summation -->
+    <circle cx="383" cy="175" r="46" fill="#14b8a6"/>
+    <text x="383" y="191" fill="#fff" font-size="36" font-weight="700" text-anchor="middle">&#931;</text>
+    <text x="383" y="247" fill="#0f766e" font-size="13" text-anchor="middle">add up the votes (+ bias)</text>
+
+    <!-- arrow to activation -->
+    <line x1="430" y1="175" x2="527" y2="175" stroke="#475569" stroke-width="2.5" marker-end="url(#nh-arr)"/>
+
+    <!-- activation -->
+    <rect x="532" y="145" width="92" height="60" rx="10" fill="#f59e0b"/>
+    <text x="578" y="186" fill="#fff" font-size="26" font-weight="700" text-anchor="middle">f</text>
+    <text x="578" y="231" fill="#b45309" font-size="13" text-anchor="middle">decide: fire or not?</text>
+
+    <!-- arrow to output -->
+    <line x1="624" y1="175" x2="688" y2="175" stroke="#475569" stroke-width="2.5" marker-end="url(#nh-arr)"/>
+    <text x="722" y="168" fill="#047857" font-size="18" font-weight="700" text-anchor="middle">1 or 0</text>
+    <text x="722" y="196" fill="#047857" font-size="12" text-anchor="middle">the answer</text>
+  </svg>
+  <figcaption>Read it left to right: each <span style="color:#1d4ed8;font-weight:700;">input</span> is multiplied by its <span style="color:#1d4ed8;font-weight:700;">weight</span> → everything is <span style="color:#0f766e;font-weight:700;">added up</span> (plus the <span style="color:#7e22ce;font-weight:700;">bias</span>) → the <span style="color:#b45309;font-weight:700;">activation</span> makes the yes/no call → out comes the <span style="color:#047857;font-weight:700;">answer</span>. For our OR neuron: <code>wA=1</code>, <code>wB=1</code>, <code>b=−0.5</code>, and <code>f</code> = "fire if the total is above 0".</figcaption>
+</figure>
+
 <div class="callout">
   <strong>The entire neuron, in one line:</strong>
   <pre style="margin:10px 0;background:#fff;color:#1a1a1a;padding:12px 16px;border:1px solid #e5e5e5;border-radius:6px;font-size:15px;"><code style="color:#1a1a1a;">output = fire?(  <span style="color:#1d4ed8;font-weight:700;">wA</span>·A  +  <span style="color:#1d4ed8;font-weight:700;">wB</span>·B  +  <span style="color:#7e22ce;font-weight:700;">bias</span>  )</code></pre>
@@ -197,7 +242,13 @@ for _ in range(1000):
     <button class="pg-run" id="nr-preset-and">set AND weights</button>
   </div>
 
-  <div id="nr-table"></div>
+  <div id="nr-plotwrap" style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;margin-top:12px;">
+    <div style="flex:0 0 auto;">
+      <svg id="nr-svg" width="240" height="240" viewBox="0 0 240 240" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;"></svg>
+      <div style="color:#94a3b8;font-size:12px;line-height:1.45;margin-top:7px;max-width:240px;">Each axis is one input. The <b style="color:#fbbf24;">amber line</b> is the neuron's fence: dots in the <b style="color:#34d399;">green</b> zone fire (1), grey dots stay quiet (0). <b>One neuron = one straight fence.</b></div>
+    </div>
+    <div id="nr-table" style="flex:1 1 260px;"></div>
+  </div>
   <div class="pg-output" id="nr-score">…</div>
 
   <div class="pg-try">
@@ -228,7 +279,38 @@ for _ in range(1000):
   const targets = { OR:[0,1,1,1], AND:[0,0,0,1], XOR:[0,1,1,0] };
   const inputs = [[0,0],[0,1],[1,0],[1,1]];
   let gate = 'OR';
-  function fmt(v){ return (v>=0?'+':'') + v.toFixed(2); }
+  const fmt = v => (v>=0?'+':'') + v.toFixed(2);
+
+  // ── decision-boundary plot: data domain [-0.5,1.5] mapped into a 240px box ──
+  const M=22, S=196, LO=-0.5, HI=1.5, RNG=HI-LO;
+  const px = A => M + (A-LO)/RNG*S;
+  const py = B => (M+S) - (B-LO)/RNG*S;
+  function plotSVG(wA,wB,b){
+    const f=(A,B)=>wA*A+wB*B+b;
+    const inter=(p,q)=>{const fp=f(p[0],p[1]),fq=f(q[0],q[1]),t=fp/(fp-fq);return [p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])];};
+    // shade the "fires" half-plane (f>0): clip the plot square against it
+    const sq=[[LO,LO],[HI,LO],[HI,HI],[LO,HI]];
+    let out=[];
+    for(let i=0;i<sq.length;i++){
+      const cur=sq[i], prev=sq[(i+sq.length-1)%sq.length];
+      const ci=f(cur[0],cur[1])>0, pi=f(prev[0],prev[1])>0;
+      if(ci){ if(!pi) out.push(inter(prev,cur)); out.push(cur); }
+      else if(pi){ out.push(inter(prev,cur)); }
+    }
+    const shade = out.length ? `<polygon points="${out.map(p=>px(p[0]).toFixed(1)+','+py(p[1]).toFixed(1)).join(' ')}" fill="#10b981" fill-opacity="0.16"/>` : '';
+    // gridlines at 0 and 1 on both axes
+    const grid=[0,1].map(v=>`<line x1="${px(v).toFixed(1)}" y1="${py(LO).toFixed(1)}" x2="${px(v).toFixed(1)}" y2="${py(HI).toFixed(1)}" stroke="#1e293b"/><line x1="${px(LO).toFixed(1)}" y1="${py(v).toFixed(1)}" x2="${px(HI).toFixed(1)}" y2="${py(v).toFixed(1)}" stroke="#1e293b"/>`).join('');
+    // boundary line: intersect f=0 with the square's edges
+    const edges=[[[LO,LO],[HI,LO]],[[HI,LO],[HI,HI]],[[HI,HI],[LO,HI]],[[LO,HI],[LO,LO]]];
+    let bp=[];
+    edges.forEach(([p,q])=>{const fp=f(p[0],p[1]),fq=f(q[0],q[1]); if((fp>0)!==(fq>0)&&fp!==fq) bp.push(inter(p,q));});
+    const line = bp.length>=2 ? `<line x1="${px(bp[0][0]).toFixed(1)}" y1="${py(bp[0][1]).toFixed(1)}" x2="${px(bp[1][0]).toFixed(1)}" y2="${py(bp[1][1]).toFixed(1)}" stroke="#fbbf24" stroke-width="2.5"/>` : '';
+    // the 4 input dots, coloured by fire/quiet
+    const dots=inputs.map(([A,B])=>{const fire=f(A,B)>0;return `<circle cx="${px(A).toFixed(1)}" cy="${py(B).toFixed(1)}" r="7" fill="${fire?'#34d399':'#64748b'}" stroke="#0f172a" stroke-width="2"/><text x="${px(A).toFixed(1)}" y="${(py(B)-11).toFixed(1)}" fill="#cbd5e1" font-size="10" text-anchor="middle">(${A},${B})</text>`;}).join('');
+    const ax=`<text x="${(px(HI)+3).toFixed(1)}" y="${(py(0)+4).toFixed(1)}" fill="#94a3b8" font-size="11">A</text><text x="${(px(0)-4).toFixed(1)}" y="${(py(HI)-3).toFixed(1)}" fill="#94a3b8" font-size="11" text-anchor="end">B</text>`;
+    return shade+grid+line+dots+ax;
+  }
+
   function draw(){
     const wA=+$('nr-wa').value, wB=+$('nr-wb').value, b=+$('nr-bias').value;
     $('nr-wa-v').textContent=fmt(wA); $('nr-wb-v').textContent=fmt(wB); $('nr-bias-v').textContent=fmt(b);
@@ -240,6 +322,7 @@ for _ in range(1000):
       rows+=`<tr><td>${A}</td><td>${B}</td><td>${fmt(sum)}</td><td><b>${out}</b></td><td>${want}</td><td>${ok?'✅':'❌'}</td></tr>`;
     });
     $('nr-table').innerHTML=`<table class="nr-tt"><thead><tr><th>A</th><th>B</th><th>wA·A + wB·B + bias</th><th>neuron</th><th>${gate} wants</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    $('nr-svg').innerHTML=plotSVG(wA,wB,b);
     let msg;
     if(correct===4) msg=`🎉 Perfect — this one neuron computes <b>${gate}</b> (4 / 4 rows).`;
     else { msg=`Matches <b>${gate}</b> on <b>${correct} / 4</b> rows.`;
@@ -260,6 +343,64 @@ for _ in range(1000):
   <li>Line up a <strong>row of these neurons</strong> side by side, all reading the same inputs but each with its own weights → that's a <strong>layer</strong>.</li>
   <li>Feed that layer's outputs into <strong>another layer</strong> of neurons → now you can draw the second fence, so XOR (and any curve) becomes possible.</li>
 </ul>
+
+<div class="playground" id="pg-grow">
+  <div class="pg-head">🌱 Grow the network — from one neuron to a deep net</div>
+  <div class="pg-sub">It's the same building block, stacked up. Step through (or hit <b>Grow it</b>) and watch the single OR neuron grow into the classic deep-neural-network picture.</div>
+  <svg id="grow-svg" viewBox="0 0 720 360" width="100%" style="background:#0f172a;border:1px solid #334155;border-radius:8px;display:block;max-height:380px;"></svg>
+  <div class="pg-output" id="grow-note" style="margin-top:10px;"></div>
+  <div class="pg-controls" style="gap:10px;align-items:center;">
+    <button class="pg-run" id="grow-prev">← Back</button>
+    <span id="grow-stage" class="nr-mono" style="color:#e2e8f0;min-width:92px;text-align:center;"></span>
+    <button class="pg-run" id="grow-next">Next →</button>
+    <button class="pg-run" id="grow-play" style="margin-left:auto;">▶ Grow it</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const STAGES = [
+    {layers:[2,1],        title:"Stage 1 — one neuron",        note:"The OR neuron from above: 2 inputs → 1 output. One straight fence. (This is a <em>perceptron</em>.)"},
+    {layers:[2,4,1],      title:"Stage 2 — add a hidden layer", note:"Drop a row of 4 neurons in the middle. Two layers of fences → now XOR, and any curve, becomes possible."},
+    {layers:[3,5,5,1],    title:"Stage 3 — go deeper",          note:"Stack more hidden layers. Each one reshapes the numbers for the next — that stacking is literally what makes learning &ldquo;deep&rdquo;."},
+    {layers:[5,5,5,5,3],  title:"Deep neural network",          note:"The textbook picture. BERT, GPT and PRAGMA are exactly this idea — just with thousands of neurons per layer and dozens of layers."},
+  ];
+  const W=720, H=360, mX=95, NG=52, r=17;
+  let s=0, timer=null;
+  const colorOf=(i,L)=> i===0 ? '#3b82f6' : i===L-1 ? '#93c5fd' : '#5eead4';
+  function render(){
+    const st=STAGES[s], layers=st.layers, L=layers.length;
+    const xGap = L>1 ? (W-2*mX)/(L-1) : 0;
+    const xs = layers.map((_,i)=> L>1 ? mX+i*xGap : W/2);
+    const pos = layers.map((n,i)=>{ const total=(n-1)*NG, y0=(H+34-total)/2; return Array.from({length:n},(_,j)=>[xs[i], y0+j*NG]); });
+    let edges='';
+    for(let i=0;i<L-1;i++) for(const a of pos[i]) for(const b of pos[i+1])
+      edges+=`<line x1="${(a[0]+r).toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${(b[0]-r-4).toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#5eead4" stroke-opacity="0.42" stroke-width="1.1" marker-end="url(#grow-arrow)"/>`;
+    let nodes='';
+    pos.forEach((layer,i)=>layer.forEach(([x,y])=>{ nodes+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${colorOf(i,L)}" stroke="#0f172a" stroke-width="2"/>`; }));
+    let labels=`<text x="${xs[0]}" y="24" fill="#cbd5e1" font-size="13" text-anchor="middle" font-weight="600">input</text>`;
+    labels+=`<text x="${xs[L-1]}" y="24" fill="#cbd5e1" font-size="13" text-anchor="middle" font-weight="600">output</text>`;
+    if(L>2){ const midX=(xs[1]+xs[L-2])/2; labels+=`<text x="${midX.toFixed(1)}" y="24" fill="#cbd5e1" font-size="13" text-anchor="middle" font-weight="600">${L-2>1?'multiple hidden layers':'hidden layer'}</text>`; }
+    $('grow-svg').innerHTML=`<defs><marker id="grow-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#5eead4" fill-opacity="0.7"/></marker></defs>`+edges+nodes+labels;
+    $('grow-stage').textContent=`Stage ${s+1} of ${STAGES.length}`;
+    $('grow-note').innerHTML=`<b style="color:#a5f3fc;">${st.title}.</b> ${st.note}`;
+    $('grow-prev').disabled = s===0;
+    $('grow-next').disabled = s===STAGES.length-1;
+  }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; $('grow-play').textContent='▶ Grow it'; } }
+  function go(d){ s=Math.max(0,Math.min(STAGES.length-1,s+d)); render(); }
+  $('grow-prev').onclick=()=>{ stop(); go(-1); };
+  $('grow-next').onclick=()=>{ stop(); go(1); };
+  $('grow-play').onclick=()=>{
+    if(timer){ stop(); return; }
+    if(s===STAGES.length-1) s=0;
+    render(); $('grow-play').textContent='⏸ Pause';
+    timer=setInterval(()=>{ if(s>=STAGES.length-1){ stop(); return; } go(1); }, 1300);
+  };
+  render();
+})();
+</script>
 
 <p>One catch: a hard "fire / stay quiet" switch has no slope, so gradient descent (L1) can't tell which way to nudge the knobs. So real networks swap the hard switch for a <strong>soft bend</strong> — and that soft bend is the <strong>ReLU</strong> you're about to meet. Same idea (let the neuron be non-straight), but smooth enough to train. The picture below is exactly this: a row of <strong>8 neurons</strong> (the hidden layer), with the soft bend in the middle.</p>
 

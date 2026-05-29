@@ -937,3 +937,10 @@ nav.topbar .lesson-pills .sep {
 .nr-tt td { font-family: ui-monospace, Menlo, monospace; }
 .nr-tt td b { color: #fde047; }
 .nr-tt tr:hover { background: #1e293b; }
+
+/* grow-the-network widget */
+#pg-grow .pg-controls button.pg-run { margin-left: 0; padding: 5px 14px; background: #334155; }
+#pg-grow .pg-controls button.pg-run:hover { background: #475569; }
+#pg-grow .pg-controls button.pg-run:disabled { opacity: 0.35; cursor: default; background: #334155; }
+#pg-grow #grow-play { background: #10b981; }
+#pg-grow #grow-play:hover { background: #059669; }
