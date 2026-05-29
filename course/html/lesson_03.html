@@ -568,7 +568,7 @@ cat         0.25    0.25    0.25    0.25</code></pre>
     for (const w of words) html += `<th>${w}</th>`;
     html += '</tr></thead><tbody>';
     for (let i = 0; i < words.length; i++) {
-      html += `<tr data-row="${i}" style="cursor:pointer;"><th>${words[i]}</th>`;
+      html += `<tr data-row="${i}" tabindex="0" style="cursor:pointer;"><th>${words[i]}</th>`;
       for (let j = 0; j < words.length; j++) {
         const v = A[i][j];
         const bg = `rgba(59,130,246,${v * 0.8})`;
@@ -580,8 +580,12 @@ cat         0.25    0.25    0.25    0.25</code></pre>
     html += '</tbody></table>';
     document.getElementById('attn-table').innerHTML = html;
     document.querySelectorAll('#attn-table tr[data-row]').forEach(tr => {
-      tr.addEventListener('mouseenter', () => { hoverRow = parseInt(tr.dataset.row, 10); drawCanvas(A); });
-      tr.addEventListener('mouseleave', () => { hoverRow = -1; drawCanvas(A); });
+      const on = () => { hoverRow = parseInt(tr.dataset.row, 10); drawCanvas(A); };
+      const off = () => { hoverRow = -1; drawCanvas(A); };
+      tr.addEventListener('mouseenter', on);
+      tr.addEventListener('mouseleave', off);
+      tr.addEventListener('focus', on);
+      tr.addEventListener('blur', off);
     });
   }
 

@@ -351,7 +351,7 @@ the little dog laughed to see such sport</pre></div>
       const xOf = i => padX + slot*i + slot/2;
       const yTok = 168, yQ = 44;
       const qx = xOf(T-1);
-      let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:600px;font-family:ui-monospace,monospace;">`;
+      let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Attention weights from the last token across the sequence; thicker, brighter lines mean the last word is paying more attention to that token when predicting the next word." style="max-width:600px;font-family:ui-monospace,monospace;">`;
       // edges query -> each token
       attn.forEach((w,i) => {
         const op = (0.12 + 0.88*(w/mx)).toFixed(2);
@@ -382,7 +382,7 @@ the little dog laughed to see such sport</pre></div>
         {x:510, n:8,  real:32, label:'32 dims',    col:'#4ade80'},
       ];
       const yFor = (n,k) => { const top=46, bot=H-30, gap=(bot-top)/(n-1); return top+gap*k; };
-      let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:600px;font-family:ui-monospace,monospace;">`;
+      let s = `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Feed-forward network drawn as three columns of nodes: 32 input dimensions expand to 64 neurons in the middle, then compress back to 32, with every node connected to every node in the next column." style="max-width:600px;font-family:ui-monospace,monospace;">`;
       // edges 0->1 and 1->2 (faint, every node to every node)
       [[0,1],[1,2]].forEach(([a,b]) => {
         for (let i=0;i<cols[a].n;i++) for (let j=0;j<cols[b].n;j++)
