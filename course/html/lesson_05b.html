@@ -119,6 +119,7 @@
       msg: "<strong>1000 labels: they tie.</strong> With plenty of labels, even a from-scratch model learns the pattern. Pre-training's edge is biggest exactly when labels are SCARCE — which, in the real world, they almost always are." },
   ];
   const cv = document.getElementById('l5b-canvas');
+  if (!cv) return;
   const ctx = cv.getContext('2d');
   const slider = document.getElementById('l5b-slider');
 
