@@ -2,7 +2,7 @@
 
 *Why the method, not the model, is what made an AI-written curriculum worth shipping*
 
-A coding agent wrote a thirteen-lesson course on how Transformers work — the real machinery behind BERT, GPT, and Revolut's PRAGMA — pitched at a curious thirteen-year-old. It did it fast. Static HTML, no build step, interactive widgets, a running example carried from "a computer can't read, it only does math on numbers" all the way to a fine-tuned model. Impressive. Then came the uncomfortable question, the one every team shipping AI-generated content eventually has to answer out loud:
+A coding agent wrote a [thirteen-lesson course on how Transformers work](https://fernfant.github.io/mini-pragma/course/html/index.html) — the real machinery behind BERT, GPT, and Revolut's PRAGMA — pitched at a curious thirteen-year-old. It did it fast. Static HTML, no build step, interactive widgets, a running example carried from "a computer can't read, it only does math on numbers" all the way to a fine-tuned model. Impressive. Then came the uncomfortable question, the one every team shipping AI-generated content eventually has to answer out loud:
 
 **Is it any good?**
 
@@ -34,7 +34,7 @@ If your team is shipping AI-generated anything and you don't have this artifact 
 
 With a grader in hand, the work becomes a loop, and the loop has a name: **score → fix → re-score.** Read every page cold, score each criterion against the rubric, rank worst-first, fix the lowest-leverage failures, then score again. Repeat until the number stops moving.
 
-The arc is in the audit reports, and the numbers are real. The first full pass (v3) averaged **86.6** — five pages exemplary, eight merely strong. One targeted batch later (v4), the average climbed to **92.8**, with nine pages exemplary. Same model. Same writer. The gain came entirely from grading what it produced and feeding the worst scores back in.
+The arc is in the audit reports — and every page's current score is live on the [scorecard](https://fernfant.github.io/mini-pragma/course/html/scorecard.html), so you can check our marking. The first full pass (v3) averaged **86.6** — five pages exemplary, eight merely strong. One targeted batch later (v4), the average climbed to **92.8**, with nine pages exemplary. Same model. Same writer. The gain came entirely from grading what it produced and feeding the worst scores back in.
 
 That's the mechanism most "AI writes your content" demos skip. The first draft is never the product. **The loop is the product**, and the rubric is what closes it.
 
@@ -50,7 +50,7 @@ The second is the **honest-failure arc** — "it got worse, here's why." When a 
 
 There's a reason this method works better with a machine than it ever did with a tired human team: **the agent doesn't get bored.** It will re-read all thirteen pages on the eleventh pass with exactly as much care as the first. It will touch fifteen files to fix one cross-reference. The maintenance burden that kills human-run quality processes — the bookkeeping, the consistency checks, the "did we update that everywhere" — costs the agent almost nothing.
 
-That's the asset. The risk is the same sentence read the other way: an agent that never gets bored also never gets *suspicious*. It won't wrinkle its nose at a number that smells wrong. So we made suspicion mechanical. Every cited figure must trace to the companion notebook — the recall and precision numbers in the streaming-churn lesson are computed, not asserted. Every inline script must pass `node --check`. Every widget must be keyboard-operable with visible focus; every figure must carry a text equivalent. Verification isn't a final step. It's a gate the loop runs through every time.
+That's the asset. The risk is the same sentence read the other way: an agent that never gets bored also never gets *suspicious*. It won't wrinkle its nose at a number that smells wrong. So we made suspicion mechanical. Every cited figure must trace to the companion notebook — the recall and precision numbers in the [streaming-churn lesson](https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html) are computed, not asserted. Every inline script must pass `node --check`. Every widget must be keyboard-operable with visible focus; every figure must carry a text equivalent. Verification isn't a final step. It's a gate the loop runs through every time.
 
 ## When a stricter ruler makes the score go down
 
@@ -74,5 +74,14 @@ Strip away the Transformers and the thirteen-year-old, and the method generalise
 4. **Let the loop, not the vibes, decide done.** When the score stops climbing and you can't name the next fix, you're done. Not before.
 
 The model wrote the course. The method made it honest. Don't confuse the two — and when a stricter ruler makes your numbers drop, that's not a setback. That's the ruler working.
+
+## See it for yourself
+
+Don't take our word for it — the whole thing is public. Click around, break a widget, check our marking:
+
+- **[Start the course →](https://fernfant.github.io/mini-pragma/course/html/index.html)** — the 13-step roadmap, from "a computer can't read" to a fine-tuned model.
+- **[The live scorecard →](https://fernfant.github.io/mini-pragma/course/html/scorecard.html)** — every page's per-criterion scores, totals, and bands (current average **93.2**).
+- **[The streaming-churn lesson →](https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html)** — where the recall and precision numbers are computed, not asserted.
+- **[The code on GitHub →](https://github.com/fernfant/mini-pragma)** — the rubric, the audit reports, and all thirteen pages.
 
 Stay tuned! CxAI Team

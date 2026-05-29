@@ -21,40 +21,26 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     line-height: 1.6;
   }
-  /* publication masthead */
-  .pub-header {
-    border-bottom: 1px solid var(--rule);
-    background: var(--bg);
-  }
+  .pub-header { border-bottom: 1px solid var(--rule); background: var(--bg); }
   .pub-inner {
     max-width: 1100px; margin: 0 auto; padding: 14px 24px;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .pub-name {
-    font-weight: 800; letter-spacing: .14em; font-size: 18px; text-transform: uppercase;
-  }
+  .pub-name { font-weight: 800; letter-spacing: .14em; font-size: 18px; text-transform: uppercase; }
   .pub-name .dot { color: var(--accent); }
   .subscribe {
     background: var(--accent); color: #fff; border: none; border-radius: 6px;
     padding: 7px 16px; font-weight: 600; font-size: 14px; cursor: pointer;
   }
-  /* article shell */
-  .article {
-    max-width: 728px; margin: 0 auto; padding: 56px 24px 80px;
-    background: var(--bg);
-  }
+  .article { max-width: 728px; margin: 0 auto; padding: 56px 24px 80px; background: var(--bg); }
   .kicker {
     color: var(--accent); font-weight: 700; font-size: 13px; letter-spacing: .08em;
     text-transform: uppercase; margin-bottom: 18px;
   }
   h1.title {
-    font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -.018em;
-    margin: 0 0 16px;
+    font-size: 40px; line-height: 1.15; font-weight: 800; letter-spacing: -.018em; margin: 0 0 16px;
   }
-  .subtitle {
-    font-size: 21px; line-height: 1.4; color: var(--muted); font-weight: 400;
-    margin: 0 0 28px;
-  }
+  .subtitle { font-size: 21px; line-height: 1.4; color: var(--muted); font-weight: 400; margin: 0 0 28px; }
   .byline {
     display: flex; align-items: center; gap: 12px;
     padding-bottom: 22px; margin-bottom: 8px; border-bottom: 1px solid var(--rule);
@@ -67,44 +53,35 @@
   }
   .byline .who { font-weight: 600; font-size: 15px; }
   .byline .when { color: var(--muted); font-size: 14px; }
-  /* body copy — Substack reading serif */
-  .body {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 20px; line-height: 1.72; color: #242424;
-    margin-top: 30px;
-  }
+  .body { font-family: Georgia, "Times New Roman", serif; font-size: 20px; line-height: 1.72; color: #242424; margin-top: 30px; }
   .body p { margin: 0 0 24px; }
   .body h2 {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 26px; line-height: 1.25; font-weight: 800; letter-spacing: -.01em;
-    margin: 44px 0 16px;
+    font-size: 26px; line-height: 1.25; font-weight: 800; letter-spacing: -.01em; margin: 44px 0 16px;
   }
   .body strong { font-weight: 700; color: #111; }
   .body em { font-style: italic; }
+  .body a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(185,65,10,.35); }
+  .body a:hover { border-bottom-color: var(--accent); }
   .body code {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 16px; background: #f2f2ef; padding: 2px 6px; border-radius: 4px;
   }
-  .body ol { margin: 0 0 24px; padding-left: 28px; }
-  .body ol li { margin-bottom: 14px; }
+  .body ol, .body ul { margin: 0 0 24px; padding-left: 28px; }
+  .body li { margin-bottom: 14px; }
   .signoff {
     margin-top: 40px; padding-top: 26px; border-top: 1px solid var(--rule);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 700; font-size: 17px; color: var(--accent);
   }
-  .footer-note {
-    max-width: 728px; margin: 0 auto; padding: 22px 24px 60px;
-    color: var(--muted); font-size: 13px; line-height: 1.6;
-  }
-  @media (max-width: 640px) {
-    h1.title { font-size: 30px; }
-    .body { font-size: 18px; }
-  }
+  .footer-note { max-width: 728px; margin: 0 auto; padding: 22px 24px 60px; color: var(--muted); font-size: 13px; line-height: 1.6; }
+  .footer-note a { color: var(--muted); }
+  @media (max-width: 640px) { h1.title { font-size: 30px; } .body { font-size: 18px; } }
   @media print {
     body { background: #fff; }
     .pub-header, .subscribe { background: #fff; }
     .article { padding-top: 28px; }
-    a { color: inherit; text-decoration: none; }
+    .body a { border-bottom: none; }
   }
 </style>
 </head>
@@ -130,14 +107,15 @@
     </div>
 
     <div class="body">
-<p>A coding agent wrote a thirteen-lesson course on how Transformers
-work — the real machinery behind BERT, GPT, and Revolut’s PRAGMA —
-pitched at a curious thirteen-year-old. It did it fast. Static HTML, no
-build step, interactive widgets, a running example carried from “a
-computer can’t read, it only does math on numbers” all the way to a
-fine-tuned model. Impressive. Then came the uncomfortable question, the
-one every team shipping AI-generated content eventually has to answer
-out loud:</p>
+<p>A coding agent wrote a <a
+href="https://fernfant.github.io/mini-pragma/course/html/index.html">thirteen-lesson
+course on how Transformers work</a> — the real machinery behind BERT,
+GPT, and Revolut’s PRAGMA — pitched at a curious thirteen-year-old. It
+did it fast. Static HTML, no build step, interactive widgets, a running
+example carried from “a computer can’t read, it only does math on
+numbers” all the way to a fine-tuned model. Impressive. Then came the
+uncomfortable question, the one every team shipping AI-generated content
+eventually has to answer out loud:</p>
 <p><strong>Is it any good?</strong></p>
 <p>Not “does it run.” Not “does it look finished.” Is it
 <em>honest</em>, is it <em>clear</em>, would a kid actually learn from
@@ -212,12 +190,15 @@ name: <strong>score → fix → re-score.</strong> Read every page cold,
 score each criterion against the rubric, rank worst-first, fix the
 lowest-leverage failures, then score again. Repeat until the number
 stops moving.</p>
-<p>The arc is in the audit reports, and the numbers are real. The first
-full pass (v3) averaged <strong>86.6</strong> — five pages exemplary,
-eight merely strong. One targeted batch later (v4), the average climbed
-to <strong>92.8</strong>, with nine pages exemplary. Same model. Same
-writer. The gain came entirely from grading what it produced and feeding
-the worst scores back in.</p>
+<p>The arc is in the audit reports — and every page’s current score is
+live on the <a
+href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">scorecard</a>,
+so you can check our marking. The first full pass (v3) averaged
+<strong>86.6</strong> — five pages exemplary, eight merely strong. One
+targeted batch later (v4), the average climbed to <strong>92.8</strong>,
+with nine pages exemplary. Same model. Same writer. The gain came
+entirely from grading what it produced and feeding the worst scores back
+in.</p>
 <p>That’s the mechanism most “AI writes your content” demos skip. The
 first draft is never the product. <strong>The loop is the
 product</strong>, and the rubric is what closes it.</p>
@@ -250,8 +231,9 @@ update that everywhere” — costs the agent almost nothing.</p>
 an agent that never gets bored also never gets <em>suspicious</em>. It
 won’t wrinkle its nose at a number that smells wrong. So we made
 suspicion mechanical. Every cited figure must trace to the companion
-notebook — the recall and precision numbers in the streaming-churn
-lesson are computed, not asserted. Every inline script must pass
+notebook — the recall and precision numbers in the <a
+href="https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html">streaming-churn
+lesson</a> are computed, not asserted. Every inline script must pass
 <code>node --check</code>. Every widget must be keyboard-operable with
 visible focus; every figure must carry a text equivalent. Verification
 isn’t a final step. It’s a gate the loop runs through every time.</p>
@@ -309,13 +291,35 @@ before.</li>
 <p>The model wrote the course. The method made it honest. Don’t confuse
 the two — and when a stricter ruler makes your numbers drop, that’s not
 a setback. That’s the ruler working.</p>
+<h2 id="see-it-for-yourself">See it for yourself</h2>
+<p>Don’t take our word for it — the whole thing is public. Click around,
+break a widget, check our marking:</p>
+<ul>
+<li><strong><a
+href="https://fernfant.github.io/mini-pragma/course/html/index.html">Start
+the course →</a></strong> — the 13-step roadmap, from “a computer can’t
+read” to a fine-tuned model.</li>
+<li><strong><a
+href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">The
+live scorecard →</a></strong> — every page’s per-criterion scores,
+totals, and bands (current average <strong>93.2</strong>).</li>
+<li><strong><a
+href="https://fernfant.github.io/mini-pragma/course/html/lesson_05b.html">The
+streaming-churn lesson →</a></strong> — where the recall and precision
+numbers are computed, not asserted.</li>
+<li><strong><a href="https://github.com/fernfant/mini-pragma">The code
+on GitHub →</a></strong> — the rubric, the audit reports, and all
+thirteen pages.</li>
+</ul>
       <div class="signoff">Stay tuned! — CxAI Team</div>
     </div>
   </article>
 
   <div class="footer-note">
     CxAI is a consumer-experience × AI newsletter. Every figure in this piece traces to a project artifact:
-    the scored rubric, the live scorecard, and the v3–v5 audit reports.
+    the scored rubric, the <a href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">live scorecard</a>,
+    and the v3–v5 audit reports. The course itself is public at
+    <a href="https://fernfant.github.io/mini-pragma/course/html/index.html">fernfant.github.io/mini-pragma</a>.
   </div>
 </body>
 </html>
