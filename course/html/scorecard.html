@@ -56,12 +56,12 @@
 <div class="wrap">
 
 <h1>Course Scorecard</h1>
-<p class="subtitle">Full-spine audit against the 11-criterion rubric · <strong>2026-05-29</strong> (v5 — adds C11 Pacing). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+<p class="subtitle">Full-spine audit against the 11-criterion rubric · <strong>2026-05-31</strong> (v6 — capstone reworked). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
 
 <div class="stat-row">
-  <div class="stat"><div class="big">93.5</div><div class="lbl">Course average / 100 — <span class="band-ex">Exemplary</span></div></div>
-  <div class="stat"><div class="big">9</div><div class="lbl">Exemplary pages (90+)</div></div>
-  <div class="stat"><div class="big">4</div><div class="lbl">Strong pages (75–89)</div></div>
+  <div class="stat"><div class="big">92.7</div><div class="lbl">Course average / 100 — <span class="band-ex">Exemplary</span></div></div>
+  <div class="stat"><div class="big">8</div><div class="lbl">Exemplary pages (90+)</div></div>
+  <div class="stat"><div class="big">5</div><div class="lbl">Strong pages (75–89)</div></div>
   <div class="stat"><div class="big">0</div><div class="lbl">Acceptable / weak / failing</div></div>
 </div>
 
@@ -74,6 +74,10 @@
     <span style="background:#fee2e2;">≤2 weak</span>
   </span>
   Pages are listed worst-first. A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
+</div>
+
+<div class="callout">
+  🔄 <strong>What changed in v6.</strong> <strong>L6</strong> was rewritten from a "build-your-own fraud detector" project into a complete worked walkthrough — <em>predicting property-viewing leads from clickstream</em> (the PropertyFinder capstone). A cold rubric read scored the first draft <strong>79 (Strong)</strong>: accurate and structurally clean, but it had traded the old build-it interactivity for a pure read-through and rushed <em>linear probe</em> / <em>mean-pooling</em> / <em>recall</em>. A fix pass then applied the three highest-leverage lifts — a <strong>labels→recall slider</strong> at the payoff (C1 3→4), <strong>recall defined with a worked number</strong> before the table (C10 3→4), and <strong>micro-examples</strong> for mean-pooling and the linear probe (C2 4→5, C11 3→4), plus text equivalents on the session figures (C9 3→4). That lifts the page to <strong>88 (Strong)</strong> and the course average to <strong>92.7</strong> (8 exemplary / 5 strong). Remaining gap to exemplary: the slider is a read-the-result control, not a build-your-own playground like the spine's best pages.
 </div>
 
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
@@ -149,6 +153,7 @@
   ],
   "pages": [
     {"p":"L4f","href":"lesson_04f.html","s":[5,4,4,4,5,4,5,4,4,4,4,5],"total":87,"band":"Strong"},
+    {"p":"L6","href":"lesson_06.html","s":[4,5,4,5,4,5,4,5,5,4,4,4],"total":88,"band":"Strong"},
     {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,5,5,5,4,4,4,4,5,5],"total":88,"band":"Strong"},
     {"p":"L5","href":"lesson_05.html","s":[4,4,4,5,4,5,5,4,4,4,5,5],"total":88,"band":"Strong"},
     {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,4,5,5,5,5,5,4,4,4,5],"total":89,"band":"Strong"},
@@ -157,10 +162,9 @@
     {"p":"L2a","href":"lesson_02a.html","s":[5,4,4,5,5,5,5,5,4,5,5,5],"total":95,"band":"Exemplary"},
     {"p":"L4","href":"lesson_04.html","s":[5,5,5,5,5,5,5,5,4,4,4,5],"total":95,"band":"Exemplary"},
     {"p":"L2","href":"lesson_02.html","s":[5,5,5,5,5,5,5,5,4,5,4,5],"total":97,"band":"Exemplary"},
-    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5,5],"total":98,"band":"Exemplary"},
     {"p":"L5b","href":"lesson_05b.html","s":[5,5,5,5,5,5,4,5,5,5,4,5],"total":97,"band":"Exemplary"},
-    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"},
-    {"p":"L6","href":"lesson_06.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"}
+    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5,5],"total":98,"band":"Exemplary"},
+    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"}
   ]
 }
 </script>

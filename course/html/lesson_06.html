@@ -89,7 +89,7 @@ area   — marina · downtown · jbr · businessbay · jvc · palm</code></pre>
 
 <div class="callout good">
 <strong>HOT → becomes a lead</strong>
-<pre style="margin:6px 0 0;"><code>action=photos    price=premium  beds=2bed  area=jvc
+<pre style="margin:6px 0 0;" aria-label="A serious buyer's first four events — every one focused on the same 2-bedroom premium listing in JVC, with deep actions like photos and mortgage."><code>action=photos    price=premium  beds=2bed  area=jvc
 action=mortgage  price=premium  beds=2bed  area=jvc
 action=view      price=premium  beds=2bed  area=jvc
 action=view      price=premium  beds=2bed  area=jvc   ...</code></pre>
@@ -97,7 +97,7 @@ action=view      price=premium  beds=2bed  area=jvc   ...</code></pre>
 
 <div class="callout bad">
 <strong>COLD → no lead</strong>
-<pre style="margin:6px 0 0;"><code>action=search    price=budget   beds=studio  area=jvc
+<pre style="margin:6px 0 0;" aria-label="A window-shopper's first four events — shallow 'search' actions jumping across unrelated listings: different prices, bedrooms, and areas each step."><code>action=search    price=budget   beds=studio  area=jvc
 action=search    price=budget   beds=4plus   area=downtown
 action=search    price=luxury   beds=3bed    area=marina
 action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
@@ -123,13 +123,15 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
 
 <h2 class="step" id="probe"><span class="step-num">Stage 3</span> Freeze, add a lead head</h2>
 
-<p>We <strong>freeze</strong> the encoder (lock its knobs) and bolt on a tiny head: average the encoder's output over the session into one vector, then a single <code>Linear</code> layer to two scores — <em>lead</em> or <em>no-lead</em>. Only the head trains. That's a <strong>linear probe</strong> on top of a frozen foundation model — the same move from <a href="lesson_05b.html">L5b</a> and <a href="lesson_05a.html">L5a</a>.</p>
+<p>We <strong>freeze</strong> the encoder (lock its knobs) and bolt on a tiny head. The head does two things. First it <strong>mean-pools</strong>: each of the 96 tokens came out of the encoder as its own 32-number vector, and we just <em>average all 96 of them</em> into one 32-number summary of the whole session. Then a single <code>Linear</code> layer turns that summary into two scores — <em>lead</em> or <em>no-lead</em>.</p>
+
+<p>Only the head trains — that's called a <strong>linear probe</strong> on top of a frozen foundation model (the same move from <a href="lesson_05b.html">L5b</a> and <a href="lesson_05a.html">L5a</a>). "Linear" because all it can do is draw <em>one straight line</em> through the encoder's output space: serious-buyer summaries on one side, window-shopper summaries on the other.</p>
 
 <p>The whole point: the head has almost nothing to learn, because the encoder already did the hard part. So it needs <strong>very few labels</strong> — which is exactly the real-world constraint, since labelled outcomes are scarce and expensive.</p>
 
 <h2 class="step" id="payoff"><span class="step-num">Stage 4</span> The payoff</h2>
 
-<p>Here's the experiment that makes the case. We hand each model a shrinking number of labelled sessions and compare the frozen-pretrained probe against an identical encoder trained <strong>from scratch</strong> (no pre-training). The metric that matters is <strong>recall on leads</strong>: of the real buyers, how many did we catch?</p>
+<p>Here's the experiment that makes the case. We hand each model a shrinking number of labelled sessions and compare the frozen-pretrained probe against an identical encoder trained <strong>from scratch</strong> (no pre-training). The metric that matters is <strong>recall on leads</strong>: of the real buyers, how many did we catch? (Our 500-session test set holds 57 real leads — if the model flags 52 of them, that's 52 / 57 ≈ <strong>91% recall</strong>.)</p>
 
 <div id="pred-payoff"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-payoff",{
@@ -151,6 +153,34 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
 </table>
 <figcaption>Recall on held-out leads (500-session test set). The pre-trained encoder + a tiny probe catches 91% of serious buyers from just <strong>20</strong> labels — the from-scratch model needs <strong>~50×</strong> more data to catch up. Precision stays ~100% throughout. Real numbers from <code>06_propertyfinder_leads.py</code>.</figcaption>
 </figure>
+
+<div class="callout" id="lead-lab">
+  <strong>Play it.</strong> Drag the number of labelled sessions and watch recall on real buyers move — the pre-trained edge is biggest when labels are scarce:
+  <div style="margin:12px 0 6px;"><input type="range" id="ll-range" min="0" max="3" step="1" value="0" style="width:240px;accent-color:#b9410a;vertical-align:middle" aria-label="number of labelled sessions"> &nbsp;<strong id="ll-n">20</strong> labelled sessions</div>
+  <div style="display:grid;grid-template-columns:118px 1fr 46px;gap:8px;align-items:center;font-size:13.5px;max-width:520px;">
+    <span>Pre-trained</span>
+    <span style="background:#e7eef0;border-radius:6px;overflow:hidden;height:18px;"><span id="ll-pre" style="display:block;height:100%;width:91%;background:#16a34a;"></span></span>
+    <strong id="ll-prev" style="color:#15803d;">91%</strong>
+    <span>From scratch</span>
+    <span style="background:#e7eef0;border-radius:6px;overflow:hidden;height:18px;"><span id="ll-base" style="display:block;height:100%;width:28%;background:#94a3b8;"></span></span>
+    <strong id="ll-basev" style="color:#64748b;">28%</strong>
+  </div>
+  <div style="font-size:12.5px;color:var(--text-dim);margin-top:8px;" id="ll-note"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  var r=document.getElementById('ll-range'); if(!r) return;
+  var N=[20,50,200,1000], PRE=[91,96,96,98], BASE=[28,58,74,96];
+  var notes=["With just 20 labels, pre-training catches 91% of buyers vs 28% from scratch — a 3x gap.",
+             "50 labels: 96% vs 58%. The cold model is catching up but still misses 4 buyers in 10.",
+             "200 labels: 96% vs 74%. More data keeps narrowing the gap.",
+             "1000 labels: 98% vs 96%. With plenty of labels, pre-training barely matters — its whole edge is at the scarce-label end."];
+  function set(id,v){var el=document.getElementById(id); if(el) el.textContent=v;}
+  function upd(){var i=+r.value;
+    set('ll-n',N[i]); set('ll-prev',PRE[i]+'%'); set('ll-basev',BASE[i]+'%'); set('ll-note',notes[i]);
+    var p=document.getElementById('ll-pre'), b=document.getElementById('ll-base');
+    if(p) p.style.width=PRE[i]+'%'; if(b) b.style.width=BASE[i]+'%';}
+  r.addEventListener('input',upd); upd();
+});</script>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why it works</h2>
 
