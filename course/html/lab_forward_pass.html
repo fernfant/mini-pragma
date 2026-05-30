@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lab · The forward pass, as a flow</title>
+<style>
+  :root{
+    --bg:#0c0d12; --ink:#ece9e3; --muted:#8b8c98;
+    --warm:#ff6a2b; --warm-deep:#b9410a; --cool:#4aa3ff; --good:#46d39a; --neu:#c9a0ff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:radial-gradient(1200px 700px at 50% -10%,#171927 0%,var(--bg) 60%);color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+  .wrap{max-width:1240px;margin:0 auto;padding:26px 20px 70px}
+  h1{font-size:22px;font-weight:650;letter-spacing:.2px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 18px;font-size:14px}
+  .stage-wrap{position:relative;border-radius:16px;background:linear-gradient(180deg,#0f1018,#0b0c11);
+    box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 30px 60px -30px #000;padding:8px}
+  canvas{display:block;width:100%;height:auto;border-radius:12px}
+  .panel{display:flex;gap:22px;flex-wrap:wrap;align-items:flex-start;margin:16px 0 0}
+  .group{display:flex;flex-direction:column;gap:7px}
+  .group .lbl{font-size:11px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted)}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  button,.chip{appearance:none;border:1px solid #2a2c39;background:#171925;color:var(--ink);
+    padding:8px 14px;border-radius:9px;font:inherit;font-size:13.5px;cursor:pointer;transition:.15s}
+  button:hover,.chip:hover{border-color:var(--warm);color:#fff}
+  button:focus-visible,.chip:focus-visible,input:focus-visible{outline:2px solid var(--warm);outline-offset:2px}
+  .chip[aria-pressed=true]{border-color:var(--warm);background:#241a16;color:#ffd9c7}
+  .att-sliders{display:flex;flex-direction:column;gap:6px;min-width:230px}
+  .att-sliders .s{display:grid;grid-template-columns:46px 1fr 40px;gap:8px;align-items:center;font-size:13px}
+  .att-sliders .s b{color:#ffd9c7;font-weight:600}
+  input[type=range]{accent-color:var(--warm);width:100%}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;color:var(--muted);font-size:12.5px;margin-left:auto;align-self:flex-end}
+  .legend span{display:inline-flex;gap:6px;align-items:center}
+  .dot{width:10px;height:10px;border-radius:3px;display:inline-block}
+  .cap{color:#b8b9c4;font-size:13.5px;margin-top:16px;max-width:940px;min-height:40px;transition:.2s}
+  .cap b{color:var(--ink)}
+  kbd{background:#1b1d27;border:1px solid #30323f;border-radius:5px;padding:1px 6px;font-size:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>The forward pass, as a flow</h1>
+  <p class="sub">Words come in &rarr; become numbers &rarr; attention routes meaning &rarr; neurons fire &rarr; the next word blooms. Play it, step it, or grab the attention dials and become the model.</p>
+
+  <div class="stage-wrap">
+    <canvas id="c" width="1180" height="560" role="img"
+      aria-label="Animation of a forward pass: words are encoded into number vectors, attention beams blend them weighted by relevance, a layer of neurons fires, and an output distribution over candidate next-words resolves to a single winning prediction. Use the attention sliders to set the blend yourself."></canvas>
+  </div>
+
+  <div class="panel">
+    <div class="group">
+      <span class="lbl">Sentence</span>
+      <div class="row" id="sentences"></div>
+    </div>
+    <div class="group">
+      <span class="lbl">Run</span>
+      <div class="row">
+        <button id="play">▶ Play</button>
+        <button id="step">⏭ Step</button>
+        <button id="restart">↺ Restart</button>
+      </div>
+    </div>
+    <div class="group att-sliders">
+      <span class="lbl">Attention — you set the blend <button id="autoAttn" style="padding:2px 8px;font-size:11px;margin-left:6px">auto</button></span>
+      <div class="s"><span id="t0n">the</span><input type="range" id="a0" min="0" max="100" value="33" aria-label="attention weight on word 1"><b id="a0v">33%</b></div>
+      <div class="s"><span id="t1n">cat</span><input type="range" id="a1" min="0" max="100" value="17" aria-label="attention weight on word 2"><b id="a1v">17%</b></div>
+      <div class="s"><span id="t2n">sat</span><input type="range" id="a2" min="0" max="100" value="49" aria-label="attention weight on word 3"><b id="a2v">49%</b></div>
+    </div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--cool)"></i>encode</span>
+      <span><i class="dot" style="background:var(--warm)"></i>attention</span>
+      <span><i class="dot" style="background:var(--neu)"></i>neurons fire</span>
+      <span><i class="dot" style="background:var(--good)"></i>prediction</span>
+    </div>
+  </div>
+
+  <p class="cap" id="cap">Numbers are real for the mechanism; the weights are <em>illustrative</em> — watch how signal flows and blends, not the exact word it lands on. <kbd>Space</kbd> play/pause · <kbd>→</kbd> step · <kbd>R</kbd> restart.</p>
+</div>
+
+<script>
+(function(){
+  const cv=document.getElementById('c'); if(!cv) return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height, dpr=Math.min(window.devicePixelRatio||1,2);
+  cv.width=W*dpr; cv.height=H*dpr; ctx.scale(dpr,dpr); cv.style.aspectRatio=W+'/'+H;
+
+  // ---------- data ----------
+  const D=6,V=5,H1=10;
+  const presets=[
+    {tokens:["the","cat","sat"], cand:["mat","rug","floor","grass","step"],
+     E:[[.8,-.3,.5,-.6,.2,.1],[-.4,.9,-.2,.7,-.5,.6],[.3,.2,.9,-.1,.8,-.4]]},
+    {tokens:["she","loves","code"], cand:["python","jazz","cats","rain","you"],
+     E:[[.5,.6,-.4,.2,-.7,.3],[.7,-.2,.6,-.5,.4,.1],[-.3,.8,.2,.6,-.1,-.6]]},
+    {tokens:["dogs","chase","balls"], cand:["fast","home","tails","cats","far"],
+     E:[[-.6,.4,.7,-.2,.5,-.3],[.2,-.5,.4,.8,-.6,.3],[.6,.3,-.4,-.1,.7,.5]]},
+  ];
+  let pi=0;
+  function rng(s){return()=>{s=(s*1664525+1013904223)%4294967296;return s/4294967296-.5;};}
+  const r=rng(7);
+  const W1=Array.from({length:D},()=>Array.from({length:H1},()=>r()*1.6));
+  const b1=Array.from({length:H1},()=>r()*.4);
+  const W2=Array.from({length:H1},()=>Array.from({length:V},()=>r()*1.6));
+  const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0);
+  const softmax=a=>{const m=Math.max(...a),e=a.map(x=>Math.exp(x-m)),s=e.reduce((x,y)=>x+y,0);return e.map(x=>x/s);};
+
+  let comp={}, attnAuto=true, attnUser=[33,17,49];
+  function recompute(){
+    const P=presets[pi], E=P.E, focus=2;
+    const scores=E.map(ej=>dot(E[focus],ej)/Math.sqrt(D));
+    const auto=softmax(scores);
+    let attn;
+    if(attnAuto){ attn=auto; attnUser=auto.map(x=>Math.round(x*100)); syncSliders(); }
+    else { const s=attnUser.reduce((a,b)=>a+b,0)||1; attn=attnUser.map(x=>x/s); }
+    const blend=Array.from({length:D},(_,d)=>E.reduce((s,ej,j)=>s+attn[j]*ej[d],0));
+    const pre=Array.from({length:H1},(_,h)=>blend.reduce((s,x,d)=>s+x*W1[d][h],0)+b1[h]);
+    const hid=pre.map(x=>Math.max(0,x));
+    const logits=Array.from({length:V},(_,v)=>hid.reduce((s,x,h)=>s+x*W2[h][v],0));
+    const probs=softmax(logits);
+    comp={E,attn,auto,blend,hid,logits,probs,winner:probs.indexOf(Math.max(...probs)),tokens:P.tokens,cand:P.cand,focus};
+  }
+
+  // ---------- layout ----------
+  const lane=[150,280,410];
+  const colX={tok:90,emb:300,att:545,mlp:800,out:1045};
+  const cellH=13,cellW=22;
+  const stageX=[colX.emb,colX.att,colX.mlp,colX.out,colX.out+30]; // encode,attn,neurons,out,bloom
+  const caps=[
+    'Each word becomes a <b>vector of numbers</b> — its meaning written as coordinates.',
+    'The focus word <b>gathers meaning</b> from every word, weighted by relevance. Drag the dials to re-route it.',
+    'A layer of <b>neurons fires</b>; ReLU silences the rest. This sparse pattern is the "thinking".',
+    'The firing pattern becomes <b>scores over candidate words</b>, squashed by softmax to add to 100%.',
+    'The model <b>commits</b>: the brightest word wins.'
+  ];
+  const defaultCap=document.getElementById('cap').innerHTML;
+
+  function vcol(v,a){a=a==null?1:a;const t=Math.max(-1,Math.min(1,v));let R,G,B;
+    if(t>=0){R=74+(255-74)*t;G=163+(106-163)*t;B=255+(43-255)*t;}
+    else{const u=-t;R=74+(20-74)*u;G=163+(120-163)*u;B=255+(80-255)*u;}
+    return`rgba(${R|0},${G|0},${B|0},${a})`;}
+
+  // ---------- animation state ----------
+  let mode='play', playing=true, speed=1, stepIdx=-1, T=0;
+  let t0=performance.now(), pausedPhase=0, stepT0=performance.now();
+  const PXPS=185, SWEEP=(W+130)/PXPS, BLOOM=2.0, CYCLE=SWEEP+BLOOM; // seconds
+  let wf=-40, bloomT=0;
+  const motes=Array.from({length:36},()=>({x:Math.random()*W,y:80+Math.random()*(H-160),s:.2+Math.random()*.5,r:.6+Math.random()*1.4}));
+
+  function reveal(x){return Math.max(0,Math.min(1,(wf-x+30)/95));}
+  function phaseNow(){
+    const p = playing ? ((performance.now()-t0)*speed/1000) : pausedPhase;
+    return ((p % CYCLE)+CYCLE)%CYCLE;
+  }
+  function updateState(){
+    if(mode==='step'){
+      wf = stepIdx<0? -40 : stageX[Math.min(stepIdx,stageX.length-1)];
+      bloomT = stepIdx>=3 ? Math.min(1,(performance.now()-stepT0)/1200) : 0;
+      return;
+    }
+    const ph=phaseNow();
+    if(ph<SWEEP){ wf=-40+(ph/SWEEP)*(W+130); bloomT=0; }
+    else { wf=W+90; bloomT=Math.min(1,(ph-SWEEP)/BLOOM); }
+  }
+
+  function draw(ts){
+    updateState();
+    ctx.clearRect(0,0,W,H);
+    drawMotes(ts);
+    // stage labels
+    ctx.save();ctx.globalAlpha=.55;ctx.fillStyle='#5c5e6e';ctx.font='11px -apple-system,sans-serif';ctx.textAlign='center';
+    [['encode',colX.emb],['attention',colX.att],['neurons',colX.mlp],['output',colX.out]].forEach(([l,x])=>ctx.fillText(l.toUpperCase(),x,34));
+    ctx.restore();
+
+    edgesTokEmb(ts);
+    attention(ts);
+    embToNeurons(ts);
+    output(ts);
+    tokensDraw();
+    embeddings(ts);
+
+    // leading line
+    const sweepDone = mode==='play'? wf>=colX.out : stepIdx>=3;
+    if(!sweepDone && wf>colX.tok && wf<colX.out-100){
+      const fade=Math.min(1,(colX.out-100-wf)/130);
+      ctx.save();ctx.globalAlpha=.55*fade;ctx.strokeStyle='rgba(255,170,110,.9)';ctx.lineWidth=2;
+      ctx.shadowBlur=16;ctx.shadowColor='rgba(255,140,80,.9)';
+      ctx.beginPath();ctx.moveTo(wf,72);ctx.lineTo(wf,H-60);ctx.stroke();ctx.restore();
+    }
+  }
+
+  function drawMotes(ts){
+    ctx.save();
+    motes.forEach(m=>{ m.x+=m.s*0.15; if(m.x>W+5)m.x=-5;
+      ctx.globalAlpha=.06+.05*Math.sin(ts/1400+m.x); ctx.fillStyle='#9fb0ff';
+      ctx.beginPath();ctx.arc(m.x,m.y,m.r,0,7);ctx.fill();});
+    ctx.restore();
+  }
+
+  function tokensDraw(){
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    comp.tokens.forEach((w,i)=>{
+      const a=reveal(colX.tok); const slide=(1-a)*-26;
+      ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle='#171a26';ctx.strokeStyle=i===comp.focus?'rgba(255,106,43,.85)':'#2c2f3d';ctx.lineWidth=1.5;
+      rr(colX.tok-42+slide,lane[i]-18,84,36,9);ctx.fill();ctx.stroke();
+      ctx.fillStyle=i===comp.focus?'#ffd9c7':'#ece9e3';ctx.font='15px -apple-system,sans-serif';
+      ctx.fillText('"'+w+'"',colX.tok+slide,lane[i]);ctx.restore();
+    });
+  }
+
+  function embeddings(ts){
+    comp.E.forEach((vec,i)=>{const a=reveal(colX.emb);const y0=lane[i]-(D*cellH)/2;
+      vec.forEach((val,d)=>{const rise=Math.max(0,Math.min(1,(wf-(colX.emb-20))/60));
+        ctx.save();ctx.globalAlpha=a;ctx.fillStyle=vcol(val,.35+.6*Math.min(1,Math.abs(val)));
+        ctx.shadowBlur=9*rise;ctx.shadowColor=vcol(val,.6);
+        rr(colX.emb-cellW/2,y0+d*cellH,cellW,cellH-2,3);ctx.fill();ctx.restore();});});
+  }
+
+  function edgesTokEmb(ts){
+    comp.tokens.forEach((w,i)=>{const a=reveal(colX.emb-40)*.5;if(a<=0)return;
+      ctx.save();ctx.globalAlpha=a;ctx.strokeStyle='rgba(74,163,255,.5)';ctx.lineWidth=1;
+      ln(colX.tok+44,lane[i],colX.emb-cellW/2-4,lane[i]);
+      flowParticles(colX.tok+44,lane[i],colX.emb-cellW/2-4,lane[i],ts,.6,'rgba(120,180,255,',a,i);
+      ctx.restore();});
+  }
+
+  function attention(ts){
+    const bx=colX.att,by=lane[comp.focus],a=reveal(colX.att);if(a<=0)return;
+    comp.attn.forEach((w,j)=>{const sx=colX.emb+cellW/2+2,sy=lane[j];
+      ctx.save();ctx.globalAlpha=a*Math.min(1,.25+w);
+      ctx.strokeStyle=`rgba(255,106,43,${.18+.7*w})`;ctx.lineWidth=1+11*w;
+      ctx.shadowBlur=14*w;ctx.shadowColor='rgba(255,106,43,.6)';
+      cv2(sx,sy,bx-30,by);ctx.stroke();ctx.restore();
+      // particles ride the beam, density ~ weight
+      flowParticlesBez(sx,sy,(sx+bx)/2,sy,(sx+bx)/2,by,bx-30,by,ts,w,a,j);
+      ctx.save();ctx.globalAlpha=a;ctx.fillStyle='rgba(255,170,120,'+a+')';ctx.font='11px sans-serif';ctx.textAlign='center';
+      ctx.fillText((w*100|0)+'%',(sx+bx)/2,sy+(j<comp.focus?-9:15));ctx.restore();});
+    const y0=by-(D*cellH)/2;
+    comp.blend.forEach((val,d)=>{ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle=vcol(val,.4+.6*Math.min(1,Math.abs(val)));ctx.shadowBlur=12;ctx.shadowColor=vcol(val,.7);
+      rr(bx-cellW/2,y0+d*cellH,cellW,cellH-2,3);ctx.fill();ctx.restore();});
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#8b8c98';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('blend',bx,y0-12);ctx.restore();
+  }
+
+  function embToNeurons(ts){
+    const bx=colX.att,by=lane[comp.focus],mx=colX.mlp,a=reveal(colX.mlp);if(a<=0)return;
+    const ny0=130,nstep=360/(H1-1);
+    for(let h=0;h<H1;h++){const act=comp.hid[h],na=Math.min(1,act/2.2);
+      // per-neuron ripple: reveal staggered by index
+      const na2=na*Math.max(0,Math.min(1,(wf-(mx-20)-h*4)/40));
+      ctx.save();ctx.globalAlpha=a*(.08+.5*na);
+      ctx.strokeStyle=`rgba(201,160,255,${.1+.6*na})`;ctx.lineWidth=.6+2.4*na;
+      cv2(bx+cellW/2,by,mx-14,ny0+h*nstep);ctx.stroke();
+      if(na>0.05) flowParticlesBez(bx+cellW/2,by,(bx+mx)/2,by,(bx+mx)/2,ny0+h*nstep,mx-14,ny0+h*nstep,ts,na*.5,a,h+3,'rgba(210,180,255,');
+      ctx.restore();}
+    for(let h=0;h<H1;h++){const act=comp.hid[h],na=Math.min(1,act/2.2),fired=act>0;
+      const pulse=fired?(.6+.4*Math.sin(ts*speed/240+h)):.15;
+      const rev=Math.max(0,Math.min(1,(wf-(mx-20)-h*5)/45));
+      ctx.save();ctx.globalAlpha=a*Math.max(.2,rev);
+      ctx.fillStyle=fired?`rgba(201,160,255,${.25+.7*na*pulse})`:'rgba(70,72,86,.5)';
+      ctx.shadowBlur=fired?18*na*pulse:0;ctx.shadowColor='rgba(201,160,255,.9)';
+      ctx.beginPath();ctx.arc(mx,ny0+h*nstep,(7+6*na)*(.6+.4*rev),0,7);ctx.fill();ctx.restore();}
+    ctx.save();ctx.globalAlpha=a;ctx.fillStyle='#8b8c98';ctx.font='11px sans-serif';ctx.textAlign='center';
+    ctx.fillText('ReLU layer',mx,ny0-18);ctx.restore();
+  }
+
+  function output(ts){
+    const mx=colX.mlp,ox=colX.out,a=reveal(ox);if(a<=0)return;
+    const ny0=130,nstep=360/(H1-1),by0=120,barH=64,gap=14;
+    for(let h=0;h<H1;h++){if(comp.hid[h]<=0)continue;
+      for(let v=0;v<V;v++){const st=comp.probs[v];
+        ctx.save();ctx.globalAlpha=a*.07*(.4+st);ctx.strokeStyle='rgba(70,211,154,.5)';ctx.lineWidth=.5;
+        ln(mx+8,ny0+h*nstep,ox-90,by0+v*(barH+gap)+barH/2);ctx.stroke();ctx.restore();}}
+    for(let v=0;v<V;v++){const y=by0+v*(barH+gap),isWin=v===comp.winner;
+      const grow=isWin?a*(.55+.45*bloomT):a;const len=20+260*comp.probs[v]*grow;
+      ctx.save();ctx.globalAlpha=a;
+      ctx.fillStyle='#171a26';rr(ox-90,y+barH/2-9,300,18,9);ctx.fill();
+      ctx.fillStyle=isWin?'rgba(70,211,154,.9)':'rgba(120,124,140,.7)';
+      if(isWin){ctx.shadowBlur=24*bloomT+6;ctx.shadowColor='rgba(70,211,154,.9)';}
+      rr(ox-90,y+barH/2-9,len,18,9);ctx.fill();ctx.shadowBlur=0;
+      ctx.fillStyle=isWin?'#bff5dd':'#a9abb8';ctx.font=(isWin?'600 ':'')+(14+(isWin?2*bloomT:0))+'px -apple-system,sans-serif';
+      ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('"'+comp.cand[v]+'"',ox-90+8,y+barH/2);
+      ctx.textAlign='right';ctx.fillStyle=isWin?'#bff5dd':'#7c7e8c';
+      ctx.fillText((comp.probs[v]*100).toFixed(0)+'%',ox+208,y+barH/2);ctx.restore();}
+    if(bloomT>0){ctx.save();ctx.globalAlpha=bloomT;ctx.textAlign='center';
+      ctx.fillStyle='rgba(70,211,154,'+bloomT+')';ctx.font='600 16px -apple-system,sans-serif';
+      ctx.fillText('predicted next word',ox+60,by0-26);ctx.restore();}
+  }
+
+  // particle helpers
+  function flowParticles(x1,y1,x2,y2,ts,rate,col,a,seed){
+    const n=2;for(let k=0;k<n;k++){const p=((ts*speed/1100)+seed*.4+k/n)%1;
+      const x=x1+(x2-x1)*p,y=y1+(y2-y1)*p;
+      ctx.beginPath();ctx.fillStyle=col+(a*.7)+')';ctx.arc(x,y,1.6,0,7);ctx.fill();}
+  }
+  function flowParticlesBez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,ts,w,a,seed,col){
+    col=col||'rgba(255,200,150,';const n=Math.max(1,Math.round(1+w*4));
+    for(let k=0;k<n;k++){const p=((ts*speed/950)+seed*.33+k/n)%1;const pt=bez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,p);
+      ctx.beginPath();ctx.fillStyle=col+(a*(.4+.6*w))+')';ctx.arc(pt.x,pt.y,1.5+3*w,0,7);ctx.fill();}
+  }
+  function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+  function ln(a,b,c,d){ctx.beginPath();ctx.moveTo(a,b);ctx.lineTo(c,d);ctx.stroke();}
+  function cv2(x1,y1,x2,y2){const m=(x1+x2)/2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.bezierCurveTo(m,y1,m,y2,x2,y2);}
+  function bez(x1,y1,cx1,cy1,cx2,cy2,x2,y2,t){const u=1-t;
+    return{x:u*u*u*x1+3*u*u*t*cx1+3*u*t*t*cx2+t*t*t*x2,y:u*u*u*y1+3*u*u*t*cy1+3*u*t*t*cy2+t*t*t*y2};}
+
+  // ---------- controls ----------
+  const playBtn=document.getElementById('play'),capEl=document.getElementById('cap');
+  let raf=0;
+  function loopStart(){ if(raf) return; (function go(ts){ T=ts||performance.now(); draw(T); raf=requestAnimationFrame(go); })(); }
+  function setCap(){ if(mode==='step'&&stepIdx>=0){capEl.innerHTML=caps[Math.min(stepIdx,caps.length-1)];}
+    else capEl.innerHTML=defaultCap; }
+  function play(){ if(mode==='step'){mode='play';t0=performance.now();} else {t0=performance.now()-pausedPhase*1000/speed;}
+    playing=true;playBtn.textContent='⏸ Pause';setCap(); }
+  function pause(){ pausedPhase=phaseNow(); playing=false; playBtn.textContent='▶ Play'; }
+  function restart(){ mode='play';t0=performance.now();pausedPhase=0;bloomT=0;stepIdx=-1;playing=true;playBtn.textContent='⏸ Pause';setCap(); }
+  function stepFwd(){ mode='step';playing=false;playBtn.textContent='▶ Play';
+    stepIdx=Math.min(stepIdx+1,stageX.length-1);stepT0=performance.now();setCap(); }
+  playBtn.addEventListener('click',()=>playing?pause():play());
+  document.getElementById('step').addEventListener('click',stepFwd);
+  document.getElementById('restart').addEventListener('click',restart);
+  document.addEventListener('keydown',e=>{
+    if(e.code==='Space'){e.preventDefault();playing?pause():play();}
+    else if(e.key==='ArrowRight'){e.preventDefault();stepFwd();}
+    else if(e.key==='r'||e.key==='R'){restart();}});
+
+  // sentence chips
+  const sc=document.getElementById('sentences');
+  presets.forEach((p,i)=>{const b=document.createElement('button');b.className='chip';
+    b.textContent=p.tokens.join(' ');b.setAttribute('aria-pressed',i===0);
+    b.onclick=()=>{pi=i;attnAuto=true;[...sc.children].forEach((c,k)=>c.setAttribute('aria-pressed',k===i));
+      recompute();labelSliders();restart();};
+    sc.appendChild(b);});
+
+  // attention sliders
+  const aEls=[0,1,2].map(i=>document.getElementById('a'+i));
+  const aVs=[0,1,2].map(i=>document.getElementById('a'+i+'v'));
+  function syncSliders(){aEls.forEach((el,i)=>{el.value=attnUser[i];aVs[i].textContent=Math.round(comp.attn? comp.attn[i]*100 : attnUser[i])+'%';});}
+  function labelSliders(){const t=presets[pi].tokens;document.getElementById('t0n').textContent=t[0];
+    document.getElementById('t1n').textContent=t[1];document.getElementById('t2n').textContent=t[2];}
+  aEls.forEach((el,i)=>el.addEventListener('input',()=>{attnAuto=false;attnUser[i]=+el.value;recompute();
+    const s=attnUser.reduce((a,b)=>a+b,0)||1;aVs.forEach((v,k)=>v.textContent=Math.round(attnUser[k]/s*100)+'%');}));
+  document.getElementById('autoAttn').addEventListener('click',()=>{attnAuto=true;recompute();});
+
+  // boot
+  recompute();labelSliders();syncSliders();loopStart();play();
+  // freeze at a fixed fraction of the cycle for deterministic screenshots: ?t=0.85
+  const q=new URLSearchParams(location.search);
+  if(q.has('t')){ playing=false; pausedPhase=Math.max(0,Math.min(1,parseFloat(q.get('t'))))*CYCLE; updateState(); draw(performance.now()); }
+})();
+</script>
+</body>
+</html>
