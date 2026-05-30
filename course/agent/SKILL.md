@@ -99,8 +99,9 @@ page's Next ↔ the next page's Prev).
 ## 5. Markup & component conventions
 
 Every spine page has, in order:
-1. `<nav class="topbar">` with `.brand` + `.lesson-pills` — **20 pills, identical
-   on every page**, only the `current` marker differs. Side-quests carry class
+1. `<nav class="topbar">` with `.brand` + `.lesson-pills` — **21 pills, identical
+   on every page** (Index + 19 lessons/branches + glossary), only the `current`
+   marker differs. Side-quests carry class
    `opt`, code walkthroughs `deep`. (When current: `opt current` / `deep current`
    / `current`.)
 2. `<div class="spinebar">` with `.sb-home` (🗺 → index), `.sb-part` (Part label),
@@ -167,7 +168,7 @@ reference (section id / line).
 | 4b | **Honest framing** | 6 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
 | 5 | **Narrative continuity** | 8 | Re-uses the running example; connects back/forward; fits the spine story. |
 | 6 | **Reinforcement** | 8 | Inline checks + recap + quiz; questions test understanding, not recall. |
-| 7 | **Structural correctness** | 8 | Correct pills (20, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
+| 7 | **Structural correctness** | 8 | Correct pills (21, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
 | 8 | **Technical soundness** | 8 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
 | 9 | **Accessibility** | 8 | Every interactive widget is keyboard-operable with visible focus; every figure/SVG has a text equivalent (`<figcaption>` or aria-label); colour is never the sole signal (callout `good`/`bad` also carry a word/icon). |
 | 10 | **Flow / sequencing** | 8 | A 12–14-yo can read top-to-bottom *once*, never backtracking: every term is defined before first use, each step says how it builds on the last, one new idea per step, order goes concrete→abstract / simple→hard. Distinct from #2 (per-sentence pitch) and #5 (cross-lesson threading) — this is *within-page* logical flow. |

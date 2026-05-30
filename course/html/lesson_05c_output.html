@@ -55,12 +55,22 @@
   <a href="lesson_05c_output.html" class="here"><span class="n">step 4</span> Output</a>
 </div>
 
-<p>We have a firing pattern — the model's thought about <em>"once upon a"</em>. The last step turns that thought into an actual word. One more layer gives every candidate word a raw <strong>score</strong> (a <em>logit</em>): higher means "this fits better". Then <strong>softmax</strong> — the same squasher from attention — turns the scores into probabilities that add to 100%. The tallest bar wins.</p>
+<p>We have a firing pattern — the model's thought about <em>"once upon a"</em>. The last step turns that thought into an actual word. <strong>One more weighted sum</strong> — one dot-product per candidate word, exactly like the neuron layer did, just producing 5 numbers instead of 10 — gives each candidate a raw <strong>score</strong> (called a <em>logit</em>, just an unbounded number): higher means "this fits better". Then <strong>softmax</strong> — the same squasher from attention — turns the scores into probabilities that add to 100%. The tallest bar wins.</p>
 
 <figure class="figure-wide">
   <div id="fp"></div>
   <figcaption>Output, lit. Each candidate word gets a bar; softmax sets the lengths so they sum to 100%. The winner glows green — the model's predicted next word.</figcaption>
 </figure>
+
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-out"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-out",{
+  q: "Two candidate words have raw scores 8.3 and -0.2. After softmax, roughly how is the probability split?",
+  options: ["About 50/50 — they're both just numbers", "Almost all on 8.3; -0.2 gets nearly nothing", "-0.2 wins because it's closer to zero"],
+  correct: 1,
+  reveal: "Softmax uses exponentials, so it blows small gaps up into big ones — a score of 8.3 utterly dominates -0.2. The biggest logit takes almost all the probability, which is why the winning bar shoots to ~100%."
+});});</script>
 
 <h2 class="step" id="softmax"><span class="step-num">Softmax</span> Scores → confidence</h2>
 
@@ -75,15 +85,6 @@ predicted next word →  "time"</code></pre>
 
 <p>That's the entire forward pass: <em>once upon a</em> → <strong>time</strong>. To write a whole sentence, a model just does this again and again — tack the chosen word onto the end and run the pass once more for the next one. Notice softmax shows up twice in the pipeline: once to mix attention, once to pick the winner. Same tool, two jobs — turning a row of numbers into a set of choices that add to 100%.</p>
 
-<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
-
-<div id="pred-out"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-out",{
-  q: "Two candidate words have raw scores 8.3 and -0.2. After softmax, roughly how is the probability split?",
-  options: ["About 50/50 — they're both just numbers", "Almost all on 8.3; -0.2 gets nearly nothing", "-0.2 wins because it's closer to zero"],
-  correct: 1,
-  reveal: "Softmax uses exponentials, so it blows small gaps up into big ones — a score of 8.3 utterly dominates -0.2. The biggest logit takes almost all the probability, which is why the winning bar shoots to ~100%."
-});});</script>
 
 <h2 class="step" id="honest"><span class="step-num">Honest</span> A real guess, from a real net</h2>
 

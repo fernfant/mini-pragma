@@ -55,7 +55,7 @@
   <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
 </div>
 
-<p>After encoding, the words are just sitting in a row, each minding its own numbers. Attention is where they finally <em>talk</em>. The last word — the one about to predict what comes next — reaches back to every word (including itself) and pulls in a share of each. The result is a single new vector, the <strong>blend</strong>. Drag the dials below and watch the blend change in real time.</p>
+<p>After encoding, the words are just sitting in a row, each minding its own numbers. Attention is where they finally <em>talk</em>. The last word — the one about to predict what comes next, which we'll call the <strong>focus word</strong> — reaches back to every word (including itself) and pulls in a share of each. The result is a single new vector, the <strong>blend</strong>. Drag the dials below and watch the blend change in real time.</p>
 
 <figure class="figure-wide">
   <div id="fp"></div>
@@ -76,7 +76,7 @@ blend = 0.30·[once] + 0.27·[upon] + 0.43·[a]
 
 <p>So the blend leans most on <em>"a"</em> (43%) but still carries a chunk of <em>"once"</em> and <em>"upon"</em>. That one vector now stands in for the <em>whole phrase so far</em> — and it's what the next stage actually thinks about.</p>
 
-<h2 class="step" id="predict"><span class="step-num">Predict</span> You are the attention head</h2>
+<h2 class="step" id="predict"><span class="step-num">Predict</span> You control the blend</h2>
 
 <div id="pred-att"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-att",{
@@ -88,7 +88,7 @@ blend = 0.30·[once] + 0.27·[upon] + 0.43·[a]
 
 <h2 class="step" id="play"><span class="step-num">Play</span> Break it on purpose</h2>
 
-<p>Set the dials so the focus word ignores itself and listens only to <em>"once"</em>. The blend shifts, and if you follow the dimmed pipeline rightward, the guess can change too. That's the whole point of attention: <strong>which words you mix decides what the model thinks comes next.</strong> Real Transformers run this same step many times in parallel (one set of weights per "head") so a word can track grammar, meaning, and reference all at once.</p>
+<p>Set the dials so the focus word ignores itself and listens only to <em>"once"</em>. The blend shifts, and if you follow the dimmed pipeline rightward, the guess can change too. That's the whole point of attention: <strong>which words you mix decides what the model thinks comes next.</strong> Real Transformers run this same step many times in parallel — each copy, called a <strong>head</strong>, tracks a different kind of relationship (grammar, meaning, reference) — so a word can follow all of them at once.</p>
 
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
