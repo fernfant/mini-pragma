@@ -1,0 +1,15 @@
+{
+  "name": "mini-pragma",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt",
+  "forwardPorts": [8011, 8014],
+  "portsAttributes": {
+    "8014": { "label": "course-html (python -m http.server 8014 --directory course/html)" },
+    "8011": { "label": "notebooks (jupyter)" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "ms-toolsai.jupyter"]
+    }
+  }
+}
