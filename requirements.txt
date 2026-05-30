@@ -1,0 +1,11 @@
+# Mini PRAGMA course dependencies.
+# Install:  pip install -r requirements.txt
+# Lets a remote/cloud runner (e.g. Claude Code on the web) set up and run the
+# Python scripts and notebooks. Editing the HTML lessons needs none of this.
+
+torch          # every model in the course (nn.Transformer, training loops)
+numpy          # array helpers in a few lessons
+matplotlib     # loss curves / heatmaps in the notebooks
+tiktoken       # GPT-2 BPE tokenizer for the L4h minigpt build
+requests       # downloads the tiny training corpora for minigpt
+jupyter        # run the lesson_*.ipynb walkthroughs
