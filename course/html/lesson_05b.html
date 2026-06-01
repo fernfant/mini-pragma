@@ -397,6 +397,16 @@ class ChurnHead(nn.Module):
 <p>This is PRAGMA, just smaller. Same architecture choices. Same pre-training objective. Same downstream-adaptation strategy.</p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the labels → recall slider above (numbers come from the companion notebook).</p>
+  <ol>
+    <li>Slide labels from ~100 down to ~20. What happens to recall for the pre-trained pipeline vs from-scratch?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-trained holds high recall even at ~20 labels; from-scratch falls apart. Same lesson as L5a, now on streaming churn — pre-training wins when labels are scarce.</p></details></li>
+    <li>Why measure <strong>recall</strong> here instead of plain accuracy?<details class="ti-answer"><summary>Check your answer</summary><p>Churners are rare, so a model that predicts ‘nobody churns’ scores high accuracy but is useless. Recall asks ‘of the real churners, how many did we catch?’ — the thing that matters.</p></details></li>
+    <li>What's the difference between recall and precision in one line each?<details class="ti-answer"><summary>Check your answer</summary><p>Recall = of the true positives, how many you caught. Precision = of the ones you flagged, how many were right. You usually trade one against the other.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

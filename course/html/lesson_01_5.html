@@ -627,6 +627,16 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 <p>The polynomial uses 3 parameters; the neural net uses 25. The neural net has extra capacity it didn't strictly need for this simple problem. So why ever use a neural network? Because for <strong>complex data</strong> you can't say "add <code>x²</code>" — the data is too complex for that intuition to apply. A neural network with enough capacity figures out the features for you.</p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Head back to the neuron table and the curve-fitting widget, then try these.</p>
+  <ol>
+    <li>Set the neuron to <strong>set OR</strong>, then change just the <strong>bias</strong> to about −1.5. How does the output table change?<details class="ti-answer"><summary>Check your answer</summary><p>It turns into an AND gate — now it only fires when <em>both</em> inputs are on. The bias is the thumb on the scale: a more negative bias makes the neuron harder to set off.</p></details></li>
+    <li>Switch the target to <strong>XOR</strong> and try to get 4/4 with a single neuron. Can you?<details class="ti-answer"><summary>Check your answer</summary><p>No — one neuron can only draw a single straight cut, and XOR isn't separable by one line. That's exactly why we stack neurons into a network (which you do next).</p></details></li>
+    <li>In the parabola widget, slide the hidden units down to a very small number. What happens to the fit?<details class="ti-answer"><summary>Check your answer</summary><p>Fewer hidden units = fewer bends available, so the curve can't match the parabola as well. More units = more bends = more shapes it can fit.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

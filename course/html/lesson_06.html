@@ -202,6 +202,16 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
   <li><strong>Stress the labels.</strong> Push the labelled set down to 10, or 5. Where does the pre-trained advantage finally break?</li>
 </ul>
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the labels → recall slider and the HOT vs COLD session examples above.</p>
+  <ol>
+    <li>Should the “contact / request a viewing” click be one of the input events the model reads?<details class="ti-answer"><summary>Check your answer</summary><p>No — that click <em>is</em> the label. Feeding it in is data leakage: the model would ‘predict’ the lead by just spotting it, then fail in production where the click hasn't happened yet.</p></details></li>
+    <li>Compare the HOT and COLD sessions. What signal separates them <em>before</em> any contact?<details class="ti-answer"><summary>Check your answer</summary><p>Focus and depth: the HOT visitor repeats the same listing with deep actions (photos, mortgage, save); the COLD one bounces across unrelated listings with shallow actions. The model reads intent from that browsing pattern.</p></details></li>
+    <li>Drag the labels slider to ~20. Why does the pre-trained-then-probed model still hit high recall?<details class="ti-answer"><summary>Check your answer</summary><p>Because pre-training on every click (no labels) already learned what normal browsing looks like; the lead head only needs a few labels to map that understanding onto ‘will convert’.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

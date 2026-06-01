@@ -261,6 +261,16 @@ one nudge  =  average(g₁, g₂)      ← weights move ONCE, using both</code><
 
 <p>So everything you just learned is real: <strong>pre-training shapes embeddings by playing fill-in-the-blank.</strong> Real BERT does <em>exactly</em> this — same training game, same gradient descent — just on billions of sentences and with attention layers on top so the model can be smarter about <em>which</em> context words matter for each blank. We'll see attention in <a href="lesson_03.html">Lesson 3</a> and the full tiny-BERT in <a href="lesson_04.html">Lesson 4</a>.</p>
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the scaling widget above (more data, bigger vectors, batches).</p>
+  <ol>
+    <li>Increase the embedding dimension. Does a bigger vector always mean better?<details class="ti-answer"><summary>Check your answer</summary><p>Up to a point it helps (more room to encode meaning), but past what the data supports it just adds parameters to train without payoff — and needs more data. Capacity must match the problem.</p></details></li>
+    <li>Increase the amount of training data while keeping the model fixed. What happens to the learned structure?<details class="ti-answer"><summary>Check your answer</summary><p>It sharpens — more examples give the model more evidence, so the embeddings/relationships come out cleaner. Data and model size have to grow together.</p></details></li>
+    <li>The lesson hits a wall that motivates the next topic. What is it, and what fixes it?<details class="ti-answer"><summary>Check your answer</summary><p>Embeddings alone treat each word in isolation — they can't tell “river bank” from “savings bank.” <strong>Attention</strong> (next) is the fix: it lets words look at each other.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

@@ -312,6 +312,16 @@ the little dog laughed to see such sport</pre></div>
   explain: "An open character vocabulary composes any spelling from ~25 letters; a fixed word list can only ever emit those exact words. That open vocabulary is what 'general-purpose' really buys you."
 });});</script>
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the parameter-breakdown bars and the character-model widget above.</p>
+  <ol>
+    <li>Look at the parameter bars: which single block is the biggest — attention's Q/K/V, or the feed-forward?<details class="ti-answer"><summary>Check your answer</summary><p>The <strong>feed-forward</strong> is the biggest single block (~⅔ of each layer's parameters); attention's Q/K/V is the smaller share. The wide FFN is where most of the weights live.</p></details></li>
+    <li>Make the character model deeper without adding more data. Does quality keep climbing?<details class="ti-answer"><summary>Check your answer</summary><p>No — depth helps only up to what the data supports. Past that, a deeper model just overfits or stalls. Model size and data have to scale together (the Chinchilla idea).</p></details></li>
+    <li>Roughly how many tokens of data does a parameter ‘want’ to be trained well?<details class="ti-answer"><summary>Check your answer</summary><p>About 20 tokens per parameter (the compute-optimal rule of thumb): double the model, double the data.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

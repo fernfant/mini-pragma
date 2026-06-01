@@ -950,3 +950,18 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
   outline: 2px solid var(--accent, #b9410a);
   outline-offset: 2px;
 }
+
+
+/* "Try it yourself" capstone card */
+.tryit { background:#fff7ed; border:1px solid #fed7aa; border-left:4px solid var(--accent,#b9410a); border-radius:0 10px 10px 0; padding:16px 20px; margin:30px 0; }
+.tryit .ti-title { font-weight:700; color:var(--accent,#b9410a); margin:0 0 6px; font-size:17px; }
+.tryit .ti-intro { margin:0 0 8px; font-size:14.5px; }
+.tryit ol { margin:0; padding-left:22px; }
+.tryit li { margin:11px 0; font-size:14.5px; }
+.tryit details.ti-answer { margin-top:5px; }
+.tryit details.ti-answer summary { cursor:pointer; color:var(--accent,#b9410a); font-weight:600; font-size:13px; list-style:none; }
+.tryit details.ti-answer summary::-webkit-details-marker { display:none; }
+.tryit details.ti-answer summary::before { content:"💡 "; }
+.tryit details.ti-answer summary::after { content:"  ▸ check"; color:#94a3b8; font-weight:400; font-size:11px; }
+.tryit details.ti-answer[open] summary::after { content:"  ▾ hide"; }
+.tryit details.ti-answer p { margin:6px 0 0; font-size:13.5px; color:var(--text,#1a1a1a); }

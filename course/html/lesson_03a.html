@@ -216,6 +216,16 @@ cat         0.25    0.25    0.25    0.25</code></pre>
 
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the √d widget and the Q/K/V explanation above.</p>
+  <ol>
+    <li>Set <code>d = 4</code>, then <code>d = 256</code>. Compare the <em>without ÷√d</em> top-word percentage in each case.<details class="ti-answer"><summary>Check your answer</summary><p>At small d it's still shared; at large d it collapses toward ~100% on one word. Bigger vectors → bigger dot products → spiky softmax. The ÷√d column barely moves.</p></details></li>
+    <li>Roughly what does the <em>with ÷√d</em> top-word percentage do as you sweep d from 4 to 256?<details class="ti-answer"><summary>Check your answer</summary><p>It stays essentially constant. Dividing by √d cancels exactly the √d growth in the scores, so the <em>shape</em> of the attention no longer depends on how long the vectors are.</p></details></li>
+    <li>Why give each word a separate Query and Key instead of just dotting the word with itself?<details class="ti-answer"><summary>Check your answer</summary><p>Plain <code>x·xᵀ</code> is symmetric — “it”→“cat” would score the same as “cat”→“it.” Separate Q and K let “it” ask “find me a noun” while “cat” advertises “I'm a noun,” so the scores can differ.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

@@ -559,6 +559,16 @@ AFTER MASKING (random 30%):
 <p style="margin-top:14px;"><span style="background:#dcfce7;padding:2px 6px;border-radius:4px;">Green 👑</span> = pre-training wins (few labels). <span style="background:#fef3c7;padding:2px 6px;border-radius:4px;">Yellow 👑</span> = baseline wins (many labels). The crossover around 500 labels is the lesson: <strong>pre-training is a head-start, most valuable when you can't afford many labels.</strong></p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the labels → accuracy slider above.</p>
+  <ol>
+    <li>Drag the number of labelled examples down low. What happens to the from-scratch model vs the pre-trained one?<details class="ti-answer"><summary>Check your answer</summary><p>From-scratch collapses with few labels; the pre-trained-then-probed model stays strong. That gap <em>is</em> the foundation-model payoff — knowledge learned without labels transfers.</p></details></li>
+    <li>Why can a model pre-trained with <em>no labels at all</em> still help a labelled task?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-training learns the <em>shape</em> of the data (which values go together). The labelled task then only has to learn a small mapping on top of that understanding, not everything from zero.</p></details></li>
+    <li>Predict: if you had unlimited labels, would pre-training still help much?<details class="ti-answer"><summary>Check your answer</summary><p>Less — with enough labels a from-scratch model can catch up. Pre-training's edge is biggest exactly when labels are scarce, which is the common real-world case.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

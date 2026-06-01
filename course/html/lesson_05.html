@@ -401,6 +401,16 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 <p>Next: see one more realistic worked example before the capstone.</p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the key-value event playground above (and the pragma_mini notebook).</p>
+  <ol>
+    <li>Build an event by hand, then mask one of its <em>values</em>. What is the model being asked to do?<details class="ti-answer"><summary>Check your answer</summary><p>Fill in the blank from the surrounding fields — the same masked-modelling game as L4, now on structured banking-style events instead of sentences.</p></details></li>
+    <li>Why tokenise a number like <code>14.99</code> as one value token instead of letting plain text split it into digits?<details class="ti-answer"><summary>Check your answer</summary><p>Plain text shatters “14.99” into 5 characters and destroys its magnitude. Key+value tokenisation keeps each field intact so the model sees a real quantity.</p></details></li>
+    <li>What does freezing the encoder and training only a small head buy you?<details class="ti-answer"><summary>Check your answer</summary><p>Speed and tiny label budgets — the pre-trained encoder already understands the data, so a small probe on top learns the new task from very few examples.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

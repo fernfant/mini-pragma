@@ -769,6 +769,16 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 <p><strong>Same five-line training loop. Same gradient descent. Same five-stage pipeline</strong> (embed → attention → feed-forward → head → softmax). Whether it fills a blank (TinyMLM, BERT) or predicts the next word (the cousin, ChatGPT), PRAGMA is just this — scaled up, with <a href="lesson_01_5.html#step-76">18 stacked blocks</a> instead of 1.</p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the masking playground above (build a training example by hand).</p>
+  <ol>
+    <li>Mask a <strong>key</strong> token instead of a value. Why is that a worse training signal?<details class="ti-answer"><summary>Check your answer</summary><p>Keys (the field names) are predictable boilerplate — recovering them teaches the model little. Masking <em>values</em> forces it to learn the real patterns in the data.</p></details></li>
+    <li>Raise the mask rate toward 100%. What breaks?<details class="ti-answer"><summary>Check your answer</summary><p>With almost everything hidden, the model has no context left to predict from — the fill-in-the-blank game becomes impossible. ~15–25% masked is the usual sweet spot.</p></details></li>
+    <li>After masking, what exactly is the model's target — and where does the loss come from?<details class="ti-answer"><summary>Check your answer</summary><p>The target is the original token that was hidden. Cross-entropy compares the model's probability for the true token against 1.0; the less confident it was, the bigger the loss.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

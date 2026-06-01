@@ -540,6 +540,16 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   <strong>🎉 That's the lesson — you made it to the end of the main path.</strong> You now know how a model writes one word at a time, why the causal mask matters, and how temperature changes its mood. <strong>Want to go deeper?</strong> The optional next page, <a href="lesson_04g.html">Lesson 4g</a>, has two bonus deep-dives: the first ("the whole brain, drawn to scale") lets you <em>see</em> the real size of the network; the second ("from memorizer to general-purpose") shows the leap from whole-word toys to ChatGPT-style models. Totally optional — dip in if you're curious, or head straight on to <a href="lesson_04h.html">Lesson 4h</a>.
 </div>
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the next-word generator and its temperature slider above.</p>
+  <ol>
+    <li>Set the temperature very <strong>low</strong>, then very <strong>high</strong>. How does the output change?<details class="ti-answer"><summary>Check your answer</summary><p>Low temp = safe, repetitive, picks the single most likely word every time. High temp = adventurous and varied, but more likely to go off the rails. It's the creativity/randomness dial.</p></details></li>
+    <li>At temperature 0, is generation deterministic? Why?<details class="ti-answer"><summary>Check your answer</summary><p>Yes — it always takes the single highest-probability token, so the same prompt gives the same continuation every time. No sampling, no surprise.</p></details></li>
+    <li>Next-word generation reuses the exact training loop. What's different at <em>inference</em> time?<details class="ti-answer"><summary>Check your answer</summary><p>Nothing learns — it's the same forward pass as training, just without the backward step. Predict, take the word, append it, repeat.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

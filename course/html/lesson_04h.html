@@ -372,6 +372,16 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
   <strong>Reality check — MacBook Air M4 (16 GB, fanless).</strong> Memory isn't the bottleneck (16 GB handles a 30M model easily). <strong>Heat is</strong> — the Air has no fan, so multi-hour runs throttle. Train overnight, keep it cool and plugged in. The true 125M <code>gpt3-small</code> preset is in <code>model.py</code> for reference, but that one really wants a cloud GPU. Want it faster on the Mac? Rewrite in Apple <strong>MLX</strong> (~2× quicker than PyTorch-MPS here).
 </div>
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the loss-curve widget above (and the runnable minigpt notebook).</p>
+  <ol>
+    <li>Predict the loop count: going from L1's 2-parameter line to this ~11M-parameter GPT, how much does the <em>training loop</em> change?<details class="ti-answer"><summary>Check your answer</summary><p>Not at all — predict → measure loss → backward → step → repeat. Same five lines from L1 to 11M params to GPT-3's 175B. Only the model in the middle grows.</p></details></li>
+    <li>In the recipe table, <code>dropout</code> appears. What's it for, in one line?<details class="ti-answer"><summary>Check your answer</summary><p>It randomly switches off some neurons each step so the model can't lean too hard on any one path — a cheap way to reduce overfitting.</p></details></li>
+    <li>The model starts by producing pure noise. Why does Shakespeare-shaped text eventually emerge?<details class="ti-answer"><summary>Check your answer</summary><p>Each step nudges millions of parameters to make the next-character guess a little less wrong. Repeat enough times and the statistics of the text (spelling, line breaks, names) get baked into the weights.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ What you can now say you understand</div>
   <ul>

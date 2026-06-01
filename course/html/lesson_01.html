@@ -331,6 +331,16 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
 <p>That's it. Everything else in this course is decoration.</p>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Scroll back to the line-fitting playground and predict each result before you test it.</p>
+  <ol>
+    <li>Crank the <strong>learning rate</strong> slider to its maximum, then hit Auto-train. What happens to the line and the loss?<details class="ti-answer"><summary>Check your answer</summary><p>It overshoots and the loss <em>explodes</em> (bounces bigger and bigger) instead of settling. Too big a step leaps clear over the valley bottom — that's why learning rate is the most-tuned dial in ML.</p></details></li>
+    <li>Drag <code>w</code> and <code>b</code> far away from the truth, then Auto-train with a small learning rate. Does it still find <code>w≈2, b≈1</code>?<details class="ti-answer"><summary>Check your answer</summary><p>Yes — it just takes more steps. Gradient descent walks downhill from wherever it starts; the starting point changes how long it takes, not where it ends (for this simple bowl-shaped loss).</p></details></li>
+    <li>Set <code>w=2</code> and <code>b=1</code> by hand. What's the loss, and why?<details class="ti-answer"><summary>Check your answer</summary><p>Loss drops to ~0: you've matched the secret rule <code>y = 2x + 1</code> exactly, so every guess is right. Training is just the search for these numbers.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

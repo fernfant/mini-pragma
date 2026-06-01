@@ -300,6 +300,16 @@ scores:`;
 </div>
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the interactive attention-matrix widget above (type a sentence, drag the temperature, reroll vectors).</p>
+  <ol>
+    <li>Type a sentence where one word clearly depends on another (e.g. “the tired dog slept”). Which cells light up?<details class="ti-answer"><summary>Check your answer</summary><p>Words that are related get higher attention weights between them. The matrix is just 'how much does each word look at each other word' — score, softmax, mix.</p></details></li>
+    <li>Drag the softmax <strong>temperature</strong> down toward 0. What happens to each row?<details class="ti-answer"><summary>Check your answer</summary><p>It gets spiky — each word dumps almost all its attention onto a single other word. High temperature spreads it out evenly. (This is the same spiky-vs-soft effect √d controls in L3a.)</p></details></li>
+    <li>Hit <strong>reroll</strong> a few times. Why does the pattern keep changing?<details class="ti-answer"><summary>Check your answer</summary><p>The vectors are random until trained. Random embeddings give near-meaningless attention; the sharp, useful patterns only appear once the vectors are <em>trained</em>.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

@@ -526,6 +526,16 @@ Linear(2048, 512)</code></pre>
 
 
 
+<div class="tryit">
+  <div class="ti-title">🔬 Try it yourself</div>
+  <p class="ti-intro">Use the stacking diagram and the 'watch the sentence through the stack' widget above.</p>
+  <ol>
+    <li>Before you step through it: in an 18-block Transformer, how many blocks run attention?<details class="ti-answer"><summary>Check your answer</summary><p>All 18. The whole (attention + feed-forward) block repeats; embedding happens once at the bottom, the output head once at the top, everything between repeats.</p></details></li>
+    <li>Your L1.5 MLP was <code>Linear → ReLU → Linear</code>. What's the only real difference from BERT's feed-forward block?<details class="ti-answer"><summary>Check your answer</summary><p>Size (and GELU instead of ReLU). BERT's is <code>Linear(512,2048) → GELU → Linear(2048,512)</code> — the same shape you built, just much bigger.</p></details></li>
+    <li>Imagine deleting the feed-forward block from every layer, leaving only attention. What would the model lose?<details class="ti-answer"><summary>Check your answer</summary><p>Its per-word 'thinking' step. Attention mixes information <em>across</em> words; the feed-forward does processing <em>within</em> each word. Drop it and the model can route information but barely transform it.</p></details></li>
+  </ol>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
