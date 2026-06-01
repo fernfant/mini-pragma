@@ -89,6 +89,14 @@
 
 <p>In the panel, each cell's colour is its number: <span style="color:#c2532a;font-weight:600">orange</span> for positive, <span style="color:#3a7bd0;font-weight:600">blue</span> for negative, and the stronger the colour the bigger the value. So a word's "shape" — its pattern of warm and cool cells — is its meaning. Switch sentences with the chips and watch each word arrive with its own pattern. Nothing is happening to them <em>yet</em>; they're just lined up, encoded, waiting for the next stage to mix them.</p>
 
+<div id="chk-enc"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-enc",{
+  q: "To encode the word \"once\", what does the model actually do?",
+  options: ["Counts its letters", "Copies that word's row of numbers from the embedding table", "Runs it through softmax"],
+  answer: 1,
+  explain: "Encoding is a lookup: the model keeps one row of learned numbers per word and copies the matching row. No math yet — just fetch the vector."
+});});</script>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

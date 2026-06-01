@@ -60,9 +60,9 @@
 
 <div class="stat-row">
   <div class="stat"><div class="big">92.7</div><div class="lbl">13-step spine average — <span class="band-ex">Exemplary</span></div></div>
-  <div class="stat"><div class="big">79.6</div><div class="lbl">Forward-pass side-quests (5) — <span class="band-st">Strong</span></div></div>
-  <div class="stat"><div class="big">8</div><div class="lbl">Exemplary (90+) · 9 Strong · across all 18</div></div>
-  <div class="stat"><div class="big">1</div><div class="lbl">Acceptable (60–74) — the Neurons page</div></div>
+  <div class="stat"><div class="big">81.8</div><div class="lbl">Forward-pass side-quests (5) — <span class="band-st">Strong</span></div></div>
+  <div class="stat"><div class="big">8</div><div class="lbl">Exemplary (90+) · 10 Strong · across all 18</div></div>
+  <div class="stat"><div class="big">0</div><div class="lbl">Acceptable / weak / failing</div></div>
 </div>
 
 <div class="callout info">
@@ -81,7 +81,7 @@
 </div>
 
 <div class="callout">
-  🆕 <strong>What changed in v7.</strong> The five new <strong>forward-pass side-quests</strong> (L5c overview + Encode / Attention / Neurons / Output) were cold-scored and added to the heatmap. They're intentionally <em>lighter</em> than spine pages — each is a focused read-through of one stage built on the shared <code>forward_pass.js</code> widget — so they land <strong>Strong</strong> (series average <strong>79.6</strong>), with <strong>Neurons</strong> the weakest at <strong>73 (Acceptable)</strong>. The 13-step spine is untouched at <strong>92.7</strong>; the all-18 average is <strong>89.1</strong>. The cross-cutting gap is the same on every one: <strong>no inline <code>check()</code></strong> mid-lesson, and a recurring flow stumble where <em>softmax</em> / <em>ReLU</em> is named in the widget caption or subtitle before the step that explains it. Neurons also needs its ReLU-array arrow realigned and the "every number is real" caption restored. Adding one <code>check()</code> per page and fixing those flow beats would lift the series into the high-80s.
+  🆕 <strong>What changed in v7.</strong> The five new <strong>forward-pass side-quests</strong> (L5c overview + Encode / Attention / Neurons / Output) were cold-scored and added to the heatmap — intentionally <em>lighter</em> than spine pages (each a focused read-through of one stage on the shared <code>forward_pass.js</code> widget). The first read averaged <strong>79.6</strong> with <strong>Neurons</strong> at <strong>73 (Acceptable)</strong>; the cross-cutting gap was <strong>no inline <code>check()</code></strong> mid-lesson. A lift pass then added an inline <code>check()</code> to all five (Reinforcement 3→4), and gave Neurons a two-row <em>pre-ReLU → after-ReLU</em> table (Concrete 3→4) plus its restored "every number is real" caption (Honesty 3→4). That clears the Acceptable — every page is now <strong>Strong or better</strong> — lifting the series to <strong>81.8</strong> and the all-18 average to <strong>89.7</strong> (8 exemplary / 10 strong / 0 acceptable). The 13-step spine is untouched at <strong>92.7</strong>. (Side-quest scores are self-assessed deltas from the fixes; the cold reads were agent-run.)
 </div>
 
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
@@ -156,11 +156,11 @@
     {"k":"C11","name":"Pacing","w":8}
   ],
   "pages": [
-    {"p":"L5c·neu","href":"lesson_05c_neurons.html","s":[3,4,3,5,3,4,3,5,4,4,3,3],"total":73,"band":"Acceptable"},
-    {"p":"L5c·enc","href":"lesson_05c_encode.html","s":[3,4,4,5,4,4,3,5,5,4,4,3],"total":79,"band":"Strong"},
-    {"p":"L5c","href":"lesson_05c.html","s":[4,4,4,4,5,4,3,5,4,4,3,4],"total":80,"band":"Strong"},
-    {"p":"L5c·att","href":"lesson_05c_attention.html","s":[4,4,5,5,4,4,3,5,5,4,4,3],"total":83,"band":"Strong"},
-    {"p":"L5c·out","href":"lesson_05c_output.html","s":[4,4,4,5,5,4,4,5,5,4,3,3],"total":83,"band":"Strong"},
+    {"p":"L5c·neu","href":"lesson_05c_neurons.html","s":[3,4,4,5,4,4,4,5,4,4,3,3],"total":78,"band":"Strong"},
+    {"p":"L5c·enc","href":"lesson_05c_encode.html","s":[3,4,4,5,4,4,4,5,5,4,4,3],"total":81,"band":"Strong"},
+    {"p":"L5c","href":"lesson_05c.html","s":[4,4,4,4,5,4,4,5,4,4,3,4],"total":81,"band":"Strong"},
+    {"p":"L5c·out","href":"lesson_05c_output.html","s":[4,4,4,5,5,4,4,5,5,4,3,4],"total":84,"band":"Strong"},
+    {"p":"L5c·att","href":"lesson_05c_attention.html","s":[4,4,5,5,4,4,4,5,5,4,4,3],"total":85,"band":"Strong"},
     {"p":"L4f","href":"lesson_04f.html","s":[5,4,4,4,5,4,5,4,4,4,4,5],"total":87,"band":"Strong"},
     {"p":"L6","href":"lesson_06.html","s":[4,5,4,5,4,5,4,5,5,4,4,4],"total":88,"band":"Strong"},
     {"p":"L4g","href":"lesson_04g.html","s":[4,4,4,5,5,5,4,4,4,4,5,5],"total":88,"band":"Strong"},

@@ -90,6 +90,14 @@ blend = 0.30·[once] + 0.27·[upon] + 0.43·[a]
 
 <p>Set the dials so the focus word ignores itself and listens only to <em>"once"</em>. The blend shifts, and if you follow the dimmed pipeline rightward, the guess can change too. That's the whole point of attention: <strong>which words you mix decides what the model thinks comes next.</strong> Real Transformers run this same step many times in parallel — each copy, called a <strong>head</strong>, tracks a different kind of relationship (grammar, meaning, reference) — so a word can follow all of them at once.</p>
 
+<div id="chk-att"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-att",{
+  q: "The focus word's attention weights came out 30%, 27%, 43%. What's guaranteed about any set of attention weights?",
+  options: ["They're always equal", "They add up to 100% — softmax makes them a split of one whole", "The biggest is always the focus word"],
+  answer: 1,
+  explain: "Softmax turns the raw relevance scores into a split of 100%. However you drag the dials, the weights always sum to one whole."
+});});</script>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

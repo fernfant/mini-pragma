@@ -67,13 +67,19 @@
 <p>Each neuron does two things. First a <strong>weighted sum</strong>: multiply every number in the blend by that neuron's weight for it, and add. That can come out positive or negative. Then <strong>ReLU</strong> (the bend from L1.5) does something brutally simple — keep the number if it's positive, replace it with 0 if it's negative:</p>
 
 <div class="callout">
-<pre style="margin:0;"><code>blend → 10 neurons → ReLU:
-
-[ 2.11, 0.41, 0, 1.41, 0.38, 0.97, 0, 0, 1.44, 0 ]
-   ▲fire        ▲off (was negative → 0)
-
-6 of the 10 neurons fired; 4 were silenced.</code></pre>
+<pre style="margin:0;"><code>pre-ReLU (raw sums):  2.11  0.41  -0.49  1.41  0.38  0.97  -0.04  -0.55  1.44  -0.00
+after ReLU (max 0):   2.11  0.41   0.00  1.41  0.38  0.97   0.00   0.00  1.44   0.00</code></pre>
 </div>
+
+<p>Line them up and ReLU's rule is obvious: every <em>negative</em> raw sum (−0.49, −0.04, −0.55, −0.00) became <strong>0</strong>; the positives passed through untouched. So <strong>6 of the 10 neurons fired</strong>; the other 4 went dark.</p>
+
+<div id="chk-neu"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-neu",{
+  q: "In the rows above, neuron #3's raw sum is −0.49. Does it fire?",
+  options: ["Yes — it passes −0.49 on", "No — ReLU turns any negative into 0", "Only halfway"],
+  answer: 1,
+  explain: "ReLU keeps positives and zeroes every negative, so −0.49 becomes 0 — neuron #3 stays dark for this input."
+});});</script>
 
 <p>Why bother zeroing things out? Because if neurons only ever added and scaled, stacking them would collapse into one big multiply — no smarter than a single layer. The ReLU bend lets each neuron <strong>specialise</strong>: react to some blends, stay silent for others. That selective firing is what lets the network carve up meaning into useful pieces.</p>
 
@@ -121,7 +127,7 @@
 </div>
 
 <script src="forward_pass.js"></script>
-<script>initFlow(document.getElementById('fp'),{focus:'neurons',caption:'<b>Neurons</b> are lit. Bright = firing, grey = silenced by ReLU. Switch sentences and watch the firing pattern change. Focus the panel, then <kbd>Space</kbd> to sweep.'});</script>
+<script>initFlow(document.getElementById('fp'),{focus:'neurons',caption:'<b>Neurons</b> are lit. Bright = firing, grey = silenced by ReLU — and every number is real, from a network that was actually trained. Switch sentences and watch the firing pattern change. Focus the panel, then <kbd>Space</kbd> to sweep.'});</script>
 <script src="course.js"></script>
 </body>
 </html>

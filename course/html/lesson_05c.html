@@ -125,6 +125,14 @@
   <strong>Is the guess real?</strong> Yes. This tiny network was actually <em>trained</em> (the same predict → measure error → nudge loop from <a href="lesson_01.html">Lesson 1</a>) on these four phrases, so at the default weights each one predicts its true next word — <em>once upon a → <strong>time</strong></em>, <em>the sky is → <strong>blue</strong></em>. It's a toy with a 5-word vocabulary, not GPT, but the flow and the numbers are honest. Now drag a dial to 100% and watch the blend, the firing, and the guess all shift — that's <em>why</em> attention matters.
 </div>
 
+<div id="chk-l5c"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l5c",{
+  q: "Which stage decides how much each earlier word gets mixed into the focus word's blend?",
+  options: ["Encode", "Attention", "The output softmax"],
+  answer: 1,
+  explain: "Attention sets the weights for the blend. Encode just turns words into vectors; the output softmax only picks the winning word at the very end."
+});});</script>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

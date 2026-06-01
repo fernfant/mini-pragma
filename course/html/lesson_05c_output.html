@@ -90,6 +90,14 @@ predicted next word →  "time"</code></pre>
 
 <p>Every number on these four pages was computed, not faked: this tiny network was actually <strong>trained</strong> (same predict → measure error → nudge loop as <a href="lesson_01.html">Lesson 1</a>) so each phrase lands on its true next word — <em>once upon a → <strong>time</strong></em>, <em>the sky is → <strong>blue</strong></em>. It has a 5-word vocabulary, not GPT's 50,000, but the machinery is identical. You've now traced a full forward pass end to end.</p>
 
+<div id="chk-out"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-out",{
+  q: "The model just predicted \"time\" after \"once upon a\". To write the NEXT word, what does it feed back in?",
+  options: ["Nothing — it's done", "\"once upon a time\", then runs the whole pass again", "Just the word \"time\" on its own"],
+  answer: 1,
+  explain: "Generation is the forward pass on repeat: append the chosen word and run again — \"once upon a\" → time, then \"once upon a time\" → the next word, and so on."
+});});</script>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
