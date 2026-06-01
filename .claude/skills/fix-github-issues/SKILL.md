@@ -60,14 +60,36 @@ a real commit — never close an issue you didn't actually fix.
    `Fixes #<N>` so the push auto-closes the issue. End with the repo's
    `Co-Authored-By:` trailer. Branch first if the repo rules forbid committing on
    the default branch.
-7. **Push, then confirm closed.** After push, verify with
-   `gh issue view <N> --json state`. If "Fixes #N" didn't auto-close (e.g. you
-   committed to a non-default branch / PR flow), close explicitly:
-   `gh issue close <N> --comment "<summary>"`. Either way, leave a comment that
-   states the fix, the scope (how many files/spots), and the commit SHA:
-   `gh issue comment <N> --body "Fixed in <sha>: <one-line what changed>. <scope note>."`
+7. **Push, then mark it fixed on GitHub** (see the dedicated section below — this
+   step is the whole point of "mark as fixed").
 8. **Report** to the user: issue title, what was wrong, what you changed (file
    count), how you verified, and the issue's new state.
+
+## Marking it fixed on GitHub (REQUIRED — don't skip)
+
+"Marked as fixed" means the issue ends up **CLOSED on github.com** with a comment
+that ties it to the fix. Every fixed issue must reach this state. Concrete steps:
+
+1. **Push** the fix to the remote (`git push`). The `Fixes #<N>` trailer in the
+   commit auto-closes the issue once it lands on the **default branch**.
+2. **Confirm the close took:**
+   ```sh
+   gh issue view <N> --json state,stateReason -q '.state, .stateReason'
+   ```
+   Expect `CLOSED` / `COMPLETED`. If it's still `OPEN` (you committed to a feature
+   branch, opened a PR, or omitted the trailer), close it explicitly:
+   ```sh
+   gh issue close <N> --reason completed
+   ```
+3. **Leave the receipt comment** — what changed, the scope, and the commit SHA so
+   anyone reading the closed issue can trace it:
+   ```sh
+   gh issue comment <N> --body "Fixed in <sha>: <one-line what changed>. Scope: <N files / M spots>. Verified: <how>."
+   ```
+4. *(Optional, if the repo uses them)* add a label: `gh issue edit <N> --add-label fixed`.
+
+Verification beats assumption: always run the `gh issue view` check after pushing
+— never tell the user an issue is "marked fixed" without confirming `state=CLOSED`.
 
 ## Hard rules
 
