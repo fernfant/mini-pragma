@@ -55,6 +55,8 @@
   <a href="lesson_05c_output.html"><span class="n">step 4</span> Output</a>
 </div>
 
+<p>Push this blend through the 10 neurons and exactly <strong>6 light up</strong>; the other 4 stay dark. That on/off pattern <em>is</em> the model thinking — and ReLU is the switch that decides who fires.</p>
+
 <p>Attention handed us one blended vector. Now it flows into a <strong>feed-forward layer</strong> — the little neural net from <a href="lesson_01_5.html">Lesson 1.5</a>. Each neuron takes the blend, multiplies it by its own set of weights, adds them up, and then asks one question: <em>is my total above zero?</em> If yes, it fires (bright); if no, <strong>ReLU</strong> shuts it to exactly zero (grey). Watch the middle column light up — only some neurons survive.</p>
 
 <h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>

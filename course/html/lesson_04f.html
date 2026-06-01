@@ -79,6 +79,8 @@
 <!-- ──────────────────────────────────────────────────────────── -->
 <h2 id="big-idea">The next-word game (vs fill-in-the-blank)</h2>
 
+<p>Feed a good next-word model "the cat sat on the ___" and it answers <strong>mat</strong>. That one move — predict the next token — is the whole task on this page, and its training data is free.</p>
+
 <p>In <a href="lesson_04.html">Lesson 4</a> we built <strong>TinyMLM</strong>. It plays <em>fill-in-the-blank</em>: hide a word in the middle of a sentence, let the model peek at the words on <strong>both sides</strong>, and guess the missing one. That's how <strong>BERT</strong> (and PRAGMA) train.</p>
 
 <p>ChatGPT plays a different game: <em>predict the very next word</em>. It only sees the words <strong>before</strong> the gap — never the future — so it can keep going forever: guess a word, add it, guess the next, add it… That's how it writes whole paragraphs.</p>

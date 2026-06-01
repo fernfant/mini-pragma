@@ -55,6 +55,8 @@
   <a href="lesson_05c_output.html" class="here"><span class="n">step 4</span> Output</a>
 </div>
 
+<p>The firing pattern scores the five candidate words — <em>time</em> at <strong>8.3</strong>, the rest below zero — and softmax squeezes that into <strong>time 100%</strong>. That final squeeze is this page.</p>
+
 <p>We have a firing pattern — the model's thought about <em>"once upon a"</em>. The last step turns that thought into an actual word. <strong>One more weighted sum</strong> — one dot-product per candidate word, exactly like the neuron layer did, just producing 5 numbers instead of 10 — gives each candidate a raw <strong>score</strong> (called a <em>logit</em>, just an unbounded number): higher means "this fits better". Then <strong>softmax</strong> — the same squasher from attention — turns the scores into probabilities that add to 100%. The tallest bar wins.</p>
 
 <h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
