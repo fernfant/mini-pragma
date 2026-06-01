@@ -385,7 +385,9 @@ ids = [BOS] + [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-k
 <!-- ──────────────────────────────────────────────────────────── -->
 <h2 class="step" id="step-7"><span class="step-num">Step 7</span> Train: shift the labels by one</h2>
 
-<p>The data trick is even simpler than masking. For a sentence, the <strong>input</strong> is everything except the last token, and the <strong>target</strong> is everything except the first — shifted left by one. So at each slot the model must name <em>the next</em> token:</p>
+<p>Here's the whole idea in one line: for every word in the sentence, the model's job is to name the word that comes <em>right after</em> it.</p>
+
+<p>That's the <strong>shift-by-one</strong> trick, and it's even simpler than masking. We feed the sentence with its last token removed (the <strong>input</strong>), and ask for the sentence with its first token removed (the <strong>target</strong>) — every position slides one step to the left. So at each slot the model must name <em>the next</em> token:</p>
 
 <pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13px;line-height:1.7;"><code style="color:#1a1a1a;">input : &lt;bos&gt;  the   cat   sat   on    the   mat
 target:  the    cat   sat   on    the   mat  &lt;eos&gt;
@@ -475,7 +477,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 <!-- ──────────────────────────────────────────────────────────── -->
 <h2 class="step" id="step-9"><span class="step-num">Step 9</span> The data journey, end to end</h2>
 
-<p>Finally, let's watch a sentence flow through every stage — with the model's <strong>real</strong> numbers at each step. Pick a context and press <strong>Next ▶</strong> to follow it through tokenise → embed → attention → feed-forward → head → softmax, ending in the predicted next word.</p>
+<p>You last walked a sentence through this exact pipeline back in <a href="lesson_04.html#data-journey">L4's data journey</a> — but those numbers were illustrative. Now you'll follow the <strong>same five stages</strong> with the <strong>real</strong> trained model from this page. Pick a context and press <strong>Next ▶</strong> to follow it through tokenise → embed → attention → feed-forward → head → softmax, ending in the predicted next word.</p>
 
 <div class="widget" id="dj" style="background:#0f172a;color:#e2e8f0;border-radius:14px;padding:20px 22px;border:1px solid #1e293b;">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">

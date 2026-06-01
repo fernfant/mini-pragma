@@ -302,6 +302,14 @@ the little dog laughed to see such sport</pre></div>
   <strong>🎉 That's the bonus.</strong> You've now <em>seen</em> the real size of a network and watched the leap from a fixed-word memorizer to a general-purpose speller. Next up: scaling all of this onto a real GPU build.
 </div>
 
+<div id="chk-04g"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-04g",{
+  q: "The character model can spell words it never saw in training; the fixed 31-word model can't. Why?",
+  options: ["It just trained longer", "Characters are the atoms — ~25 letters can build any word, while 31 whole words can't combine into anything new", "It has more layers"],
+  answer: 1,
+  explain: "An open character vocabulary composes any spelling from ~25 letters; a fixed word list can only ever emit those exact words. That open vocabulary is what 'general-purpose' really buys you."
+});});</script>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

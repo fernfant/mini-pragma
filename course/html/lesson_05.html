@@ -316,6 +316,8 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 
 <h2 class="step" id="infer"><span class="step-num">Sec 7</span> Inference</h2>
 
+<p>Inference is just training run backwards: instead of hiding a value so the model can <em>learn</em>, you hide the value you actually want to know and let the trained model fill in the blank. Here's the whole thing in a few lines of Python:</p>
+
 <pre><code>def guess(event, hide_key):
     ids = encode(event)
     for i in range(0, len(ids), 2):
