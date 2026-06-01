@@ -187,6 +187,66 @@ cat         0.25    0.25    0.25    0.25</code></pre>
 
 <p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;"><strong>Heads-up on the word "head."</strong> An <strong>attention head</strong> is one of these parallel question-askers — that's the real industry term, straight from the 2017 paper <em>Attention Is All You Need</em>. Later (in <a href="lesson_04.html">Lesson 4</a>) you'll meet the <strong>output head</strong>: the final layer that turns vectors into word scores. Same word, completely different job — don't let them blur together.</p>
 
+<h3 id="heads-viz">See the heads as detectors</h3>
+
+<p>This is the attention twin of the neuron-detector idea from <a href="lesson_01_5.html#detect">L1.5</a>. There, a feed-forward neuron lit up on a <em>feature within</em> one word. Here, an attention <strong>head</strong> lights up a <em>relationship across</em> words. Same idea — things lighting up — just <em>within</em> vs <em>across</em>. Pick a head (each is a different relationship detector), then click a word and watch where its attention beams go.</p>
+
+<div class="widget">
+  <h3>🎚 Watch the heads light up</h3>
+  <div class="pg-sub">Each head detects a different kind of link. Choose a head, then click a word — brighter, thicker beams mean stronger attention.</div>
+  <div id="ah-heads" role="group" aria-label="Choose an attention head" style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;"></div>
+  <svg id="ah-svg" viewBox="0 0 600 170" role="img" aria-label="Attention beams from the selected word to the words it attends to, for the chosen head." style="width:100%;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;"></svg>
+  <div id="ah-words" role="group" aria-label="Choose a word" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;"></div>
+  <p id="ah-cap" style="font-weight:600;margin:6px 0 0;"></p>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);">These three heads are hand-set so the specialisation is visible. Real trained heads aren't labelled — but researchers have found heads that genuinely track exactly these relationships (subject–verb, modifier→noun, nearby words). Same principle as the neurons: each head detects something, and together they read the sentence.</p>
+
+<script>
+(() => {
+  const svg=document.getElementById('ah-svg'); if(!svg) return;
+  const WORDS=['the','hungry','dog','chased','the','cat'];
+  const X=WORDS.map((_,i)=>50+i*100);
+  const HEADS={
+    noun:{label:'🔎 find-the-noun', col:'#b9410a', W:[[1,0,4,0,0,0],[0,1,5,0,0,0],[0,0,5,0,0,0],[0,0,2,1,0,2],[0,0,0,0,1,4],[0,0,0,0,0,5]]},
+    sv:{label:'🔗 subject↔verb', col:'#1d4ed8', W:[[2,0,1,0,0,0],[0,2,1,0,0,0],[0,0,1,5,0,0],[0,0,4,1,0,3],[0,0,0,1,2,1],[0,0,0,5,0,1]]},
+    near:{label:'↔ neighbours', col:'#047857', W:[[1,3,1,0,0,0],[3,1,3,0,0,0],[0,3,1,3,0,0],[0,0,3,1,3,0],[0,0,0,3,1,3],[0,0,0,0,3,1]]}
+  };
+  let head='noun', focus=1;
+  function norm(r){ const s=r.reduce((a,b)=>a+b,0)||1; return r.map(v=>v/s); }
+  function render(){
+    const H=HEADS[head], w=norm(H.W[focus]);
+    let arcs='';
+    for(let j=0;j<WORDS.length;j++){ if(j===focus||w[j]<0.06) continue;
+      const x1=X[focus],x2=X[j],mx=(x1+x2)/2,my=128-(28+Math.abs(x2-x1)*0.5);
+      arcs+='<path d="M'+x1+' 128 Q'+mx+' '+my+' '+x2+' 128" fill="none" stroke="'+H.col+'" stroke-width="'+(1.5+w[j]*8).toFixed(1)+'" stroke-linecap="round" opacity="'+(0.2+w[j]*0.75).toFixed(2)+'"/>';
+    }
+    let lab='';
+    for(let i=0;i<WORDS.length;i++){
+      const isF=i===focus, recv=w[i];
+      lab+='<circle cx="'+X[i]+'" cy="128" r="'+(isF?6:3.5)+'" fill="'+(isF?H.col:'#cbd5e1')+'"/>';
+      lab+='<text x="'+X[i]+'" y="152" text-anchor="middle" font-size="15" font-weight="'+(isF||recv>0.2?'700':'400')+'" fill="'+(isF?H.col:(recv>0.06?'#1a1a1a':'#94a3b8'))+'" font-family="ui-sans-serif,system-ui">'+WORDS[i]+'</text>';
+    }
+    svg.innerHTML=arcs+lab;
+    let tj=focus===0?1:0; for(let j=0;j<w.length;j++) if(j!==focus && w[j]>w[tj]) tj=j;
+    document.getElementById('ah-cap').innerHTML='Head <b style="color:'+H.col+'">'+H.label+'</b>: “'+WORDS[focus]+'” looks most at “<b>'+WORDS[tj]+'</b>” ('+Math.round(w[tj]*100)+'%).';
+    document.querySelectorAll('#ah-heads button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.h===head?'true':'false'));
+    document.querySelectorAll('#ah-words button').forEach(b=>{ const on=(+b.dataset.i)===focus; b.setAttribute('aria-pressed', on?'true':'false'); b.style.borderColor=on?HEADS[head].col:'#cbd5e1'; });
+  }
+  const hc=document.getElementById('ah-heads');
+  Object.keys(HEADS).forEach(k=>{ const b=document.createElement('button'); b.type='button'; b.dataset.h=k; b.textContent=HEADS[k].label;
+    b.style.cssText='padding:6px 12px;border-radius:7px;border:1.5px solid '+HEADS[k].col+';background:#fff;color:'+HEADS[k].col+';font-weight:600;cursor:pointer;font-size:13.5px;';
+    b.addEventListener('click',()=>{head=k; hc.querySelectorAll('button').forEach(x=>x.style.background='#fff'); b.style.background='#fdeee3'; render();});
+    hc.appendChild(b); });
+  hc.firstChild.style.background='#fdeee3';
+  const wc=document.getElementById('ah-words');
+  WORDS.forEach((w0,i)=>{ const b=document.createElement('button'); b.type='button'; b.dataset.i=i; b.textContent=w0;
+    b.style.cssText='padding:5px 11px;border-radius:7px;border:1.5px solid #cbd5e1;background:#fff;cursor:pointer;font-size:13.5px;';
+    b.addEventListener('click',()=>{focus=i; render();}); wc.appendChild(b); });
+  render();
+})();
+</script>
+
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this is such a big deal</h2>
 
 <p>Before attention (~2017), models read text left to right. A word at position 100 could only "remember" position 1 through a fuzzy compressed memory. Long-range dependencies were really hard.</p>

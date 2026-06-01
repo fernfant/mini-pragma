@@ -591,6 +591,73 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 
 <p>So <code>layer1</code> holds <strong>2 parameters per unit</strong> (its w<sub>i</sub> and b<sub>i</sub>) and <code>layer2</code> holds the remaining 1 per unit (c<sub>i</sub>) plus the single output bias. <strong>16 + 9 = 25</strong>, which matches <strong>3×8 + 1</strong>. Now when you read "this Transformer has 100 million parameters", you know that just means 100 million little numbered wires + biases inside many such boxes stacked up.</p>
 
+<h2 class="step" id="detect"><span class="step-num">Detect</span> What does each neuron actually <em>detect</em>?</h2>
+
+<p>Here's the intuition that makes neural networks click: <strong>each hidden neuron is a little detector that fires when it spots its pattern.</strong> Below is a 6-cell signal you can switch on and off, and four neurons that each carry a fixed <em>template</em>. A neuron lights up only when the signal matches its template. Toggle the cells and watch which detectors fire — the <em>pattern of firings</em> is how the network "sees" the input.</p>
+
+<div class="widget">
+  <h3>🎚 Toggle the signal — watch the detectors fire</h3>
+  <div class="pg-sub">Click a cell to flip it on/off. Each neuron computes <code>ReLU(match − 1.5)</code>, so it fires only when <strong>both</strong> of its template cells are on.</div>
+  <div id="nd-signal" role="group" aria-label="Input signal: six cells you can toggle on or off" style="margin:12px 0;"></div>
+  <div id="nd-neurons"></div>
+  <p id="nd-read" style="margin-top:12px;font-weight:600;"></p>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);">We hand-set these four detectors so the idea is visible. A <em>trained</em> network discovers its own — usually messier — but the principle is identical: every neuron fires on a feature, and the pattern of firings <em>is</em> the network's understanding. Stack layers (next lesson) and later neurons detect features built from earlier ones.</p>
+
+<script>
+(() => {
+  const host = document.getElementById('nd-signal');
+  if (!host) return;
+  const N = 6;
+  let sig = [1,1,0,0,0,0];
+  const DET = [
+    {name:'left edge',    t:[1,1,0,0,0,0], col:'#1d4ed8'},
+    {name:'centre block', t:[0,0,1,1,0,0], col:'#b9410a'},
+    {name:'right edge',   t:[0,0,0,0,1,1], col:'#047857'},
+    {name:'two ends',     t:[1,0,0,0,0,1], col:'#7e22ce'},
+  ];
+  function matched(d){ let s=0; for(let i=0;i<N;i++) s+=sig[i]*d.t[i]; return s; }
+  function renderSignal(){
+    host.innerHTML='';
+    const row=document.createElement('div'); row.style.cssText='display:flex;gap:6px;flex-wrap:wrap;';
+    for(let i=0;i<N;i++){
+      const b=document.createElement('button');
+      b.type='button';
+      b.setAttribute('aria-pressed', sig[i]?'true':'false');
+      b.setAttribute('aria-label','signal cell '+(i+1)+(sig[i]?' (on)':' (off)'));
+      b.textContent = sig[i]?'1':'0';
+      b.style.cssText='width:42px;height:42px;border-radius:8px;border:2px solid #cbd5e1;font-weight:700;font-size:16px;cursor:pointer;background:'+(sig[i]?'#1a1a1a':'#fff')+';color:'+(sig[i]?'#fff':'#94a3b8')+';';
+      b.addEventListener('click',()=>{ sig[i]=sig[i]?0:1; render(); });
+      row.appendChild(b);
+    }
+    host.appendChild(row);
+  }
+  function renderNeurons(){
+    const wrap=document.getElementById('nd-neurons'); wrap.innerHTML='';
+    DET.forEach(d=>{
+      const m=matched(d), need=d.t.reduce((a,b)=>a+b,0), firing=m>=2;
+      const tmpl=d.t.map((t,i)=>'<span style="display:inline-block;width:15px;height:15px;border-radius:3px;margin:0 1px;background:'+(t?(sig[i]?d.col:'#cbd5e1'):'#f1f5f9')+';border:1px solid #e2e8f0;vertical-align:middle;"></span>').join('');
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;gap:12px;margin:7px 0;';
+      row.innerHTML='<span style="width:92px;font-size:13px;color:#475569;">neuron: <b>'+d.name+'</b></span>'
+        +'<span>'+tmpl+'</span>'
+        +'<span style="width:150px;font-weight:700;color:'+(firing?d.col:'#94a3b8')+';">'+(firing?'⚡ FIRES':'· quiet')
+        +' <span style="font-weight:400;color:#94a3b8;font-size:12px;">('+m+'/'+need+' matched)</span></span>';
+      wrap.appendChild(row);
+    });
+  }
+  function render(){
+    renderSignal(); renderNeurons();
+    const fired=DET.filter(d=>matched(d)>=2);
+    document.getElementById('nd-read').innerHTML = fired.length
+      ? 'Active detectors: '+fired.map(d=>'<span style="color:'+d.col+'">'+d.name+'</span>').join(' + ')+' — that firing pattern <em>is</em> what the network sees.'
+      : 'No detector fires — the network sees nothing it recognises in this signal.';
+  }
+  render();
+})();
+</script>
+
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Train the MLP on the SAME parabola data</h2>
 
 <div id="pred-s5"></div>
@@ -604,6 +671,56 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 <p>Same training loop. Same MSE loss. Same Adam optimiser. Only the model class changed.</p>
 
 <p>The notebook shows Karpathy-style snapshots at steps 0 / 100 / 500 / 1000 / 2000 — you can SEE each hidden unit's "knee" sliding into place over training. By step 2000 the 8 knees cover different slices of x and sum (weighted by layer 2) to recreate the parabola.</p>
+
+<h2 class="step" id="bends"><span class="step-num">Bends</span> How the bends add up to the curve</h2>
+
+<p>You trained the MLP — but <em>how</em> do a handful of straight ReLU pieces fit a curve? Each neuron contributes one <strong>bend</strong> that switches on past its own kink. Drag the input <code>x</code> and watch the neurons light up left-to-right: each active bend adds its slope, so the line steepens into the curve. This is the flip side of the detector idea — there each neuron <em>recognised</em> a feature; here each neuron <em>builds</em> a piece of the output.</p>
+
+<div class="widget">
+  <h3>🎚 Sweep the input — watch the bends switch on</h3>
+  <div class="pg-sub">Four ReLU neurons, each a bend that turns on past its kink. As <code>x</code> grows, more switch on and the model curve (orange) climbs to meet the target (grey, dashed).</div>
+  <svg id="cb-svg" viewBox="0 0 420 250" role="img" aria-label="A target curve in grey dashes and the model's piecewise-linear approximation in orange; a marker shows the current input x and which ReLU bends are active." style="width:100%;max-width:440px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;"></svg>
+  <label for="cb-x" style="display:block;margin:10px 0 4px;">Input <code>x</code> = <output id="cb-xv" class="nr-mono">3.0</output></label>
+  <input id="cb-x" type="range" min="0" max="6" step="0.1" value="3" style="width:260px;" aria-label="Input x from 0 to 6">
+  <div id="cb-lamps" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;"></div>
+  <p id="cb-cap" style="margin-top:10px;font-weight:600;"></p>
+</div>
+
+<p style="font-size:13px;color:var(--text-dim);">An illustrative 4-bend net fitting a rising curve. A bigger MLP just has more, finer bends — that's the whole reason adding hidden units lets it fit more complex shapes.</p>
+
+<script>
+(() => {
+  const sl=document.getElementById('cb-x'); if(!sl) return;
+  const K=[0,1.5,3,4.5], S=[0.6,0.7,0.9,1.1], COL=['#1d4ed8','#b9410a','#047857','#7e22ce'];
+  const X0=40,X1=400,Y0=230,Y1=20, XMAX=6, YMAX=15;
+  const px=x=>X0+(x/XMAX)*(X1-X0), py=y=>Y0-(y/YMAX)*(Y0-Y1);
+  const model=x=>K.reduce((s,k,i)=>s+S[i]*Math.max(0,x-k),0);
+  const target=x=>0.4*x*x;
+  function path(fn){ let d=''; for(let i=0;i<=60;i++){ const x=i/10; d+=(i?'L':'M')+px(x).toFixed(1)+' '+py(fn(x)).toFixed(1)+' '; } return d; }
+  const tgtPath=path(target), modPath=path(model);
+  const svg=document.getElementById('cb-svg');
+  function render(){
+    const x=+sl.value; document.getElementById('cb-xv').textContent=x.toFixed(1);
+    const yv=model(x);
+    svg.innerHTML=
+      '<line x1="'+X0+'" y1="'+Y0+'" x2="'+X1+'" y2="'+Y0+'" stroke="#e5e7eb"/>'
+      +'<line x1="'+X0+'" y1="'+Y0+'" x2="'+X0+'" y2="'+Y1+'" stroke="#e5e7eb"/>'
+      +'<path d="'+tgtPath+'" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5 4"/>'
+      +'<path d="'+modPath+'" fill="none" stroke="#b9410a" stroke-width="2.5"/>'
+      +'<line x1="'+px(x).toFixed(1)+'" y1="'+Y1+'" x2="'+px(x).toFixed(1)+'" y2="'+Y0+'" stroke="#cbd5e1" stroke-dasharray="3 3"/>'
+      +'<circle cx="'+px(x).toFixed(1)+'" cy="'+py(yv).toFixed(1)+'" r="5" fill="#b9410a"/>'
+      +'<text x="'+X1+'" y="245" text-anchor="end" font-size="11" fill="#94a3b8">input x →</text>'
+      +'<text x="'+px(x).toFixed(1)+'" y="14" text-anchor="middle" font-size="11" fill="#b9410a">x='+x.toFixed(1)+'</text>';
+    const lamps=document.getElementById('cb-lamps'); lamps.innerHTML=''; let active=0;
+    K.forEach((k,i)=>{ const on=x>k; if(on) active++;
+      const d=document.createElement('div'); d.style.cssText='display:flex;align-items:center;gap:6px;font-size:13px;color:'+(on?COL[i]:'#94a3b8')+';font-weight:'+(on?'700':'400')+';';
+      d.innerHTML='<span style="width:12px;height:12px;border-radius:50%;display:inline-block;background:'+(on?COL[i]:'#e2e8f0')+';"></span>bend '+(i+1)+' (kink '+k+') '+(on?'⚡':'·');
+      lamps.appendChild(d); });
+    document.getElementById('cb-cap').innerHTML='At <code>x='+x.toFixed(1)+'</code>, <b>'+active+' of 4</b> bends are active → model output ≈ <b>'+yv.toFixed(1)+'</b>. Each new bend that switches on adds its slope, steepening the line into the curve.';
+  }
+  sl.addEventListener('input',render); render();
+})();
+</script>
 
 <h2 class="step" id="step-6"><span class="step-num">Step 6</span> Side-by-side comparison</h2>
 
