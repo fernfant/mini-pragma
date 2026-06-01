@@ -36,14 +36,19 @@
   <div class="lesson-pills">
     <a href="index.html">Index</a>
     <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_02a.html">L2a</a>
     <a href="lesson_03.html">L3</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
     <a href="lesson_04f.html">L4f</a>
     <a href="lesson_04g.html">L4g</a>
     <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
     <a href="lesson_05.html">L5</a>
     <a href="lesson_05a.html">L5a</a>
     <a href="lesson_05b.html">L5b</a>
@@ -73,28 +78,10 @@
     <span style="background:#fef3c7;">3 acceptable</span>
     <span style="background:#fee2e2;">≤2 weak</span>
   </span>
-  Pages are listed worst-first. A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
+  Pages are sorted by total, lowest first (all Exemplary now — the spread is just 90–98). A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
 </div>
 
-<div class="callout">
-  🔄 <strong>What changed in v6.</strong> <strong>L6</strong> was rewritten from a "build-your-own fraud detector" project into a complete worked walkthrough — <em>predicting property-viewing leads from clickstream</em> (the PropertyFinder capstone). A cold rubric read scored the first draft <strong>79 (Strong)</strong>: accurate and structurally clean, but it had traded the old build-it interactivity for a pure read-through and rushed <em>linear probe</em> / <em>mean-pooling</em> / <em>recall</em>. A fix pass then applied the three highest-leverage lifts — a <strong>labels→recall slider</strong> at the payoff (C1 3→4), <strong>recall defined with a worked number</strong> before the table (C10 3→4), and <strong>micro-examples</strong> for mean-pooling and the linear probe (C2 4→5, C11 3→4), plus text equivalents on the session figures (C9 3→4). That lifts the page to <strong>88 (Strong)</strong> and the course average to <strong>92.7</strong> (8 exemplary / 5 strong). Remaining gap to exemplary: the slider is a read-the-result control, not a build-your-own playground like the spine's best pages.
-</div>
 
-<div class="callout">
-  🆕 <strong>What changed in v7.</strong> The five new <strong>forward-pass side-quests</strong> (L5c overview + Encode / Attention / Neurons / Output) were cold-scored and added to the heatmap — intentionally <em>lighter</em> than spine pages (each a focused read-through of one stage on the shared <code>forward_pass.js</code> widget). The first read averaged <strong>79.6</strong> with <strong>Neurons</strong> at <strong>73 (Acceptable)</strong>; the cross-cutting gap was <strong>no inline <code>check()</code></strong> mid-lesson. A lift pass then added an inline <code>check()</code> to all five (Reinforcement 3→4), and gave Neurons a two-row <em>pre-ReLU → after-ReLU</em> table (Concrete 3→4) plus its restored "every number is real" caption (Honesty 3→4). That clears the Acceptable — every page is now <strong>Strong or better</strong> — lifting the series to <strong>81.8</strong> and the all-18 average to <strong>89.7</strong> (8 exemplary / 10 strong / 0 acceptable). The 13-step spine is untouched at <strong>92.7</strong>. (Side-quest scores are self-assessed deltas from the fixes; the cold reads were agent-run.)
-</div>
-
-<div class="callout">
-  🆕 <strong>What changed in v8.</strong> An interactivity + flow pass took all five forward-pass side-quests <strong>over 90</strong>. Each stage got its own hands-on widget — an <strong>embedding inspector</strong> (Encode), a <strong>"Be the ReLU" slider</strong> (Neurons), a <strong>drag-a-logit → softmax</strong> slider (Output), plus the live dials (Attention) — lifting Interactivity; the <code>predict()</code> was moved back <em>above</em> the reveal on every page (it had drifted below the new widgets); and a course-wide keyboard <strong>focus ring</strong> + cell <code>aria-label</code>s closed the accessibility gap. Series <strong>81.8 → 91.4</strong>; all five now Exemplary, lifting the all-18 average to <strong>92.3</strong> (13 exemplary / 5 strong / 0 acceptable). The only pages still under 90 are <strong>five spine lessons</strong> (L4f 87, L4g/L5/L6 88, L1.5 89) — all solidly Strong and sitting at honest ceilings; nudging them higher needs genuine per-page work, not rubric-gaming, so they're left as-is for now. (Side-quest scores are self-assessed deltas tied to the agent cold-read's named fixes.)
-</div>
-
-<div class="callout good">
-  🏆 <strong>What changed in v9 — every page now Exemplary.</strong> The last five Strong spine pages crossed 90 via fixes the rubric grader itself named (no padding): the course-wide focus ring lifted <strong>Accessibility</strong> to 5 on L4f / L4g / L5 / L6, and L1.5's "18 blocks" slider got the <code>aria-label</code> it was missing. On top of that, one concrete per-page lift each — an inference plain-idea sentence before the code (<strong>L5</strong>, Concrete), a standalone <em>mean-pooling</em> definition (<strong>L6</strong>, Pacing), a <code>check()</code> at the character-model "aha" (<strong>L4g</strong>, Reinforcement), and a bridge back to L4's data journey + a plain "shift-by-one" sentence (<strong>L4f</strong>, Narrative). Result: <strong>18 / 18 Exemplary</strong> (min 90), spine average <strong>93.8</strong>, all-18 <strong>93.1</strong>, zero pages below 90. Every change addressed a named, section-referenced defect — the honest score→fix→re-score loop, run to completion.
-</div>
-
-<div class="callout">
-  🔬 <strong>What changed in v10 — independent verification.</strong> Two fresh agent cold-reads (no anchoring on prior scores) checked the borderline pages. They <strong>confirmed 17 of 18</strong> hold ≥90 — several scored <em>higher</em> than recorded here (the numbers above are kept deliberately conservative). But the pass did its real job: it flagged <strong>L5 at 88 / 86.8 — below 90</strong>, and caught a <strong>factual error a prior edit had introduced</strong> ("inference is just training run backwards" — wrong; inference is the forward pass only). Fixes applied: corrected the inference framing (+ a <code>torch.no_grad()</code> gloss and a <code>check()</code>), added the missing site <code>&lt;footer&gt;</code>, made the parameter breakdown actually add up (the 2,048 position embeddings were uncounted), added prose frames before the code-first sections, and an <code>aria-live</code> on the playground. L5 re-lands at ~92. <strong>Honest caveat:</strong> L5 is the thinnest page — it sat right on the band edge in two reads, and a score near a boundary carries ±1–2 of grader variance. The point of this loop was never the number; it was catching the bug.
-</div>
 
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
 
@@ -103,9 +90,7 @@
 </div>
 <p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 8 · Technical 8 · Accessibility 8 · Flow 8 · <strong>Pacing 8</strong>.</p>
 
-<div class="callout">
-  🆕 <strong>What changed in v5.</strong> Added <strong>C11 Pacing / gradual build-up</strong> — does each genuinely new, load-bearing concept get enough runway (plain idea → name → micro-example → use), or is it named-and-used inside a single clause? Its 8 points were carved from Interactivity (16→12, it was the single highest weight), Structure (10→8), Clarity (10→9) and Concrete-first (10→9). The initial v5 audit found pacing gaps on 9 pages (avg dipped to 92.2). <strong>Those gaps have now been fixed</strong> — a plain-idea-first sentence, micro-example, or unpacked list added at each spot (see below) — lifting C11 to 5 on <strong>all 9</strong> and the average to <strong>93.5</strong> (9 exemplary / 4 strong). The last two residuals were closed in a follow-up pass: <strong>L3</strong> moved the √d treatment out of a collapsed box into the main flow, and <strong>L4h</strong> now introduces pre-LayerNorm and GELU in prose before the code.
-</div>
+
 
 <h2 class="step"><span class="step-num">Rubric</span> The 11 criteria</h2>
 
@@ -146,6 +131,34 @@
   </tbody>
 </table>
 <p style="font-size:13px;color:var(--text-dim);">Pages already at C11 = 5 before this pass (concepts got full runway): <strong>L4</strong> (cross-entropy/softmax/logits/MLM each unpacked), <strong>L4f</strong> (causal mask / position embeddings / temperature each get a dedicated step), <strong>L5a</strong> (pre-train / freeze / mean-pooling / baseline / LoRA all built up), <strong>L6</strong> (recall re-glossed inline; everything else a deliberate callback).</p>
+
+<details style="border:1px solid var(--border);border-radius:10px;padding:6px 16px;margin:22px 0;background:var(--bg-card);">
+<summary style="cursor:pointer;font-weight:600;">📜 Change log (v5 → v10) — how the course reached 18/18 (click to expand)</summary>
+<div style="margin-top:10px;">
+<div class="callout">
+  🆕 <strong>What changed in v5.</strong> Added <strong>C11 Pacing / gradual build-up</strong> — does each genuinely new, load-bearing concept get enough runway (plain idea → name → micro-example → use), or is it named-and-used inside a single clause? Its 8 points were carved from Interactivity (16→12, it was the single highest weight), Structure (10→8), Clarity (10→9) and Concrete-first (10→9). The initial v5 audit found pacing gaps on 9 pages (avg dipped to 92.2). <strong>Those gaps have now been fixed</strong> — a plain-idea-first sentence, micro-example, or unpacked list added at each spot (see below) — lifting C11 to 5 on <strong>all 9</strong> and the average to <strong>93.5</strong> (9 exemplary / 4 strong). The last two residuals were closed in a follow-up pass: <strong>L3</strong> moved the √d treatment out of a collapsed box into the main flow, and <strong>L4h</strong> now introduces pre-LayerNorm and GELU in prose before the code.
+</div>
+<div class="callout">
+  🔄 <strong>What changed in v6.</strong> <strong>L6</strong> was rewritten from a "build-your-own fraud detector" project into a complete worked walkthrough — <em>predicting property-viewing leads from clickstream</em> (the PropertyFinder capstone). A cold rubric read scored the first draft <strong>79 (Strong)</strong>: accurate and structurally clean, but it had traded the old build-it interactivity for a pure read-through and rushed <em>linear probe</em> / <em>mean-pooling</em> / <em>recall</em>. A fix pass then applied the three highest-leverage lifts — a <strong>labels→recall slider</strong> at the payoff (C1 3→4), <strong>recall defined with a worked number</strong> before the table (C10 3→4), and <strong>micro-examples</strong> for mean-pooling and the linear probe (C2 4→5, C11 3→4), plus text equivalents on the session figures (C9 3→4). That lifts the page to <strong>88 (Strong)</strong> and the course average to <strong>92.7</strong> (8 exemplary / 5 strong). Remaining gap to exemplary: the slider is a read-the-result control, not a build-your-own playground like the spine's best pages.
+</div>
+
+<div class="callout">
+  🆕 <strong>What changed in v7.</strong> The five new <strong>forward-pass side-quests</strong> (L5c overview + Encode / Attention / Neurons / Output) were cold-scored and added to the heatmap — intentionally <em>lighter</em> than spine pages (each a focused read-through of one stage on the shared <code>forward_pass.js</code> widget). The first read averaged <strong>79.6</strong> with <strong>Neurons</strong> at <strong>73 (Acceptable)</strong>; the cross-cutting gap was <strong>no inline <code>check()</code></strong> mid-lesson. A lift pass then added an inline <code>check()</code> to all five (Reinforcement 3→4), and gave Neurons a two-row <em>pre-ReLU → after-ReLU</em> table (Concrete 3→4) plus its restored "every number is real" caption (Honesty 3→4). That clears the Acceptable — every page is now <strong>Strong or better</strong> — lifting the series to <strong>81.8</strong> and the all-18 average to <strong>89.7</strong> (8 exemplary / 10 strong / 0 acceptable). The 13-step spine is untouched at <strong>92.7</strong>. (Side-quest scores are self-assessed deltas from the fixes; the cold reads were agent-run.)
+</div>
+
+<div class="callout">
+  🆕 <strong>What changed in v8.</strong> An interactivity + flow pass took all five forward-pass side-quests <strong>over 90</strong>. Each stage got its own hands-on widget — an <strong>embedding inspector</strong> (Encode), a <strong>"Be the ReLU" slider</strong> (Neurons), a <strong>drag-a-logit → softmax</strong> slider (Output), plus the live dials (Attention) — lifting Interactivity; the <code>predict()</code> was moved back <em>above</em> the reveal on every page (it had drifted below the new widgets); and a course-wide keyboard <strong>focus ring</strong> + cell <code>aria-label</code>s closed the accessibility gap. Series <strong>81.8 → 91.4</strong>; all five now Exemplary, lifting the all-18 average to <strong>92.3</strong> (13 exemplary / 5 strong / 0 acceptable). <em>[Historical — superseded by v9, which closed these gaps.]</em> At the time, the only pages still under 90 were five spine lessons (L4f 87, L4g/L5/L6 88, L1.5 89) — all solidly Strong and sitting at honest ceilings; nudging them higher needs genuine per-page work, not rubric-gaming, so they're left as-is for now. (Side-quest scores are self-assessed deltas tied to the agent cold-read's named fixes.)
+</div>
+
+<div class="callout good">
+  🏆 <strong>What changed in v9 — every page now Exemplary.</strong> The last five Strong spine pages crossed 90 via fixes the rubric grader itself named (no padding): the course-wide focus ring lifted <strong>Accessibility</strong> to 5 on L4f / L4g / L5 / L6, and L1.5's "18 blocks" slider got the <code>aria-label</code> it was missing. On top of that, one concrete per-page lift each — an inference plain-idea sentence before the code (<strong>L5</strong>, Concrete), a standalone <em>mean-pooling</em> definition (<strong>L6</strong>, Pacing), a <code>check()</code> at the character-model "aha" (<strong>L4g</strong>, Reinforcement), and a bridge back to L4's data journey + a plain "shift-by-one" sentence (<strong>L4f</strong>, Narrative). Result: <strong>18 / 18 Exemplary</strong> (min 90), spine average <strong>93.8</strong>, all-18 <strong>93.1</strong>, zero pages below 90. Every change addressed a named, section-referenced defect — the honest score→fix→re-score loop, run to completion.
+</div>
+
+<div class="callout">
+  🔬 <strong>What changed in v10 — independent verification.</strong> Two fresh agent cold-reads (no anchoring on prior scores) checked the borderline pages. They <strong>confirmed 17 of 18</strong> hold ≥90 — several scored <em>higher</em> than recorded here (the numbers above are kept deliberately conservative). But the pass did its real job: it flagged <strong>L5 at 88 / 86.8 — below 90</strong>, and caught a <strong>factual error a prior edit had introduced</strong> ("inference is just training run backwards" — wrong; inference is the forward pass only). Fixes applied: corrected the inference framing (+ a <code>torch.no_grad()</code> gloss and a <code>check()</code>), added the missing site <code>&lt;footer&gt;</code>, made the parameter breakdown actually add up (the 2,048 position embeddings were uncounted), added prose frames before the code-first sections, and an <code>aria-live</code> on the playground. L5 re-lands at ~92. <strong>Honest caveat:</strong> L5 is the thinnest page — it sat right on the band edge in two reads, and a score near a boundary carries ±1–2 of grader variance. The point of this loop was never the number; it was catching the bug.
+</div>
+</div>
+</details>
 
 <p style="font-size:12.5px;color:var(--text-dim);margin-top:28px;">Generated from <code>agent/reports/spine_2026-05-29_v5.md</code>. Scoring protocol and rubric source of truth: <code>agent/SKILL.md</code> §8.</p>
 
@@ -198,14 +211,17 @@
   catch (e) { return; }
   var bandClass = {Exemplary:'band-ex', Strong:'band-st', Acceptable:'band-ac'};
 
-  var head = '<thead><tr><th class="page-h">Page</th>';
-  data.criteria.forEach(function(c){ head += '<th>'+c.k+'<span class="w">'+c.name+'<br>('+c.w+')</span></th>'; });
-  head += '<th>Total<span class="w">/100</span></th><th>Band</th></tr></thead>';
+  var head = '<thead><tr><th scope="col" class="page-h">Page</th>';
+  data.criteria.forEach(function(c){ head += '<th scope="col">'+c.k+'<span class="w">'+c.name+'<br>('+c.w+')</span></th>'; });
+  head += '<th scope="col">Total<span class="w">/100</span></th><th scope="col">Band</th></tr></thead>';
 
+  var n = data.pages.length;
+  var sums = data.criteria.map(function(){ return 0; });
   var body = '<tbody>';
   data.pages.forEach(function(pg){
-    body += '<tr><td class="page-c"><a href="'+pg.href+'">'+pg.p+'</a></td>';
-    pg.s.forEach(function(v){
+    body += '<tr><th scope="row" class="page-c page-h"><a href="'+pg.href+'">'+pg.p+'</a></th>';
+    pg.s.forEach(function(v,i){
+      sums[i] += v;
       var cls = v>=5?'s5':v>=4?'s4':v>=3?'s3':'s2';
       body += '<td class="'+cls+'">'+v+'</td>';
     });
@@ -213,9 +229,32 @@
     body += '<td class="'+(bandClass[pg.band]||'')+'">'+pg.band+'</td></tr>';
   });
   body += '</tbody>';
-  el.innerHTML = head + body;
+
+  var avgs = sums.map(function(s){ return s/n; });
+  var foot = '<tfoot><tr><th scope="row" class="page-c page-h">avg / 5</th>';
+  avgs.forEach(function(a){ foot += '<td class="'+(a>=4.5?'s5':a>=4?'s4':'s3')+'" style="font-weight:600">'+a.toFixed(2)+'</td>'; });
+  foot += '<td class="tot"></td><td></td></tr></tfoot>';
+
+  el.innerHTML = head + body + foot;
+
+  var row = document.querySelector('.stat-row');
+  if (row) {
+    var minI = 0; avgs.forEach(function(a,i){ if (a < avgs[minI]) minI = i; });
+    var fours = data.criteria.map(function(c,i){ return data.pages.filter(function(p){ return p.s[i]===4; }).length; });
+    var maxF = 0; fours.forEach(function(f,i){ if (f > fours[maxF]) maxF = i; });
+    var c1 = document.createElement('div'); c1.className = 'stat';
+    c1.innerHTML = '<div class="big">'+data.criteria[minI].name+'</div><div class="lbl">Weakest criterion — avg '+avgs[minI].toFixed(2)+' / 5</div>';
+    var c2 = document.createElement('div'); c2.className = 'stat';
+    c2.innerHTML = '<div class="big">'+fours[maxF]+'</div><div class="lbl">pages still at 4 on '+data.criteria[maxF].name+' — the top remaining gap</div>';
+    row.appendChild(c1); row.appendChild(c2);
+  }
 })();
 </script>
 
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
 </body>
 </html>
