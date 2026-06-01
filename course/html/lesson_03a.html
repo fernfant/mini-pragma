@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Lesson 3 — Attention</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">Index</a>
+    <a href="lesson_01.html">L1</a>
+    <a href="lesson_01b.html" class="opt">L1b</a>
+    <a href="lesson_01c.html" class="opt">L1c</a>
+    <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_01_6.html">L1.6</a>
+    <a href="lesson_02.html">L2</a>
+    <a href="lesson_02a.html">L2a</a>
+    <a href="lesson_03.html">L3</a>
+    <a href="lesson_03a.html" class="current">L3a</a>
+    <a href="lesson_03b.html" class="opt">L3b</a>
+    <a href="lesson_04.html">L4</a>
+    <a href="lesson_04_code.html" class="deep">L4·code</a>
+    <a href="lesson_04f.html">L4f</a>
+    <a href="lesson_04g.html">L4g</a>
+    <a href="lesson_04h.html">L4h</a>
+    <a href="lesson_04h_code.html" class="deep">L4h·code</a>
+    <a href="lesson_05.html">L5</a>
+    <a href="lesson_05a.html">L5a</a>
+    <a href="lesson_05b.html">L5b</a>
+    <a href="lesson_05c.html" class="opt">L5c</a>
+    <a href="lesson_06.html">L6</a>
+    <a href="glossary.html">📖</a>
+  </div>
+</nav>
+
+<div class="spinebar">
+  <a href="index.html" class="sb-home" title="Roadmap">🗺</a>
+  <span class="sb-part">Part 2 · The building blocks</span>
+  <span class="sb-track"><span class="sb-fill" style="width:46.7%"></span></span>
+  <span class="sb-step">Step 7 of 15</span>
+</div>
+
+<div class="wrap">
+
+<h1>Lesson 3a — How attention computes (Q, K, V)</h1>
+<p class="subtitle">The same score → softmax → mix, now with the real machinery: queries, keys, values, the √d scale, and multiple heads.</p>
+
+<div class="lesson-links">
+  <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_03_attention.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
+  <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_03c_attention_from_scratch.ipynb" target="_blank" rel="noopener"><span class="ico">🛠</span> L3c from-scratch</a>
+  <a href="lesson_03.html"><span class="ico">←</span> L3 (the idea)</a>
+</div>
+
+<details class="lesson-toc" open>
+  <summary>Steps in this lesson</summary>
+  <ol>
+    <li><a href="#qkv">The full formula (Q, K, V)</a></li>
+    <li><a href="#multi">Multi-head attention</a></li>
+    <li><a href="#why">Why this is such a big deal</a></li>
+  </ol>
+</details>
+
+<p>On <a href="lesson_03.html">L3</a> you saw the idea: <strong>score → softmax → mix</strong>, using the word-vectors directly. Real attention adds one layer of machinery on top — instead of comparing the raw vectors, each word first projects itself into a <strong>query</strong>, a <strong>key</strong>, and a <strong>value</strong>. Same three moves; this lesson shows where Q, K and V come from, why we divide the scores by √d, and what stacking several attention "heads" buys you.</p>
+
+<h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> The full formula</h2>
+
+<p>Real attention uses three learned projections of each word vector — Query, Key, Value — instead of just dotting <code>x</code> with itself:</p>
+
+<pre><code>Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V</code></pre>
+
+<p>Don't stall on the <code>/ √d</code> bit yet — it's just a stabiliser, and we unpack it in a moment (<a href="#scale">Why divide by √d?</a>, just below). The heart of the formula is everything else:</p>
+
+<ul>
+  <li><strong>Q (query)</strong> — "what am I looking for?"</li>
+  <li><strong>K (key)</strong> — "what do I offer to others looking?"</li>
+  <li><strong>V (value)</strong> — "what do I actually contribute if matched?"</li>
+</ul>
+
+<p>The three matrices are trainable weights nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Q/K/V give the model more flexibility — each word can ask different questions of others than what it offers in return.</p>
+
+<h3 id="qkv-why">Why one vector isn't enough (the party-mixer trick)</h3>
+
+<p>Picture a party where everyone is trying to find the person they came to talk to. Each guest fills out three cards. The <strong>Query</strong> card says <em>"what am I looking for?"</em> The <strong>Key</strong> card says <em>"what do I offer to anyone who's looking?"</em> The <strong>Value</strong> card says <em>"what I'll actually hand over if you pick me."</em> To decide who to listen to, a guest holds up their <strong>Query</strong> and compares it against everyone else's <strong>Key</strong> — a good match means "pay attention to this person" — and then collects that person's <strong>Value</strong>.</p>
+
+<p>Everything earlier in this lesson used just <em>one</em> vector per word: we computed <code>x · xᵀ</code>, where each word is its own Query <em>and</em> its own Key at the same time. That has a hidden flaw — it's <strong>symmetric</strong>. The score for "it" looking at "cat" comes out <em>exactly the same</em> as "cat" looking at "it", because it's the same dot product either way. But real language isn't like that! The word <strong>"it"</strong> is desperately hunting for its noun, while "cat" isn't especially hunting for "it". Their needs are different, so their scores should be different too.</p>
+
+<p>Giving each word a <strong>separate</strong> Query and Key fixes this. Now "it" can write a Query that screams <em>"I'm a pronoun, find me a nearby noun!"</em>, and "cat" can write a Key that says <em>"I'm a noun."</em> Those match strongly — so "it" attends to "cat" — but the reverse score can be totally different. This is the asymmetry that the lesson's opening question (<em>"which word does 'it' refer to?"</em>) actually needs. Plain <code>x · xᵀ</code> can't tell apart "who's asking" from "who's being asked"; Q and K can.</p>
+
+<div class="callout info">
+  <strong>One word, three jobs.</strong> Q, K, and V are just three different views of the same word vector, each made by multiplying it by a learned matrix. Think of it as the word putting on a different hat depending on whether it's <em>asking</em> (Q), <em>being asked</em> (K), or <em>handing over its meaning</em> (V).
+</div>
+
+<h3 id="scale">Why divide by √d?</h3>
+
+<p>Here's the problem the <code>/ √d</code> solves. Longer word vectors (more features, <code>d</code> of them) have bigger dot products — add up more numbers and you get a bigger total. Feed those big scores into softmax and it turns <strong>too spiky</strong>: one word grabs almost 100% of the attention and everyone else gets ~0%, so the model stops blending information across words.</p>
+
+<p>The fix is one division. We take the square root of the vector size — call it <strong>√d</strong> — and divide every score by it before softmax. That's the <strong>scaling factor</strong>: it shrinks the scores back into a gentle range so softmax stays soft.</p>
+
+<p>See it on plain numbers. With small scores softmax shares attention nicely; with big ones it collapses onto a single word:</p>
+
+<pre><code>softmax([2, 1, 0])    ≈ [0.66, 0.24, 0.09]   ← nicely shared
+softmax([20, 10, 0])  ≈ [1.00, 0.00, 0.00]   ← one word hogs everything</code></pre>
+
+<p>So in <code>softmax(Q · Kᵀ / √d) · V</code>, the <code>/ √d</code> is just that shrink step keeping the left example from turning into the right one. It's a small stabiliser, not a deep idea — but every real Transformer uses it.</p>
+
+<details class="go-deeper">
+  <summary>Go deeper: what if every word has the IDENTICAL vector?</summary>
+  <p>A useful thought experiment. If every word in the sentence had the exact same embedding, what would attention do? I set all four word vectors to <code>[0.5, 0.3]</code> and computed the attention matrix:</p>
+  <pre style="max-width:380px;"><code>             the     dog     chs     cat
+the         0.25    0.25    0.25    0.25
+dog         0.25    0.25    0.25    0.25
+chased      0.25    0.25    0.25    0.25
+cat         0.25    0.25    0.25    0.25</code></pre>
+  <p><strong>Perfectly uniform</strong> — every word splits 25% across the 4 tokens. Attention can't tell anyone apart, so it spreads evenly. <em>The whole power of attention depends on words having different vectors in the first place.</em> This is also why embeddings have to be trained first — random embeddings give almost-uniform attention; trained embeddings give sharp, meaningful attention.</p>
+</details>
+
+<h2 class="step" id="multi"><span class="step-num">Multi</span> Multi-head attention</h2>
+
+<p>One set of Q/K/V lets each word ask just <em>one</em> kind of question. But a word often needs to track several things at once — grammar <em>and</em> meaning <em>and</em> which noun it refers to. So why not let it ask several questions in parallel? That's the whole idea of <strong>multi-head attention</strong>: run the attention formula several times side by side, each run with its own Q/K/V matrices, then <em>concatenate</em> the outputs (just lay them next to each other into one longer vector). Each parallel run is called a <strong>head</strong>, and each head can specialise — one might learn grammar, another subject-object pairing, another nearby words. PRAGMA-L uses 16 attention heads in its <strong>history encoder</strong> — the part of the model that reads a customer's whole stream of past banking events (the same kind of key-value sequences you'll build in L5) and blends them into one understanding of that person, exactly the way attention here blends words in a sentence.</p>
+
+<p style="font-size:14px;color:#475569;border-left:3px solid #c7d2fe;padding-left:12px;"><strong>Heads-up on the word "head."</strong> An <strong>attention head</strong> is one of these parallel question-askers — that's the real industry term, straight from the 2017 paper <em>Attention Is All You Need</em>. Later (in <a href="lesson_04.html">Lesson 4</a>) you'll meet the <strong>output head</strong>: the final layer that turns vectors into word scores. Same word, completely different job — don't let them blur together.</p>
+
+<h2 class="step" id="why"><span class="step-num">Why</span> Why this is such a big deal</h2>
+
+<p>Before attention (~2017), models read text left to right. A word at position 100 could only "remember" position 1 through a fuzzy compressed memory. Long-range dependencies were really hard.</p>
+
+<p>Attention solved this: <strong>every word can look at every other word in parallel, directly</strong>. No fuzzy memory. No left-to-right bottleneck. Long-range information is as accessible as short-range.</p>
+
+<div class="callout">
+  <strong>But wait — how does it know word order?</strong> Looking at every word at once has a catch: attention is <strong>order-blind</strong>. On its own it would score "dog bites man" exactly like "man bites dog", because it just sees a bag of words. The fix is simple: before attention runs, each word gets a small extra "position" vector added to its embedding — a seat number that says "I'm word #1", "I'm word #2", and so on. This tag is called a <strong>positional encoding</strong>, and it's how the model can still tell who did what to whom.
+</div>
+
+<div class="detour">
+  <span class="dt-ico">🧭</span>
+  <div>
+    <strong>Optional side-quest.</strong> Want the full "why Transformers won" story — speed, memory, scale, and the old models they beat? Take a detour through
+    <a href="lesson_03b.html">L3b — Why Transformers won</a>. <em>Safe to skip — Next continues to L4.</em>
+  </div>
+</div>
+
+<div class="callout good">
+  <strong>The three steps that are the heart of every modern AI model:</strong>
+  <ol>
+    <li><strong>Score every pair</strong> with a dot product.</li>
+    <li><strong>Softmax</strong> turns scores into a 100% attention budget.</li>
+    <li><strong>Mix</strong> word vectors using those weights. Each word now carries context.</li>
+  </ol>
+</div>
+
+
+
+<div class="recap">
+  <div class="r-title">✅ You can now say…</div>
+  <ul>
+    <li>Query/Key/Value let each word ask "who matters to me?" (Q), advertise "what I offer" (K), and pass along "what I carry" (V).</li>
+    <li>We divide the scores by √d before softmax so they don’t blow up as vectors get longer — it keeps training stable.</li>
+    <li>Multi-head attention runs several of these in parallel — each head a different "lens" on the sentence — then combines them.</li>
+  </ul>
+</div>
+
+<div id="quiz-l3a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3a",[{"q": "In Q/K/V, the <em>query</em> is…", "options": ["What a word offers others", "What a word is looking for", "The final output"], "answer": 1, "explain": "Query = \u2018what am I looking for?\u2019. Key = \u2018what do I offer?\u2019. Value = \u2018what I pass along\u2019."},{"q": "Why divide the attention scores by √d before softmax?", "options": ["To make them add to 100%", "To stop the scores growing huge as the vectors get longer, which would make softmax too spiky", "To save memory"], "answer": 1, "explain": "Longer vectors give bigger dot products; √d rescales them so softmax stays smooth and training is stable."},{"q": "What does multi-head attention give you?", "options": ["Several attention \u2018lenses\u2019 running in parallel, each focusing on different relationships", "A faster optimiser", "Fewer parameters"], "answer": 0, "explain": "Each head learns its own Q/K/V, so different heads can track different kinds of word relationships at once."}]);});</script>
+
+<div class="pagination">
+  <a href="lesson_03.html">
+    <span class="dir">← Previous</span>
+    <span class="ttl">L3 — Attention: the idea</span>
+  </a>
+  <a href="lesson_04.html" class="next">
+    <span class="dir">Next →</span>
+    <span class="ttl">L4 — Training a tiny BERT</span>
+  </a>
+</div>
+
+</div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+<script src="course.js"></script>
+</body>
+</html>

@@ -39,9 +39,11 @@
     <a href="lesson_01b.html" class="opt">L1b</a>
     <a href="lesson_01c.html" class="opt">L1c</a>
     <a href="lesson_01_5.html">L1.5</a>
+    <a href="lesson_01_6.html">L1.6</a>
     <a href="lesson_02.html">L2</a>
     <a href="lesson_02a.html">L2a</a>
     <a href="lesson_03.html">L3</a>
+    <a href="lesson_03a.html">L3a</a>
     <a href="lesson_03b.html" class="opt">L3b</a>
     <a href="lesson_04.html">L4</a>
     <a href="lesson_04_code.html" class="deep">L4·code</a>
@@ -61,12 +63,12 @@
 <div class="wrap">
 
 <h1>Course Scorecard</h1>
-<p class="subtitle">Full audit against the 11-criterion rubric — the 13-step spine + the 5 forward-pass side-quests · <strong>2026-05-31</strong> (v11 — Concrete-first to 5). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+<p class="subtitle">Full audit against the 12-criterion rubric — the 15-step spine + the 5 forward-pass side-quests · <strong>2026-06-02</strong> (v12 — added <strong>C12 Conceptual depth</strong>; split the neural-network and attention pillars into 2-page arcs). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
 
 <div class="stat-row">
-  <div class="stat"><div class="big">95.0</div><div class="lbl">13-step spine average — <span class="band-ex">Exemplary</span></div></div>
+  <div class="stat"><div class="big">95.1</div><div class="lbl">15-step spine average — <span class="band-ex">Exemplary</span></div></div>
   <div class="stat"><div class="big">93.4</div><div class="lbl">Forward-pass side-quests (5) — <span class="band-ex">Exemplary</span></div></div>
-  <div class="stat"><div class="big">18 / 18</div><div class="lbl"><span class="band-ex">Exemplary</span> (90+) — every page</div></div>
+  <div class="stat"><div class="big">20 / 20</div><div class="lbl"><span class="band-ex">Exemplary</span> (90+) — every page</div></div>
   <div class="stat"><div class="big">0</div><div class="lbl">Strong / acceptable / weak / failing</div></div>
 </div>
 
@@ -86,13 +88,13 @@
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
 
 <div class="sc-wrap">
-  <table class="sc" id="sc-table" aria-label="Scorecard: 18 lesson pages scored 0 to 5 across 11 criteria, with weighted total out of 100 and band."></table>
+  <table class="sc" id="sc-table" aria-label="Scorecard: 20 lesson pages scored 0 to 5 across 12 criteria, with weighted total out of 100 and band."></table>
 </div>
-<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 6 · Narrative 8 · Reinforcement 8 · Structure 8 · Technical 8 · Accessibility 8 · Flow 8 · <strong>Pacing 8</strong>.</p>
+<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 5 · Narrative 6 · Reinforcement 7 · Structure 6 · Technical 6 · Accessibility 8 · Flow 8 · Pacing 8 · <strong>Conceptual depth 8</strong>.</p>
 
 
 
-<h2 class="step"><span class="step-num">Rubric</span> The 11 criteria</h2>
+<h2 class="step"><span class="step-num">Rubric</span> The 12 criteria</h2>
 
 <div class="sc-wrap">
 <table class="sc crit-tbl">
@@ -168,41 +170,43 @@
 
 </div>
 
-<script id="sc-data" type="application/json">
-{
+<script id="sc-data" type="application/json">{
   "criteria": [
-    {"k":"C1","name":"Interactivity","w":12},
-    {"k":"C2","name":"Clarity","w":9},
-    {"k":"C3","name":"Concrete","w":9},
-    {"k":"C4a","name":"Accuracy","w":8},
-    {"k":"C4b","name":"Honesty","w":6},
-    {"k":"C5","name":"Narrative","w":8},
-    {"k":"C6","name":"Reinforce","w":8},
-    {"k":"C7","name":"Structure","w":8},
-    {"k":"C8","name":"Technical","w":8},
-    {"k":"C9","name":"Access","w":8},
-    {"k":"C10","name":"Flow","w":8},
-    {"k":"C11","name":"Pacing","w":8}
+    {"k": "C1", "name": "Interactivity", "w": 12},
+    {"k": "C2", "name": "Clarity", "w": 9},
+    {"k": "C3", "name": "Concrete", "w": 9},
+    {"k": "C4a", "name": "Accuracy", "w": 8},
+    {"k": "C4b", "name": "Honesty", "w": 5},
+    {"k": "C5", "name": "Narrative", "w": 6},
+    {"k": "C6", "name": "Reinforce", "w": 7},
+    {"k": "C7", "name": "Structure", "w": 6},
+    {"k": "C8", "name": "Technical", "w": 6},
+    {"k": "C9", "name": "Access", "w": 8},
+    {"k": "C10", "name": "Flow", "w": 8},
+    {"k": "C11", "name": "Pacing", "w": 8},
+    {"k": "C12", "name": "Depth", "w": 8}
   ],
   "pages": [
-    {"p":"L4f","href":"lesson_04f.html","s":[5,4,5,4,5,5,5,4,4,5,4,5],"total":92,"band":"Exemplary"},
-    {"p":"L6","href":"lesson_06.html","s":[4,5,5,5,4,5,4,5,5,5,4,5],"total":93,"band":"Exemplary"},
-    {"p":"L4g","href":"lesson_04g.html","s":[4,4,5,5,5,5,5,4,4,5,5,5],"total":93,"band":"Exemplary"},
-    {"p":"L1.5","href":"lesson_01_5.html","s":[4,4,5,5,5,5,5,5,4,5,4,5],"total":93,"band":"Exemplary"},
-    {"p":"L5c·enc","href":"lesson_05c_encode.html","s":[4,5,5,5,5,5,4,5,5,4,5,4],"total":93,"band":"Exemplary"},
-    {"p":"L5c","href":"lesson_05c.html","s":[4,5,5,5,5,5,4,5,5,4,5,4],"total":93,"band":"Exemplary"},
-    {"p":"L5c·att","href":"lesson_05c_attention.html","s":[4,5,5,5,5,5,4,5,5,4,5,4],"total":93,"band":"Exemplary"},
-    {"p":"L1","href":"lesson_01.html","s":[4,4,5,5,5,5,5,5,4,4,5,5],"total":93,"band":"Exemplary"},
-    {"p":"L5","href":"lesson_05.html","s":[5,4,5,5,5,5,5,4,5,5,4,4],"total":93,"band":"Exemplary"},
-    {"p":"L5c·neu","href":"lesson_05c_neurons.html","s":[5,5,5,5,5,5,4,5,5,4,4,4],"total":94,"band":"Exemplary"},
-    {"p":"L5c·out","href":"lesson_05c_output.html","s":[5,5,5,5,5,5,4,5,5,4,4,4],"total":94,"band":"Exemplary"},
-    {"p":"L4","href":"lesson_04.html","s":[5,5,5,5,5,5,5,5,4,4,4,5],"total":95,"band":"Exemplary"},
-    {"p":"L4h","href":"lesson_04h.html","s":[4,4,5,5,5,5,5,5,5,5,5,5],"total":96,"band":"Exemplary"},
-    {"p":"L2a","href":"lesson_02a.html","s":[5,4,5,5,5,5,5,5,4,5,5,5],"total":97,"band":"Exemplary"},
-    {"p":"L2","href":"lesson_02.html","s":[5,5,5,5,5,5,5,5,4,5,4,5],"total":97,"band":"Exemplary"},
-    {"p":"L5b","href":"lesson_05b.html","s":[5,5,5,5,5,5,4,5,5,5,4,5],"total":97,"band":"Exemplary"},
-    {"p":"L3","href":"lesson_03.html","s":[5,5,5,5,5,5,5,5,4,5,5,5],"total":98,"band":"Exemplary"},
-    {"p":"L5a","href":"lesson_05a.html","s":[5,5,5,5,5,5,4,5,5,5,5,5],"total":98,"band":"Exemplary"}
+    {"p": "L4g", "href": "lesson_04g.html", "s": [4, 4, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L3a", "href": "lesson_03a.html", "s": [3, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5], "total": 92, "band": "Exemplary"},
+    {"p": "L4f", "href": "lesson_04f.html", "s": [5, 4, 5, 4, 5, 5, 5, 4, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L1.5", "href": "lesson_01_5.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L5c·enc", "href": "lesson_05c_encode.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L5c", "href": "lesson_05c.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L5c·att", "href": "lesson_05c_attention.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L1", "href": "lesson_01.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L6", "href": "lesson_06.html", "s": [4, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 5, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L5", "href": "lesson_05.html", "s": [5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L5c·neu", "href": "lesson_05c_neurons.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L5c·out", "href": "lesson_05c_output.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L1.6", "href": "lesson_01_6.html", "s": [5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L4", "href": "lesson_04.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 5, 5], "total": 96, "band": "Exemplary"},
+    {"p": "L4h", "href": "lesson_04h.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], "total": 96, "band": "Exemplary"},
+    {"p": "L2a", "href": "lesson_02a.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
+    {"p": "L2", "href": "lesson_02.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5], "total": 97, "band": "Exemplary"},
+    {"p": "L5b", "href": "lesson_05b.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5], "total": 97, "band": "Exemplary"},
+    {"p": "L3", "href": "lesson_03.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5], "total": 99, "band": "Exemplary"},
+    {"p": "L5a", "href": "lesson_05a.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5], "total": 99, "band": "Exemplary"}
   ]
 }
 </script>

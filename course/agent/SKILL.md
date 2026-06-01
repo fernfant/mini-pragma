@@ -69,29 +69,41 @@ but **these principles are about the HTML lesson pages.**
    reach with Tab/Enter isn't "learn-by-doing" for everyone. Every meaningful
    SVG/figure carries a `<figcaption>` or text equivalent so the idea survives if
    the image doesn't render.
+11. **Flesh out load-bearing concepts in proportion to their importance.** The
+   biggest ideas in the course — what a neural network *is*, what attention *does* —
+   earn more than one page, built slowly (intuition → mechanism → worked example →
+   generalisation → use). Don't compress a pillar into a single dense step just
+   because the spine "has a slot for it." Importance sets the real-estate: a minor
+   idea gets a paragraph; a foundational one gets an arc. This is *how much total
+   room* a concept gets, distinct from #11 Pacing (the runway each idea gets on a
+   page it's already on).
 
-## 4. Structure: the 13-step spine
+## 4. Structure: the 15-step spine
 
 The main path is a single linear spine. Pagination must be reciprocal (each
-page's Next ↔ the next page's Prev).
+page's Next ↔ the next page's Prev). Two pillars are deliberately built across a
+**2-page arc** (per criterion C12 Conceptual depth): neural networks (L1.5→L1.6)
+and attention (L3→L3a).
 
 | Step | File | Title role |
 |---|---|---|
 | 1 | lesson_01.html | What is a model? (learning) |
-| 2 | lesson_01_5.html | The single neuron / MLP |
-| 3 | lesson_02.html | Tokens & embeddings |
-| 4 | lesson_02a.html | Scaling up embeddings |
-| 5 | lesson_03.html | Attention |
-| 6 | lesson_04.html | Training a tiny BERT (MLM) |
-| 7 | lesson_04f.html | Next-word / generation |
-| 8 | lesson_04g.html | Bonus deep-dives (brain to scale) |
-| 9 | lesson_04h.html | minigpt |
-| 10 | lesson_05.html | Putting it together (PRAGMA) |
-| 11 | lesson_05a.html | Tabular (house predictor) |
-| 12 | lesson_05b.html | Streaming churn (foundation-model pipeline) |
-| 13 | lesson_06.html | Capstone |
+| 2 | lesson_01_5.html | From a curve to a neural network (the neuron + MLP) |
+| 3 | lesson_01_6.html | Stacking into depth (and why it's already a Transformer) |
+| 4 | lesson_02.html | Tokens & embeddings |
+| 5 | lesson_02a.html | Scaling up embeddings |
+| 6 | lesson_03.html | Attention: why words must look at each other (the idea) |
+| 7 | lesson_03a.html | How attention computes (Q, K, V, √d, multi-head) |
+| 8 | lesson_04.html | Training a tiny BERT (MLM) |
+| 9 | lesson_04f.html | Next-word / generation |
+| 10 | lesson_04g.html | Bonus deep-dives (brain to scale) |
+| 11 | lesson_04h.html | minigpt |
+| 12 | lesson_05.html | Putting it together (PRAGMA) |
+| 13 | lesson_05a.html | Tabular (house predictor) |
+| 14 | lesson_05b.html | Streaming churn (foundation-model pipeline) |
+| 15 | lesson_06.html | Capstone |
 
-**Off-spine branches** (reachable but not part of the 13 steps):
+**Off-spine branches** (reachable but not part of the 15 steps):
 - `opt` side-quests: lesson_01b, lesson_01c, lesson_03b
 - `deep` code walkthroughs: lesson_04_code, lesson_04h_code
 - index.html (roadmap), glossary.html
@@ -99,16 +111,16 @@ page's Next ↔ the next page's Prev).
 ## 5. Markup & component conventions
 
 Every spine page has, in order:
-1. `<nav class="topbar">` with `.brand` + `.lesson-pills` — **21 pills, identical
-   on every page** (Index + 19 lessons/branches + glossary), only the `current`
+1. `<nav class="topbar">` with `.brand` + `.lesson-pills` — **23 pills, identical
+   on every page** (Index + 21 lessons/branches + glossary), only the `current`
    marker differs. Side-quests carry class
    `opt`, code walkthroughs `deep`. (When current: `opt current` / `deep current`
    / `current`.)
 2. `<div class="spinebar">` with `.sb-home` (🗺 → index), `.sb-part` (Part label),
-   `.sb-track`>`.sb-fill` (width %), `.sb-step` ("Step N of 13"). Branch pages use
+   `.sb-track`>`.sb-fill` (width %), `.sb-step` ("Step N of 15"). Branch pages use
    "Side-quest"/"Code walkthrough" labels and **no `.sb-fill`**.
-   - 13-step fill widths: 7.7, 15.4, 23.1, 30.8, 38.5, 46.2, 53.8, 61.5, 69.2,
-     76.9, 84.6, 92.3, 100 (%).
+   - 15-step fill widths: 6.7, 13.3, 20, 26.7, 33.3, 40, 46.7, 53.3, 60, 66.7,
+     73.3, 80, 86.7, 93.3, 100 (%).
 3. `<div class="wrap">` — content. `<h1>` + `<p class="subtitle">`, optional
    `.lesson-links`, optional `<details class="lesson-toc">`, then `<h2 class="step"
    id="...">` sections each opening with a `<span class="step-num">` chip.
@@ -146,7 +158,7 @@ if (!el) return;`). Widgets must degrade silently if their host node is absent.
 - A new undefined term with no glossary entry and no inline definition.
 - Fake or unlabelled numbers; figures that contradict the companion code.
 - An analogy that the reader must later un-learn, presented as fact.
-- Broken nav: wrong pill count, missing `current`, wrong "Step N of 13", or
+- Broken nav: wrong pill count, missing `current`, wrong "Step N of 15", or
   non-reciprocal pagination.
 - A widget that throws (no guard), has malformed JSON data, or can only be operated
   with a mouse (no keyboard path, no visible focus).
@@ -165,18 +177,23 @@ reference (section id / line).
 | 2 | **Age-appropriate clarity** | 9 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
 | 3 | **Concrete-first pedagogy** | 9 | Opens with a real worked example/numbers; one idea per step; generalises only after. |
 | 4a | **Numeric/factual accuracy** | 8 | Every cited figure (params, accuracy, layer counts, demo numbers) matches the companion code or is explicitly labelled "illustrative"; zero unverified assertions. |
-| 4b | **Honest framing** | 6 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
-| 5 | **Narrative continuity** | 8 | Re-uses the running example; connects back/forward; fits the spine story. |
-| 6 | **Reinforcement** | 8 | Inline checks + recap + quiz; questions test understanding, not recall. |
-| 7 | **Structural correctness** | 8 | Correct pills (21, right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
-| 8 | **Technical soundness** | 8 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
+| 4b | **Honest framing** | 5 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
+| 5 | **Narrative continuity** | 6 | Re-uses the running example; connects back/forward; fits the spine story. |
+| 6 | **Reinforcement** | 7 | Inline checks + recap + quiz; questions test understanding, not recall. |
+| 7 | **Structural correctness** | 6 | Correct pills (right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
+| 8 | **Technical soundness** | 6 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
 | 9 | **Accessibility** | 8 | Every interactive widget is keyboard-operable with visible focus; every figure/SVG has a text equivalent (`<figcaption>` or aria-label); colour is never the sole signal (callout `good`/`bad` also carry a word/icon). |
 | 10 | **Flow / sequencing** | 8 | A 12–14-yo can read top-to-bottom *once*, never backtracking: every term is defined before first use, each step says how it builds on the last, one new idea per step, order goes concrete→abstract / simple→hard. Distinct from #2 (per-sentence pitch) and #5 (cross-lesson threading) — this is *within-page* logical flow. |
 | 11 | **Pacing / gradual build-up** | 8 | Every genuinely new, load-bearing concept gets real runway: plain idea → name → micro-example → use. A concept is never named-and-used inside a single clause or parenthetical. Distinct from #2 (per-sentence pitch), #3 (concrete *opening*) and #10 (ordering / used-before-defined) — this is *how much runway each new idea gets*. |
+| 12 | **Conceptual depth / flesh-out** | 8 | A load-bearing concept is developed *in proportion to its importance* — built slowly across as many steps/pages as it needs (intuition → mechanism → worked example → generalisation → use), never crammed into one dense step. The course's pillars (neural networks, attention) each earn a multi-page arc. Judged **across pages** against the concept-development ledger, not the page in isolation. Distinct from #11 Pacing (*within-page* runway per idea) — this asks whether a concept gets **enough total real-estate at all**. |
 
 **Scoring #11 (Pacing).** For each genuinely new, load-bearing concept on the page, check the four-beat runway: (1) plain-idea sentence, (2) name introduced, (3) a micro-example or worked instance, (4) use. Score = how consistently concepts get all four: every load-bearing concept gets full runway → 5; one concept named-and-used in a single clause/parenthetical with no micro-example → 4; several rushed → 3; most concepts compressed → ≤2. Justify by citing the rushed concept and its section id (e.g. "`#train`: cross-entropy named and used in one line"). A concept that is a deliberate *callback* to an earlier full treatment does not need re-runway — a one-line re-gloss suffices.
 
 **Scoring #10 (Flow).** Do a **cold read**: simulate a 13-year-old reading the page once, top-to-bottom, *no scrolling back*. Log every point where they'd get confused or have to re-read. The score is the inverse of confusion points: 0 points → 5; 1–2 minor stumbles → 4; one place you genuinely *must* backtrack → 3; several backtracks → 2; the order fights the reader throughout → ≤1. Justify the score by citing the **checklist probes** that fail (section id / line): (a) a term used before it's defined; (b) a step with no transition saying how it builds on the prior one; (c) a step introducing more than one new idea; (d) a current step that depends on an "as we'll see later" hand-wave; (e) abstract-before-concrete ordering. Optionally report an unweighted Flesch-Kincaid grade (target 6–8) as a sanity floor — it does **not** set the score (it's blind to ordering).
+
+**Scoring #12 (Conceptual depth / flesh-out).** Unlike every other criterion, this is judged **across pages**, against the **concept-development ledger** (`course/agent/reports/concept_development_*.md`). Each core concept is rated **importance** (H/M/L) and **development** (how many spine steps/pages build it, and how slowly). Score a page by the concept it is *responsible for*: 5 = a high-importance concept gets a slow, multi-beat build with room to breathe (a pillar earns a multi-page arc); a lightweight concept is fully covered in its space. 4 = slightly under-developed for its weight (could use one more worked beat or a split). 3 = a major concept crammed into a single page/step its importance doesn't justify (e.g. all of "what a neural network is" on one page; all of attention on one). ≤2 = a foundational idea introduced and used with almost no build. Distinct from #11 Pacing (*within-page* runway per new idea) — #12 asks whether the concept gets **enough total real-estate at all**. Justify by citing the concept, its importance, and its current page/step count. When the ledger shows a high-importance concept under-developed, the fix is usually **new/split pages**, not edits to the existing one — so a low #12 is a *roadmap signal*, and the per-page deduction lands on the page currently carrying the overloaded concept.
+
+> **Weights changed in this revision** (to seat #12 at weight 8 while the total stays 100): Narrative 8→6, Structural 8→6, Technical 8→6, Honest framing 6→5, Reinforcement 8→7. The pedagogically central axes — **Interactivity (12), Concrete-first (9), Clarity (9), Accuracy (8), Accessibility, Flow, Pacing** — are protected. The 8 points come from the **saturated** axis the framework review flagged (Narrative scores 5 almost everywhere) and the two **mechanical pass/fail** axes (Structural & Technical are gate-checks that idle at 4–5, so a graded 0–5 scale wastes their weight), plus a point each off Honesty (also saturated) and Reinforcement.
 
 **Total /100.** Bands: 90–100 exemplary · 75–89 strong · 60–74 acceptable ·
 40–59 weak · <40 failing. Report per-criterion score, weighted subtotal, total,
