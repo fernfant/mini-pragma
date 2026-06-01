@@ -57,6 +57,16 @@
 
 <p>This is the same machine from the <a href="lesson_05c.html">whole-flow page</a>, but we've turned the lights down on every stage except the first. Watch the left-hand column: each word lights up as a little stack of coloured cells. That stack <em>is</em> the word, rewritten as numbers.</p>
 
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-enc"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-enc",{
+  q: "Two words mean almost the same thing (say 'big' and 'large'). After training, what should their number-lists look like?",
+  options: ["Identical — same word, same numbers", "Very similar, but not identical", "Completely different and random"],
+  correct: 1,
+  reveal: "Training pulls words that behave alike toward similar coordinates — so 'big' and 'large' land close together, but not exactly equal (they're still different words). That closeness is what lets the next stages treat them alike. Distance between vectors becomes distance in meaning."
+});});</script>
+
 <figure class="figure-wide">
   <div id="fp"></div>
   <figcaption>Encode, lit; the rest of the pipeline dimmed for context. Each word becomes a column of 6 numbers — blue for negative, orange for positive, brighter = bigger.</figcaption>
@@ -75,15 +85,36 @@
 "a"     →  [ 0.2,  0.8,  0.1, -0.4, -0.2,  0.5 ]</code></pre>
 </div>
 
-<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+<div class="callout" id="emb-inspect">
+  <strong>Inspect the vectors.</strong> Click a word to see its 6 learned numbers — <span style="color:#c2532a">orange = positive</span>, <span style="color:#3a7bd0">blue = negative</span>:
+  <div id="ei-words" style="display:flex;gap:6px;flex-wrap:wrap;margin:10px 0;"></div>
+  <div id="ei-cells" style="display:flex;gap:4px;flex-wrap:wrap;margin:8px 0;"></div>
+  <div id="ei-note" style="font-size:13px;color:var(--text-dim);min-height:20px;"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  var box=document.getElementById('emb-inspect'); if(!box) return;
+  var V={"once":[.6,-.2,.3,.1,-.5,.4],"upon":[-.3,.5,-.6,.2,.7,-.1],"a":[.2,.8,.1,-.4,-.2,.5],
+         "begin":[.55,-.15,.32,.08,-.45,.42],"start":[.58,-.18,.28,.12,-.48,.38]};
+  var notes={"begin":"“begin” and “start” mean nearly the same thing — flip between them and watch the cells barely move.",
+             "start":"“start” sits almost on top of “begin”: similar meaning → similar numbers. That closeness is the whole point."};
+  var wb=document.getElementById('ei-words'),cells=document.getElementById('ei-cells'),note=document.getElementById('ei-note');
+  function col(v){if(v>=0){var t=Math.min(1,v);return 'rgb('+Math.round(230-156*t)+','+Math.round(230-90*t)+','+Math.round(230-140*t)+')';}var u=Math.min(1,-v);return 'rgb('+Math.round(230-156*u)+','+Math.round(230-90*u)+','+Math.round(230+25*u)+')';}
+  function show(w){
+    cells.innerHTML='';
+    V[w].forEach(function(v,i){var d=document.createElement('span');
+      d.style.cssText='display:inline-flex;align-items:center;justify-content:center;width:48px;height:30px;border-radius:5px;font-size:12px;color:#1a1a1a;background:'+col(v);
+      d.setAttribute('role','img'); d.setAttribute('aria-label','coordinate '+(i+1)+' of "'+w+'": '+v.toFixed(2));
+      d.textContent=(v>=0?' ':'')+v.toFixed(2);cells.appendChild(d);});
+    note.textContent=notes[w]||('“'+w+'” as 6 coordinates — fetched straight from the embedding table.');
+    [].forEach.call(wb.children,function(b){b.setAttribute('aria-pressed',b.dataset.w===w);});
+  }
+  Object.keys(V).forEach(function(w,i){var b=document.createElement('button');b.textContent=w;b.dataset.w=w;
+    b.setAttribute('aria-pressed',i===0);
+    b.style.cssText='padding:6px 13px;border:1px solid var(--border);border-radius:8px;background:var(--bg-card);cursor:pointer;font:inherit;font-size:13px;';
+    b.onclick=function(){show(w);};wb.appendChild(b);});
+  show("once");
+});</script>
 
-<div id="pred-enc"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-enc",{
-  q: "Two words mean almost the same thing (say 'big' and 'large'). After training, what should their number-lists look like?",
-  options: ["Identical — same word, same numbers", "Very similar, but not identical", "Completely different and random"],
-  correct: 1,
-  reveal: "Training pulls words that behave alike toward similar coordinates — so 'big' and 'large' land close together, but not exactly equal (they're still different words). That closeness is what lets the next stages treat them alike. Distance between vectors becomes distance in meaning."
-});});</script>
 
 <h2 class="step" id="seeing"><span class="step-num">Seeing</span> Read the colours</h2>
 

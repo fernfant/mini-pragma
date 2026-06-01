@@ -944,3 +944,9 @@ nav.topbar .lesson-pills .sep {
 #pg-grow .pg-controls button.pg-run:disabled { opacity: 0.35; cursor: default; background: #334155; }
 #pg-grow #grow-play { background: #10b981; }
 #pg-grow #grow-play:hover { background: #059669; }
+
+/* keyboard accessibility: a visible focus ring on every control, course-wide */
+button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--accent, #b9410a);
+  outline-offset: 2px;
+}

@@ -57,6 +57,16 @@
 
 <p>Attention handed us one blended vector. Now it flows into a <strong>feed-forward layer</strong> — the little neural net from <a href="lesson_01_5.html">Lesson 1.5</a>. Each neuron takes the blend, multiplies it by its own set of weights, adds them up, and then asks one question: <em>is my total above zero?</em> If yes, it fires (bright); if no, <strong>ReLU</strong> shuts it to exactly zero (grey). Watch the middle column light up — only some neurons survive.</p>
 
+<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
+
+<div id="pred-neu"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-neu",{
+  q: "A neuron's weighted sum of the blend comes out to −0.8. After ReLU, what value does it pass on?",
+  options: ["−0.8, unchanged", "0", "0.8 (it flips the sign)"],
+  correct: 1,
+  reveal: "ReLU keeps positives and replaces anything negative with exactly 0. So −0.8 becomes 0 — that neuron stays silent for this input. Positives pass through untouched."
+});});</script>
+
 <figure class="figure-wide">
   <div id="fp"></div>
   <figcaption>Neurons, lit. Bright purple = a firing neuron (brighter = stronger); grey = silenced by ReLU. The sparse on/off pattern is this layer's response to the blend.</figcaption>
@@ -73,6 +83,24 @@ after ReLU (max 0):   2.11  0.41   0.00  1.41  0.38  0.97   0.00   0.00  1.44   
 
 <p>Line them up and ReLU's rule is obvious: every <em>negative</em> raw sum (−0.49, −0.04, −0.55, −0.00) became <strong>0</strong>; the positives passed through untouched. So <strong>6 of the 10 neurons fired</strong>; the other 4 went dark.</p>
 
+<div class="callout" id="relu-lab">
+  <strong>Be the ReLU.</strong> Slide one neuron's raw weighted sum and watch the gate decide:
+  <div style="margin:10px 0;">raw sum: <strong id="rl-raw">−0.50</strong>
+    <br><input type="range" id="rl-range" min="-3" max="3" step="0.1" value="-0.5" style="width:260px;accent-color:#9b5de5;vertical-align:middle" aria-label="a neuron's raw weighted sum"></div>
+  <div style="font-size:14px;">after ReLU <code>max(0, raw)</code> = <strong id="rl-out">0.00</strong> &nbsp;→&nbsp; <span id="rl-state"></span></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  var r=document.getElementById('rl-range'); if(!r) return;
+  function upd(){var x=parseFloat(r.value), out=Math.max(0,x);
+    document.getElementById('rl-raw').textContent=(x<0?'−':'')+Math.abs(x).toFixed(2);
+    document.getElementById('rl-out').textContent=out.toFixed(2);
+    document.getElementById('rl-state').innerHTML = out>0
+      ? '<span style="color:#7c3aed;font-weight:600;">🟣 fires</span> (the bigger the sum, the brighter)'
+      : '<span style="color:#6b6b6b;font-weight:600;">⚫ silent</span> — negative sums are zeroed';
+  }
+  r.addEventListener('input',upd); upd();
+});</script>
+
 <div id="chk-neu"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){check("chk-neu",{
   q: "In the rows above, neuron #3's raw sum is −0.49. Does it fire?",
@@ -83,15 +111,6 @@ after ReLU (max 0):   2.11  0.41   0.00  1.41  0.38  0.97   0.00   0.00  1.44   
 
 <p>Why bother zeroing things out? Because if neurons only ever added and scaled, stacking them would collapse into one big multiply — no smarter than a single layer. The ReLU bend lets each neuron <strong>specialise</strong>: react to some blends, stay silent for others. That selective firing is what lets the network carve up meaning into useful pieces.</p>
 
-<h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
-
-<div id="pred-neu"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-neu",{
-  q: "A neuron's weighted sum of the blend comes out to −0.8. After ReLU, what value does it pass on?",
-  options: ["−0.8, unchanged", "0", "0.8 (it flips the sign)"],
-  correct: 1,
-  reveal: "ReLU keeps positives and replaces anything negative with exactly 0. So −0.8 becomes 0 — that neuron stays silent for this input. Positives pass through untouched."
-});});</script>
 
 <h2 class="step" id="play"><span class="step-num">Play</span> Watch the pattern change</h2>
 

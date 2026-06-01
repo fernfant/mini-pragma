@@ -57,11 +57,6 @@
 
 <p>We have a firing pattern — the model's thought about <em>"once upon a"</em>. The last step turns that thought into an actual word. <strong>One more weighted sum</strong> — one dot-product per candidate word, exactly like the neuron layer did, just producing 5 numbers instead of 10 — gives each candidate a raw <strong>score</strong> (called a <em>logit</em>, just an unbounded number): higher means "this fits better". Then <strong>softmax</strong> — the same squasher from attention — turns the scores into probabilities that add to 100%. The tallest bar wins.</p>
 
-<figure class="figure-wide">
-  <div id="fp"></div>
-  <figcaption>Output, lit. Each candidate word gets a bar; softmax sets the lengths so they sum to 100%. The winner glows green — the model's predicted next word.</figcaption>
-</figure>
-
 <h2 class="step" id="predict"><span class="step-num">Predict</span> Before the reveal</h2>
 
 <div id="pred-out"></div>
@@ -71,6 +66,12 @@
   correct: 1,
   reveal: "Softmax uses exponentials, so it blows small gaps up into big ones — a score of 8.3 utterly dominates -0.2. The biggest logit takes almost all the probability, which is why the winning bar shoots to ~100%."
 });});</script>
+
+<figure class="figure-wide">
+  <div id="fp"></div>
+  <figcaption>Output, lit. Each candidate word gets a bar; softmax sets the lengths so they sum to 100%. The winner glows green — the model's predicted next word.</figcaption>
+</figure>
+
 
 <h2 class="step" id="softmax"><span class="step-num">Softmax</span> Scores → confidence</h2>
 
@@ -83,7 +84,34 @@ softmax →             time 100%  blue  0%   you  0%   much  0%   cake  0%
 predicted next word →  "time"</code></pre>
 </div>
 
+<p style="font-size:13px;color:var(--text-dim);">(Those percentages are rounded — "time" is really ~99.97%, not a literal 100%, and the others are tiny but never exactly 0.)</p>
+
 <p>That's the entire forward pass: <em>once upon a</em> → <strong>time</strong>. To write a whole sentence, a model just does this again and again — tack the chosen word onto the end and run the pass once more for the next one. Notice softmax shows up twice in the pipeline: once to mix attention, once to pick the winner. Same tool, two jobs — turning a row of numbers into a set of choices that add to 100%.</p>
+
+<div class="callout" id="logit-lab">
+  <strong>Drag a logit.</strong> Push <em>"blue"</em>'s raw score up and watch softmax steal probability away from <em>"time"</em> — a small change in the score makes a big change in the odds:
+  <div style="margin:10px 0;">"blue" logit: <strong id="ll2-v">−3.9</strong>
+    <br><input type="range" id="ll2-range" min="-5" max="10" step="0.5" value="-3.9" style="width:260px;accent-color:#b9410a;vertical-align:middle" aria-label="the raw score (logit) for the word blue"></div>
+  <div id="ll2-bars" style="display:grid;grid-template-columns:54px 1fr 46px;gap:6px;align-items:center;font-size:13px;max-width:440px;"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  var r=document.getElementById('ll2-range'); if(!r) return;
+  var words=["time","blue","you","much","cake"], base=[8.3,-3.9,-0.5,-0.2,-4.1];
+  var bars=document.getElementById('ll2-bars');
+  words.forEach(function(w,i){
+    bars.insertAdjacentHTML('beforeend',
+      '<span>"'+w+'"</span><span style="background:#e7eef0;border-radius:5px;overflow:hidden;height:16px;"><span id="ll2-f'+i+'" style="display:block;height:100%;background:#94a3b8;"></span></span><strong id="ll2-p'+i+'"></strong>');
+  });
+  function softmax(a){var m=Math.max.apply(null,a),e=a.map(function(x){return Math.exp(x-m);}),s=e.reduce(function(x,y){return x+y;},0);return e.map(function(x){return x/s;});}
+  function upd(){var L=base.slice(); L[1]=parseFloat(r.value);
+    document.getElementById('ll2-v').textContent=(L[1]<0?'−':'')+Math.abs(L[1]).toFixed(1);
+    var p=softmax(L), win=p.indexOf(Math.max.apply(null,p));
+    p.forEach(function(v,i){var f=document.getElementById('ll2-f'+i),pc=document.getElementById('ll2-p'+i);
+      f.style.width=(v*100).toFixed(0)+'%'; f.style.background=(i===win?'#16a34a':'#94a3b8');
+      pc.textContent=(v*100).toFixed(0)+'%'; pc.style.color=(i===win?'#15803d':'#64748b');});
+  }
+  r.addEventListener('input',upd); upd();
+});</script>
 
 
 <h2 class="step" id="honest"><span class="step-num">Honest</span> A real guess, from a real net</h2>
