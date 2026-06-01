@@ -78,3 +78,27 @@ the actual 11-criterion / 12-row course rubric from `course/agent/SKILL.md` §8 
 The Pacing row carries a one-line foreshadow ("not in the first draft… hold that thought")
 so the later C11 reveal still lands. Lands in **B2/B4/B9**, all already at 5; total **holds at
 92.8**. (Added table CSS to the HTML template so it renders in the serif column and the PDF.)
+
+## Scoring `build-story_who-grades-the-grader_2026-06-01` ("Who grades the grader?")
+
+Same score → fix → re-score loop. Controlling idea: a writer that grades its own
+work inflates — a blind re-audit (92.7 self → 86.7 independent) is the cure.
+
+| # | Criterion | W | Draft | v2 | Note |
+|---|-----------|---|-------|----|------|
+| B1 | Controlling idea & narrative | 12 | 5 | 5 | "who grades the grader" holds throughout. |
+| B2 | Concrete / worked examples | 12 | 4 | 5 | **fix:** added the L4g "bug graded a 5" before/after box + the 16-weights rename slip. |
+| B3 | Visuals & diagrams | 12 | 3 | **4** | new self-vs-blind bar chart + reused spine/loop. *Held at 4:* static; course earns 5 with draggable widgets. |
+| B4 | Accuracy / verifiable data | 12 | 5 | 5 | every figure traces to `spine_2026-06-01.md`, `recommend_2026-05-30.md`, scorecard JSON. |
+| B6 | Clarity (exec reader) | 10 | 4 | 5 | **fix:** tightened the saturated-criteria paragraph. |
+| B5 | Honest framing | 8 | 5 | 5 | the −6.0 self-vs-blind drop is the centrepiece; the self-score caveat is owned in-text. |
+| B7 | Flow / sequencing | 8 | 4 | **4** | *Held at 4:* the recap + self-scoring coda are deliberate meta-detours a cold read flags. |
+| B9 | Skimmability / structure | 8 | 4 | 5 | declarative headings, purposeful bold, the predict box and worked-example boxes. |
+| B8 | Pacing / runway | 6 | 4 | 5 | the blind-audit reveal gets full predict→reveal→explain runway. |
+| B10 | CxAI voice-match | 6 | 5 | 5 | "From X to Y" title, no-period subtitle, framework-by-naming, sign-off. |
+| B11 | Takeaways / actionability | 6 | 3 | 5 | **fix:** the four moves became specific (separate grader/writer, kill saturated criteria…). |
+
+**Total: 84.0 → 90.0.** Band: **Strong → Exemplary.** Two rows **held at 4** with a
+named residual (Visuals: static vs draggable; Flow: the self-scoring coda) — not
+rounded up. And the honest meta-note the post makes about *itself*: this 90.0 is
+**self-scored**, the exact bias the piece spends a thousand words warning about.

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-label="Bar chart: the same thirteen spine pages scored 92.7 out of 100 when the writer graded itself, but 86.7 when an independent agent re-read them blind — a six-point gap the self-score had hidden.">
+  <style>
+    .ttl{font:700 17px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#242424}
+    .lbl{font:600 14px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#242424}
+    .num{font:800 26px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .sub{font:400 12.5px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#6b6b6b}
+    .ax{stroke:#e6e6e6;stroke-width:1}
+    .gap{font:700 13px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#b9410a}
+  </style>
+  <text x="30" y="34" class="ttl">Same 13 pages. Two rulers.</text>
+  <!-- baseline grid: 0,75(strong),90(exemplary),100 mapped to y. plot area x 60..660, y 70..270 for 0..100 -->
+  <!-- y for v = 270 - v*2 -->
+  <line x1="60" y1="270" x2="660" y2="270" class="ax"/>
+  <line x1="60" y1="120" x2="660" y2="120" class="ax" stroke-dasharray="4 4"/>
+  <text x="664" y="124" class="sub">90 · exemplary</text>
+  <line x1="60" y1="150" x2="660" y2="150" class="ax" stroke-dasharray="4 4"/>
+  <text x="664" y="154" class="sub">75 · strong</text>
+  <!-- bar 1: self-scored 92.7 -> height 92.7*2=185.4, top y=270-185.4=84.6 -->
+  <rect x="150" y="84.6" width="120" height="185.4" rx="4" fill="#f0c9b4"/>
+  <text x="210" y="74" class="num" fill="#b9410a" text-anchor="middle">92.7</text>
+  <text x="210" y="292" class="lbl" text-anchor="middle">Writer grades itself</text>
+  <text x="210" y="309" class="sub" text-anchor="middle">v7 self-audit · 9 exemplary</text>
+  <!-- bar 2: blind 86.7 -> height 173.4, top y=270-173.4=96.6 -->
+  <rect x="450" y="96.6" width="120" height="173.4" rx="4" fill="#b9410a"/>
+  <text x="510" y="86" class="num" fill="#b9410a" text-anchor="middle">86.7</text>
+  <text x="510" y="292" class="lbl" text-anchor="middle">Blind re-read</text>
+  <text x="510" y="309" class="sub" text-anchor="middle">independent agent · 5 exemplary</text>
+  <!-- gap bracket between the two bar tops -->
+  <line x1="290" y1="84.6" x2="430" y2="84.6" stroke="#b9410a" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="290" y1="96.6" x2="430" y2="96.6" stroke="#b9410a" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="360" y="78" class="gap" text-anchor="middle">−6.0</text>
+</svg>

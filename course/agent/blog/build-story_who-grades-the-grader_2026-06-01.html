@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Self-Scored to Blind-Reviewed: We Audited Our Own AI Grader — CxAI</title>
+<style>
+  :root { --ink:#1a1a1a; --muted:#6b6b6b; --rule:#e6e6e6; --accent:#b9410a; --accent-light:#f6e9e1; --bg:#ffffff; }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin:0; background:#f7f7f5; color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.6; }
+  .pub-header { border-bottom:1px solid var(--rule); background:var(--bg); }
+  .pub-inner { max-width:1100px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; justify-content:space-between; }
+  .pub-name { font-weight:800; letter-spacing:.14em; font-size:18px; text-transform:uppercase; }
+  .pub-name .dot { color:var(--accent); }
+  .subscribe { background:var(--accent); color:#fff; border:none; border-radius:6px; padding:7px 16px; font-weight:600; font-size:14px; cursor:pointer; }
+  .article { max-width:728px; margin:0 auto; padding:56px 24px 80px; background:var(--bg); }
+  .kicker { color:var(--accent); font-weight:700; font-size:13px; letter-spacing:.08em; text-transform:uppercase; margin-bottom:18px; }
+  h1.title { font-size:40px; line-height:1.15; font-weight:800; letter-spacing:-.018em; margin:0 0 16px; }
+  .subtitle { font-size:21px; line-height:1.4; color:var(--muted); font-weight:400; margin:0 0 28px; }
+  .byline { display:flex; align-items:center; gap:12px; padding-bottom:22px; margin-bottom:8px; border-bottom:1px solid var(--rule); }
+  .avatar { width:44px; height:44px; border-radius:50%; background:linear-gradient(135deg,var(--accent),#e08a4a); color:#fff; font-weight:800; font-size:17px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+  .byline .who { font-weight:600; font-size:15px; }
+  .byline .when { color:var(--muted); font-size:14px; }
+  .body { font-family:Georgia,"Times New Roman",serif; font-size:20px; line-height:1.72; color:#242424; margin-top:30px; }
+  .body p { margin:0 0 24px; }
+  .body h2 { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:26px; line-height:1.25; font-weight:800; letter-spacing:-.01em; margin:44px 0 16px; }
+  .body strong { font-weight:700; color:#111; }
+  .body em { font-style:italic; }
+  .body a { color:var(--accent); text-decoration:none; border-bottom:1px solid rgba(185,65,10,.35); }
+  .body a:hover { border-bottom-color:var(--accent); }
+  .body code { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:16px; background:#f2f2ef; padding:2px 6px; border-radius:4px; }
+  .body ol, .body ul { margin:0 0 24px; padding-left:28px; }
+  .body li { margin-bottom:14px; }
+  .body figure { margin:34px 0; }
+  .body figure svg { width:100%; height:auto; display:block; border:1px solid var(--rule); border-radius:10px; background:#fff; padding:14px; }
+  .body figcaption { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14px; color:var(--muted); text-align:center; margin-top:11px; }
+  .body blockquote { margin:30px 0; padding:18px 24px; background:var(--accent-light); border-left:4px solid var(--accent); border-radius:0 10px 10px 0; font-size:18px; line-height:1.62; }
+  .body blockquote p { margin:0 0 12px; }
+  .body blockquote p:last-child { margin-bottom:0; }
+  .body blockquote code { background:#fff; }
+  .body table { width:100%; border-collapse:collapse; margin:30px 0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-size:14.5px; line-height:1.45; }
+  .body thead th { text-align:left; font-weight:700; color:#111; border-bottom:2px solid var(--accent); padding:8px 11px; }
+  .body tbody td { text-align:left; padding:9px 11px; border-bottom:1px solid var(--rule); vertical-align:top; color:#3a3a3a; }
+  .body tbody tr:nth-child(odd) { background:#faf7f5; }
+  .body th:nth-child(1), .body td:nth-child(1) { color:var(--muted); width:34px; }
+  .body th:nth-child(3), .body td:nth-child(3) { text-align:center; white-space:nowrap; font-variant-numeric:tabular-nums; width:64px; }
+  .body table strong { color:#111; }
+  .body table code { font-size:13px; }
+  .signoff { margin-top:40px; padding-top:26px; border-top:1px solid var(--rule); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; font-weight:700; font-size:17px; color:var(--accent); }
+  .footer-note { max-width:728px; margin:0 auto; padding:22px 24px 60px; color:var(--muted); font-size:13px; line-height:1.6; }
+  .footer-note a { color:var(--muted); }
+  @media (max-width:640px) { h1.title { font-size:30px; } .body { font-size:18px; } }
+  @media print { body { background:#fff; } .pub-header,.subscribe { background:#fff; } .article { padding-top:28px; } .body a { border-bottom:none; } .body figure,.body blockquote,.body table { break-inside:avoid; } }
+</style>
+</head>
+<body>
+  <header class="pub-header"><div class="pub-inner"><div class="pub-name">CxAI<span class="dot">.</span></div><button class="subscribe">Subscribe</button></div></header>
+  <article class="article">
+    <div class="kicker">Building with AI</div>
+    <h1 class="title">From Self-Scored to Blind-Reviewed: We Audited Our Own AI Grader</h1>
+    <p class="subtitle">The course graded itself 92.7. An independent re-read said 86.7 — and the gap is the most honest number in the project</p>
+    <div class="byline"><div class="avatar">Cx</div><div><div class="who">CxAI Team</div><div class="when">June 1, 2026 · Consumer Experience × AI</div></div></div>
+    <div class="body">
+<p>In our last piece we argued that when an AI agent writes your
+content, <strong>the method, not the model, is what makes it worth
+shipping</strong> — a <a
+href="https://fernfant.github.io/mini-pragma/course/html/index.html">thirteen-lesson
+course on how Transformers work</a>, held honest by a scoring rubric and
+a <strong>score→fix→re-score loop</strong>. We ended on a tidy number:
+93.2 out of 100, nine pages exemplary, self-scored and
+“conservative.”</p>
+<p>Then we did the thing that tidy number was begging for. We tested the
+loop’s weakest link — the part we’d flagged in our own notes and then
+quietly lived with.</p>
+<p><strong>Who grades the grader?</strong></p>
+<p>Because here is the embarrassing structural fact of the whole setup:
+the same agent that <em>wrote</em> each lesson also <em>scored</em> it.
+It fixed the pacing gaps and then awarded itself the points for closing
+them. That’s not a small caveat. It’s the foundation every headline
+number was standing on. This post is what happened when we kicked
+it.</p>
+<h2 id="a-60-second-recap-of-the-method">A 60-second recap of the
+method</h2>
+<p>If you missed part one: the course is <strong>one linear
+spine</strong> — text → ids → vectors → attention → a guess →
+fine-tuning — with the same example carried the whole way, reciprocal
+pagination so nobody falls off the path, and optional side-quests kept
+<em>off</em> the main route. Structure you can check mechanically, not a
+table of contents.</p>
+<figure>
+<svg viewBox="0 0 720 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The course spine: one running example flows through six stages — text, ids, vectors, attention, a guess, fine-tune — across 13 steps.">
+<rect width="720" height="120" fill="#fff"/>
+<rect x="16.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="68.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">text</text>
+<line x1="122.3" y1="57" x2="130.5" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="130.5,52 138.5,57 130.5,62" fill="#b9410a"/>
+<rect x="132.8" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="184.8" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">ids</text>
+<line x1="239.1" y1="57" x2="247.3" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="247.3,52 255.3,57 247.3,62" fill="#b9410a"/>
+<rect x="249.6" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="301.6" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">vectors</text>
+<line x1="355.9" y1="57" x2="364.1" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="364.1,52 372.1,57 364.1,62" fill="#b9410a"/>
+<rect x="366.4" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="418.4" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">attention</text>
+<line x1="472.7" y1="57" x2="480.9" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="480.9,52 488.9,57 480.9,62" fill="#b9410a"/>
+<rect x="483.2" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="535.2" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">a guess</text>
+<line x1="589.5" y1="57" x2="597.7" y2="57" stroke="#b9410a" stroke-width="2"/>
+<polygon points="597.7,52 605.7,57 597.7,62" fill="#b9410a"/>
+<rect x="600.0" y="34" width="104" height="46" rx="9" fill="#f6e9e1" stroke="#b9410a" stroke-width="1.5"/>
+<text x="652.0" y="62" text-anchor="middle" fill="#242424" font-size="14" font-weight="700" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">fine-tune</text>
+<text x="360" y="104" text-anchor="middle" fill="#6b6b6b" font-size="13" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">One running example · 13 linear steps · reciprocal Prev/Next</text>
+</svg>
+<figcaption aria-hidden="true">One running example, a linear spine of
+steps — from text to a fine-tuned model.</figcaption>
+</figure>
+<p>Upstream of every lesson sits the real product: a
+<strong>rubric</strong>. Each page scored <strong>0–5 across twelve
+weighted rows</strong> (interactivity, concrete-first, accuracy,
+honesty, accessibility, flow, pacing…), summed to a single number out of
+100, with explicit bands. Write the grader before you trust the writer.
+Then run the loop: read cold, score, fix the worst, re-score,
+repeat.</p>
+<p>It worked well enough that the course <em>grew</em> — from thirteen
+pages to <strong>eighteen</strong>, adding a visual “watch a forward
+pass happen” series and a full property-portal capstone. The <a
+href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">live
+scorecard</a> now reads <strong>94.6 average, all eighteen pages
+exemplary.</strong></p>
+<p>A beautiful scoreboard. Maintained by the same agent that plays the
+game.</p>
+<h2 id="the-blind-spot-we-had-already-written-down">The blind spot we
+had already written down</h2>
+<p>We didn’t need an outside critic to find the flaw — we’d documented
+it ourselves. A framework-review pass had flagged three problems in
+plain language, and every one pointed the same direction:</p>
+<ul>
+<li><strong>The scores are self-reported.</strong> The audit note said
+it outright: <em>“Self-scored by the implementer, not a blind
+reviewer.”</em></li>
+<li><strong>Three criteria had saturated.</strong> Numeric accuracy
+scored 5 on 12 of 13 pages, honesty 5 on 11 of 13, narrative 5 on 12 of
+13. Together they carry <strong>22 of the 100 points</strong> while
+contributing almost no variance — they couldn’t tell a strong page from
+an exemplary one.</li>
+<li><strong>Holistic-then-justify.</strong> An author scoring their own
+fixes grades intuitively, then back-fills the justification. The number
+comes first; the reasons get fitted to it.</li>
+</ul>
+<p>Inter-rater reliability research has a blunt name for the cure:
+<strong>separate the scorer from the author.</strong> So we did — we
+pointed independent read-only agents at all thirteen spine pages and
+told them to grade blind against the same twelve-row rubric, with no
+sight of the existing scores.</p>
+<h2 id="predict-before-the-reveal">Predict before the reveal</h2>
+<p>We make thirteen-year-olds commit to a guess before showing them the
+answer. It’s the course’s signature move —
+<em>predict-before-reveal</em> — and it’s only fair we use it on
+you.</p>
+<blockquote>
+<p><strong>🤔 Take the guess.</strong> Thirteen pages the agent had
+self-scored at <strong>92.7</strong>. Same pages, unchanged. A blind,
+independent re-read against the identical rubric. Did the average go
+<strong>up</strong>, <strong>down</strong>, or <strong>stay
+flat</strong>?</p>
+<p><em>Don’t skim past it. The course makes kids commit; an executive
+can manage the same.</em></p>
+</blockquote>
+<p>If you guessed <strong>down</strong>, you already understand why this
+post exists.</p>
+<p>The blind re-audit came back at <strong>86.7</strong> — six points
+under the self-score, and the band distribution flipped from
+nine-exemplary-four-strong to <strong>five exemplary, eight
+strong</strong>.</p>
+<figure>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" role="img" aria-label="Bar chart: the same thirteen spine pages scored 92.7 out of 100 when the writer graded itself, but 86.7 when an independent agent re-read them blind — a six-point gap the self-score had hidden.">
+  <style>
+    .ttl{font:700 17px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#242424}
+    .lbl{font:600 14px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#242424}
+    .num{font:800 26px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+    .sub{font:400 12.5px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#6b6b6b}
+    .ax{stroke:#e6e6e6;stroke-width:1}
+    .gap{font:700 13px -apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;fill:#b9410a}
+  </style>
+  <text x="30" y="34" class="ttl">Same 13 pages. Two rulers.</text>
+  <!-- baseline grid: 0,75(strong),90(exemplary),100 mapped to y. plot area x 60..660, y 70..270 for 0..100 -->
+  <!-- y for v = 270 - v*2 -->
+  <line x1="60" y1="270" x2="660" y2="270" class="ax"/>
+  <line x1="60" y1="120" x2="660" y2="120" class="ax" stroke-dasharray="4 4"/>
+  <text x="664" y="124" class="sub">90 · exemplary</text>
+  <line x1="60" y1="150" x2="660" y2="150" class="ax" stroke-dasharray="4 4"/>
+  <text x="664" y="154" class="sub">75 · strong</text>
+  <!-- bar 1: self-scored 92.7 -> height 92.7*2=185.4, top y=270-185.4=84.6 -->
+  <rect x="150" y="84.6" width="120" height="185.4" rx="4" fill="#f0c9b4"/>
+  <text x="210" y="74" class="num" fill="#b9410a" text-anchor="middle">92.7</text>
+  <text x="210" y="292" class="lbl" text-anchor="middle">Writer grades itself</text>
+  <text x="210" y="309" class="sub" text-anchor="middle">v7 self-audit · 9 exemplary</text>
+  <!-- bar 2: blind 86.7 -> height 173.4, top y=270-173.4=96.6 -->
+  <rect x="450" y="96.6" width="120" height="173.4" rx="4" fill="#b9410a"/>
+  <text x="510" y="86" class="num" fill="#b9410a" text-anchor="middle">86.7</text>
+  <text x="510" y="292" class="lbl" text-anchor="middle">Blind re-read</text>
+  <text x="510" y="309" class="sub" text-anchor="middle">independent agent · 5 exemplary</text>
+  <!-- gap bracket between the two bar tops -->
+  <line x1="290" y1="84.6" x2="430" y2="84.6" stroke="#b9410a" stroke-width="1" stroke-dasharray="3 3"/>
+  <line x1="290" y1="96.6" x2="430" y2="96.6" stroke="#b9410a" stroke-width="1" stroke-dasharray="3 3"/>
+  <text x="360" y="78" class="gap" text-anchor="middle">−6.0</text>
+</svg>
+<figcaption aria-hidden="true">Same thirteen pages: 92.7 when the writer
+graded itself, 86.7 on a blind re-read — a six-point gap the self-score
+had hidden.</figcaption>
+</figure>
+<h2 id="what-a-stricter-reader-actually-found">What a stricter reader
+actually found</h2>
+<p>Here’s the part that matters: the drop was <strong>almost entirely a
+stricter read, not a content regression.</strong> No page got worse. A
+reviewer with no stake in the scores simply checked the cited numbers
+against the companion code — and found machine-verifiable mistakes the
+self-score had waved through. One example, in full:</p>
+<blockquote>
+<p><strong>Worked example — a bug the author graded a 5</strong></p>
+<p><em>The page (lesson 4g) said:</em> “the surprise is that attention’s
+Q/K/V, not the feed-forward, is the single biggest block of
+parameters.”</p>
+<p><em>The page’s own bar chart said:</em> feed-forward = <strong>4,192
+params (37.9%)</strong>, Q/K/V = <strong>3,168 (28.6%)</strong>. The
+feed-forward is the bigger block. The “surprise” was backwards — and it
+contradicted the figure printed directly beneath it.</p>
+<p>The author had scored that page’s accuracy a 5. The blind reader
+scored it 75 overall and put the inverted claim at the top of the fix
+list.</p>
+</blockquote>
+<p>It wasn’t alone. The streaming-leads capstone claimed
+<strong>298</strong> leads where the seed-7 script actually yields
+~<strong>307</strong>. A bridge lesson defined its colour-coded legend
+<em>after</em> the first place it’s used. A “feed-forward is GELU”
+caption sat on top of code that defaults to ReLU. None of these are
+catastrophes. All of them are exactly the kind of thing an author
+re-reading their own work nods straight past — and exactly the kind of
+thing a fresh reader trips on immediately.</p>
+<h2
+id="the-agent-doesnt-get-bored.-thats-still-the-asset-and-the-risk.">The
+agent doesn’t get bored. That’s still the asset and the risk.</h2>
+<p>The same week, the loop earned its keep on a job no human would
+volunteer for. We decided the course’s friendly word for a model’s
+learnable values — “knob” — should become the real vocabulary:
+<strong>weights and biases</strong>. That meant <strong>171 occurrences
+across more than fifty files</strong> — lessons, glossary, notebooks,
+Python references, even the text inside SVG diagrams — each one judged
+in context (a single multiplier became <em>weight</em>; an offset,
+<em>bias</em>; a count, <em>parameters</em>). The agent did it in one
+pass and stayed consistent across every file. No human team rewrites
+fifty files by hand without drift.</p>
+<p>That’s the asset. The risk is the same sentence read backwards: an
+agent that never gets bored also never gets <em>suspicious</em>.
+Mid-rename it had cheerfully produced “8 weights + 8 biases = 16
+weights” (it’s 16 <em>parameters</em>) and rewritten a filename inside
+an image link, quietly breaking the picture. It didn’t wrinkle its nose
+at either — a grep did. <strong>The tirelessness is real; the judgment
+has to be supplied from outside.</strong> That’s the whole case for
+blind review in one anecdote.</p>
+<h2 id="what-this-means-if-youre-building-with-ai">What this means if
+you’re building with AI</h2>
+<p>Strip away the Transformers and the thirteen-year-old, and four moves
+generalise to any team putting AI-generated work in front of real
+people:</p>
+<ol type="1">
+<li><strong>Separate the grader from the writer.</strong> A model that
+scores its own output will inflate — not from malice, from the same
+holistic-then-justify bias humans have. A blind pass is the cheapest six
+points of honesty you’ll ever buy.</li>
+<li><strong>Watch for saturated criteria.</strong> When a measure scores
+full marks almost everywhere, it has stopped measuring. Re-cut it or
+retire it; don’t let dead weight pad the total.</li>
+<li><strong>Make suspicion mechanical.</strong> If a number can be
+computed, compute it — every pass. The agent won’t doubt a figure that
+smells wrong, so a check has to.</li>
+<li><strong>Let the loop, not the scoreboard, decide done.</strong> A
+94.6 you gave yourself is a hypothesis. The blind 86.7 is the next batch
+of worst-first work.</li>
+</ol>
+<p>The model wrote the course. The method made it honest — but only once
+we stopped letting the writer hold its own report card.</p>
+<h2 id="we-graded-this-post-too">We graded this post, too</h2>
+<p>This article is built like one of the lessons it describes: it opened
+<strong>concrete</strong>, it made you <strong>predict before the
+reveal</strong>, and — naturally — it gets <strong>graded by a
+rubric</strong>, the same adapted eleven-criterion card we score every
+CxAI build-story against.</p>
+<p>Scored cold, this post came in at <strong>84 / 100 — Strong</strong>,
+dragged down by two rows: <strong>Visuals</strong> (one new diagram, two
+reused) and <strong>Takeaways</strong> (the closing list was generic).
+We did what the loop says — built the self-vs-blind chart into the
+centre of the argument, sharpened the four moves into specifics — and
+re-scored to <strong>90 / 100 — Exemplary.</strong></p>
+<blockquote>
+<p><strong>Worked example — eating our own dog food</strong></p>
+<p>The honest move here would be to note the obvious: <strong>this
+self-score is itself self-scored.</strong> The whole post argues that a
+writer grading its own work inflates — and then we grade our own work.
+So we hold two rows at <strong>4, not 5</strong> with a named residual:
+<em>Visuals</em> (the figures are static; the course earns its top marks
+with widgets you can drag) and <em>Flow</em> (this self-scoring coda is
+a deliberate meta-detour a strict cold-read would flag). The ceiling
+stays at 4 because we can still name the fix. Same discipline; same
+blind spot we just spent a thousand words on. We see it.</p>
+</blockquote>
+<figure>
+<svg viewBox="0 0 460 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The score, fix, re-score loop: read and score every page, fix the worst, then score again — repeat until the number stops moving.">
+<rect width="460" height="230" fill="#fff"/>
+<path d="M 300 70 A 120 120 0 0 1 330 150" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="333,143 336,156 324,152" fill="#b9410a"/>
+<path d="M 330 178 A 120 120 0 0 1 130 178" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="135,184 124,178 134,171" fill="#b9410a"/>
+<path d="M 128 150 A 120 120 0 0 1 160 70" fill="none" stroke="#b9410a" stroke-width="2.5"/>
+<polygon points="166,75 156,66 152,79" fill="#b9410a"/>
+<circle cx="230" cy="46" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="230" y="44" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Score</text>
+<text x="230" y="60" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">read every page cold</text>
+<circle cx="360" cy="150" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="360" y="148" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Fix</text>
+<text x="360" y="164" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">worst-first</text>
+<circle cx="100" cy="150" r="40" fill="#f6e9e1" stroke="#b9410a" stroke-width="2"/>
+<text x="100" y="148" text-anchor="middle" fill="#242424" font-size="14" font-weight="800" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">Re-score</text>
+<text x="100" y="164" text-anchor="middle" fill="#6b6b6b" font-size="9.5" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">check the delta</text>
+<text x="230" y="120" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">until the number</text>
+<text x="230" y="134" text-anchor="middle" fill="#6b6b6b" font-size="11" font-style="italic" font-family="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif">stops moving</text>
+</svg>
+<figcaption aria-hidden="true">The loop that turns a draft into a
+product — score, fix the worst, re-score, repeat.</figcaption>
+</figure>
+<h2 id="see-it-for-yourself">See it for yourself</h2>
+<p>Don’t take our word for it — and especially don’t take our
+self-scores. The whole thing is public; check the marking:</p>
+<ul>
+<li><strong><a
+href="https://fernfant.github.io/mini-pragma/course/html/index.html">Start
+the course →</a></strong> — eighteen steps, “a computer can’t read” to a
+fine-tuned model.</li>
+<li><strong><a
+href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">The
+live scorecard →</a></strong> — every page’s per-criterion scores (the
+self-scored <strong>94.6</strong> — now go find the blind reader’s six
+points).</li>
+<li><strong><a href="https://github.com/fernfant/mini-pragma">The code
+on GitHub →</a></strong> — the rubric, the audit reports (including the
+blind one), and all eighteen pages.</li>
+</ul>
+<p>The number you give yourself is a hope. The number a stranger gives
+you is the truth. Build the loop that tells them apart.</p>
+<p>Stay tuned! CxAI Team</p>
+
+      <div class="signoff">Stay tuned! — CxAI Team</div>
+    </div>
+  </article>
+  <div class="footer-note">CxAI is a consumer-experience × AI newsletter. Every figure in this piece traces to a project artifact: the scored rubric, the <a href="https://fernfant.github.io/mini-pragma/course/html/scorecard.html">live scorecard</a>, and the dated audit reports. The course itself is public at <a href="https://fernfant.github.io/mini-pragma/course/html/index.html">fernfant.github.io/mini-pragma</a>.</div>
+</body>
+</html>
