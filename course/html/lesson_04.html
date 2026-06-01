@@ -80,7 +80,7 @@
 
 <h2 class="step" id="big-idea"><span class="step-num">Idea</span> The fill-in-the-blank game</h2>
 
-<p>In <a href="lesson_03.html">L3</a> you saw <em>how</em> a Transformer lets words look at each other with attention. But what are all those knobs actually trained to <em>do</em>? Here's the game BERT plays: pick a sentence with a word missing, and have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
+<p>In <a href="lesson_03.html">L3</a> you saw <em>how</em> a Transformer lets words look at each other with attention. But what are all those weights actually trained to <em>do</em>? Here's the game BERT plays: pick a sentence with a word missing, and have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>
 
 <p>If you have <em>"The cat sat on the mat"</em>, you get 6 training examples from one sentence:</p>
 
@@ -628,7 +628,7 @@ loss    = -log(p_truth)
     loss   = loss_fn(logits.reshape(-1, V), y.reshape(-1)) # 2. wrongness
     opt.zero_grad()                                        # 3. clear
     loss.backward()                                        # 4. gradients
-    opt.step()                                             # 5. nudge ALL knobs</code></pre>
+    opt.step()                                             # 5. nudge ALL weights</code></pre>
 
 <p>Loss curve from the notebook:</p>
 
@@ -758,7 +758,7 @@ step 400   loss 0.006     ← essentially zero</code></pre>
     <tr><td>8–31 words in vocab</td><td>~28,000</td></tr>
     <tr><td>2–8 tokens per example</td><td>Up to thousands</td></tr>
     <tr><td>1 encoder layer (1 attention + 1 FFN)</td><td>18 encoder layers (18 attention + 18 FFN)</td></tr>
-    <tr><td>~2,000–11,000 knobs total</td><td>1 billion</td></tr>
+    <tr><td>~2,000–11,000 parameters total</td><td>1 billion</td></tr>
     <tr><td>A handful of toy patterns to memorise</td><td>Structure of real banking event streams</td></tr>
     <tr><td>Seconds on a laptop</td><td>2 weeks on 32× NVIDIA H100 GPUs</td></tr>
   </tbody>

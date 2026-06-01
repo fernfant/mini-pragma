@@ -201,7 +201,7 @@ class GPTConfig:
 <pre class="gw-code">self.lm_head = nn.Linear(n_embd, vocab_size, bias=False)
 self.tf.wte.weight = self.lm_head.weight   <span class="c"># same numbers do double duty</span></pre>
 
-<p>Build it and count the knobs — and feel how far it is from the giant:</p>
+<p>Build it and count the weights — and feel how far it is from the giant:</p>
 <div class="gw-out"><span class="gw-out-label">output</span><pre>model: 4 layers, d_model=192, 4 heads
 parameters: 11.4M  (GPT-3 175B is ~15,312x bigger)</pre></div>
 
@@ -210,7 +210,7 @@ parameters: 11.4M  (GPT-3 175B is ~15,312x bigger)</pre></div>
   q:"Which part of the model is DIFFERENT from the Lesson 1 training loop?",
   options:["The training loop changed a lot","Nothing — the loop is identical; only the model inside it grew","Cross-entropy was replaced"],
   answer:1,
-  explain:"The loop never changes: predict → measure loss → backward → step → repeat. Going from 2 knobs in L1 to 11M here to 175B in GPT-3 is all about the model plugged into the same loop."
+  explain:"The loop never changes: predict → measure loss → backward → step → repeat. Going from 2 parameters in L1 to 11M here to 175B in GPT-3 is all about the model plugged into the same loop."
 });});</script>
 
 <!-- ───────────────────────── Part 4 ───────────────────────── -->
@@ -259,9 +259,9 @@ We know't, we know't.
   </div>
 </div>
 
-<p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each knob, nudge them, repeat. We just add three real-world training tricks on top. None of them changes <em>what</em> the loop does; they just make the downhill walk smoother so a big model trains without blowing up:</p>
+<p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each weight, nudge them, repeat. We just add three real-world training tricks on top. None of them changes <em>what</em> the loop does; they just make the downhill walk smoother so a big model trains without blowing up:</p>
 <ul>
-  <li><strong>AdamW</strong> — a smarter optimiser than the plain SGD from L1. Instead of one fixed step size for every knob, it gives each knob its own adaptive step based on how it's been moving. (The "W" adds <em>weight decay</em>: a gentle pull keeping the knobs from growing too large.)</li>
+  <li><strong>AdamW</strong> — a smarter optimiser than the plain SGD from L1. Instead of one fixed step size for every weight, it gives each weight its own adaptive step based on how it's been moving. (The "W" adds <em>weight decay</em>: a gentle pull keeping the weights from growing too large.)</li>
   <li><strong>Cosine learning-rate schedule with warmup</strong> — the step size isn't constant. It <em>warms up</em> (starts tiny so early steps don't lurch), then eases down along a cosine curve toward the end so the model settles gently instead of overshooting.</li>
   <li><strong>Gradient clipping</strong> — if a gradient ever comes back huge, it gets capped to a maximum size before the nudge. One freak example can't yank the whole model off a cliff.</li>
 </ul>
@@ -272,7 +272,7 @@ for it in range(601):
     lr = lr_at(it)                       <span class="c"># cosine warmup schedule</span>
     x, y = get_batch(train_data)
     _, loss = model(x, y)                <span class="c"># predict + measure</span>
-    loss.backward()                      <span class="c"># blame each knob</span>
+    loss.backward()                      <span class="c"># blame each weight</span>
     clip_grad_norm_(model.parameters(), 1.0)
     opt.step()                           <span class="c"># nudge them</span></pre>
 <div class="widget" id="l4h-loss" style="background:#0f172a;border-radius:12px;padding:16px 18px;border:1px solid #1e293b;">

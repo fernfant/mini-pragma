@@ -63,10 +63,10 @@
 
 <div id="pred-04g-scale"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-04g-scale",{
-  q:"This bonus model has 11,071 parameters (tunable knobs). GPT-3 has about 175 billion. Roughly how many times more knobs does GPT-3 have?",
+  q:"This bonus model has 11,071 parameters (tunable weights). GPT-3 has about 175 billion. Roughly how many times more weights does GPT-3 have?",
   options:["About 100× more","About 1,000× more","About 16 million× more"],
   correct:2,
-  reveal:"175,000,000,000 ÷ 11,071 ≈ <strong>16 million×</strong>. But it's the same machinery — wider word-vectors, more heads, dozens of stacked layers. No new trick, just an astonishing amount more of the same knobs you're about to see drawn to scale."
+  reveal:"175,000,000,000 ÷ 11,071 ≈ <strong>16 million×</strong>. But it's the same machinery — wider word-vectors, more heads, dozens of stacked layers. No new trick, just an astonishing amount more of the same weights you're about to see drawn to scale."
 });});</script>
 
 <h3 style="margin-bottom:4px;">① How wide is one word? — 32 dimensions</h3>
@@ -289,7 +289,7 @@ the little dog laughed to see such sport</pre></div>
   </tbody>
 </table>
 <div class="callout good" style="margin-top:12px;">
-  <strong>That's the recipe.</strong> The path to a general-purpose LLM isn't "more knobs on the same toy" — it's <strong>(1) break text into tiny pieces</strong> so the model can handle anything, <strong>(2) feed it far more and far richer text</strong>, and only <em>then</em> <strong>(3) scale up the layers and width</strong>, because now there's something deep to learn. Our char model spells from 25 letters on 13 rhymes. GPT-4 uses ~100,000 subword pieces on a big chunk of the internet, with ~100 layers. Same three steps — yours, just bigger.
+  <strong>That's the recipe.</strong> The path to a general-purpose LLM isn't "more weights on the same toy" — it's <strong>(1) break text into tiny pieces</strong> so the model can handle anything, <strong>(2) feed it far more and far richer text</strong>, and only <em>then</em> <strong>(3) scale up the layers and width</strong>, because now there's something deep to learn. Our char model spells from 25 letters on 13 rhymes. GPT-4 uses ~100,000 subword pieces on a big chunk of the internet, with ~100 layers. Same three steps — yours, just bigger.
 </div>
 
 <p style="margin-top:14px;"><strong>Run this one yourself</strong> — it's the best example on the whole page. Train the character model, watch it learn to spell, and try your own rhymes:</p>
@@ -313,7 +313,7 @@ the little dog laughed to see such sport</pre></div>
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
-    <li>A model's <strong>size</strong> is just its parameter count — the tunable knobs. This one has 11,071; GPT-3 has ~175 billion. Same machinery, vastly more knobs.</li>
+    <li>A model's <strong>size</strong> is just its parameter count — the tunable weights. This one has 11,071; GPT-3 has ~175 billion. Same machinery, vastly more weights.</li>
     <li>Scaling up means <strong>wider word-vectors, more heads, and more stacked layers</strong> — not a new idea.</li>
     <li>The leap to a <strong>general-purpose</strong> model: instead of picking from a fixed list of words, it builds any word character by character — the ChatGPT-style jump.</li>
   </ul>
@@ -321,8 +321,8 @@ the little dog laughed to see such sport</pre></div>
 
 <div id="quiz-04g"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-04g",[
-  {"q":"What is a <em>parameter</em>?","options":["A word in the training data","An adjustable number (a knob) inside the model","The model's final guess"],"answer":1,"explain":"Parameters are the tunable knobs training nudges. This model has 11,071 of them."},
-  {"q":"GPT-3 gives each word 12,288 dimensions; ours gives 32. Going from our model to GPT-3 is mostly…","options":["A totally different kind of math","More of the same knobs — wider vectors, more heads, more layers","Replacing the neurons with hand-written rules"],"answer":1,"explain":"Scaling adds more of the same parts. The architecture barely changes — there's just an enormous amount more of it."},
+  {"q":"What is a <em>parameter</em>?","options":["A word in the training data","An adjustable number (a weight) inside the model","The model's final guess"],"answer":1,"explain":"Parameters are the tunable weights training nudges. This model has 11,071 of them."},
+  {"q":"GPT-3 gives each word 12,288 dimensions; ours gives 32. Going from our model to GPT-3 is mostly…","options":["A totally different kind of math","More of the same weights — wider vectors, more heads, more layers","Replacing the neurons with hand-written rules"],"answer":1,"explain":"Scaling adds more of the same parts. The architecture barely changes — there's just an enormous amount more of it."},
   {"q":"What's the leap from a <em>memorizer</em> to a <em>general-purpose</em> model?","options":["It memorises more whole sentences","It builds any word from characters instead of picking from a fixed list","It just runs on a faster computer"],"answer":1,"explain":"A general-purpose speller composes any word character by character, so it isn't limited to a fixed vocabulary — that's the ChatGPT-style jump."}
 ]);});</script>
 

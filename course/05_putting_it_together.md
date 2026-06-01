@@ -171,7 +171,7 @@ This is **the whole Transformer**, in 6 lines. Let's tag every piece.
 
 ### (a) `self.emb = nn.Embedding(V, d)`
 > **L2 in action.** The embedding table. `V` rows (one per vocab word),
-> `d=32` columns. **14 × 32 = 448 knobs**, all trainable.
+> `d=32` columns. **14 × 32 = 448 parameters**, all trainable.
 
 ### (b) `self.pos = nn.Embedding(64, d)`
 > Position embedding — like word embeddings, but for *positions*.
@@ -201,7 +201,7 @@ abstract understanding before it has to make a prediction.
 > it back to `V=14` scores — one per vocab word. The model's "guess"
 > for a masked position is the word with the highest score.
 >
-> **L1b context.** Just another set of trainable knobs (`d × V = 448`
+> **L1b context.** Just another set of trainable weights (`d × V = 448`
 > here). The training loop will nudge these too.
 
 ### (e) The forward pass — embedding + position + encoders
@@ -217,7 +217,7 @@ h = self.enc(self.emb(x) + self.pos(positions))
 > Project the final vectors back to vocab scores. Output shape:
 > `(batch, sequence_length, vocab_size)`.
 
-**Total knobs in this model:** the embedding (448) + position (2048) + two encoder layers (~few thousand) + the head (448). All trainable.
+**Total weights in this model:** the embedding (448) + position (2048) + two encoder layers (~few thousand) + the head (448). All trainable.
 
 > **L1b in action.** This is the architecture — what the math is.
 > Training will nudge every one of those numbers via the L1 loop.
@@ -244,7 +244,7 @@ for step in range(2000):
 
 > **L1 + L1c + L4 in action.**
 > - `AdamW` — a fancier optimiser than SGD. Still does gradient descent
->   (still the same 5-line loop), just with smarter step sizes per knob.
+>   (still the same 5-line loop), just with smarter step sizes per weight.
 > - `CrossEntropyLoss(ignore_index=-100)` — measures wrongness when
 >   picking 1 of `V` words. The `-100` tells it to skip positions we
 >   didn't mask. (We saw why in §4.)
@@ -259,7 +259,7 @@ for step in range(2000):
 
 **This loop is identical in shape to Lesson 1's `w = w - lr × grad_w`.**
 The only difference is that `loss.backward()` is now nudging *thousands*
-of knobs across the embedding table, position embeddings, attention
+of weights across the embedding table, position embeddings, attention
 matrices, FFN matrices, and output head — all at once.
 
 ---

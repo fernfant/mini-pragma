@@ -382,8 +382,8 @@ mlm_head  = MLMHead(V)
 opt       = torch.optim.AdamW(list(encoder.parameters()) + list(mlm_head.parameters()), lr=3e-3)
 loss_fn   = nn.CrossEntropyLoss(ignore_index=-100)
 
-total_knobs = sum(p.numel() for p in list(encoder.parameters()) + list(mlm_head.parameters()))
-print(f"Pre-training encoder via MLM ({total_knobs:,} knobs, 3000 steps)...")
+total_params = sum(p.numel() for p in list(encoder.parameters()) + list(mlm_head.parameters()))
+print(f"Pre-training encoder via MLM ({total_params:,} parameters, 3000 steps)...")
 for step in range(3000):
     idx       = torch.randint(0, N_HOUSES, (128,))
     xb, yb    = mlm_mask(X[idx])

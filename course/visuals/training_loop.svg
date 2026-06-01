@@ -15,7 +15,7 @@
   </defs>
 
   <text x="450" y="32" class="title">The 5-line training loop — same for ANY architecture</text>
-  <text x="450" y="56" class="sub">Run this 100, 1000, or a million times. PyTorch nudges every knob a tiny bit each iteration.</text>
+  <text x="450" y="56" class="sub">Run this 100, 1000, or a million times. PyTorch nudges every weight a tiny bit each iteration.</text>
 
   <!-- Step 1 -->
   <circle cx="100" cy="170" r="32" fill="#3b82f6"/>
@@ -50,7 +50,7 @@
   <text x="580" y="240" class="step-title">BACKWARD</text>
   <text x="580" y="262" class="step-code">loss.backward()</text>
   <text x="580" y="284" class="step-desc">compute gradient</text>
-  <text x="580" y="302" class="step-desc">for every knob</text>
+  <text x="580" y="302" class="step-desc">for every parameter</text>
 
   <line x1="622" y1="170" x2="698" y2="170" class="arrow"/>
 
@@ -59,7 +59,7 @@
   <text x="740" y="178" class="step-num">5</text>
   <text x="740" y="240" class="step-title">STEP</text>
   <text x="740" y="262" class="step-code">opt.step()</text>
-  <text x="740" y="284" class="step-desc">nudge every knob</text>
+  <text x="740" y="284" class="step-desc">nudge every parameter</text>
   <text x="740" y="302" class="step-desc">opposite to its gradient</text>
 
   <!-- Loop arrow -->
@@ -67,6 +67,6 @@
   <text x="420" y="72" class="sub" style="font-weight:600;fill:#333">↻ repeat</text>
 
   <!-- Bottom -->
-  <text x="450" y="380" class="sub" style="font-weight:600">Identical in Model A (2 knobs) and Model B (12 knobs) and PRAGMA-L (1,000,000,000 knobs).</text>
+  <text x="450" y="380" class="sub" style="font-weight:600">Identical in Model A (2 parameters) and Model B (12 parameters) and PRAGMA-L (1,000,000,000 parameters).</text>
   <text x="450" y="402" class="sub">Architecture changes. Training recipe does not.</text>
 </svg>

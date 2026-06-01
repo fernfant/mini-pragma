@@ -28,7 +28,7 @@ x      = torch.tensor([1., 2., 3., 4., 5., 6., 7., 8.])
 y_true = 2 * x + 1
 
 # Our model is two numbers. We start them at 0 — totally wrong.
-# The `requires_grad=True` part tells PyTorch: "these are the knobs to turn".
+# The `requires_grad=True` part tells PyTorch: "these are the parameters to learn".
 w = torch.tensor(0.0, requires_grad=True)
 b = torch.tensor(0.0, requires_grad=True)
 

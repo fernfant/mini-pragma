@@ -51,16 +51,16 @@ The squaring matters for two reasons:
 
 ## Part 2 — What "gradient descent" actually means
 
-The loss is a single number. Each knob is a separate number. So the loss
-is a **function of all the knobs**. For Model A with knobs `w` and `b`,
+The loss is a single number. Each weight is a separate number. So the loss
+is a **function of all the weights**. For Model A with a weight `w` and a bias `b`,
 the loss is a function of those two values — a surface in 3D, like a hill:
 
 ![Gradient = slope](visuals/gradient_as_slope.svg)
 
 > **The gradient is just the slope of that hill** — measured separately
-> for each knob.
+> for each weight.
 
-For knob `w`, the gradient answers:
+For weight `w`, the gradient answers:
 
 > *"If I increase `w` by 1, by how much does the loss change?"*
 
@@ -108,7 +108,7 @@ gradient_w  =  mean(−6, −20, −42, −72, −110)  =  −250 / 5  =  −50
 gradient_b  =  mean(−6, −10, −14, −18, −22)   =  −70 / 5   =  −14
 ```
 
-Both negative → increasing either knob will decrease loss → we should
+Both negative → increasing either weight will decrease loss → we should
 increase both.
 
 Applying the update rule with `lr = 0.05`:
@@ -204,9 +204,9 @@ That's it. That's the whole engine that powers modern AI.
 ## Three things to remember
 
 > 1. **Loss** is one number that measures how wrong the model is on a batch.
-> 2. **Gradient** of the loss with respect to a knob = "which way does that knob need to move to lower the loss?"
-> 3. **Gradient descent** = "nudge every knob opposite to its gradient, a tiny bit, repeat thousands of times."
+> 2. **Gradient** of the loss with respect to a weight = "which way does that weight need to move to lower the loss?"
+> 3. **Gradient descent** = "nudge every weight opposite to its gradient, a tiny bit, repeat thousands of times."
 
 When you say *"PyTorch does the gradient descent"*, you now know it's
-literally doing the arithmetic in Part 3 for every knob in the model,
+literally doing the arithmetic in Part 3 for every weight in the model,
 automatically.

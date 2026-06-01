@@ -45,7 +45,7 @@
     <text x="820" y="440" class="tick-label" text-anchor="middle">1T</text>
   </g>
 
-  <text x="460" y="468" class="axis-title" text-anchor="middle">Number of parameters (the "knobs")</text>
+  <text x="460" y="468" class="axis-title" text-anchor="middle">Number of parameters (the weights &amp; biases)</text>
 
   <!-- Y axis tick labels -->
   <text x="92" y="424" class="tick-label" text-anchor="end">basic</text>

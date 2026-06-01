@@ -63,7 +63,7 @@
     <li><a href="#what-gd">What "gradient descent" actually means</a></li>
     <li><a href="#by-hand">Computing the gradient by hand at step 0</a></li>
     <li><a href="#play">Play with the interactive demo</a></li>
-    <li><a href="#general">How this generalises to a billion knobs</a></li>
+    <li><a href="#general">How this generalises to a billion parameters</a></li>
     <li><a href="#remember">Three things to remember</a></li>
   </ol>
 </details>
@@ -101,14 +101,14 @@
 
 <h2 class="step" id="what-gd"><span class="step-num">GD</span> What "gradient descent" actually means</h2>
 
-<p>The loss is one number. Each knob is a separate number. So the loss is a <strong>function of all the knobs</strong>. Imagine it as a hill:</p>
+<p>The loss is one number. Each weight is a separate number. So the loss is a <strong>function of all the weights</strong>. Imagine it as a hill:</p>
 
 <figure class="figure-wide">
   <img src="../visuals/gradient_as_slope.svg" alt="Gradient as slope">
   <figcaption>The loss surface as a hill. The gradient is the steepness at your current point — gradient descent walks downhill.</figcaption>
 </figure>
 
-<p>The gradient is just <strong>the slope of that hill</strong> — measured separately for each knob. For knob <code>w</code>, the gradient answers: <em>"if I increase <code>w</code> by 1, how much does loss change?"</em></p>
+<p>The gradient is just <strong>the slope of that hill</strong> — measured separately for each weight. For weight <code>w</code>, the gradient answers: <em>"if I increase <code>w</code> by 1, how much does loss change?"</em></p>
 
 <p>That's where the update rule comes from:</p>
 <pre><code>new_w = old_w − learning_rate × gradient</code></pre>
@@ -174,13 +174,13 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 
 <div id="pred-l1c"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l1c",{
-  q:"Model A had 2 knobs. A real LLM has a billion. Does gradient descent still work the same way?",
-  options:["Yes \u2014 same downhill step, just on far more knobs", "No, billions need a brand-new method", "Only for small models"],
+  q:"Model A had 2 parameters. A real LLM has a billion. Does gradient descent still work the same way?",
+  options:["Yes \u2014 same downhill step, just on far more weights", "No, billions need a brand-new method", "Only for small models"],
   correct:0,
-  reveal:"Exactly the same idea: measure the slope, step downhill, repeat. More knobs = more numbers nudged at once, not a different recipe."
+  reveal:"Exactly the same idea: measure the slope, step downhill, repeat. More weights = more numbers nudged at once, not a different recipe."
 });});</script>
 
-<h2 class="step" id="general"><span class="step-num">Scale</span> How this generalises to a billion knobs</h2>
+<h2 class="step" id="general"><span class="step-num">Scale</span> How this generalises to a billion parameters</h2>
 
 <p>In Model A, PyTorch tracked <strong>2 gradients</strong>. In Model B, <strong>15</strong>. In Lesson 4's Transformer, <strong>thousands</strong>. In PRAGMA-Large, <strong>1,000,000,000</strong>. Same <code>loss.backward()</code>. Same <code>opt.step()</code>. Just more numbers.</p>
 
@@ -191,8 +191,8 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 <div class="callout good">
   <ol>
     <li><strong>Loss</strong> is one number that measures how wrong the model is on a batch.</li>
-    <li><strong>Gradient</strong> of the loss with respect to a knob = "which way does that knob need to move to lower the loss?"</li>
-    <li><strong>Gradient descent</strong> = "nudge every knob opposite to its gradient, a tiny bit, repeat thousands of times."</li>
+    <li><strong>Gradient</strong> of the loss with respect to a weight = "which way does that weight need to move to lower the loss?"</li>
+    <li><strong>Gradient descent</strong> = "nudge every weight opposite to its gradient, a tiny bit, repeat thousands of times."</li>
   </ol>
 </div>
 
@@ -206,7 +206,7 @@ new_b = 0 − 0.05 × (−14) = +0.7</code></pre>
 </div>
 
 <div id="quiz-l1c"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1c",[{"q": "What is a <em>gradient</em>?", "options": ["The model's final answer", "The slope of the loss — which way to nudge a knob", "The learning rate"], "answer": 1, "explain": "Gradient = slope of the loss for each knob. Step opposite it to go downhill."}, {"q": "You crank the learning rate way too high. What happens?", "options": ["The model overshoots and bounces around", "It learns faster with no downside", "Nothing changes"], "answer": 0, "explain": "Too big = overshoot/diverge. Too small = crawls. It's the key dial to tune."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l1c",[{"q": "What is a <em>gradient</em>?", "options": ["The model's final answer", "The slope of the loss — which way to nudge a weight", "The learning rate"], "answer": 1, "explain": "Gradient = slope of the loss for each weight. Step opposite it to go downhill."}, {"q": "You crank the learning rate way too high. What happens?", "options": ["The model overshoots and bounces around", "It learns faster with no downside", "Nothing changes"], "answer": 0, "explain": "Too big = overshoot/diverge. Too small = crawls. It's the key dial to tune."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_01b.html">

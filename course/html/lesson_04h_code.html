@@ -121,7 +121,7 @@
 <div class="cw-cell">
   <span class="cw-celltag">model.py · the dials</span>
   <div class="cw-h">GPTConfig — the GPT-3 family table, as code</div>
-  <p class="cw-say">Every knob that separates "tiny laptop GPT" from "GPT-3 175B" lives here. Change these numbers and nothing else, and you slide along the whole family.</p>
+  <p class="cw-say">Every weight that separates "tiny laptop GPT" from "GPT-3 175B" lives here. Change these numbers and nothing else, and you slide along the whole family.</p>
 <pre class="cw-code"><span class="k">@dataclass</span>
 <span class="k">class</span> GPTConfig:
     block_size: int = 256      <span class="c"># context length (how many tokens it sees at once)</span>
@@ -363,7 +363,7 @@ done.</pre>
         <span class="k">with</span> ctx:                            <span class="c"># bf16 autocast on MPS</span>
             _, loss = model(x, y)            <span class="c"># predict + measure</span>
             loss = loss / grad_accum
-        loss.backward()                      <span class="c"># blame each knob</span>
+        loss.backward()                      <span class="c"># blame each weight</span>
     torch.nn.utils.clip_grad_norm_(model.parameters(), grad_clip)
     opt.step()                               <span class="c"># nudge them all</span></pre>
   <div class="cw-out">

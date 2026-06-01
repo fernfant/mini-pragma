@@ -176,7 +176,7 @@ opt      = torch.optim.AdamW(list(encoder.parameters()) + list(mlm_head.paramete
 loss_fn  = nn.CrossEntropyLoss(ignore_index=-100)
 
 print("Pre-training encoder via masked-event modelling for 2000 steps...")
-print(f"  encoder + MLM head knobs: {sum(p.numel() for p in list(encoder.parameters()) + list(mlm_head.parameters())):,}")
+print(f"  encoder + MLM head params: {sum(p.numel() for p in list(encoder.parameters()) + list(mlm_head.parameters())):,}")
 for step in range(2000):
     idx    = torch.randint(0, N_SESSIONS, (64,))
     xb, yb = mlm_mask(X[idx])

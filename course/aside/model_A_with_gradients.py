@@ -2,10 +2,10 @@
 Model A — same linear regression as before, but now we also print the
 GRADIENTS at every step.
 
-The gradient for each knob = "if I increase this knob by 1, how does loss
+The gradient for each parameter = "if I increase this parameter by 1, how does loss
 change?" PyTorch computes these for us when we call loss.backward().
 
-The optimiser then nudges each knob in the OPPOSITE direction of its
+The optimiser then nudges each parameter in the OPPOSITE direction of its
 gradient (because we want loss to go DOWN, not up).
 """
 import torch

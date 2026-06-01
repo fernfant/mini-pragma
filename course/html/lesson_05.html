@@ -297,8 +297,8 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 <table>
   <thead><tr><th>Piece</th><th>Lesson</th><th>What it does</th></tr></thead>
   <tbody>
-    <tr><td>(a) <code>nn.Embedding(V, d)</code></td><td>L2</td><td>Embedding table. 14 × 32 = 448 knobs.</td></tr>
-    <tr><td>(b) <code>nn.Embedding(64, d)</code></td><td>(positional)</td><td>Position embeddings — so the model knows order. 64 × 32 = 2,048 knobs.</td></tr>
+    <tr><td>(a) <code>nn.Embedding(V, d)</code></td><td>L2</td><td>Embedding table. 14 × 32 = 448 weights.</td></tr>
+    <tr><td>(b) <code>nn.Embedding(64, d)</code></td><td>(positional)</td><td>Position embeddings — so the model knows order. 64 × 32 = 2,048 weights.</td></tr>
     <tr><td>(c) <code>TransformerEncoder(...)</code></td><td>L3 attn + <a href="lesson_01_5.html#step-75">L1.5</a> FFN, stacked <a href="lesson_01_5.html#step-76">×2</a></td><td>2 layers of (attention + FFN). Attention happens in EVERY layer.</td></tr>
     <tr><td>(d) <code>nn.Linear(d, V)</code></td><td>(MLM head)</td><td>Project context vectors back to vocab scores.</td></tr>
   </tbody>
@@ -320,7 +320,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
     loss = loss_fn(logits.reshape(-1, V), y.reshape(-1))    # 2. wrongness
     opt.zero_grad(); loss.backward(); opt.step()            # 3, 4, 5</code></pre>
 
-<p>The same 5-line loop you've seen all course. <code>loss.backward()</code> nudges <em>thousands</em> of knobs across embedding, position, attention, FFN, and head.</p>
+<p>The same 5-line loop you've seen all course. <code>loss.backward()</code> nudges <em>thousands</em> of weights across embedding, position, attention, FFN, and head.</p>
 
 <h2 class="step" id="infer"><span class="step-num">Sec 7</span> Inference</h2>
 

@@ -124,7 +124,7 @@
 
 <p>Two reasons:</p>
 <ol>
-  <li><strong>Vanishing gradients across time.</strong> The gradient signal from the last word has to travel back through every intermediate step. Multiply small numbers together long enough and they vanish — early knobs get effectively no learning signal.</li>
+  <li><strong>Vanishing gradients across time.</strong> The gradient signal from the last word has to travel back through every intermediate step. Multiply small numbers together long enough and they vanish — early weights get effectively no learning signal.</li>
   <li><strong>Sequential compute can't be GPU-accelerated.</strong> Bigger model + already slow = unbearably slow.</li>
 </ol>
 
@@ -168,7 +168,7 @@
 </div>
 
 <div id="quiz-l3b"></div>
-<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3b",[{"q": "Why are RNNs slow on long sentences?", "options": ["They use too much memory", "They process one word at a time, in order", "They have too many knobs"], "answer": 1, "explain": "RNNs are sequential — word 100 must wait for word 99. Attention does all at once."}, {"q": "The 'single index card' analogy describes which RNN weakness?", "options": ["Losing long-range memory", "Being too accurate", "Using too little power"], "answer": 0, "explain": "Early words fade as the one card gets rewritten each step. Attention looks back directly."}]);});</script>
+<script>document.addEventListener("DOMContentLoaded",function(){renderQuiz("quiz-l3b",[{"q": "Why are RNNs slow on long sentences?", "options": ["They use too much memory", "They process one word at a time, in order", "They have too many weights"], "answer": 1, "explain": "RNNs are sequential — word 100 must wait for word 99. Attention does all at once."}, {"q": "The 'single index card' analogy describes which RNN weakness?", "options": ["Losing long-range memory", "Being too accurate", "Using too little power"], "answer": 0, "explain": "Early words fade as the one card gets rewritten each step. Attention looks back directly."}]);});</script>
 
 <div class="pagination">
   <a href="lesson_03.html">

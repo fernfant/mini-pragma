@@ -115,7 +115,7 @@ This is our first time defining a model as a Python class. Let's go piece by pie
 > **You've already learned every piece.** Nothing in `TinyMLM` is new — we're just putting the pieces together.
 
 **`class TinyMLM(nn.Module):`** — by inheriting from `nn.Module`, we get:
-- automatic parameter tracking (so the optimiser can find all the knobs to tune),
+- automatic parameter tracking (so the optimiser can find all the weights to tune),
 - a `.to(device)` method for moving to GPU,
 - a `.eval()` / `.train()` mode toggle,
 - and a few other niceties. Every neural network in PyTorch inherits from `nn.Module`.

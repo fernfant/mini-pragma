@@ -49,35 +49,35 @@
   <dt id="model">model</dt>
   <dd>A model is just two things: a bag of numbers and a rule for combining them with your input to make an output. <span class="eg"><strong>Example:</strong> the rule <code>y = w·x + b</code> with numbers <code>w=2, b=1</code> is a tiny model. "Learning" means hunting for good numbers.</span></dd>
 
-  <dt id="weights">weights / <span id="knobs">knobs</span></dt>
-  <dd>The adjustable numbers inside a model. We call them "knobs" because training turns them like dials on a radio. A tiny model has 2 knobs; PRAGMA has about a billion. Training is the search for knob settings that make good predictions.</dd>
+  <dt id="weights">weights &amp; <span id="biases">biases</span></dt>
+  <dd>The adjustable numbers inside a model. The <strong>weights</strong> multiply the inputs; the <strong>biases</strong> are extra numbers added on to shift the result up or down. A tiny model has 2 (one weight, one bias); PRAGMA has about a billion. Training is the search for the weight and bias settings that make good predictions. Taken together they're the model's <em>parameters</em>.</dd>
 
   <dt id="parameter">parameter / <span id="parameters">parameters</span></dt>
-  <dd>A fancy word for one knob — a single adjustable number. "This model has 7 million parameters" just means 7 million little tunable numbers. More parameters = more room to learn complicated patterns (but also more data needed to train them).</dd>
+  <dd>The umbrella word for the model's adjustable numbers — every weight and every bias. "This model has 7 million parameters" just means 7 million little tunable numbers. More parameters = more room to learn complicated patterns (but also more data needed to train them).</dd>
 
   <dt id="training">training</dt>
-  <dd>Showing the model examples, measuring how wrong it is, and nudging every knob a tiny bit to be less wrong — then repeating thousands of times. <span class="eg"><strong>Example:</strong> show it that <code>x=3</code> should give <code>y=7</code>; it guesses 4; nudge <code>w</code> and <code>b</code> so next time it's closer to 7. That loop <em>is</em> machine learning.</span></dd>
+  <dd>Showing the model examples, measuring how wrong it is, and nudging every weight a tiny bit to be less wrong — then repeating thousands of times. <span class="eg"><strong>Example:</strong> show it that <code>x=3</code> should give <code>y=7</code>; it guesses 4; nudge <code>w</code> and <code>b</code> so next time it's closer to 7. That loop <em>is</em> machine learning.</span></dd>
 
   <dt id="loss">loss</dt>
   <dd>One number that scores how wrong the model's current guesses are — lower is better, 0 is perfect. <span class="eg"><strong>Example:</strong> it guessed 4 but the truth was 7, so the squared error is <code>(7−4)² = 9</code>. The entire job of training is to push this number down.</span></dd>
 
   <dt id="gradient">gradient</dt>
-  <dd>For each knob, the gradient answers: "if I nudge this knob up a little, does the loss go up or down, and how steeply?" It's the <em>slope</em> of the loss. Knowing the slope tells you which way to turn each knob to make the loss smaller.</dd>
+  <dd>For each weight, the gradient answers: "if I nudge this weight up a little, does the loss go up or down, and how steeply?" It's the <em>slope</em> of the loss. Knowing the slope tells you which way to turn each weight to make the loss smaller.</dd>
 
   <dt id="gradient-descent">gradient descent</dt>
-  <dd>The actual learning step: check the slope (gradient) for every knob, then nudge each one a tiny step in the downhill direction. Repeat. <span class="eg"><strong>Picture it:</strong> finding the bottom of a foggy valley by always taking one small step downhill from wherever you're standing.</span></dd>
+  <dd>The actual learning step: check the slope (gradient) for every weight, then nudge each one a tiny step in the downhill direction. Repeat. <span class="eg"><strong>Picture it:</strong> finding the bottom of a foggy valley by always taking one small step downhill from wherever you're standing.</span></dd>
 
   <dt id="learning-rate">learning rate</dt>
   <dd>How big each downhill step is. Too big and you leap clear over the valley and bounce around (or blow up); too small and you crawl and training takes forever. <span class="eg"><strong>Example:</strong> <code>lr=0.01</code> is a common gentle step. It's the single most fiddled-with dial in deep learning.</span></dd>
 
   <dt id="optimiser">optimiser</dt>
-  <dd>The helper that performs the nudging each step so you don't do the arithmetic by hand. You hand it the knobs and a learning rate; it runs <code>knob = knob − rate × gradient</code> for every knob. SGD and Adam are the two you'll meet.</dd>
+  <dd>The helper that performs the nudging each step so you don't do the arithmetic by hand. You hand it the weights and a learning rate; it runs <code>weight = weight − rate × gradient</code> for every weight. SGD and Adam are the two you'll meet.</dd>
 
   <dt id="sgd">SGD</dt>
-  <dd>Stochastic Gradient Descent — the simplest optimiser. Each step it nudges every knob straight opposite its gradient by the learning rate. "Stochastic" just means it uses a small random batch of examples each step instead of all of them.</dd>
+  <dd>Stochastic Gradient Descent — the simplest optimiser. Each step it nudges every weight straight opposite its gradient by the learning rate. "Stochastic" just means it uses a small random batch of examples each step instead of all of them.</dd>
 
   <dt id="adam">Adam</dt>
-  <dd>A smarter optimiser that gives each knob its own adaptive step size — so knobs with tiny gradients still move and knobs with huge gradients don't explode. It usually trains faster and more reliably than plain SGD, which is why most modern models use it.</dd>
+  <dd>A smarter optimiser that gives each weight its own adaptive step size — so weights with tiny gradients still move and weights with huge gradients don't explode. It usually trains faster and more reliably than plain SGD, which is why most modern models use it.</dd>
 
   <dt id="mse">MSE</dt>
   <dd>Mean Squared Error — the loss for predicting <em>numbers</em>. Take each <code>(guess − truth)</code>, square it, average them all. <span class="eg"><strong>Example:</strong> guesses off by 1 and 3 give <code>(1² + 3²) / 2 = 5</code>. Squaring punishes big misses far more than small ones.</span></dd>
@@ -192,7 +192,7 @@
   <dd>Taking an already pre-trained model and training it a little more on a specific labelled task. Because it already "knows a lot", this needs far less data than starting from scratch.</dd>
 
   <dt id="freeze">freeze</dt>
-  <dd>Lock a part of the model so the optimiser leaves its knobs alone during training. <span class="eg"><strong>Example:</strong> freeze the pre-trained encoder and train only a small new head on top — it's fast and needs very few labels.</span></dd>
+  <dd>Lock a part of the model so the optimiser leaves its weights alone during training. <span class="eg"><strong>Example:</strong> freeze the pre-trained encoder and train only a small new head on top — it's fast and needs very few labels.</span></dd>
 
   <dt id="foundation-model">foundation model</dt>
   <dd>One big model, pre-trained once on huge data, then reused for many different tasks with only small additions. PRAGMA is Revolut's foundation model for banking events; GPT is one for text.</dd>

@@ -124,12 +124,12 @@ Identical to `pragma_mini.py`'s `PragmaMini.__init__`. The pieces:
 
 | Line | Lesson | What it does |
 |------|--------|--------------|
-| `(a)` `nn.Embedding(V, d)` | **L2** | Token embedding table. 23 × 32 = 736 knobs. |
+| `(a)` `nn.Embedding(V, d)` | **L2** | Token embedding table. 23 × 32 = 736 parameters. |
 | `(b)` `nn.Embedding(max_len, d)` | (positional) | Lets the model know where in the sequence each token is. |
 | `(c)` `TransformerEncoder(...)` | **L3** | Stack of 2 attention+FFN layers. Each layer is one round of "every word looks at every other word" (L3). |
 
 > **L1b in action.** This is the architecture. **No training has happened
-> yet** — these are just freshly random knobs.
+> yet** — these are just freshly random weights.
 
 ```python
 class MLMHead(nn.Module):
@@ -202,10 +202,10 @@ for step in range(2000):
 > 1. **Predict** — `logits = mlm_head(encoder(xb))`
 > 2. **Measure wrongness** — `loss = loss_fn(...)`
 > 3. **Clear notes** — `opt.zero_grad()`
-> 4. **Compute gradients for every knob** — `loss.backward()` (L1c)
-> 5. **Nudge every knob** — `opt.step()`
+> 4. **Compute gradients for every weight** — `loss.backward()` (L1c)
+> 5. **Nudge every weight** — `opt.step()`
 >
-> The model has ~22,000 knobs. `loss.backward()` is computing 22,000
+> The model has ~22,000 parameters. `loss.backward()` is computing 22,000
 > gradients in this single line. **Same recipe as Lesson 1's `w` and `b`.**
 
 ```python
@@ -236,7 +236,7 @@ def freeze(mod):
 ```
 
 > **L1b in action.** Setting `requires_grad = False` on a parameter
-> tells PyTorch *"don't update this knob during training"*. We're going
+> tells PyTorch *"don't update this weight during training"*. We're going
 > to freeze the encoder so that gradient descent only nudges the classifier
 > head — preserving everything the encoder learned during pre-training.
 
@@ -261,7 +261,7 @@ def train_classifier(encoder, X_tr, y_tr, epochs=200, freeze_encoder=True):
 > **L1 + L1c again.** Identical 5-line loop. Now with the **churn labels**
 > as the truth. Two modes:
 >
-> - `freeze_encoder=True` — only the head gets nudged (~66 knobs). The
+> - `freeze_encoder=True` — only the head gets nudged (~66 parameters). The
 >   encoder is a fixed feature extractor.
 > - `freeze_encoder=False` — everything gets nudged. This is the
 >   "baseline" — no pre-training; learn end-to-end from scratch.

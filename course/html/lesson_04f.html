@@ -333,7 +333,7 @@ ids = [BOS] + [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-k
   <summary>Go deeper: where are all 11,071 parameters? (exact breakdown)</summary>
   <p>People are often surprised the count is "hard to reach by hand" — because the biggest chunk isn't the part you'd guess (the feed-forward), it's attention's Q/K/V projection. Here's every parameter:</p>
   <table class="compact" style="max-width:460px;">
-    <thead><tr><th>Part</th><th>Shape</th><th>Knobs</th></tr></thead>
+    <thead><tr><th>Part</th><th>Shape</th><th>Weights</th></tr></thead>
     <tbody>
       <tr><td>word embedding</td><td>31×32</td><td>992</td></tr>
       <tr><td>position embedding</td><td>16×32</td><td>512</td></tr>
@@ -465,7 +465,7 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
 </div>
 
 <div class="callout good" style="margin-top:14px;">
-  <strong>This is ChatGPT in miniature.</strong> Crank the temperature up and the model gets wild and surprising; turn it near 0 and it always picks the single safest word (and tends to repeat). That one slider is the difference between a boring, predictable assistant and a creative-but-occasionally-wrong one. Same knob exists in the real ChatGPT API.
+  <strong>This is ChatGPT in miniature.</strong> Crank the temperature up and the model gets wild and surprising; turn it near 0 and it always picks the single safest word (and tends to repeat). That one slider is the difference between a boring, predictable assistant and a creative-but-occasionally-wrong one. Same weight exists in the real ChatGPT API.
 </div>
 
 <div id="pred-temp"></div>

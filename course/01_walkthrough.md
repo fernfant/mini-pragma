@@ -76,7 +76,7 @@ b = torch.tensor(0.0, requires_grad=True)
 
 Right now both are 0, so the model's "rule" is `y_pred = 0 * x + 0 = 0` — it always predicts 0, for any input. Totally wrong. That's fine. It's about to learn.
 
-**`requires_grad=True` — the magic flag.** This tells PyTorch: *"These are the knobs I want to tune. Please remember how to adjust them later."* PyTorch quietly starts tracking every calculation that involves `w` or `b`, so it can later answer the question: "If I want the loss to go down, which direction should I push w? Which direction should I push b?"
+**`requires_grad=True` — the magic flag.** This tells PyTorch: *"These are the weights I want to tune. Please remember how to adjust them later."* PyTorch quietly starts tracking every calculation that involves `w` or `b`, so it can later answer the question: "If I want the loss to go down, which direction should I push w? Which direction should I push b?"
 
 This is **autograd** — automatic differentiation. It's the engine that makes deep learning possible. You don't have to do any calculus yourself. PyTorch does it for you.
 
@@ -96,7 +96,7 @@ Three things to notice:
 
 1. **`SGD`** = Stochastic Gradient Descent. The name sounds scary but the idea is plain: *go downhill*. If you're standing on a hillside and want to reach the bottom, take a small step in the steepest-downhill direction, then look around, then take another step. Repeat until you can't go down anymore.
 
-2. **`[w, b]`** — we're telling the optimiser which knobs it's allowed to turn. In bigger models this list might have a billion entries; here we have two.
+2. **`[w, b]`** — we're telling the optimiser which weights it's allowed to turn. In bigger models this list might have a billion entries; here we have two.
 
 3. **`lr=0.01`** — the **learning rate**. This is the SIZE of each step. 0.01 means "take a small step." Try `lr=10` and the model will overshoot the answer like a drunk person trying to walk in a straight line. Try `lr=0.0000001` and it'll take forever. Picking the right learning rate is one of the most important — and most annoying — parts of training real models.
 
@@ -122,7 +122,7 @@ print(f"Before training:  y ≈ {w.item():.2f}*x + {b.item():.2f}")
 for step in range(1000):
 ```
 
-We're going to do the next four steps **one thousand times**. Each repetition nudges the knobs a tiny bit. After 1000 nudges, the model is usually fully trained on this kind of problem.
+We're going to do the next four steps **one thousand times**. Each repetition nudges the weights a tiny bit. After 1000 nudges, the model is usually fully trained on this kind of problem.
 
 ---
 
@@ -237,7 +237,7 @@ print("(The secret rule was y = 2*x + 1. We re-discovered it.)")
 
 **The big claim again:** the model was never told the rule. It was only given examples. It nudged its way to the answer by playing "guess, get told you're wrong, adjust" a thousand times.
 
-This is **every machine learning model**, ever. PRAGMA's billion-parameter Transformer does *exactly* this. The "rule" it's discovering is unimaginably more complex ("given these 100 banking events, what's the next likely event?"), and it has a billion knobs instead of two — but the loop is the same.
+This is **every machine learning model**, ever. PRAGMA's billion-parameter Transformer does *exactly* this. The "rule" it's discovering is unimaginably more complex ("given these 100 banking events, what's the next likely event?"), and it has a billion parameters instead of two — but the loop is the same.
 
 ---
 
@@ -257,7 +257,7 @@ That's it. Everything else in the course is decoration.
 
 If you want to go deeper before moving on:
 
-- **[Lesson 1b — Architecture vs. Training](01b_architecture_vs_training.md)** — separates two ideas that are easy to confuse: what the model computes vs. how its knobs get tuned. Shows a side-by-side comparison of linear regression (2 knobs) and an embedding-based classifier (12 knobs), both trained with the same loop.
+- **[Lesson 1b — Architecture vs. Training](01b_architecture_vs_training.md)** — separates two ideas that are easy to confuse: what the model computes vs. how its weights get tuned. Shows a side-by-side comparison of linear regression (2 parameters) and an embedding-based classifier (12 parameters), both trained with the same loop.
 - **[Lesson 1c — Inside the training loop](01c_gradient_descent.md)** — opens up `loss.backward()` and `opt.step()`. Shows by hand how the gradient is computed, and includes an [interactive visualisation](visuals/gradient_descent_interactive.html) you can play with.
 
 Both are optional. They're there in case "PyTorch handles it" felt too hand-wavy.

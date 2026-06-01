@@ -325,10 +325,10 @@ AFTER MASKING (random 30%):
 
 <div id="pred-l5a-mask" style="margin:18px 0;"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a-mask",{
-  q:"Before training, the model's knobs are random — so on its very first try, what does it guess for the three masked slots?",
+  q:"Before training, the model's weights are random — so on its very first try, what does it guess for the three masked slots?",
   options:["Garbage — random tokens, because nothing has been learned yet","The correct values, because the context makes them obvious","Nothing — it skips masked slots"],
   correct:0,
-  reveal:"Random garbage at first. The context only <em>becomes</em> a useful clue after thousands of training rounds nudge the knobs. A fresh model has no idea that 'rural + vintage' hints at 'small' — that's exactly the structure it has to learn."
+  reveal:"Random garbage at first. The context only <em>becomes</em> a useful clue after thousands of training rounds nudge the weights. A fresh model has no idea that 'rural + vintage' hints at 'small' — that's exactly the structure it has to learn."
 });});</script>
 
 <p>The model looks at the visible context — <em>rural, vintage, 1car, largegarden, avgschool</em> — and uses <a href="lesson_03.html">attention</a> to figure out (once trained):</p>
@@ -339,7 +339,7 @@ AFTER MASKING (random 30%):
   <li><code>condition→&lt;MASK&gt;</code> → vintage + fair-ish profile → probably <code>faircond</code></li>
 </ul>
 
-<p>The model's guesses (random at first) get compared to the truth. Loss is high → backprop → nudge knobs → guesses improve. Run 3,000 times and the encoder learns:</p>
+<p>The model's guesses (random at first) get compared to the truth. Loss is high → backprop → nudge weights → guesses improve. Run 3,000 times and the encoder learns:</p>
 
 <ul>
   <li>"beach" embeddings drift close to "haspool", "largegarden", "exccond"</li>
@@ -351,7 +351,7 @@ AFTER MASKING (random 30%):
 
 <h2 class="step" id="step-6"><span class="step-num">Step 6</span> How training works (link back to L1)</h2>
 
-<p>Same 5-line loop as <a href="lesson_01.html">Lesson 1</a>, just with thousands more knobs:</p>
+<p>Same 5-line loop as <a href="lesson_01.html">Lesson 1</a>, just with thousands more weights:</p>
 
 <div id="pred-l5a-pretrain"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a-pretrain",{
@@ -366,7 +366,7 @@ AFTER MASKING (random 30%):
     logits = mlm_head(encoder(xb))              # 1. guess
     loss   = loss_fn(logits, yb)                # 2. measure wrongness
     opt.zero_grad()                             # 3. clear notes
-    loss.backward()                             # 4. compute gradients for ALL knobs
+    loss.backward()                             # 4. compute gradients for ALL weights
     opt.step()                                  # 5. nudge them</code></pre>
 
 <p><code>loss.backward()</code> is the magic — it computes gradients for every embedding number, every Q/K/V matrix in attention, every feed-forward weight, and the MLM head — all in one line. We saw exactly how this works in <a href="lesson_01c.html">L1c</a>.</p>
@@ -418,7 +418,7 @@ AFTER MASKING (random 30%):
       </tr>
       <tr>
         <td><strong>Step 2</strong></td>
-        <td><strong>FREEZE encoder</strong><br><small>(don't nudge its knobs anymore)</small></td>
+        <td><strong>FREEZE encoder</strong><br><small>(don't nudge its weights anymore)</small></td>
         <td>—</td>
       </tr>
       <tr>

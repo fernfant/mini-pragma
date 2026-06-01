@@ -2,14 +2,14 @@
 Model B — Tiny neural net with an embedding table.
 
 ARCHITECTURE:    word_id  ──►  embedding lookup (2 numbers)  ──►  linear  ──►  3 scores
-  KNOBS: 12  (6 in the embedding table + 6 in the linear layer)
+  PARAMS: 12  (6 weights in the embedding table + 6 in the linear layer)
 
 This model learns to predict an animal's sound from its name:
   dog  → bark
   cat  → meow
   fish → swim
 
-The SAME 5-line training loop as Model A — just nudging more knobs.
+The SAME 5-line training loop as Model A — just nudging more parameters.
 Watch the embedding table evolve from random to meaningful.
 """
 import torch
@@ -26,18 +26,18 @@ inputs  = torch.tensor([0, 1, 2])    # dog, cat, fish
 targets = torch.tensor([0, 1, 2])    # bark, meow, swim
 
 # THE ARCHITECTURE: embedding lookup + linear projection
-emb  = nn.Embedding(3, 2)            # 3 animals × 2 dims = 6 knobs
-head = nn.Linear(2, 3, bias=False)   # 2 × 3 = 6 knobs
+emb  = nn.Embedding(3, 2)            # 3 animals × 2 dims = 6 weights
+head = nn.Linear(2, 3, bias=False)   # 2 × 3 = 6 weights
 
 # THE TRAINING RECIPE: identical to Model A
-all_knobs = list(emb.parameters()) + list(head.parameters())
-opt = torch.optim.SGD(all_knobs, lr=0.5)
+all_params = list(emb.parameters()) + list(head.parameters())
+opt = torch.optim.SGD(all_params, lr=0.5)
 loss_fn = nn.CrossEntropyLoss()
 
 print("=" * 60)
 print("MODEL B — Embedding lookup + linear classifier")
 print("  Architecture: id ─► embedding (2 nums) ─► linear ─► 3 scores")
-print(f"  Total knobs:  {sum(k.numel() for k in all_knobs)}  (6 in embedding + 6 in head)")
+print(f"  Total params:  {sum(k.numel() for k in all_params)}  (6 in embedding + 6 in head)")
 print("=" * 60)
 print("\nINITIAL EMBEDDING TABLE (random numbers — meaningless):")
 for i, animal in enumerate(ANIMALS):
@@ -49,7 +49,7 @@ for step in range(401):
     logits = head(emb(inputs))                # 1. guess scores for each sound
     loss = loss_fn(logits, targets)           # 2. measure wrongness
     opt.zero_grad()                           # 3. clear notes
-    loss.backward()                           # 4. compute gradients for ALL 12 knobs
+    loss.backward()                           # 4. compute gradients for ALL 12 parameters
     opt.step()                                # 5. nudge them all
     if step % 80 == 0:
         d = emb.weight[0].detach().tolist()

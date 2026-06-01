@@ -71,7 +71,7 @@ print("STEP 2 — Single-head attention, step by step")
 print("=" * 70)
 
 # These three linear layers are LEARNED. We initialize them, but during
-# training they'll get nudged like every other knob.
+# training they'll get nudged like every other weight.
 W_q = nn.Linear(d_model, d_model, bias=False)
 W_k = nn.Linear(d_model, d_model, bias=False)
 W_v = nn.Linear(d_model, d_model, bias=False)

@@ -171,7 +171,7 @@ The model has to predict the 3 masked values. It looks at the visible context �
 - `pool→<MASK>` — rural + vintage + avgschool = probably `nopool`.
 - `condition→<MASK>` — vintage + fair-ish profile = probably `faircond`.
 
-The model's guesses (random at first) get compared to the actual masked values. The loss is high → backprop → nudge knobs → guesses get a little better next time. Run this 3,000 times across random batches and the model learns:
+The model's guesses (random at first) get compared to the actual masked values. The loss is high → backprop → nudge weights → guesses get a little better next time. Run this 3,000 times across random batches and the model learns:
 
 - "beach" embeddings drift close to "haspool", "largegarden", "exccond"
 - "rural" embeddings drift close to "small", "vintage", "largegarden"
@@ -183,7 +183,7 @@ The encoder has now learned the **archetype structure** without ever being told 
 
 ## STEP 6 — How training works in this lesson (link back to L1, L1c)
 
-Same 5-line loop as Lesson 1, just with thousands more knobs to nudge:
+Same 5-line loop as Lesson 1, just with thousands more weights to nudge:
 
 ```python
 for step in range(3000):
@@ -191,7 +191,7 @@ for step in range(3000):
     logits = mlm_head(encoder(xb))              # 1. guess
     loss   = loss_fn(logits, yb)                # 2. measure wrongness
     opt.zero_grad()                             # 3. clear notes
-    loss.backward()                             # 4. compute gradients for ALL knobs
+    loss.backward()                             # 4. compute gradients for ALL weights
     opt.step()                                  # 5. nudge them
 ```
 
@@ -245,10 +245,10 @@ This is the comparison the lesson is built around. **It's not "pre-trained encod
           on all 8,000 houses
           (no price labels needed)
                                             Step 1: Random-init encoder
-                                                    (knobs start as noise)
+                                                    (weights start as noise)
 
   Step 2: FREEZE encoder
-          (don't nudge its knobs anymore)
+          (don't nudge its weights anymore)
 
   Step 3: Add price head                    Step 2: Add price head
 

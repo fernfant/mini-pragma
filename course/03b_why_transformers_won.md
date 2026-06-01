@@ -95,7 +95,7 @@ parameters didn't reliably make them smarter. Two big reasons:
 1. **Vanishing gradients across time.** When you train an RNN on a long
    sequence, the gradient signal from the last word has to travel back
    through every intermediate step. Multiply small numbers together long
-   enough and they vanish — early-word knobs get effectively no learning
+   enough and they vanish — early-word weights get effectively no learning
    signal.
 2. **Sequential compute can't be GPU-accelerated.** Bigger model + already
    slow = unbearably slow.

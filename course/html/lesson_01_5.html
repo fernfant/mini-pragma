@@ -45,7 +45,7 @@
 <div class="wrap">
 
 <h1>Lesson 1.5 — From linear regression to neural networks</h1>
-<p class="subtitle">Bridge between L1's two-knob model and L4's tiny BERT. Same training loop. Different model in the middle.</p>
+<p class="subtitle">Bridge between L1's two-weight model and L4's tiny BERT. Same training loop. Different model in the middle.</p>
 
 <div class="lesson-links">
   <a href="http://localhost:8011/notebooks/lesson_01_5_from_linear_to_neural.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
@@ -87,7 +87,7 @@
 <h2>The two questions this lesson answers</h2>
 
 <ol>
-  <li><strong>Is BERT just linear regression with more knobs? Or is it a different kind of model?</strong></li>
+  <li><strong>Is BERT just linear regression with more weights? Or is it a different kind of model?</strong></li>
   <li><strong>When do you need a neural network instead of linear regression?</strong></li>
 </ol>
 
@@ -223,7 +223,7 @@ for _ in range(1000):
 <div class="callout">
   <strong>The entire neuron, in one line:</strong>
   <pre style="margin:10px 0;background:#fff;color:#1a1a1a;padding:12px 16px;border:1px solid #e5e5e5;border-radius:6px;font-size:15px;"><code style="color:#1a1a1a;">output = fire?(  <span style="color:#1d4ed8;font-weight:700;">wA</span>·A  +  <span style="color:#1d4ed8;font-weight:700;">wB</span>·B  +  <span style="color:#7e22ce;font-weight:700;">bias</span>  )</code></pre>
-  <code>A</code> and <code>B</code> are the inputs. <span style="color:#1d4ed8;font-weight:700;">wA</span>, <span style="color:#1d4ed8;font-weight:700;">wB</span> are the weights it learns (the knobs from L1!). <span style="color:#7e22ce;font-weight:700;">bias</span> shifts the line. <code>fire?</code> is the yes/no decision. That's the whole thing — a weighted sum and a threshold.
+  <code>A</code> and <code>B</code> are the inputs. <span style="color:#1d4ed8;font-weight:700;">wA</span>, <span style="color:#1d4ed8;font-weight:700;">wB</span> are the weights it learns (the weights from L1!). <span style="color:#7e22ce;font-weight:700;">bias</span> shifts the line. <code>fire?</code> is the yes/no decision. That's the whole thing — a weighted sum and a threshold.
 </div>
 
 <p>Too simple to be useful? Watch. With the right weights, this <em>one</em> neuron can compute real logic. Let's teach it <strong>OR</strong> (fire if A <em>or</em> B is on) and <strong>AND</strong> (fire only if <em>both</em> are on). Inputs are just 0 (off) or 1 (on).</p>
@@ -407,7 +407,7 @@ for _ in range(1000):
 })();
 </script>
 
-<p>One catch: a hard "fire / stay quiet" switch has no slope, so gradient descent (L1) can't tell which way to nudge the knobs. So real networks swap the hard switch for a <strong>soft bend</strong> — and that soft bend is the <strong>ReLU</strong> you're about to meet. Same idea (let the neuron be non-straight), but smooth enough to train. The picture below is exactly this: a row of <strong>8 neurons</strong> (the hidden layer), with the soft bend in the middle.</p>
+<p>One catch: a hard "fire / stay quiet" switch has no slope, so gradient descent (L1) can't tell which way to nudge the weights. So real networks swap the hard switch for a <strong>soft bend</strong> — and that soft bend is the <strong>ReLU</strong> you're about to meet. Same idea (let the neuron be non-straight), but smooth enough to train. The picture below is exactly this: a row of <strong>8 neurons</strong> (the hidden layer), with the soft bend in the middle.</p>
 
 <div id="pred-s4"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-s4",{
@@ -420,8 +420,8 @@ for _ in range(1000):
 <p>A neural network is best pictured as a <strong>pipeline that transforms numbers through layers</strong>. Each layer takes the previous stage's numbers, does one specific operation, and hands them on. The simplest version (a Multilayer Perceptron, or MLP) — and the one we'll use today — looks like this:</p>
 
 <figure class="figure-wide">
-  <img src="../visuals/mlp_pipeline.svg" alt="MLP pipeline: input x (shape 1) → Linear (+16 knobs) → hidden (shape 8) → ReLU (0 knobs) → still shape 8 → Linear (+9 knobs) → output y (shape 1). Total 25 knobs.">
-  <figcaption>The shape changes at every stage: <code>(1) → (8) → (8) → (1)</code>. <strong>Linear</strong> stages carry knobs (16 + 9 = 25). <strong>ReLU</strong> carries none — it's just a rule, not a layer with parameters.</figcaption>
+  <img src="../visuals/mlp_pipeline.svg" alt="MLP pipeline: input x (shape 1) → Linear (+16 parameters) → hidden (shape 8) → ReLU (0 parameters) → still shape 8 → Linear (+9 parameters) → output y (shape 1). Total 25 parameters.">
+  <figcaption>The shape changes at every stage: <code>(1) → (8) → (8) → (1)</code>. <strong>Linear</strong> stages carry parameters (16 + 9 = 25). <strong>ReLU</strong> carries none — it's just a rule, not a layer with parameters.</figcaption>
 </figure>
 
 <div class="callout">
@@ -503,7 +503,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   </div>
 
   <div class="pg-notebook">
-    📓 The same forward pass lives in <code>MLP.forward()</code> of <a href="http://localhost:8011/notebooks/lesson_01_5_from_linear_to_neural.ipynb" target="_blank" rel="noopener">lesson_01_5_from_linear_to_neural.ipynb</a> — running with torch handles 25 knobs and gradients automatically.
+    📓 The same forward pass lives in <code>MLP.forward()</code> of <a href="http://localhost:8011/notebooks/lesson_01_5_from_linear_to_neural.ipynb" target="_blank" rel="noopener">lesson_01_5_from_linear_to_neural.ipynb</a> — running with torch handles 25 parameters and gradients automatically.
   </div>
 </div>
 
@@ -597,37 +597,37 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   <p>That's all the universal approximation theorem says: enough bends → any shape. The network <em>learns</em> where to put each bend (the <code>w</code> and <code>b</code>) by gradient descent. Without the ReLU there are no bends, so stacking layers just gives you one straight line again.</p>
 </details>
 
-<h3>Where do the knobs actually sit?</h3>
+<h3>Where do the parameters actually sit?</h3>
 
-<p>"25 parameters" sounds vague. Let's look at <em>where</em> each one lives. Picture the network as wires between three columns of dots — the input, the hidden units, the output. <strong>Every wire is one knob</strong>, and each unit has one extra knob (its bias).</p>
+<p>"25 parameters" sounds vague. Let's look at <em>where</em> each one lives. Picture the network as wires between three columns of dots — the input, the hidden units, the output. <strong>Every wire is one weight</strong>, and each unit has one extra parameter (its bias).</p>
 
 <figure class="figure-wide">
-  <img src="../visuals/mlp_knobs.svg" alt="MLP wiring: input x connects to 4 hidden units h1..h4, each with a bias b_i, each connecting to output y with a weight c_i, plus one final output bias">
-  <figcaption>The picture uses 4 hidden units so it's readable. Each hidden unit <strong>owns 3 knobs</strong>: one weight coming in (<span style="color:#3b82f6;font-weight:700">w<sub>i</sub></span>), one bias of its own (<span style="color:#92400e;font-weight:700">b<sub>i</sub></span>), one weight going out (<span style="color:#047857;font-weight:700">c<sub>i</sub></span>). Plus one final output bias.</figcaption>
+  <img src="../visuals/mlp_weights.svg" alt="MLP wiring: input x connects to 4 hidden units h1..h4, each with a bias b_i, each connecting to output y with a weight c_i, plus one final output bias">
+  <figcaption>The picture uses 4 hidden units so it's readable. Each hidden unit <strong>owns 3 parameters</strong>: one weight coming in (<span style="color:#3b82f6;font-weight:700">w<sub>i</sub></span>), one bias of its own (<span style="color:#92400e;font-weight:700">b<sub>i</sub></span>), one weight going out (<span style="color:#047857;font-weight:700">c<sub>i</sub></span>). Plus one final output bias.</figcaption>
 </figure>
 
 <div class="callout good">
-  <strong>The formula:</strong> for <code>H</code> hidden units, total knobs = <strong>3·H + 1</strong>.
+  <strong>The formula:</strong> for <code>H</code> hidden units, total parameters = <strong>3·H + 1</strong>.
   <ul style="margin:6px 0;">
     <li><code>H</code> input weights (one wire from <code>x</code> into each unit)</li>
     <li><code>H</code> biases (one per unit — sets where the bend lives)</li>
     <li><code>H</code> output weights (one wire out of each unit, weighting its contribution)</li>
     <li>1 final output bias</li>
   </ul>
-  Picture above: <strong>H = 4 → 13 knobs</strong>. The code below: <strong>H = 8 → 25 knobs</strong>.
+  Picture above: <strong>H = 4 → 13 parameters</strong>. The code below: <strong>H = 8 → 25 parameters</strong>.
 </div>
 
 <pre><code>class MLP(nn.Module):
     def __init__(self, hidden=8):
         super().__init__()
-        self.layer1 = nn.Linear(1, hidden)      # 8 input weights + 8 biases = 16 knobs
-        self.layer2 = nn.Linear(hidden, 1)      # 8 output weights + 1 bias  =  9 knobs
+        self.layer1 = nn.Linear(1, hidden)      # 8 input weights + 8 biases = 16 parameters
+        self.layer2 = nn.Linear(hidden, 1)      # 8 output weights + 1 bias  =  9 parameters
     def forward(self, x):
         h = self.layer1(x)
         h = F.relu(h)
         return self.layer2(h)</code></pre>
 
-<p>So <code>layer1</code> holds <strong>2 knobs per unit</strong> (its w<sub>i</sub> and b<sub>i</sub>) and <code>layer2</code> holds the remaining 1 per unit (c<sub>i</sub>) plus the single output bias. <strong>16 + 9 = 25</strong>, which matches <strong>3×8 + 1</strong>. Now when you read "this Transformer has 100 million parameters", you know that just means 100 million little numbered wires + biases inside many such boxes stacked up.</p>
+<p>So <code>layer1</code> holds <strong>2 parameters per unit</strong> (its w<sub>i</sub> and b<sub>i</sub>) and <code>layer2</code> holds the remaining 1 per unit (c<sub>i</sub>) plus the single output bias. <strong>16 + 9 = 25</strong>, which matches <strong>3×8 + 1</strong>. Now when you read "this Transformer has 100 million parameters", you know that just means 100 million little numbered wires + biases inside many such boxes stacked up.</p>
 
 <h2 class="step" id="step-5"><span class="step-num">Step 5</span> Train the MLP on the SAME parabola data</h2>
 
@@ -970,8 +970,8 @@ Linear(2048, 512)</code></pre>
   <ol>
     <li>The model is trained to predict masked words. If it can't, loss is high.</li>
     <li>Loss flows backward through every block, every attention head, every FFN.</li>
-    <li>Each parameter (knob) gets a tiny nudge in the direction that <em>reduces the loss next time</em>.</li>
-    <li>Over millions of training examples, the knobs in <em>each block</em> drift into configurations that solve a useful sub-problem — because solving that sub-problem helps predict masked words.</li>
+    <li>Each parameter (weight) gets a tiny nudge in the direction that <em>reduces the loss next time</em>.</li>
+    <li>Over millions of training examples, the weights in <em>each block</em> drift into configurations that solve a useful sub-problem — because solving that sub-problem helps predict masked words.</li>
     <li>The model never "decides" what each layer should do. The training data and the optimiser <em>force</em> the layers to specialise — because that's the path of least loss.</li>
   </ol>
 

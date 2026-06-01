@@ -125,7 +125,7 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
 
 <h2 class="step" id="probe"><span class="step-num">Stage 3</span> Freeze, add a lead head</h2>
 
-<p>We <strong>freeze</strong> the encoder (lock its knobs) and bolt on a tiny head. The head does two things. First it <strong>squeezes the whole session into a single vector</strong> — a step called <strong>mean-pooling</strong>: each of the 96 tokens came out of the encoder as its own 32-number vector, and we simply average all 96 into one 32-number summary of the visit. Then a single <code>Linear</code> layer turns that summary into two scores — <em>lead</em> or <em>no-lead</em>.</p>
+<p>We <strong>freeze</strong> the encoder (lock its weights) and bolt on a tiny head. The head does two things. First it <strong>squeezes the whole session into a single vector</strong> — a step called <strong>mean-pooling</strong>: each of the 96 tokens came out of the encoder as its own 32-number vector, and we simply average all 96 into one 32-number summary of the visit. Then a single <code>Linear</code> layer turns that summary into two scores — <em>lead</em> or <em>no-lead</em>.</p>
 
 <p>Only the head trains — that's called a <strong>linear probe</strong> on top of a frozen foundation model (the same move from <a href="lesson_05b.html">L5b</a> and <a href="lesson_05a.html">L5a</a>). "Linear" because all it can do is draw <em>one straight line</em> through the encoder's output space: serious-buyer summaries on one side, window-shopper summaries on the other.</p>
 
