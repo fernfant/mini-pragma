@@ -7,7 +7,7 @@ of instructions the agent loads when you ask for that task.
 |---|---|
 | [`fix-github-issues`](fix-github-issues/SKILL.md) | Read open GitHub issues → fix them → mark fixed (commit + close + comment). |
 | [`course-build-blog`](course-build-blog/SKILL.md) | Write a CxAI-style "how we built the Mini PRAGMA course" blog post, grounded in the real artifacts. |
-| `course-principles` | Principles + scoring rubric for the course lessons. The canonical file lives at [`course/agent/SKILL.md`](../course/agent/SKILL.md). |
+| [`course-principles`](course-principles/) | Principles + scoring rubric for the course lessons. Canonical file: [`course/agent/SKILL.md`](../course/agent/SKILL.md). |
 
 ## Why these are *here* and not only in `.claude/`
 
