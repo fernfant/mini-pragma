@@ -58,6 +58,7 @@
       const logits=Array.from({length:V},(_,v)=>hid.reduce((s,x,h)=>s+x*W2[h][v],0));
       const probs=softmax(logits);
       comp={E,attn,auto,blend,hid,logits,probs,winner:probs.indexOf(Math.max(...probs)),tokens:P.tokens,cand:vocab,focus:fc};
+      cv.setAttribute('aria-label','Forward pass for the phrase "'+P.tokens.join(' ')+'": each word becomes a number-vector, attention blends them, a layer of neurons fires, and the model predicts the next word "'+vocab[comp.winner]+'".');
     }
 
     const lane=[150,280,410], colX={tok:90,emb:300,att:545,mlp:800,out:1045};

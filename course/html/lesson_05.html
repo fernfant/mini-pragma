@@ -94,6 +94,8 @@ V = len(vocab)</code></pre>
 
 <h2 class="step" id="data"><span class="step-num">Sec 2</span> The synthetic data</h2>
 
+<p>Before the model, we need events to feed it. This block just makes fake-but-realistic ones: a set of rules saying which values tend to go together (so the data has patterns worth learning), then a loop that samples events from them.</p>
+
 <pre><code>RULES = {
     "dog":  {"action": ["eat", "play"],   "place": ["garden", "bowl"]},
     "cat":  {"action": ["sleep", "play"], "place": ["couch", "bowl"]},
@@ -137,6 +139,8 @@ V = len(vocab)</code></pre>
 
 <h2 class="step" id="mask"><span class="step-num">Sec 4</span> Masking <span class="legend-chip">L4</span></h2>
 
+<p>Here's the fill-in-the-blank game from L4 in code: hide about a quarter of the value tokens, remember what they were, and let the model try to recover them. This one function is the whole training signal.</p>
+
 <pre><code>def mask(ids, p=0.25):
     ids = list(ids)
     labels = [-100] * len(ids)
@@ -176,7 +180,7 @@ ids, labels = mask_one(ids, hide_value_of)
     <button class="pg-run" id="pg-l5-run">▶ Run</button>
   </div>
 
-  <div class="pg-output" id="pg-l5-output">(pick a pet and a field to hide)</div>
+  <div class="pg-output" id="pg-l5-output" aria-live="polite">(pick a pet and a field to hide)</div>
 
   <div class="pg-try">
     <strong>🎯 Try these:</strong>
@@ -268,10 +272,12 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
   q:"The toy model has ~20,000 numbers to learn. Which piece do you think holds the most?",
   options:["The embedding table (one row per word)","The 2 encoder layers (attention + feed-forward)","The final scoring head"],
   correct:1,
-  reveal:"The two encoder layers — about 17,000 of the ~20,000. The embedding table is only 448 and the head 462; almost all the model's capacity lives in the attention + feed-forward stacks."
+  reveal:"The two encoder layers — about 17,000 of the ~20,000. The rest is small: the token-embedding table (448), the position embeddings (64 × 32 = 2,048), and the output head (462). Add those up — 448 + 2,048 + 462 + 17,000 ≈ 20,000 — and you see almost all the model's capacity lives in the attention + feed-forward stacks."
 });});</script>
 
 <h2 class="step" id="arch"><span class="step-num">Sec 5</span> The architecture <span class="legend-chip">L1b</span> <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
+
+<p>Now the model itself — and it's tiny. Four pieces in <code>__init__</code> (embed → position → encoder stack → head) and a one-line <code>forward</code> that runs them in order. Everything you built across L2–L4, assembled:</p>
 
 <pre><code>class PragmaMini(nn.Module):
     def __init__(self, V, d=32, heads=2, layers=2):
@@ -290,7 +296,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
   <thead><tr><th>Piece</th><th>Lesson</th><th>What it does</th></tr></thead>
   <tbody>
     <tr><td>(a) <code>nn.Embedding(V, d)</code></td><td>L2</td><td>Embedding table. 14 × 32 = 448 knobs.</td></tr>
-    <tr><td>(b) <code>nn.Embedding(64, d)</code></td><td>(positional)</td><td>Position embeddings — so the model knows order.</td></tr>
+    <tr><td>(b) <code>nn.Embedding(64, d)</code></td><td>(positional)</td><td>Position embeddings — so the model knows order. 64 × 32 = 2,048 knobs.</td></tr>
     <tr><td>(c) <code>TransformerEncoder(...)</code></td><td>L3 attn + <a href="lesson_01_5.html#step-75">L1.5</a> FFN, stacked <a href="lesson_01_5.html#step-76">×2</a></td><td>2 layers of (attention + FFN). Attention happens in EVERY layer.</td></tr>
     <tr><td>(d) <code>nn.Linear(d, V)</code></td><td>(MLM head)</td><td>Project context vectors back to vocab scores.</td></tr>
   </tbody>
@@ -316,7 +322,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 
 <h2 class="step" id="infer"><span class="step-num">Sec 7</span> Inference</h2>
 
-<p>Inference is just training run backwards: instead of hiding a value so the model can <em>learn</em>, you hide the value you actually want to know and let the trained model fill in the blank. Here's the whole thing in a few lines of Python:</p>
+<p>Inference is the <strong>same forward pass as training, minus the learning</strong> — no backward step, no weight updates. You hide the value you actually want to know, run the model once, and read off its best guess. Note the <code>torch.no_grad()</code>: it tells PyTorch "just predict, don't track gradients." Here's the whole thing in a few lines of Python:</p>
 
 <pre><code>def guess(event, hide_key):
     ids = encode(event)
@@ -324,9 +330,17 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
         if vocab[ids[i]] == hide_key:
             pos = i + 1
             ids[pos] = tok2id[MASK]
-    with torch.no_grad():
+    with torch.no_grad():                       # just predict — no learning
         logits = model(torch.tensor([ids]))
     return vocab[logits[0, pos].argmax().item()]</code></pre>
+
+<div id="chk-l5-infer"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){check("chk-l5-infer",{
+  q: "At inference time (running <code>guess()</code>), does the model do a backward pass to update its weights?",
+  options: ["Yes — every prediction trains it a little more", "No — inference is forward-only; the weights are frozen", "Only when it gets the answer wrong"],
+  answer: 1,
+  explain: "Inference is just the forward pass. The backward step (backprop) only happens during training; here <code>torch.no_grad()</code> switches it off entirely — the model only predicts."
+});});</script>
 
 <h2 class="step" id="real"><span class="step-num">Real</span> What "real PRAGMA" adds on top</h2>
 
@@ -373,7 +387,7 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 <h3>6. Downstream adaptation</h3>
 <ul>
   <li><strong>Embedding probe</strong> — freeze encoder, add tiny classifier on top.</li>
-  <li><strong>LoRA fine-tuning</strong> — instead of retraining the whole model, swap in a tiny set of adapter weights (~2-4% of the model) via low-rank adapters.</li>
+  <li><strong>LoRA fine-tuning</strong> — adapting a giant model to a new task without retraining all of it. Instead, you <em>freeze</em> the model and bolt on a tiny set of extra weights (~2–4% of the size), training only those. "Low-rank adapter" is just the name for that small bolt-on. (You saw the same freeze-then-train idea in <a href="lesson_05b.html">L5b</a>.)</li>
 </ul>
 
 <div class="callout good">
@@ -406,6 +420,12 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 </div>
 
 </div>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
 <script src="course.js"></script>
 </body>
 </html>
