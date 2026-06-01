@@ -107,6 +107,69 @@ softmax([20, 10, 0])  ≈ [1.00, 0.00, 0.00]   ← one word hogs everything</cod
 
 <p>So in <code>softmax(Q · Kᵀ / √d) · V</code>, the <code>/ √d</code> is just that shrink step keeping the left example from turning into the right one. It's a small stabiliser, not a deep idea — but every real Transformer uses it.</p>
 
+<div id="pred-scale"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-scale",{
+  q:"In the widget below you'll drag the vector size <code>d</code> from small to large. With <em>no</em> ÷√d, what happens to softmax as <code>d</code> grows?",
+  options:["It gets spiky — one word grabs almost all the attention","It stays evenly shared","The scores shrink toward zero"],
+  correct:0,
+  reveal:"Longer vectors → bigger dot products (they grow like √d) → softmax collapses onto the single highest score. Dividing by √d cancels exactly that growth, so the <em>shape</em> of the attention stops depending on how long the vectors are."
+});});</script>
+
+<div class="widget">
+  <h3>🎚 Interactive: feel what ÷√d does</h3>
+  <div class="pg-sub">How much the word <b>cat</b> attends to each word in "the dog chased cat". Drag the vector size <code>d</code> and compare: raw scores (left) vs scores divided by √d (right, what real attention uses).</div>
+  <label for="qkv-d" style="display:block;margin:12px 0 4px;">Vector size <code>d</code> = <output id="qkv-dv" class="nr-mono">16</output></label>
+  <input id="qkv-d" type="range" min="4" max="256" step="4" value="16" style="width:240px;"
+         aria-label="Vector size d, from 4 to 256. Larger d makes raw dot-product scores bigger.">
+  <div class="widget-row two" style="margin-top:14px;gap:24px;">
+    <div>
+      <h4 style="margin:0 0 6px;">Without ÷√d <span style="font-weight:400;color:var(--text-dim);font-size:13px;">(raw)</span></h4>
+      <div id="qkv-raw"></div>
+      <p id="qkv-raw-note" style="font-size:13px;margin:8px 0 0;"></p>
+    </div>
+    <div>
+      <h4 style="margin:0 0 6px;">With ÷√d <span style="font-weight:400;color:var(--text-dim);font-size:13px;">(real attention)</span></h4>
+      <div id="qkv-sc"></div>
+      <p id="qkv-sc-note" style="font-size:13px;margin:8px 0 0;"></p>
+    </div>
+  </div>
+</div>
+<script>
+(() => {
+  const slider = document.getElementById('qkv-d');
+  if (!slider) return;
+  const WORDS = ['the','dog','chased','cat'];
+  const COL = ['#94a3b8','#3b82f6','#f59e0b','#10b981'];
+  // fixed per-√d alignment of "cat" to each word (its own row of the pattern)
+  const B = [0.30, 0.90, 0.60, 1.20];
+  const dv = document.getElementById('qkv-dv');
+  function softmax(a){ const m=Math.max(...a); const e=a.map(v=>Math.exp(v-m)); const s=e.reduce((x,y)=>x+y,0); return e.map(v=>v/s); }
+  function bars(probs){
+    return probs.map((p,j)=>`<div style="display:flex;align-items:center;gap:8px;margin:3px 0;font-size:13px;">
+      <span style="width:54px;color:var(--text-dim);">${WORDS[j]}</span>
+      <div style="flex:1;background:var(--code-bg);border-radius:4px;height:18px;">
+        <div style="width:${(p*100).toFixed(1)}%;height:100%;background:${COL[j]};border-radius:4px;"></div></div>
+      <span style="width:42px;text-align:right;font-variant-numeric:tabular-nums;">${(p*100).toFixed(0)}%</span></div>`).join('');
+  }
+  function render(){
+    const d = +slider.value;
+    dv.textContent = d;
+    const raw = B.map(b => b * Math.sqrt(d));     // dot products grow ~ √d
+    const pr  = softmax(raw);                      // no scaling
+    const ps  = softmax(raw.map(s => s/Math.sqrt(d))); // ÷√d  ==  softmax(B), stable
+    document.getElementById('qkv-raw').innerHTML = bars(pr);
+    document.getElementById('qkv-sc').innerHTML  = bars(ps);
+    const topR = Math.max(...pr), topS = Math.max(...ps);
+    document.getElementById('qkv-raw-note').innerHTML =
+      `Top word grabs <b>${(topR*100).toFixed(0)}%</b> — ${topR>0.85?'softmax has collapsed onto one word ❌':'still shared, but watch it climb as d grows'}`;
+    document.getElementById('qkv-sc-note').innerHTML =
+      `Top word grabs <b>${(topS*100).toFixed(0)}%</b> — steady at every <code>d</code> ✅`;
+  }
+  slider.addEventListener('input', render);
+  render();
+})();
+</script>
+
 <details class="go-deeper">
   <summary>Go deeper: what if every word has the IDENTICAL vector?</summary>
   <p>A useful thought experiment. If every word in the sentence had the exact same embedding, what would attention do? I set all four word vectors to <code>[0.5, 0.3]</code> and computed the attention matrix:</p>
