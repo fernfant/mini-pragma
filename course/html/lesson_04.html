@@ -752,10 +752,8 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 
 <h2 class="step" id="whats-different"><span class="step-num">Real</span> What's different in real PRAGMA?</h2>
 
-<figure class="figure-wide">
-  <img src="../visuals/architecture_comparison.svg" alt="Architecture comparison: TinyMLM vs real PRAGMA">
-  <figcaption>Same shape, different scale: our TinyMLM and real PRAGMA share the exact pipeline — embed → attention → feed-forward → head — PRAGMA just stacks more layers, wider vectors, and a far bigger vocabulary.</figcaption>
-</figure>
+<div id="net-l4-scale"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l4-scale",{layers:[{n:5,label:"token embeddings",kind:"in"},{n:5,label:"attention + FFN",kind:"hidden",repeat:"×N"},{n:5,label:"output head",kind:"out"}],caption:"Real PRAGMA is this exact picture — embed → (attention + feed-forward) ×many → head — just more layers, wider vectors, and a far bigger vocabulary."});});</script>
 
 <p>You actually built <strong>two</strong> tiny models in this lesson: <strong>TinyMLM</strong> (Step 5 — the fill-in-the-blank / masked model) and its next-word cousin from the <a href="#data-journey">data journey</a>. They play different games but are almost the same size — and both sit a <em>long</em> way from real PRAGMA:</p>
 

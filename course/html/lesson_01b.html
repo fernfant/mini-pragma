@@ -87,10 +87,15 @@
   </div>
 </div>
 
-<figure class="figure-wide">
-  <img src="../visuals/architecture_comparison.svg" alt="Three architectures compared">
-  <figcaption>Same training loop. Different architectures. Different number of parameters.</figcaption>
-</figure>
+<div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin:18px 0;">
+  <div id="net-l1b-a" style="flex:1 1 250px;"></div>
+  <div id="net-l1b-b" style="flex:1 1 250px;"></div>
+</div>
+<p style="text-align:center;font-size:13px;color:var(--text-dim);margin-top:-2px;">Same training loop, different architectures (and parameter counts) — drawn the same way every time.</p>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  netSchematic("net-l1b-a",{layers:[{n:1,label:"input x",kind:"in"},{n:1,label:"output y",kind:"out"}],caption:"Model A — linear regression: 2 parameters (w, b)."});
+  netSchematic("net-l1b-b",{layers:[{n:1,label:"word id",kind:"in"},{n:2,label:"embedding",kind:"hidden"},{n:3,label:"class scores",kind:"out"}],caption:"Model B — embedding + linear classifier: 15 parameters."});
+});</script>
 
 <h2 class="step" id="why"><span class="step-num">Why</span> Why this matters</h2>
 
