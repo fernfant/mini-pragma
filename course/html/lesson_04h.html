@@ -374,6 +374,9 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s ~11M weights and one loss number — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l4h"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l4h",{"layers": [{"n": 5, "label": "token embeddings", "kind": "in"}, {"n": 5, "label": "Transformer layers", "kind": "hidden", "repeat": "×4"}, {"n": 5, "label": "next-token scores", "kind": "out"}], "caption": "minigpt — ~11M weights, same picture: token embeddings → 4 stacked Transformer layers → next-token scores."});});</script>
+
 <h2 class="step" id="trace"><span class="step-num">Trace</span> One training step, every number</h2>
 
 <p>The loop "never changes" from L1 to GPT-3 — so let's watch a single step do its work. One weight <code>w</code>, one data point (<code>x = 2</code>, target <code>= 7</code>). Hit <em>Take one step</em> and follow guess → loss → gradient → the nudge, over and over, as <code>w</code> climbs toward 3.5:</p>

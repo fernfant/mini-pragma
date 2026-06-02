@@ -69,6 +69,9 @@
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s the vectors climbing the 18-block stack — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l16"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l16",{"layers": [{"n": 1, "label": "embed", "kind": "in"}, {"n": 5, "label": "attention + FFN", "kind": "hidden", "repeat": "×18"}, {"n": 1, "label": "head", "kind": "out"}], "caption": "A Transformer, same shape but deep: embed once, repeat an (attention + feed-forward) block 18 times, then read off the answer."});});</script>
+
 <h2 class="step" id="step-75"><span class="step-num">Step 1</span> Heads-up — you just built the MLP that lives inside every Transformer</h2>
 
 <div id="pred-s75"></div>

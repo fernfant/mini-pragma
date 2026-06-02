@@ -78,6 +78,9 @@
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s key-value events turned into token ids — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l5"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l5",{"layers": [{"n": 5, "label": "event tokens", "kind": "in"}, {"n": 5, "label": "encoder", "kind": "hidden"}, {"n": 4, "label": "value scores", "kind": "out"}], "caption": "PRAGMA-mini — the same network, fed key-value event tokens instead of words."});});</script>
+
 <h2 class="step" id="vocab"><span class="step-num">Sec 1</span> Vocabulary <span class="legend-chip">L2</span></h2>
 
 <p>First, the plain idea. A banking event isn't a sentence — it's a little form, a set of <strong>fields paired with their values</strong>: <code>merchant = Tesco</code>, <code>amount = 14.99</code>, <code>type = groceries</code>. The trick we're about to build keeps each pair intact: one token for the field <em>name</em> (the <strong>key</strong>), one token for its <em>contents</em> (the <strong>value</strong>). That's why it's called <em>key-value</em> tokenisation — and here's the vocabulary for a toy version with pets instead of merchants:</p>

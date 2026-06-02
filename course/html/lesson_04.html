@@ -82,6 +82,9 @@
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s masked token ids and the cross-entropy loss — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l4"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l4",{"layers": [{"n": 4, "label": "token embeddings", "kind": "in"}, {"n": 5, "label": "encoder block", "kind": "hidden"}, {"n": 4, "label": "word scores", "kind": "out"}], "caption": "Tiny BERT — embed the tokens, run one encoder block (attention + feed-forward), predict the masked word. Same input → hidden → output picture."});});</script>
+
 <h2 class="step" id="big-idea"><span class="step-num">Idea</span> The fill-in-the-blank game</h2>
 
 <p>In <a href="lesson_03.html">L3</a> you saw <em>how</em> a Transformer lets words look at each other with attention. But what are all those weights actually trained to <em>do</em>? Here's the game BERT plays: pick a sentence with a word missing, and have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>

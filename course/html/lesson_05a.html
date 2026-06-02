@@ -82,6 +82,9 @@ A "sentence" of a house:   [bedrooms=3] [bathrooms=2] [area=1800] [garage=yes] [
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s a house's features and a predicted price — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l5a"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l5a",{"layers": [{"n": 4, "label": "house features", "kind": "in"}, {"n": 5, "label": "encoder", "kind": "hidden", "frozen": true}, {"n": 1, "label": "price", "kind": "out"}], "caption": "Pre-train the encoder, freeze it (🔒), train only a tiny head → price. Same picture; only the head learns."});});</script>
+
 <h2 class="step" id="step-1"><span class="step-num">Step 1</span> Look at the data (build your eye first)</h2>
 
 <p>Before any model, just look at three houses. Each has 10 attributes.</p>

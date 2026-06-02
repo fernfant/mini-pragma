@@ -1010,3 +1010,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .bits-note code { background:rgba(125,211,252,0.15); color:#7dd3fc; padding:1px 6px; border-radius:4px; font-size:0.95em; }
 .bits-note .bn-bits { font-family:ui-monospace,"SF Mono",monospace; color:#38507a; font-size:12px; letter-spacing:2px; white-space:nowrap; }
 @media (max-width:560px){ .bits-note .bn-bits { display:none; } }
+
+/* consistent neural-network schematic (netSchematic in course.js) */
+.netfig { margin:18px 0; text-align:center; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; }
+.netfig svg { height:auto; display:block; margin:0 auto; }
+.netfig .nf-cap { font-size:13px; color:var(--text-dim); margin:10px auto 0; max-width:620px; }

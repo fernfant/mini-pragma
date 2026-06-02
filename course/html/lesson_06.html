@@ -74,6 +74,9 @@
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s a clickstream session and a lead probability — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
+<div id="net-l6"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l6",{"layers": [{"n": 5, "label": "clickstream", "kind": "in"}, {"n": 5, "label": "encoder", "kind": "hidden", "frozen": true}, {"n": 1, "label": "lead?", "kind": "out"}], "caption": "The capstone network — clickstream tokens → frozen encoder (🔒) → a tiny lead head."});});</script>
+
 <h2 class="step" id="problem"><span class="step-num">Brief</span> The problem</h2>
 
 <p>Visitor A opens a 2-bed in JVC, flips through every photo, runs the mortgage calculator, and saves it. Visitor B bounces across nine unrelated listings and leaves. A is a <strong>lead</strong>; B isn’t — and this page builds the model that tells them apart <em>before</em> either clicks "contact".</p>

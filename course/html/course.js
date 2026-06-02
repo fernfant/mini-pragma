@@ -345,6 +345,31 @@
     render();
   };
 
+  // netSchematic(id, cfg) — one consistent "here's the neural network" picture.
+  // cfg = { layers:[{n, label, kind:'in'|'hidden'|'out', repeat:'×18'?, frozen:bool?}], caption }
+  window.netSchematic = function (id, cfg) {
+    var box = document.getElementById(id); if (!box) return;
+    var layers = cfg.layers, L = layers.length;
+    var W = Math.max(360, 150 * (L - 1) + 160), H = 215, cy = 96;
+    var COL = { in: '#64748b', hidden: '#b9410a', out: '#047857' };
+    var xs = layers.map(function (_, i) { return L === 1 ? W / 2 : 80 + i * (W - 160) / (L - 1); });
+    function ys(n) { var d = Math.min(n, 5), gap = Math.min(30, 150 / d), a = []; for (var k = 0; k < d; k++) a.push(cy + (k - (d - 1) / 2) * gap); return a; }
+    var YS = layers.map(function (l) { return ys(l.n); });
+    var e = [];
+    for (var i = 0; i < L - 1; i++) YS[i].forEach(function (y1) { YS[i + 1].forEach(function (y2) { e.push('<line x1="' + (xs[i] + 11) + '" y1="' + y1 + '" x2="' + (xs[i + 1] - 11) + '" y2="' + y2 + '" stroke="#e5e7eb" stroke-width="1"/>'); }); });
+    layers.forEach(function (l, i) {
+      var c = COL[l.kind] || '#64748b';
+      YS[i].forEach(function (y) {
+        e.push('<circle cx="' + xs[i] + '" cy="' + y + '" r="10" fill="' + (l.frozen ? '#eef2ff' : c) + '" stroke="' + c + '" stroke-width="2"' + (l.frozen ? ' stroke-dasharray="3 2"' : '') + '/>');
+      });
+      if (l.n > 5) e.push('<text x="' + xs[i] + '" y="' + (Math.max.apply(null, YS[i]) + 21) + '" text-anchor="middle" font-size="13" fill="#94a3b8">⋮</text>');
+      e.push('<text x="' + xs[i] + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" font-weight="600" fill="' + c + '">' + l.label + '</text>');
+      if (l.repeat) e.push('<text x="' + xs[i] + '" y="' + (cy - 70) + '" text-anchor="middle" font-size="12.5" font-weight="800" fill="#b9410a">' + l.repeat + '</text>');
+      if (l.frozen) e.push('<text x="' + xs[i] + '" y="' + (cy - 70) + '" text-anchor="middle" font-size="14">🔒</text>');
+    });
+    box.innerHTML = '<figure class="netfig"><svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + (cfg.caption || 'neural network schematic') + '" style="width:100%;max-width:' + W + 'px;">' + e.join('') + '</svg><figcaption class="nf-cap">' + cfg.caption + '</figcaption></figure>';
+  };
+
   document.addEventListener("DOMContentLoaded", linkGlossary);
   document.addEventListener("DOMContentLoaded", gradeTryit);
 })();
