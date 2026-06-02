@@ -270,6 +270,45 @@
     });
   }
 
+  // traceProbe(id, cfg) — glass-box trace of a frozen-encoder + tiny probe head.
+  // Shows: frozen features → ×weights → contributions → sum+bias = z → output.
+  // cfg = { feats:[names], examples:[{name,x:[..]}], w:[..], b, mode:'class'|'reg',
+  //         posLabel, negLabel, outLabel, unitPre, unitPost }
+  window.traceProbe = function (id, cfg) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    var cur = 0;
+    var sig = function (z) { return 1 / (1 + Math.exp(-z)); };
+    var fmt = function (n) { return (Math.round(n * 100) / 100).toString(); };
+    function render() {
+      var x = cfg.examples[cur].x;
+      var z = cfg.b;
+      var rows = cfg.feats.map(function (f, i) { var c = cfg.w[i] * x[i]; z += c; return { f: f, v: x[i], w: cfg.w[i], c: c }; });
+      var btns = cfg.examples.map(function (e, i) {
+        return '<button type="button" class="tp-ex' + (i === cur ? ' on' : '') + '" data-i="' + i + '" aria-pressed="' + (i === cur) + '">' + e.name + '</button>';
+      }).join('');
+      var tbl = '<table class="tp-tbl"><thead><tr><th>frozen feature</th><th>value</th><th></th><th>weight</th><th></th><th>contribution</th></tr></thead><tbody>';
+      rows.forEach(function (r) {
+        tbl += '<tr><td class="tp-f">' + r.f + '</td><td>' + fmt(r.v) + '</td><td>×</td><td>' + r.w + '</td><td>=</td><td><b>' + fmt(r.c) + '</b></td></tr>';
+      });
+      tbl += '<tr class="tp-bias"><td class="tp-f">bias</td><td></td><td></td><td></td><td>+</td><td><b>' + cfg.b + '</b></td></tr>';
+      tbl += '</tbody></table>';
+      var out;
+      if (cfg.mode === 'class') {
+        var p = sig(z), pos = p >= 0.5;
+        out = '<div class="tp-sum">add them up: <b>z = ' + fmt(z) + '</b> &nbsp;→&nbsp; squash with sigmoid: <b>' + (p * 100).toFixed(0) + '%</b></div>' +
+          '<div class="tp-verdict ' + (pos ? 'pos' : 'neg') + '">' + (pos ? '✅ ' + cfg.posLabel : '— ' + cfg.negLabel) + ' &nbsp;<span class="tp-prob">(probability ' + (p * 100).toFixed(0) + '%, threshold 50%)</span></div>';
+      } else {
+        out = '<div class="tp-sum">add them up: <b>' + (cfg.unitPre || '') + fmt(z) + (cfg.unitPost || '') + '</b></div>' +
+          '<div class="tp-verdict pos">' + cfg.outLabel + ': <b>' + (cfg.unitPre || '') + fmt(z) + (cfg.unitPost || '') + '</b></div>';
+      }
+      box.innerHTML = '<div class="tp-flow">frozen features → × probe weights → add up → ' + (cfg.mode === 'class' ? 'sigmoid → decision' : 'prediction') + '</div>' +
+        '<div class="tp-ex-row">' + btns + '</div>' + tbl + out;
+      box.querySelectorAll('.tp-ex').forEach(function (b) { b.addEventListener('click', function () { cur = +b.dataset.i; render(); }); });
+    }
+    render();
+  };
+
   document.addEventListener("DOMContentLoaded", linkGlossary);
   document.addEventListener("DOMContentLoaded", gradeTryit);
 })();

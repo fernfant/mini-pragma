@@ -202,6 +202,22 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
   <li><strong>Stress the labels.</strong> Push the labelled set down to 10, or 5. Where does the pre-trained advantage finally break?</li>
 </ul>
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> Where the lead decision actually comes from</h2>
+
+<p>The <strong>frozen encoder</strong> has already boiled each visitor's whole clickstream down to a few <em>feature</em> numbers. The <strong>probe</strong> — the only part we trained, on those ~20 labels — just multiplies each feature by a weight, adds them up, and squashes the total into a probability. Here's the <em>entire</em> computation for one visitor, every number visible — flip between a hot and a cold visitor:</p>
+
+<div class="widget">
+  <h3>🎚 From frozen features to the lead decision</h3>
+  <div class="pg-sub">Trace it: each frozen feature → × its probe weight → contribution → add up → sigmoid → decision.</div>
+  <div id="tp-l6"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){traceProbe('tp-l6',{
+  feats:['focus — same listing','deep actions (photos, mortgage)','consistent price / beds / area','session length'],
+  examples:[{name:'🔥 HOT visitor',x:[0.9,0.8,0.9,0.7]},{name:'❄️ COLD visitor',x:[0.2,0.1,0.2,0.3]}],
+  w:[2.5,2.0,1.5,0.5], b:-2.5, mode:'class', posLabel:'LEAD — likely to request a viewing', negLabel:'no lead'
+});});</script>
+<p style="font-size:13px;color:var(--text-dim);">Illustrative frozen features and probe weights. The real encoder produces dozens of features and the probe learns the weights — but it's exactly this shape: a tiny weighted sum on top of frozen features.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the labels → recall slider and the HOT vs COLD session examples above.</p>
