@@ -372,6 +372,33 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
   <strong>Reality check — MacBook Air M4 (16 GB, fanless).</strong> Memory isn't the bottleneck (16 GB handles a 30M model easily). <strong>Heat is</strong> — the Air has no fan, so multi-hour runs throttle. Train overnight, keep it cool and plugged in. The true 125M <code>gpt3-small</code> preset is in <code>model.py</code> for reference, but that one really wants a cloud GPU. Want it faster on the Mac? Rewrite in Apple <strong>MLX</strong> (~2× quicker than PyTorch-MPS here).
 </div>
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> One training step, every number</h2>
+
+<p>The loop "never changes" from L1 to GPT-3 — so let's watch a single step do its work. One weight <code>w</code>, one data point (<code>x = 2</code>, target <code>= 7</code>). Hit <em>Take one step</em> and follow guess → loss → gradient → the nudge, over and over, as <code>w</code> climbs toward 3.5:</p>
+
+<div class="widget">
+  <h3>🎚 Watch one gradient-descent step</h3>
+  <div class="pg-sub">model: <code>guess = w · x</code>. Each step nudges <code>w</code> downhill on the loss — the exact 5-line loop, with one weight.</div>
+  <div id="os-l4h"></div>
+</div>
+<script>(function(){var box=document.getElementById('os-l4h');if(!box)return;
+var X=2,T=7,LR=0.1,w=0,step=0;
+function r(){var g=w*X,loss=(g-T)*(g-T),grad=2*(g-T)*X,nw=w-LR*grad;
+box.innerHTML='<div class="tp-flow">guess → loss → gradient → nudge w → repeat</div>'
++'<table class="tp-tbl"><tbody>'
++'<tr><td class="tp-f">weight now</td><td><b>'+w.toFixed(3)+'</b></td></tr>'
++'<tr><td class="tp-f">guess = w·x = w·'+X+'</td><td>'+g.toFixed(3)+'</td></tr>'
++'<tr><td class="tp-f">target</td><td>'+T+'</td></tr>'
++'<tr><td class="tp-f">loss = (guess − target)²</td><td><b>'+loss.toFixed(3)+'</b></td></tr>'
++'<tr><td class="tp-f">gradient = 2·(guess−target)·x</td><td>'+grad.toFixed(3)+'</td></tr>'
++'<tr class="tp-bias"><td class="tp-f">new w = w − '+LR+'·gradient</td><td><b>'+nw.toFixed(3)+'</b></td></tr>'
++'</tbody></table>'
++'<div style="margin-top:8px;"><button type="button" id="os-step">Take one step ▸</button> <button type="button" class="alt" id="os-reset">Reset</button> <span style="margin-left:8px;color:#64748b;font-size:13px;">step '+step+(loss<0.01?' — converged ✅':'')+'</span></div>';
+document.getElementById('os-step').addEventListener('click',function(){w=nw;step++;r();});
+document.getElementById('os-reset').addEventListener('click',function(){w=0;step=0;r();});}
+r();})();</script>
+<p style="font-size:13px;color:var(--text-dim);">minigpt runs this exact loop over ~11M weights at once instead of one — same four lines, same nudge.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the loss-curve widget above (and the runnable minigpt notebook).</p>

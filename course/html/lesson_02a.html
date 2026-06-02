@@ -261,6 +261,26 @@ one nudge  =  average(g₁, g₂)      ← weights move ONCE, using both</code><
 
 <p>So everything you just learned is real: <strong>pre-training shapes embeddings by playing fill-in-the-blank.</strong> Real BERT does <em>exactly</em> this — same training game, same gradient descent — just on billions of sentences and with attention layers on top so the model can be smarter about <em>which</em> context words matter for each blank. We'll see attention in <a href="lesson_03.html">Lesson 3</a> and the full tiny-BERT in <a href="lesson_04.html">Lesson 4</a>.</p>
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> Trace the similarity score</h2>
+
+<p>"Similar vectors point the same way" — but what's the actual number? Two word-vectors' similarity is their <strong>dot product</strong>: multiply matching components, add them up. Here it is in full — flip between a similar and a dissimilar pair:</p>
+
+<div class="widget">
+  <h3>🎚 Two vectors → dot product → similarity</h3>
+  <div class="pg-sub">Multiply each pair of components, then add them up. Bigger total = more alike.</div>
+  <div id="dp-l2a"></div>
+</div>
+<script>(function(){var box=document.getElementById('dp-l2a');if(!box)return;
+var EX=[{name:'🐱 cat vs 🐶 dog (similar)',u:[0.9,0.8,0.1,0.2],v:[0.8,0.9,0.2,0.1]},{name:'🐱 cat vs 🚗 car (different)',u:[0.9,0.8,0.1,0.2],v:[0.1,0.0,0.9,0.8]}];
+var c=0;
+function r(){var u=EX[c].u,v=EX[c].v,dot=0;
+var rows=u.map(function(ui,i){var pr=ui*v[i];dot+=pr;return '<tr><td class="tp-f">dim '+(i+1)+'</td><td>'+ui+'</td><td>×</td><td>'+v[i]+'</td><td>=</td><td><b>'+pr.toFixed(2)+'</b></td></tr>';}).join('');
+var btns=EX.map(function(e,i){return '<button type="button" class="tp-ex'+(i===c?' on':'')+'" data-i="'+i+'" aria-pressed="'+(i===c)+'">'+e.name+'</button>';}).join('');
+box.innerHTML='<div class="tp-ex-row">'+btns+'</div><table class="tp-tbl"><thead><tr><th>component</th><th>vec A</th><th></th><th>vec B</th><th></th><th>product</th></tr></thead><tbody>'+rows+'</tbody></table><div class="tp-sum">add them up → dot product = <b>'+dot.toFixed(2)+'</b></div><div class="tp-verdict '+(dot>1?'pos':'neg')+'">'+(dot>1?'high similarity — these vectors point the same way':'low similarity — these point different ways')+' ('+dot.toFixed(2)+')</div>';
+box.querySelectorAll('.tp-ex').forEach(function(b){b.addEventListener('click',function(){c=+b.dataset.i;r();});});}
+r();})();</script>
+<p style="font-size:13px;color:var(--text-dim);">Illustrative vectors. This dot product is exactly the "score" step inside attention (<a href="lesson_03.html">L3</a>) — same arithmetic, just between a query and a key.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the scaling widget above (more data, bigger vectors, batches).</p>

@@ -526,6 +526,23 @@ Linear(2048, 512)</code></pre>
 
 
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> One vector through one block</h2>
+
+<p>What does a single block actually <em>do</em> to a word's vector? Here's "it" — a 2-number vector — going through one (attention + feed-forward) block, the thing that repeats 18 times. Every number is shown:</p>
+
+<div class="widget">
+  <h3>Watch the vector transform, stage by stage</h3>
+  <table class="tp-tbl" style="font-size:13px;">
+    <tbody>
+      <tr><td class="tp-f">① input — the word "it"</td><td>[1.00, 0.20]</td></tr>
+      <tr><td class="tp-f">② attention — blend 70% itself + 30% of "cat" [0.20, 1.00]</td><td>[0.76, 0.44]</td></tr>
+      <tr><td class="tp-f">③ feed-forward — ReLU(2·x − 1) = [0.52, 0], then add x back (residual)</td><td>[1.28, 0.44]</td></tr>
+      <tr class="tp-bias"><td class="tp-f">→ output of block 1 (this feeds into block 2)</td><td>[1.28, 0.44]</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:10px 0 0;font-size:13px;color:#475569;">"it" has absorbed a little of "cat" (its 2nd number rose 0.20 → 0.44) and been reshaped by the feed-forward. <strong>Block 2 does the same to this output, then block 3… 18 times.</strong> Stacking is just running this trace over and over.</p>
+</div>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the stacking diagram and the 'watch the sentence through the stack' widget above.</p>
