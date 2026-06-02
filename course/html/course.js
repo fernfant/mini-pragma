@@ -363,7 +363,8 @@
         e.push('<circle cx="' + xs[i] + '" cy="' + y + '" r="10" fill="' + (l.frozen ? '#eef2ff' : c) + '" stroke="' + c + '" stroke-width="2"' + (l.frozen ? ' stroke-dasharray="3 2"' : '') + '/>');
       });
       if (l.n > 5) e.push('<text x="' + xs[i] + '" y="' + (Math.max.apply(null, YS[i]) + 21) + '" text-anchor="middle" font-size="13" fill="#94a3b8">⋮</text>');
-      e.push('<text x="' + xs[i] + '" y="' + (H - 9) + '" text-anchor="middle" font-size="11" font-weight="600" fill="' + c + '">' + l.label + '</text>');
+      e.push('<text x="' + xs[i] + '" y="' + (H - (l.sub ? 22 : 9)) + '" text-anchor="middle" font-size="11" font-weight="600" fill="' + c + '">' + l.label + '</text>');
+      if (l.sub) e.push('<text x="' + xs[i] + '" y="' + (H - 8) + '" text-anchor="middle" font-size="10.5" fill="#94a3b8">' + l.sub + '</text>');
       if (l.repeat) e.push('<text x="' + xs[i] + '" y="' + (cy - 70) + '" text-anchor="middle" font-size="12.5" font-weight="800" fill="#b9410a">' + l.repeat + '</text>');
       if (l.frozen) e.push('<text x="' + xs[i] + '" y="' + (cy - 70) + '" text-anchor="middle" font-size="14">🔒</text>');
     });
