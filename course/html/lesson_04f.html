@@ -540,6 +540,21 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   <strong>🎉 That's the lesson — you made it to the end of the main path.</strong> You now know how a model writes one word at a time, why the causal mask matters, and how temperature changes its mood. <strong>Want to go deeper?</strong> The optional next page, <a href="lesson_04g.html">Lesson 4g</a>, has two bonus deep-dives: the first ("the whole brain, drawn to scale") lets you <em>see</em> the real size of the network; the second ("from memorizer to general-purpose") shows the leap from whole-word toys to ChatGPT-style models. Totally optional — dip in if you're curious, or head straight on to <a href="lesson_04h.html">Lesson 4h</a>.
 </div>
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> Watch the next word get picked</h2>
+
+<p>How does "predict the next word" actually choose? The model produces a raw <strong>score</strong> (a <em>logit</em>) for every word in its vocabulary. Softmax turns those scores into percentages that add to 100%, and it picks the biggest. Here's that whole step, glass-box — drag the <strong>temperature</strong> and watch the probabilities sharpen or spread:</p>
+
+<div class="widget">
+  <h3>🎚 logits → softmax → the chosen word</h3>
+  <div class="pg-sub">Context: <em>"she poured milk on her ___"</em>. Each candidate has a raw logit; trace it through softmax to the pick.</div>
+  <div id="ts-l4f"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){traceSoftmax('ts-l4f',{
+  candidates:[{label:'cereal',logit:3.1},{label:'plate',logit:1.2},{label:'shoes',logit:0.4},{label:'floor',logit:-0.3}],
+  temp:true, pick:'next word'
+});});</script>
+<p style="font-size:13px;color:var(--text-dim);">Illustrative logits. Low temperature makes softmax spiky (always "cereal"); high temperature flattens it (more adventurous, more mistakes) — the exact dial from the generator above.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the next-word generator and its temperature slider above.</p>

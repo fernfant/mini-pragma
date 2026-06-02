@@ -309,6 +309,42 @@
     render();
   };
 
+  // traceSoftmax(id, cfg) — glass-box "scores → softmax → pick" trace.
+  // cfg = { candidates:[{label,logit}], temp:bool, pick:'next word' }
+  window.traceSoftmax = function (id, cfg) {
+    var box = document.getElementById(id);
+    if (!box) return;
+    var T = 1;
+    var COL = ['#047857', '#1d4ed8', '#b45309', '#7e22ce', '#0e7490', '#be123c'];
+    function render() {
+      var cands = cfg.candidates;
+      var ex = cands.map(function (c) { return Math.exp(c.logit / T); });
+      var sum = ex.reduce(function (a, b) { return a + b; }, 0);
+      var p = ex.map(function (e) { return e / sum; });
+      var top = p.indexOf(Math.max.apply(null, p));
+      var slider = cfg.temp
+        ? '<label for="' + id + '-t" style="display:block;margin:4px 0 10px;font-size:13px;">temperature T = <output id="' + id + '-tv" class="nr-mono">' + T.toFixed(1) + '</output>' +
+          ' <input id="' + id + '-t" type="range" min="0.3" max="2" step="0.1" value="' + T + '" style="width:200px;vertical-align:middle;" aria-label="softmax temperature"></label>'
+        : '';
+      var rows = cands.map(function (c, i) {
+        var pct = (p[i] * 100);
+        return '<div style="display:flex;align-items:center;gap:10px;margin:4px 0;font-size:13px;">' +
+          '<span style="width:78px;font-family:ui-monospace,monospace;font-weight:' + (i === top ? '700' : '400') + ';color:' + (i === top ? COL[i % COL.length] : '#475569') + ';">' + c.label + '</span>' +
+          '<span style="width:96px;color:#64748b;font-family:ui-monospace,monospace;">logit ' + c.logit.toFixed(1) + '</span>' +
+          '<span style="flex:1;background:var(--code-bg);border-radius:4px;height:18px;min-width:80px;"><span style="display:block;width:' + pct.toFixed(1) + '%;height:100%;background:' + COL[i % COL.length] + ';border-radius:4px;"></span></span>' +
+          '<span style="width:44px;text-align:right;font-variant-numeric:tabular-nums;font-weight:' + (i === top ? '700' : '400') + ';">' + pct.toFixed(0) + '%</span></div>';
+      }).join('');
+      box.innerHTML = '<div class="tp-flow">raw scores (logits) → divide by T → exp → ÷ total = softmax probabilities → pick the biggest</div>' +
+        slider + rows +
+        '<div class="tp-verdict pos" style="margin-top:10px;">Picked ' + (cfg.pick || 'output') + ': <b>' + cands[top].label + '</b> (' + (p[top] * 100).toFixed(0) + '%)</div>';
+      if (cfg.temp) {
+        var s = document.getElementById(id + '-t');
+        s.addEventListener('input', function () { T = +s.value; document.getElementById(id + '-tv').textContent = T.toFixed(1); render(); });
+      }
+    }
+    render();
+  };
+
   document.addEventListener("DOMContentLoaded", linkGlossary);
   document.addEventListener("DOMContentLoaded", gradeTryit);
 })();

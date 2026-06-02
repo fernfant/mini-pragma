@@ -312,6 +312,21 @@ the little dog laughed to see such sport</pre></div>
   explain: "An open character vocabulary composes any spelling from ~25 letters; a fixed word list can only ever emit those exact words. That open vocabulary is what 'general-purpose' really buys you."
 });});</script>
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> Watch the next character get picked</h2>
+
+<p>The character model works the same way as next-word — just over letters. Given some context, it produces a raw <strong>logit</strong> for each possible next character, softmax turns them into probabilities, and it picks one. Here's that step, glass-box:</p>
+
+<div class="widget">
+  <h3>🎚 logits → softmax → the chosen character</h3>
+  <div class="pg-sub">Context: <em>"shakespea_"</em>. Trace each candidate letter's logit through softmax to the pick (drag temperature).</div>
+  <div id="ts-l4g"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){traceSoftmax('ts-l4g',{
+  candidates:[{label:'r',logit:4.0},{label:'k',logit:1.5},{label:'t',logit:0.8},{label:'e',logit:0.5}],
+  temp:true, pick:'next character'
+});});</script>
+<p style="font-size:13px;color:var(--text-dim);">Illustrative logits. Same softmax-and-pick as next-word, one rung down: characters instead of words. Spelling emerges because the right letters keep winning.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the parameter-breakdown bars and the character-model widget above.</p>

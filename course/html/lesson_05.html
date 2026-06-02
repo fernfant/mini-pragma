@@ -401,6 +401,21 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
 <p>Next: see one more realistic worked example before the capstone.</p>
 
 
+<h2 class="step" id="trace"><span class="step-num">Trace</span> Watch the masked value get filled in</h2>
+
+<p>This is the whole game in one step: a value is hidden, and the model produces a raw <strong>logit</strong> for each possible value, softmaxes them, and picks. Here's that fill-in-the-blank, glass-box:</p>
+
+<div class="widget">
+  <h3>🎚 logits → softmax → the filled-in value</h3>
+  <div class="pg-sub">Event: <code>action=photos price=&lt;mask&gt; beds=2bed area=jvc</code>. Trace each candidate price through softmax to the pick.</div>
+  <div id="ts-l5"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){traceSoftmax('ts-l5',{
+  candidates:[{label:'premium',logit:3.5},{label:'mid',logit:1.8},{label:'luxury',logit:1.2},{label:'budget',logit:0.5}],
+  temp:false, pick:'masked value'
+});});</script>
+<p style="font-size:13px;color:var(--text-dim);">Illustrative logits — the model leans "premium" because the other fields (photos on a 2-bed in JVC) co-occur with premium listings in training. Same softmax-and-pick as every other prediction in the course.</p>
+
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the key-value event playground above (and the pragma_mini notebook).</p>
