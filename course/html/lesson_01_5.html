@@ -593,66 +593,114 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 
 <h2 class="step" id="detect"><span class="step-num">Detect</span> What does each neuron actually <em>detect</em>?</h2>
 
-<p>Here's the intuition that makes neural networks click: <strong>each hidden neuron is a little detector that fires when it spots its pattern.</strong> Below is a 6-cell signal you can switch on and off, and four neurons that each carry a fixed <em>template</em>. A neuron lights up only when the signal matches its template. Toggle the cells and watch which detectors fire — the <em>pattern of firings</em> is how the network "sees" the input.</p>
+<p>Here's the intuition that makes neural networks click: <strong>each hidden neuron is a little detector that fires when it spots its pattern</strong>, and the output neuron tallies their votes into the answer <code>Y</code>. Let's trace one signal <em>all the way through</em> the same <code>input → hidden → output</code> pipeline you saw in the diagram above — so you can see exactly where the weights are, what each neuron outputs, and how those add back up into <code>Y</code>.</p>
+
+<p>The <strong>signal</strong> <code>X</code> is a tiny <strong>6-pixel strip</strong> — each pixel on (1) or off (0). We've hand-wired this net to answer one question: <em>is the bright part in the centre?</em> Toggle pixels and follow the wires.</p>
 
 <div class="widget">
-  <h3>🎚 Toggle the signal — watch the detectors fire</h3>
-  <div class="pg-sub">Click a cell to flip it on/off. Each neuron computes <code>ReLU(match − 1.5)</code>, so it fires only when <strong>both</strong> of its template cells are on.</div>
-  <div id="nd-signal" role="group" aria-label="Input signal: six cells you can toggle on or off" style="margin:12px 0;"></div>
-  <div id="nd-neurons"></div>
-  <p id="nd-read" style="margin-top:12px;font-weight:600;"></p>
+  <h3>🎚 Trace the signal from X to Y</h3>
+  <div class="pg-sub">Each hidden neuron looks at <strong>2 pixels</strong> and fires (outputs 1) only when <em>both</em> are on: <code>h = ReLU(pixel + pixel − 1)</code>. The output neuron adds up their votes with its own weights: <code>Y = 1·h₁ + 3·h₂ + 1·h₃ − 2·h₄</code>.</div>
+  <div id="nd-pixels" role="group" aria-label="The 6-pixel input signal — toggle each pixel on or off" style="margin:10px 0 14px;"></div>
+  <svg id="nd-svg" viewBox="0 0 560 290" role="img" aria-label="A wired neural network: six input pixels on the left connect to four hidden detector neurons in the middle, each of which connects to one output neuron Y on the right. Edge thickness shows the weights; node values update as you toggle the pixels." style="width:100%;max-width:580px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;"></svg>
+  <div id="nd-trace" style="margin-top:12px;"></div>
 </div>
 
-<p style="font-size:13px;color:var(--text-dim);">We hand-set these four detectors so the idea is visible. A <em>trained</em> network discovers its own — usually messier — but the principle is identical: every neuron fires on a feature, and the pattern of firings <em>is</em> the network's understanding. Stack layers (next lesson) and later neurons detect features built from earlier ones.</p>
+<p style="font-size:13px;color:var(--text-dim);">We hand-wired the weights so you can trace every step. A <em>trained</em> network learns its own weights — usually messier — but the flow is identical: signal <code>X</code> → multiply by weights &amp; ReLU → hidden outputs <code>h</code> → multiply by weights → output <code>Y</code>. Stack layers (next lesson) and later neurons detect features built from earlier ones.</p>
 
 <script>
 (() => {
-  const host = document.getElementById('nd-signal');
-  if (!host) return;
-  const N = 6;
-  let sig = [1,1,0,0,0,0];
-  const DET = [
-    {name:'left edge',    t:[1,1,0,0,0,0], col:'#1d4ed8'},
-    {name:'centre block', t:[0,0,1,1,0,0], col:'#b9410a'},
-    {name:'right edge',   t:[0,0,0,0,1,1], col:'#047857'},
-    {name:'two ends',     t:[1,0,0,0,0,1], col:'#7e22ce'},
+  const pxHost = document.getElementById('nd-pixels');
+  if (!pxHost) return;
+  let sig = [0,0,1,1,0,0];                 // default: centre bright
+  const NEUR = [
+    {name:'left edge',  px:[0,1], col:'#1d4ed8'},
+    {name:'centre',     px:[2,3], col:'#b9410a'},
+    {name:'right edge', px:[4,5], col:'#047857'},
+    {name:'two ends',   px:[0,5], col:'#7e22ce'}
   ];
-  function matched(d){ let s=0; for(let i=0;i<N;i++) s+=sig[i]*d.t[i]; return s; }
-  function renderSignal(){
-    host.innerHTML='';
-    const row=document.createElement('div'); row.style.cssText='display:flex;gap:6px;flex-wrap:wrap;';
-    for(let i=0;i<N;i++){
-      const b=document.createElement('button');
-      b.type='button';
-      b.setAttribute('aria-pressed', sig[i]?'true':'false');
-      b.setAttribute('aria-label','signal cell '+(i+1)+(sig[i]?' (on)':' (off)'));
-      b.textContent = sig[i]?'1':'0';
-      b.style.cssText='width:42px;height:42px;border-radius:8px;border:2px solid #cbd5e1;font-weight:700;font-size:16px;cursor:pointer;background:'+(sig[i]?'#1a1a1a':'#fff')+';color:'+(sig[i]?'#fff':'#94a3b8')+';';
+  const V = [1,3,1,-2];                     // output weights (the votes)
+  const relu = z => Math.max(0, z);
+  const inY  = [30,75,120,165,210,255];
+  const hidY = [55,120,185,250];
+  const IN_X=72, HID_X=300, OUT_X=502, OUT_Y=157;
+  function compute(){
+    const h = NEUR.map(n => relu(sig[n.px[0]] + sig[n.px[1]] - 1));
+    const Y = h.reduce((s,hi,i)=> s + V[i]*hi, 0);
+    return {h, Y};
+  }
+  function pixels(){
+    pxHost.innerHTML = '<span style="font-size:13px;color:#475569;margin-right:8px;">signal X:</span>';
+    const row=document.createElement('span'); row.style.cssText='display:inline-flex;gap:6px;vertical-align:middle;';
+    sig.forEach((v,i)=>{
+      const b=document.createElement('button'); b.type='button';
+      b.setAttribute('aria-pressed', v?'true':'false');
+      b.setAttribute('aria-label','pixel x'+(i+1)+(v?' (on)':' (off)'));
+      b.textContent='x'+(i+1)+'='+v;
+      b.style.cssText='min-width:46px;height:38px;border-radius:8px;border:2px solid #cbd5e1;font-weight:700;font-size:13px;cursor:pointer;background:'+(v?'#1a1a1a':'#fff')+';color:'+(v?'#fff':'#94a3b8')+';';
       b.addEventListener('click',()=>{ sig[i]=sig[i]?0:1; render(); });
       row.appendChild(b);
-    }
-    host.appendChild(row);
-  }
-  function renderNeurons(){
-    const wrap=document.getElementById('nd-neurons'); wrap.innerHTML='';
-    DET.forEach(d=>{
-      const m=matched(d), need=d.t.reduce((a,b)=>a+b,0), firing=m>=2;
-      const tmpl=d.t.map((t,i)=>'<span style="display:inline-block;width:15px;height:15px;border-radius:3px;margin:0 1px;background:'+(t?(sig[i]?d.col:'#cbd5e1'):'#f1f5f9')+';border:1px solid #e2e8f0;vertical-align:middle;"></span>').join('');
-      const row=document.createElement('div');
-      row.style.cssText='display:flex;align-items:center;gap:12px;margin:7px 0;';
-      row.innerHTML='<span style="width:92px;font-size:13px;color:#475569;">neuron: <b>'+d.name+'</b></span>'
-        +'<span>'+tmpl+'</span>'
-        +'<span style="width:150px;font-weight:700;color:'+(firing?d.col:'#94a3b8')+';">'+(firing?'⚡ FIRES':'· quiet')
-        +' <span style="font-weight:400;color:#94a3b8;font-size:12px;">('+m+'/'+need+' matched)</span></span>';
-      wrap.appendChild(row);
     });
+    pxHost.appendChild(row);
+  }
+  function svg(h,Y){
+    const e=[]; // edges first (behind nodes)
+    NEUR.forEach((n,i)=> n.px.forEach(p=>{
+      const on=sig[p]===1;
+      e.push('<line x1="'+(IN_X+13)+'" y1="'+inY[p]+'" x2="'+(HID_X-18)+'" y2="'+hidY[i]+'" stroke="'+(on?n.col:'#dbe2ea')+'" stroke-width="'+(on?2.6:1)+'" opacity="'+(on?0.9:0.45)+'"/>');
+    }));
+    NEUR.forEach((n,i)=>{
+      const fire=h[i]>0;
+      e.push('<line x1="'+(HID_X+18)+'" y1="'+hidY[i]+'" x2="'+(OUT_X-22)+'" y2="'+OUT_Y+'" stroke="'+(V[i]>0?'#047857':'#b45309')+'" stroke-width="'+(1+Math.abs(V[i])*1.2)+'" opacity="'+(fire?0.9:0.18)+'"/>');
+      const mx=(HID_X+18+OUT_X-22)/2, my=(hidY[i]+OUT_Y)/2;
+      e.push('<text x="'+mx+'" y="'+(my-4)+'" font-size="11" font-weight="700" fill="'+(V[i]>0?'#047857':'#b45309')+'" font-family="ui-monospace,monospace">×'+V[i]+'</text>');
+    });
+    // headers
+    e.push('<text x="'+IN_X+'" y="14" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569">signal X</text>');
+    e.push('<text x="'+HID_X+'" y="14" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569">hidden layer (detectors)</text>');
+    e.push('<text x="'+OUT_X+'" y="14" text-anchor="middle" font-size="11.5" font-weight="700" fill="#475569">output Y</text>');
+    // input nodes
+    sig.forEach((v,p)=>{
+      e.push('<text x="'+(IN_X-22)+'" y="'+(inY[p]+4)+'" text-anchor="end" font-size="11" fill="#94a3b8" font-family="ui-monospace,monospace">x'+(p+1)+'</text>');
+      e.push('<circle cx="'+IN_X+'" cy="'+inY[p]+'" r="13" fill="'+(v?'#1a1a1a':'#fff')+'" stroke="#94a3b8"/>');
+      e.push('<text x="'+IN_X+'" y="'+(inY[p]+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="'+(v?'#fff':'#94a3b8')+'">'+v+'</text>');
+    });
+    // hidden nodes
+    NEUR.forEach((n,i)=>{
+      const fire=h[i]>0;
+      e.push('<circle cx="'+HID_X+'" cy="'+hidY[i]+'" r="18" fill="'+(fire?n.col:'#eef2ff')+'" stroke="'+n.col+'" stroke-width="2"/>');
+      e.push('<text x="'+HID_X+'" y="'+(hidY[i]+5)+'" text-anchor="middle" font-size="14" font-weight="800" fill="'+(fire?'#fff':'#94a3b8')+'">'+h[i]+'</text>');
+      e.push('<text x="'+(HID_X+26)+'" y="'+(hidY[i]+4)+'" font-size="11" fill="'+(fire?n.col:'#94a3b8')+'" font-weight="600">'+n.name+(fire?' ⚡':'')+'</text>');
+    });
+    // output node
+    const centred=Y>=3;
+    e.push('<circle cx="'+OUT_X+'" cy="'+OUT_Y+'" r="24" fill="'+(centred?'#dcfce7':'#f1f5f9')+'" stroke="'+(centred?'#047857':'#94a3b8')+'" stroke-width="2.5"/>');
+    e.push('<text x="'+OUT_X+'" y="'+(OUT_Y+6)+'" text-anchor="middle" font-size="16" font-weight="800" fill="'+(centred?'#047857':'#475569')+'">'+Y+'</text>');
+    e.push('<text x="'+OUT_X+'" y="'+(OUT_Y+44)+'" text-anchor="middle" font-size="11" font-weight="700" fill="'+(centred?'#047857':'#94a3b8')+'">'+(centred?'👁 centred':'not centred')+'</text>');
+    return e.join('');
+  }
+  function trace(h,Y){
+    const sub=['₁','₂','₃','₄'];
+    let rows = NEUR.map((n,i)=>{
+      const a=n.px[0], b=n.px[1], z=sig[a]+sig[b]-1;
+      return '<div style="margin:3px 0;"><span style="color:'+n.col+';font-weight:700;">h'+sub[i]+' ('+n.name+')</span> = ReLU(x'+(a+1)+' + x'+(b+1)+' − 1) = ReLU('+sig[a]+' + '+sig[b]+' − 1) = ReLU('+z+') = <b>'+h[i]+'</b>'+(h[i]>0?' ⚡':'')+'</div>';
+    }).join('');
+    const op = i => (V[i]<0?' − ':' + ') + Math.abs(V[i]) + '·h'+sub[i];
+    const opv = i => (V[i]<0?' − ':' + ') + Math.abs(V[i]) + '·' + h[i];
+    const yline = 'Y = 1·h'+sub[0]+op(1)+op(2)+op(3) + ' = 1·'+h[0]+opv(1)+opv(2)+opv(3) + ' = <b>'+Y+'</b>';
+    const centred=Y>=3;
+    return '<div style="font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;line-height:1.5;">'
+      + '<div style="font-family:-apple-system,system-ui,sans-serif;font-weight:700;color:#334155;margin-bottom:6px;">① Hidden layer — each neuron multiplies its pixels by weight 1, adds bias −1, then ReLU:</div>'
+      + rows
+      + '<div style="font-family:-apple-system,system-ui,sans-serif;font-weight:700;color:#334155;margin:11px 0 6px;">② Output — multiply each hidden output by its weight and add them up:</div>'
+      + '<div>'+yline+'</div>'
+      + '<div style="font-family:-apple-system,system-ui,sans-serif;margin-top:8px;font-weight:700;color:'+(centred?'#047857':'#b45309')+';">Verdict: Y = '+Y+(centred?' ≥ 3 → 👁 the bright part is CENTRED':' &lt; 3 → not a centred pattern')+'</div>'
+      + '</div>';
   }
   function render(){
-    renderSignal(); renderNeurons();
-    const fired=DET.filter(d=>matched(d)>=2);
-    document.getElementById('nd-read').innerHTML = fired.length
-      ? 'Active detectors: '+fired.map(d=>'<span style="color:'+d.col+'">'+d.name+'</span>').join(' + ')+' — that firing pattern <em>is</em> what the network sees.'
-      : 'No detector fires — the network sees nothing it recognises in this signal.';
+    pixels();
+    const {h,Y}=compute();
+    document.getElementById('nd-svg').innerHTML = svg(h,Y);
+    document.getElementById('nd-trace').innerHTML = trace(h,Y);
   }
   render();
 })();
