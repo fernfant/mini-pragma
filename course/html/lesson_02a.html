@@ -61,6 +61,8 @@
   reveal:"It <strong>averages</strong> them — each neighbour counts the same. That's the whole trick (it's why this is called a <em>bag</em> of words: order and importance are thrown away). Keep that flat average in mind — it's exactly the ceiling attention will break in Lesson 3."
 });});</script>
 
+<p class="bits-note">🔢 <strong>Still just numbers.</strong> here it's bigger embedding vectors and whole batches — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+
 <h2 class="step" id="try2"><span class="step-num">Try 2</span> 🔬 What if we just throw more data at it?</h2>
 
 <p>You probably noticed, back in <a href="lesson_02.html">Lesson 2's first widget</a>, that the loss never quite settled — it bounces around 2.0–3.0 even at step 3,000, and inference sometimes guesses wrong. That's a real symptom: <strong>20 sentences and 8 numbers per word just isn't enough signal</strong>. The model can almost learn the patterns, but not quite.</p>

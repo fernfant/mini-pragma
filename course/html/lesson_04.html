@@ -80,6 +80,8 @@
 </figure>
 
 
+<p class="bits-note">🔢 <strong>Still just numbers.</strong> here it's masked token ids and the cross-entropy loss — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+
 <h2 class="step" id="big-idea"><span class="step-num">Idea</span> The fill-in-the-blank game</h2>
 
 <p>In <a href="lesson_03.html">L3</a> you saw <em>how</em> a Transformer lets words look at each other with attention. But what are all those weights actually trained to <em>do</em>? Here's the game BERT plays: pick a sentence with a word missing, and have the model guess what was there. You don't need to label any data — the right answer is whatever word you hid.</p>

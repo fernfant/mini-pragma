@@ -81,6 +81,8 @@
 </figure>
 
 
+<p class="bits-note">🔢 <strong>Still just numbers.</strong> here a word becomes an id, then a one-hot, then a vector — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+
 <h2 class="step" id="intuition"><span class="step-num">Idea</span> The big idea (forget words for a moment)</h2>
 
 <p>Imagine you describe yourself with 4 numbers, 0 to 10:</p>
@@ -186,6 +188,43 @@ Kid #2:   pizza ⭐⭐⭐    soccer ⭐⭐    dog-lover ⭐⭐⭐⭐⭐    quiet
 vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code></pre>
 
 <p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally indexing the table at its ID row. No math, just memory lookup.</p>
+
+<h3 id="onehot">The hidden binary step: one-hot</h3>
+
+<p>Here's the part that surprises people. That "just grab row 2" is secretly a piece of math — and it's the one place a <strong>truly binary</strong> input shows up. Turn the word's id into a <strong>one-hot vector</strong>: a row of <code>0</code>s with a single <code>1</code> in the word's slot. Multiply that binary vector by the table, and you get exactly that word's row. Pick a word and watch it happen:</p>
+
+<div class="widget">
+  <h3>🎚 word → id → one-hot (binary) → its vector</h3>
+  <div class="pg-sub">The one-hot is the only genuinely binary thing here: a single 1. Multiplying it by the table just selects the row. <em>Everything downstream is real numbers.</em></div>
+  <div id="oh-app"></div>
+</div>
+<script>(function(){
+  var box=document.getElementById('oh-app'); if(!box) return;
+  var VOCAB=['the','cat','dog','sat','mat'];
+  var TBL=[[0.10,-0.40,0.30,0.20],[0.80,0.10,-0.20,0.60],[0.75,0.20,-0.15,0.55],[-0.30,0.50,0.40,-0.10],[-0.25,0.45,0.35,-0.20]];
+  var cur=1;
+  function r(){
+    var oh=VOCAB.map(function(_,i){return i===cur?1:0;});
+    var vec=TBL[cur];
+    var btns=VOCAB.map(function(w,i){return '<button type="button" class="tp-ex'+(i===cur?' on':'')+'" data-i="'+i+'" aria-pressed="'+(i===cur)+'">'+w+'</button>';}).join('');
+    var ohcells=oh.map(function(v){return '<span style="display:inline-block;width:30px;height:30px;line-height:30px;text-align:center;border-radius:5px;margin:0 2px;font-family:ui-monospace,monospace;font-weight:700;background:'+(v?'#1a1a1a':'#fff')+';color:'+(v?'#fff':'#94a3b8')+';border:1.5px solid #cbd5e1;">'+v+'</span>';}).join('');
+    var rows=TBL.map(function(row,i){
+      var sel=i===cur;
+      var cells=row.map(function(n){return '<td style="padding:3px 9px;'+(sel?'font-weight:700;color:#b9410a;':'color:#94a3b8;')+'">'+n.toFixed(2)+'</td>';}).join('');
+      return '<tr style="background:'+(sel?'#fff7ed':'transparent')+';"><td style="padding:3px 9px;color:'+(sel?'#b9410a':'#94a3b8')+';font-family:ui-monospace,monospace;">'+oh[i]+' ×</td>'+cells+'</tr>';
+    }).join('');
+    box.innerHTML='<div class="tp-ex-row">'+btns+'</div>'
+      +'<div class="tp-flow">id = '+cur+' &nbsp;→&nbsp; one-hot (binary):</div>'
+      +'<div style="margin:4px 0 12px;">'+ohcells+'</div>'
+      +'<div class="tp-flow">× embedding table → keeps only the row where the 1 is:</div>'
+      +'<table class="tp-tbl" style="font-size:12.5px;margin:4px 0;"><tbody>'+rows+'</tbody></table>'
+      +'<div class="tp-verdict pos">"'+VOCAB[cur]+'" → vector ['+vec.map(function(n){return n.toFixed(2);}).join(', ')+'] &nbsp;<span class="tp-prob">(the highlighted row — exactly what the lookup returns)</span></div>';
+    box.querySelectorAll('.tp-ex').forEach(function(b){b.addEventListener('click',function(){cur=+b.dataset.i;r();});});
+  }
+  r();
+})();</script>
+
+<p style="font-size:13px;color:var(--text-dim);">So the chain is: <strong>word → integer id → one-hot binary vector → real-numbered embedding</strong>. The <em>only</em> binary input is that one-hot; the moment we multiply by the table, we're in real numbers — and stay there for the rest of the model. (Underneath, of course, even those real numbers are stored as bits — that part never changes.)</p>
 
 <div class="callout info">
   <strong>Why 4? Who picks the number of columns?</strong><br>

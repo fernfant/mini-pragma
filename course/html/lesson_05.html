@@ -76,6 +76,8 @@
   <figcaption><code>pragma_mini.py</code> is exactly this pipeline in code — embed, stack attention+feed-forward, then a head.</figcaption>
 </figure>
 
+<p class="bits-note">🔢 <strong>Still just numbers.</strong> here it's key-value events turned into token ids — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+
 <h2 class="step" id="vocab"><span class="step-num">Sec 1</span> Vocabulary <span class="legend-chip">L2</span></h2>
 
 <p>First, the plain idea. A banking event isn't a sentence — it's a little form, a set of <strong>fields paired with their values</strong>: <code>merchant = Tesco</code>, <code>amount = 14.99</code>, <code>type = groceries</code>. The trick we're about to build keeps each pair intact: one token for the field <em>name</em> (the <strong>key</strong>), one token for its <em>contents</em> (the <strong>value</strong>). That's why it's called <em>key-value</em> tokenisation — and here's the vocabulary for a toy version with pets instead of merchants:</p>

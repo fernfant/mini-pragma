@@ -372,6 +372,8 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
   <strong>Reality check — MacBook Air M4 (16 GB, fanless).</strong> Memory isn't the bottleneck (16 GB handles a 30M model easily). <strong>Heat is</strong> — the Air has no fan, so multi-hour runs throttle. Train overnight, keep it cool and plugged in. The true 125M <code>gpt3-small</code> preset is in <code>model.py</code> for reference, but that one really wants a cloud GPU. Want it faster on the Mac? Rewrite in Apple <strong>MLX</strong> (~2× quicker than PyTorch-MPS here).
 </div>
 
+<p class="bits-note">🔢 <strong>Still just numbers.</strong> here it's ~11M weights and one loss number — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+
 <h2 class="step" id="trace"><span class="step-num">Trace</span> One training step, every number</h2>
 
 <p>The loop "never changes" from L1 to GPT-3 — so let's watch a single step do its work. One weight <code>w</code>, one data point (<code>x = 2</code>, target <code>= 7</code>). Hit <em>Take one step</em> and follow guess → loss → gradient → the nudge, over and over, as <code>w</code> climbs toward 3.5:</p>
