@@ -66,7 +66,7 @@
 
 <p>On <a href="lesson_03.html">L3</a> you saw the idea: <strong>score → softmax → mix</strong>, using the word-vectors directly. Real attention adds one layer of machinery on top — instead of comparing the raw vectors, each word first projects itself into a <strong>query</strong>, a <strong>key</strong>, and a <strong>value</strong>. Same three moves; this lesson shows where Q, K and V come from, why we divide the scores by √d, and what stacking several attention "heads" buys you.</p>
 
-<p class="bits-note">🔢 <strong>Still just numbers.</strong> here it's the Q·K scores, the √d scale, and softmax — and underneath, every number here is just <strong>bits</strong> (0s and 1s), the only thing a computer can actually store.</p>
+<aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s the Q·K scores, the √d scale, and softmax — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
 <h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> The full formula</h2>
 
