@@ -7,7 +7,7 @@ to conflate.
 
 ## The two ideas, separated
 
-![Same training loop, different architectures](visuals/architecture_comparison.svg)
+*(Same training loop, different architectures — see the side-by-side network diagrams on the [L1b lesson page](html/lesson_01b.html).)*
 
 There are **two completely separate things** in every neural network:
 
