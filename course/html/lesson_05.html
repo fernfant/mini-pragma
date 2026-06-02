@@ -405,9 +405,13 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the key-value event playground above (and the pragma_mini notebook).</p>
   <ol>
-    <li>Build an event by hand, then mask one of its <em>values</em>. What is the model being asked to do?<details class="ti-answer"><summary>Check your answer</summary><p>Fill in the blank from the surrounding fields — the same masked-modelling game as L4, now on structured banking-style events instead of sentences.</p></details></li>
-    <li>Why tokenise a number like <code>14.99</code> as one value token instead of letting plain text split it into digits?<details class="ti-answer"><summary>Check your answer</summary><p>Plain text shatters “14.99” into 5 characters and destroys its magnitude. Key+value tokenisation keeps each field intact so the model sees a real quantity.</p></details></li>
-    <li>What does freezing the encoder and training only a small head buy you?<details class="ti-answer"><summary>Check your answer</summary><p>Speed and tiny label budgets — the pre-trained encoder already understands the data, so a small probe on top learns the new task from very few examples.</p></details></li>
+    <li>Build an event by hand, then mask one of its <em>values</em>. What is the model asked to do?<details class="ti-answer"><summary>Check your answer</summary><p>Fill in the blank from the surrounding fields — the same masked game as L4, on structured events instead of sentences.</p></details></li>
+    <li>Why tokenise <code>14.99</code> as one value token instead of letting text split it into digits?<details class="ti-answer"><summary>Check your answer</summary><p>Plain text shatters “14.99” into 5 characters and destroys its magnitude. Key+value tokenisation keeps the field intact.</p></details></li>
+    <li>What does freezing the encoder and training only a small head buy you?<details class="ti-answer"><summary>Check your answer</summary><p>Speed and tiny label budgets — the pre-trained encoder already understands the data; a small probe learns the task from few examples.</p></details></li>
+    <li>Predict the masked value: <code>pet=dog</code>, <code>place=garden</code>, <code>action=?</code><details class="ti-answer"><summary>Check your answer</summary><p>Something like “eat” or “play” — the model learns which values co-occur. Fill-in-the-blank on structured data.</p></details></li>
+    <li>Why keep key and value as <em>separate</em> tokens instead of merging “merchant=Tesco” into one?<details class="ti-answer"><summary>Check your answer</summary><p>Separate tokens let the model reuse “merchant” across rows and compare values; merging would explode the vocabulary.</p></details></li>
+    <li>The toy has ~thousands of parameters; PRAGMA has ~a billion. What stays the same?<details class="ti-answer"><summary>Check your answer</summary><p>The recipe: key-value tokenise → embed → attention+FFN stack → predict. Only scale differs.</p></details></li>
+    <li>What is 'pre-training' doing here before any labels exist?<details class="ti-answer"><summary>Check your answer</summary><p>Learning the shape of normal events (which fields go together) by masked prediction — no labels needed. Labels come later for the task.</p></details></li>
   </ol>
 </div>
 

@@ -265,9 +265,13 @@ one nudge  =  average(g₁, g₂)      ← weights move ONCE, using both</code><
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the scaling widget above (more data, bigger vectors, batches).</p>
   <ol>
-    <li>Increase the embedding dimension. Does a bigger vector always mean better?<details class="ti-answer"><summary>Check your answer</summary><p>Up to a point it helps (more room to encode meaning), but past what the data supports it just adds parameters to train without payoff — and needs more data. Capacity must match the problem.</p></details></li>
-    <li>Increase the amount of training data while keeping the model fixed. What happens to the learned structure?<details class="ti-answer"><summary>Check your answer</summary><p>It sharpens — more examples give the model more evidence, so the embeddings/relationships come out cleaner. Data and model size have to grow together.</p></details></li>
-    <li>The lesson hits a wall that motivates the next topic. What is it, and what fixes it?<details class="ti-answer"><summary>Check your answer</summary><p>Embeddings alone treat each word in isolation — they can't tell “river bank” from “savings bank.” <strong>Attention</strong> (next) is the fix: it lets words look at each other.</p></details></li>
+    <li>Increase the embedding dimension. Does bigger always mean better?<details class="ti-answer"><summary>Check your answer</summary><p>Up to a point — past what the data supports it just adds parameters without payoff, and needs more data. Capacity must match the problem.</p></details></li>
+    <li>Increase the training data while keeping the model fixed. What happens to the learned structure?<details class="ti-answer"><summary>Check your answer</summary><p>It sharpens — more examples = more evidence, so relationships come out cleaner. Data and model size grow together.</p></details></li>
+    <li>The lesson hits a wall that motivates the next topic. What is it, and what fixes it?<details class="ti-answer"><summary>Check your answer</summary><p>Embeddings treat each word in isolation — they can't tell “river bank” from “savings bank.” <strong>Attention</strong> (next) is the fix.</p></details></li>
+    <li>Make the batch size huge, then tiny. What changes about training?<details class="ti-answer"><summary>Check your answer</summary><p>Big batches give smoother, steadier updates but slower epochs; tiny are noisier but quicker per step. A tradeoff.</p></details></li>
+    <li>Tiny model + tons of data — does quality keep climbing?<details class="ti-answer"><summary>Check your answer</summary><p>No — it plateaus once the small model runs out of capacity. Model and data must scale together.</p></details></li>
+    <li>Why can't a plain embedding disambiguate “bank”?<details class="ti-answer"><summary>Check your answer</summary><p>A word gets one fixed vector regardless of context, so both meanings share it. Attention lets the vector shift with its neighbours.</p></details></li>
+    <li>Predict what happens to training time if you scale the vector dimension ×4.<details class="ti-answer"><summary>Check your answer</summary><p>It grows roughly with the parameter count — bigger vectors = more weights = more compute per step.</p></details></li>
   </ol>
 </div>
 

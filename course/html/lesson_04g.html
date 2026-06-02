@@ -316,9 +316,13 @@ the little dog laughed to see such sport</pre></div>
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the parameter-breakdown bars and the character-model widget above.</p>
   <ol>
-    <li>Look at the parameter bars: which single block is the biggest — attention's Q/K/V, or the feed-forward?<details class="ti-answer"><summary>Check your answer</summary><p>The <strong>feed-forward</strong> is the biggest single block (~⅔ of each layer's parameters); attention's Q/K/V is the smaller share. The wide FFN is where most of the weights live.</p></details></li>
-    <li>Make the character model deeper without adding more data. Does quality keep climbing?<details class="ti-answer"><summary>Check your answer</summary><p>No — depth helps only up to what the data supports. Past that, a deeper model just overfits or stalls. Model size and data have to scale together (the Chinchilla idea).</p></details></li>
-    <li>Roughly how many tokens of data does a parameter ‘want’ to be trained well?<details class="ti-answer"><summary>Check your answer</summary><p>About 20 tokens per parameter (the compute-optimal rule of thumb): double the model, double the data.</p></details></li>
+    <li>Which single block is biggest — attention's Q/K/V, or the feed-forward?<details class="ti-answer"><summary>Check your answer</summary><p>The <strong>feed-forward</strong> (~⅔ of each layer's parameters). The wide FFN is where most weights live.</p></details></li>
+    <li>Make the character model deeper without adding data. Does quality keep climbing?<details class="ti-answer"><summary>Check your answer</summary><p>No — depth helps only up to what the data supports; past that it overfits or stalls. Model and data scale together.</p></details></li>
+    <li>Roughly how many tokens of data does a parameter 'want' to be trained well?<details class="ti-answer"><summary>Check your answer</summary><p>About 20 tokens per parameter (the compute-optimal rule): double the model, double the data.</p></details></li>
+    <li>The char model starts as gibberish. What does it learn first?<details class="ti-answer"><summary>Check your answer</summary><p>Common letters and short patterns (spaces, frequent letters), then spelling, then words. Statistics first, structure later.</p></details></li>
+    <li>Predict: double the model size, keep data fixed. Better or worse?<details class="ti-answer"><summary>Check your answer</summary><p>Likely worse — it overfits or wastes capacity. Data has to grow with the model.</p></details></li>
+    <li>Why is the feed-forward the 'wide' block?<details class="ti-answer"><summary>Check your answer</summary><p>It expands the dimension (e.g. 512→2048), applies a nonlinearity, then compresses back — the expand step holds most of the params.</p></details></li>
+    <li>Attention vs feed-forward — which mixes across words, which thinks within a word?<details class="ti-answer"><summary>Check your answer</summary><p>Attention mixes <em>across</em> words; the feed-forward processes <em>within</em> each word. A block does both.</p></details></li>
   </ol>
 </div>
 

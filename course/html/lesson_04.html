@@ -773,9 +773,13 @@ step 400   loss 0.006     ← essentially zero</code></pre>
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the masking playground above (build a training example by hand).</p>
   <ol>
-    <li>Mask a <strong>key</strong> token instead of a value. Why is that a worse training signal?<details class="ti-answer"><summary>Check your answer</summary><p>Keys (the field names) are predictable boilerplate — recovering them teaches the model little. Masking <em>values</em> forces it to learn the real patterns in the data.</p></details></li>
-    <li>Raise the mask rate toward 100%. What breaks?<details class="ti-answer"><summary>Check your answer</summary><p>With almost everything hidden, the model has no context left to predict from — the fill-in-the-blank game becomes impossible. ~15–25% masked is the usual sweet spot.</p></details></li>
-    <li>After masking, what exactly is the model's target — and where does the loss come from?<details class="ti-answer"><summary>Check your answer</summary><p>The target is the original token that was hidden. Cross-entropy compares the model's probability for the true token against 1.0; the less confident it was, the bigger the loss.</p></details></li>
+    <li>Mask a <strong>key</strong> token instead of a value. Why is that a worse signal?<details class="ti-answer"><summary>Check your answer</summary><p>Keys are predictable boilerplate — recovering them teaches little. Masking <em>values</em> forces the model to learn the real patterns.</p></details></li>
+    <li>Raise the mask rate toward 100%. What breaks?<details class="ti-answer"><summary>Check your answer</summary><p>With almost everything hidden there's no context to predict from — the game becomes impossible. ~15–25% is the sweet spot.</p></details></li>
+    <li>After masking, what's the target, and where does the loss come from?<details class="ti-answer"><summary>Check your answer</summary><p>The target is the original hidden token; cross-entropy compares the model's probability for it against 1.0 — less confidence = more loss.</p></details></li>
+    <li>Why hide tokens at all — why not show the full sentence?<details class="ti-answer"><summary>Check your answer</summary><p>With nothing hidden there's nothing to predict; the blank <em>is</em> the whole training signal.</p></details></li>
+    <li>The same word is masked in two different sentences. Same prediction?<details class="ti-answer"><summary>Check your answer</summary><p>Not necessarily — the model predicts from context, so different neighbours can give different answers. That's the point.</p></details></li>
+    <li>Cross-entropy: the model gave the true word 70% in one case, 5% in another. Which loss is bigger?<details class="ti-answer"><summary>Check your answer</summary><p>The 5% case — <code>−log(0.05)≈3.0</code> vs <code>−log(0.70)≈0.36</code>. Less confidence in the right answer = more loss.</p></details></li>
+    <li>This is BERT-style. How does GPT's training differ?<details class="ti-answer"><summary>Check your answer</summary><p>BERT fills blanks anywhere (sees both sides); GPT predicts the <em>next</em> word (sees only the left). Same loop, different blank.</p></details></li>
   </ol>
 </div>
 

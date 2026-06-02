@@ -746,11 +746,15 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
-  <p class="ti-intro">Head back to the neuron table and the curve-fitting widget, then try these.</p>
+  <p class="ti-intro">Use the neuron table, the detector widget, the bends widget, and the parabola fit above.</p>
   <ol>
-    <li>Set the neuron to <strong>set OR</strong>, then change just the <strong>bias</strong> to about −1.5. How does the output table change?<details class="ti-answer"><summary>Check your answer</summary><p>It turns into an AND gate — now it only fires when <em>both</em> inputs are on. The bias is the thumb on the scale: a more negative bias makes the neuron harder to set off.</p></details></li>
-    <li>Switch the target to <strong>XOR</strong> and try to get 4/4 with a single neuron. Can you?<details class="ti-answer"><summary>Check your answer</summary><p>No — one neuron can only draw a single straight cut, and XOR isn't separable by one line. That's exactly why we stack neurons into a network (which you do next).</p></details></li>
-    <li>In the parabola widget, slide the hidden units down to a very small number. What happens to the fit?<details class="ti-answer"><summary>Check your answer</summary><p>Fewer hidden units = fewer bends available, so the curve can't match the parabola as well. More units = more bends = more shapes it can fit.</p></details></li>
+    <li>Set the neuron to <strong>OR</strong>, then change just the <strong>bias</strong> to about −1.5. How does the table change?<details class="ti-answer"><summary>Check your answer</summary><p>It becomes an AND gate — fires only when <em>both</em> inputs are on. A more negative bias makes the neuron harder to set off.</p></details></li>
+    <li>Switch the target to <strong>XOR</strong> and try to get 4/4 with one neuron. Can you?<details class="ti-answer"><summary>Check your answer</summary><p>No — one neuron draws a single straight cut, and XOR isn't separable by one line. That's why we stack neurons.</p></details></li>
+    <li>In the parabola widget, slide the hidden units very low. What happens to the fit?<details class="ti-answer"><summary>Check your answer</summary><p>Fewer units = fewer bends, so it can't match the curve as well. More units = more bends = more shapes.</p></details></li>
+    <li>In the detector widget, turn on <em>only</em> cells 1 and 6. Which neuron fires?<details class="ti-answer"><summary>Check your answer</summary><p>The <strong>two ends</strong> detector — its template is exactly cells 1 and 6. The firing pattern reports what's present.</p></details></li>
+    <li>Set both neuron weights to 0 and vary the bias. What does the output do?<details class="ti-answer"><summary>Check your answer</summary><p>It ignores the inputs entirely — with zero weights only the bias decides, so it fires or not regardless of A and B.</p></details></li>
+    <li>In the bends widget, drag <code>x</code> just past 1.5. How many bends are active, and what happens to the slope?<details class="ti-answer"><summary>Check your answer</summary><p>Two — and the line steepens, because each newly-active bend adds its slope. That's how straight pieces build a curve.</p></details></li>
+    <li>What does ReLU do to negative values, and why is it essential?<details class="ti-answer"><summary>Check your answer</summary><p>It clips them to 0 — the <em>bend</em>. Without a nonlinearity, stacked Linear layers collapse back into one straight line.</p></details></li>
   </ol>
 </div>
 

@@ -376,9 +376,13 @@ $PY sample.py --ckpt ckpt_tinystories.pt --prompt "Once upon a time"</pre>
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the loss-curve widget above (and the runnable minigpt notebook).</p>
   <ol>
-    <li>Predict the loop count: going from L1's 2-parameter line to this ~11M-parameter GPT, how much does the <em>training loop</em> change?<details class="ti-answer"><summary>Check your answer</summary><p>Not at all — predict → measure loss → backward → step → repeat. Same five lines from L1 to 11M params to GPT-3's 175B. Only the model in the middle grows.</p></details></li>
-    <li>In the recipe table, <code>dropout</code> appears. What's it for, in one line?<details class="ti-answer"><summary>Check your answer</summary><p>It randomly switches off some neurons each step so the model can't lean too hard on any one path — a cheap way to reduce overfitting.</p></details></li>
-    <li>The model starts by producing pure noise. Why does Shakespeare-shaped text eventually emerge?<details class="ti-answer"><summary>Check your answer</summary><p>Each step nudges millions of parameters to make the next-character guess a little less wrong. Repeat enough times and the statistics of the text (spelling, line breaks, names) get baked into the weights.</p></details></li>
+    <li>Predict: from L1's 2-parameter line to this ~11M-parameter GPT, how much does the <em>training loop</em> change?<details class="ti-answer"><summary>Check your answer</summary><p>Not at all — predict → loss → backward → step → repeat, from 2 params to 175B. Only the model in the middle grows.</p></details></li>
+    <li>The recipe table lists <code>dropout</code>. What's it for, in one line?<details class="ti-answer"><summary>Check your answer</summary><p>It randomly switches off some neurons each step so the model can't lean too hard on one path — cheap overfitting protection.</p></details></li>
+    <li>The model starts as pure noise. Why does Shakespeare-shaped text emerge?<details class="ti-answer"><summary>Check your answer</summary><p>Each step nudges millions of params to make the next-character guess less wrong. Repeat enough and the text's statistics bake into the weights.</p></details></li>
+    <li>The loss curve flattens. Does more training still help?<details class="ti-answer"><summary>Check your answer</summary><p>Diminishing returns — once it plateaus, extra steps barely move it. You'd need more data or a bigger model.</p></details></li>
+    <li>What does a learning-rate warmup do early in training?<details class="ti-answer"><summary>Check your answer</summary><p>Starts small so the fresh random model doesn't blow up, then ramps — keeping the early steps stable.</p></details></li>
+    <li>Train on tiny data for many epochs. What happens to sample quality?<details class="ti-answer"><summary>Check your answer</summary><p>Train loss keeps dropping but it memorises (overfits) — samples look like copied text, not new writing.</p></details></li>
+    <li>Same architecture, 100× the data and parameters — what's GPT-3?<details class="ti-answer"><summary>Check your answer</summary><p>Exactly this minigpt, scaled. The recipe doesn't change; the size does.</p></details></li>
   </ol>
 </div>
 

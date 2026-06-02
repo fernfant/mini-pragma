@@ -399,11 +399,15 @@ class ChurnHead(nn.Module):
 
 <div class="tryit">
   <div class="ti-title">🔬 Try it yourself</div>
-  <p class="ti-intro">Use the labels → recall slider above (numbers come from the companion notebook).</p>
+  <p class="ti-intro">Use the labels → recall slider above (figures come from the companion notebook).</p>
   <ol>
-    <li>Slide labels from ~100 down to ~20. What happens to recall for the pre-trained pipeline vs from-scratch?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-trained holds high recall even at ~20 labels; from-scratch falls apart. Same lesson as L5a, now on streaming churn — pre-training wins when labels are scarce.</p></details></li>
-    <li>Why measure <strong>recall</strong> here instead of plain accuracy?<details class="ti-answer"><summary>Check your answer</summary><p>Churners are rare, so a model that predicts ‘nobody churns’ scores high accuracy but is useless. Recall asks ‘of the real churners, how many did we catch?’ — the thing that matters.</p></details></li>
-    <li>What's the difference between recall and precision in one line each?<details class="ti-answer"><summary>Check your answer</summary><p>Recall = of the true positives, how many you caught. Precision = of the ones you flagged, how many were right. You usually trade one against the other.</p></details></li>
+    <li>Slide labels from ~100 down to ~20. What happens to recall for pre-trained vs from-scratch?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-trained holds high recall even at ~20 labels; from-scratch falls apart. Same lesson as L5a, on streaming churn.</p></details></li>
+    <li>Why measure <strong>recall</strong> here instead of plain accuracy?<details class="ti-answer"><summary>Check your answer</summary><p>Churners are rare, so 'predict nobody churns' scores high accuracy but is useless. Recall asks how many real churners you caught.</p></details></li>
+    <li>Give recall and precision in one line each.<details class="ti-answer"><summary>Check your answer</summary><p>Recall = of the true positives, how many you caught. Precision = of the ones you flagged, how many were right.</p></details></li>
+    <li>A model predicts “nobody churns.” What's its accuracy and recall?<details class="ti-answer"><summary>Check your answer</summary><p>High accuracy (churners are rare) but ~0 recall — it catches none of them. That's why accuracy lies here.</p></details></li>
+    <li>You want to catch as many churners as possible, accepting false alarms. Optimise for…?<details class="ti-answer"><summary>Check your answer</summary><p>Recall — catch the true positives even at the cost of precision. The cost of a missed churner sets the tradeoff.</p></details></li>
+    <li>Predict pre-trained recall at ~20 labels vs from-scratch.<details class="ti-answer"><summary>Check your answer</summary><p>Pre-trained stays high; from-scratch is poor — the foundation-model payoff again, on streaming data.</p></details></li>
+    <li>'Streaming' churn — why does order/time matter?<details class="ti-answer"><summary>Check your answer</summary><p>A customer's recent events carry the signal; the model reads the sequence and its trend, not a static snapshot.</p></details></li>
   </ol>
 </div>
 

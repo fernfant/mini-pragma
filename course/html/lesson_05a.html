@@ -563,9 +563,13 @@ AFTER MASKING (random 30%):
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the labels → accuracy slider above.</p>
   <ol>
-    <li>Drag the number of labelled examples down low. What happens to the from-scratch model vs the pre-trained one?<details class="ti-answer"><summary>Check your answer</summary><p>From-scratch collapses with few labels; the pre-trained-then-probed model stays strong. That gap <em>is</em> the foundation-model payoff — knowledge learned without labels transfers.</p></details></li>
-    <li>Why can a model pre-trained with <em>no labels at all</em> still help a labelled task?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-training learns the <em>shape</em> of the data (which values go together). The labelled task then only has to learn a small mapping on top of that understanding, not everything from zero.</p></details></li>
-    <li>Predict: if you had unlimited labels, would pre-training still help much?<details class="ti-answer"><summary>Check your answer</summary><p>Less — with enough labels a from-scratch model can catch up. Pre-training's edge is biggest exactly when labels are scarce, which is the common real-world case.</p></details></li>
+    <li>Drag the labelled examples down low. What happens to from-scratch vs pre-trained?<details class="ti-answer"><summary>Check your answer</summary><p>From-scratch collapses; pre-trained-then-probed stays strong. That gap <em>is</em> the foundation-model payoff.</p></details></li>
+    <li>Why can a model pre-trained with <em>no labels</em> still help a labelled task?<details class="ti-answer"><summary>Check your answer</summary><p>Pre-training learns the data's shape; the labelled task then only learns a small mapping on top, not everything from zero.</p></details></li>
+    <li>Predict: with unlimited labels, would pre-training still help much?<details class="ti-answer"><summary>Check your answer</summary><p>Less — with enough labels from-scratch catches up. Pre-training's edge is biggest when labels are scarce.</p></details></li>
+    <li>At the minimum labels, which model would you ship?<details class="ti-answer"><summary>Check your answer</summary><p>The pre-trained-then-probed one — it stays accurate where from-scratch is near useless. Labels are the scarce resource.</p></details></li>
+    <li>What did pre-training learn without ever seeing a price label?<details class="ti-answer"><summary>Check your answer</summary><p>The structure of houses (which features go together), by predicting masked fields — and that transfers to predicting price.</p></details></li>
+    <li>Predict the shape of the from-scratch curve as labels increase.<details class="ti-answer"><summary>Check your answer</summary><p>Rises steeply, then catches up late — it needs lots of labels to learn what pre-training got for free.</p></details></li>
+    <li>Is tabular data really 'a sequence' like a sentence?<details class="ti-answer"><summary>Check your answer</summary><p>Yes, here — each row becomes a sequence of field→value tokens, so the same Transformer machinery applies.</p></details></li>
   </ol>
 </div>
 

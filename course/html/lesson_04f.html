@@ -544,9 +544,13 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Use the next-word generator and its temperature slider above.</p>
   <ol>
-    <li>Set the temperature very <strong>low</strong>, then very <strong>high</strong>. How does the output change?<details class="ti-answer"><summary>Check your answer</summary><p>Low temp = safe, repetitive, picks the single most likely word every time. High temp = adventurous and varied, but more likely to go off the rails. It's the creativity/randomness dial.</p></details></li>
-    <li>At temperature 0, is generation deterministic? Why?<details class="ti-answer"><summary>Check your answer</summary><p>Yes — it always takes the single highest-probability token, so the same prompt gives the same continuation every time. No sampling, no surprise.</p></details></li>
-    <li>Next-word generation reuses the exact training loop. What's different at <em>inference</em> time?<details class="ti-answer"><summary>Check your answer</summary><p>Nothing learns — it's the same forward pass as training, just without the backward step. Predict, take the word, append it, repeat.</p></details></li>
+    <li>Set the temperature very <strong>low</strong>, then very <strong>high</strong>. How does the output change?<details class="ti-answer"><summary>Check your answer</summary><p>Low = safe and repetitive (always the most likely word); high = varied and adventurous but more likely to go off the rails.</p></details></li>
+    <li>At temperature 0, is generation deterministic? Why?<details class="ti-answer"><summary>Check your answer</summary><p>Yes — it always takes the single highest-probability token, so the same prompt gives the same continuation.</p></details></li>
+    <li>Generation reuses the training loop. What's different at <em>inference</em>?<details class="ti-answer"><summary>Check your answer</summary><p>Nothing learns — it's the same forward pass, minus the backward step. Predict, take the word, append, repeat.</p></details></li>
+    <li>Generate a long passage at high temperature. What tends to go wrong?<details class="ti-answer"><summary>Check your answer</summary><p>It drifts into nonsense — high randomness sacrifices coherence. There's a sweet spot between safe and chaotic.</p></details></li>
+    <li>How does the model turn its output numbers into a chosen word?<details class="ti-answer"><summary>Check your answer</summary><p>Logits → softmax → probabilities → pick (argmax at temp 0, or sample). The head produces a score per vocabulary word.</p></details></li>
+    <li>Same prompt, temperature 0, run twice — same output?<details class="ti-answer"><summary>Check your answer</summary><p>Yes, identical — argmax is deterministic. Variety needs temperature above 0.</p></details></li>
+    <li>Why does it feel 'creative' if it's just predicting the next token?<details class="ti-answer"><summary>Check your answer</summary><p>Each pick feeds back as context for the next, so small choices compound into novel sentences. Creativity from iterated prediction.</p></details></li>
   </ol>
 </div>
 

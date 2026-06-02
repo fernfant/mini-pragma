@@ -850,9 +850,13 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
   <div class="ti-title">🔬 Try it yourself</div>
   <p class="ti-intro">Open the embedding playground and the Train widget above.</p>
   <ol>
-    <li>Drag two words' vectors right on top of each other. What does the similarity score do?<details class="ti-answer"><summary>Check your answer</summary><p>It shoots up toward its maximum — similar vectors = high dot-product similarity. That's the whole idea: meaning becomes geometry, and 'close' means 'similar'.</p></details></li>
-    <li>Hit Train (or re-train) and watch the embeddings move. Who designed where each word lands?<details class="ti-answer"><summary>Check your answer</summary><p>Nobody — the training loop drifts them there automatically, the same guess→loss→nudge loop from L1. Random at the start, meaningful after training.</p></details></li>
-    <li>Why can't you feed the raw text “cat” straight into the model instead of an embedding vector?<details class="ti-answer"><summary>Check your answer</summary><p>Computers only do math on numbers. Tokenising turns “cat” into an id, and the embedding turns that id into a vector the model can actually compute with.</p></details></li>
+    <li>Drag two words' vectors on top of each other. What does the similarity score do?<details class="ti-answer"><summary>Check your answer</summary><p>It shoots up — similar vectors = high similarity. Meaning becomes geometry; 'close' means 'similar'.</p></details></li>
+    <li>Hit Train and watch the embeddings move. Who decided where each word lands?<details class="ti-answer"><summary>Check your answer</summary><p>Nobody — the training loop drifts them there automatically, the same guess→loss→nudge loop from L1.</p></details></li>
+    <li>Why can't you feed the raw text “cat” straight in instead of an embedding vector?<details class="ti-answer"><summary>Check your answer</summary><p>Computers only do math on numbers. Tokenising gives an id; the embedding turns that id into a vector the model can compute with.</p></details></li>
+    <li>Put two unrelated words at opposite ends. What's their similarity?<details class="ti-answer"><summary>Check your answer</summary><p>Low or negative — far apart = dissimilar. Distance in embedding space mirrors difference in meaning.</p></details></li>
+    <li>Look at the similarities <em>before</em> training. What do they look like?<details class="ti-answer"><summary>Check your answer</summary><p>Random and meaningless — embeddings start random. Structure only appears after training.</p></details></li>
+    <li>A size-2 vector vs a size-64 vector — which can capture more nuance?<details class="ti-answer"><summary>Check your answer</summary><p>64 — more dimensions = more independent features to encode meaning (up to what the data supports).</p></details></li>
+    <li>How does the model 'know' cat and dog are similar without being told?<details class="ti-answer"><summary>Check your answer</summary><p>From context — they appear in similar sentences, so training nudges their vectors close. Similarity is learned from co-occurrence.</p></details></li>
   </ol>
 </div>
 
