@@ -63,10 +63,10 @@
 <div class="wrap">
 
 <h1>Course Scorecard</h1>
-<p class="subtitle">Full audit against the 12-criterion rubric — the 15-step spine + the 5 forward-pass side-quests · <strong>2026-06-02</strong> (v12 — added <strong>C12 Conceptual depth</strong>; split the neural-network and attention pillars into 2-page arcs). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
+<p class="subtitle">Full audit against the 13-criterion rubric — the 15-step spine + the 5 forward-pass side-quests · <strong>2026-06-02</strong> (v13 — added <strong>C13 Traceability / glass-box</strong>: can the reader trace a computation input→weights→outputs→result?). Each criterion scored 0–5; the page total is the weighted sum out of 100.</p>
 
 <div class="stat-row">
-  <div class="stat"><div class="big">95.1</div><div class="lbl">15-step spine average — <span class="band-ex">Exemplary</span></div></div>
+  <div class="stat"><div class="big">95.0</div><div class="lbl">15-step spine average — <span class="band-ex">Exemplary</span></div></div>
   <div class="stat"><div class="big">93.4</div><div class="lbl">Forward-pass side-quests (5) — <span class="band-ex">Exemplary</span></div></div>
   <div class="stat"><div class="big">20 / 20</div><div class="lbl"><span class="band-ex">Exemplary</span> (90+) — every page</div></div>
   <div class="stat"><div class="big">0</div><div class="lbl">Strong / acceptable / weak / failing</div></div>
@@ -88,13 +88,13 @@
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
 
 <div class="sc-wrap">
-  <table class="sc" id="sc-table" aria-label="Scorecard: 20 lesson pages scored 0 to 5 across 12 criteria, with weighted total out of 100 and band."></table>
+  <table class="sc" id="sc-table" aria-label="Scorecard: 20 lesson pages scored 0 to 5 across 13 criteria, with weighted total out of 100 and band."></table>
 </div>
-<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 5 · Narrative 6 · Reinforcement 7 · Structure 6 · Technical 6 · Accessibility 8 · Flow 8 · Pacing 8 · <strong>Conceptual depth 8</strong>.</p>
+<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 4 · Narrative 5 · Reinforcement 6 · Structure 5 · Technical 5 · Accessibility 8 · Flow 8 · Pacing 8 · Conceptual depth 8 · <strong>Traceability 5</strong>.</p>
 
 
 
-<h2 class="step"><span class="step-num">Rubric</span> The 12 criteria</h2>
+<h2 class="step"><span class="step-num">Rubric</span> The 13 criteria</h2>
 
 <div class="sc-wrap">
 <table class="sc crit-tbl">
@@ -104,15 +104,16 @@
     <tr><td>2</td><td class="page-c">Age-appropriate clarity</td><td class="w-c">9</td><td style="text-align:left">Plain second-person voice; every term earned; short sentences; a 12–14-yo follows unaided.</td></tr>
     <tr><td>3</td><td class="page-c">Concrete-first pedagogy</td><td class="w-c">9</td><td style="text-align:left">Opens with a real worked example/numbers; one idea per step; generalises only after.</td></tr>
     <tr><td>4a</td><td class="page-c">Numeric / factual accuracy</td><td class="w-c">8</td><td style="text-align:left">Every cited figure matches the companion code or is labelled "illustrative"; zero unverified claims.</td></tr>
-    <tr><td>4b</td><td class="page-c">Honest framing</td><td class="w-c">5</td><td style="text-align:left">Simplifications flagged in-clause; no analogy sold as fact the reader must later un-learn.</td></tr>
-    <tr><td>5</td><td class="page-c">Narrative continuity</td><td class="w-c">6</td><td style="text-align:left">Re-uses the running example; connects back/forward; fits the spine story.</td></tr>
-    <tr><td>6</td><td class="page-c">Reinforcement</td><td class="w-c">7</td><td style="text-align:left">Inline checks + recap + quiz; questions test understanding, not recall.</td></tr>
-    <tr><td>7</td><td class="page-c">Structural correctness</td><td class="w-c">6</td><td style="text-align:left">Correct pills, spinebar step/width, reciprocal pagination, recap→quiz→pager order.</td></tr>
-    <tr><td>8</td><td class="page-c">Technical soundness</td><td class="w-c">6</td><td style="text-align:left">All inline JS passes <code>node --check</code>; widgets guarded; JSON valid; no external deps.</td></tr>
+    <tr><td>4b</td><td class="page-c">Honest framing</td><td class="w-c">4</td><td style="text-align:left">Simplifications flagged in-clause; no analogy sold as fact the reader must later un-learn.</td></tr>
+    <tr><td>5</td><td class="page-c">Narrative continuity</td><td class="w-c">5</td><td style="text-align:left">Re-uses the running example; connects back/forward; fits the spine story.</td></tr>
+    <tr><td>6</td><td class="page-c">Reinforcement</td><td class="w-c">6</td><td style="text-align:left">Inline checks + recap + quiz; questions test understanding, not recall.</td></tr>
+    <tr><td>7</td><td class="page-c">Structural correctness</td><td class="w-c">5</td><td style="text-align:left">Correct pills, spinebar step/width, reciprocal pagination, recap→quiz→pager order.</td></tr>
+    <tr><td>8</td><td class="page-c">Technical soundness</td><td class="w-c">5</td><td style="text-align:left">All inline JS passes <code>node --check</code>; widgets guarded; JSON valid; no external deps.</td></tr>
     <tr><td>9</td><td class="page-c">Accessibility</td><td class="w-c">8</td><td style="text-align:left">Widgets keyboard-operable with visible focus; every figure/SVG has a text equivalent; colour never the sole signal.</td></tr>
     <tr><td>10</td><td class="page-c">Flow / sequencing</td><td class="w-c">8</td><td style="text-align:left">A 12–14-yo reads top-to-bottom <em>once</em> with no backtracking: terms defined before use, one new idea per step, concrete→abstract order. Scored by cold-read trace.</td></tr>
     <tr><td>11</td><td class="page-c">Pacing / gradual build-up</td><td class="w-c">8</td><td style="text-align:left">Every genuinely new, load-bearing concept gets real runway — plain idea → name → micro-example → use — never named-and-used inside a single clause or parenthetical. Distinct from clarity (per-sentence pitch), concrete-first (the opening), and flow (ordering).</td></tr>
-    <tr><td>12</td><td class="page-c">Conceptual depth / flesh-out</td><td class="w-c">8</td><td style="text-align:left">A load-bearing concept gets development space <em>proportional to its importance</em> — built slowly across as many pages as it needs, never crammed into one dense step. The pillars (neural networks, attention) each earn a multi-page arc. Judged <em>across pages</em> against the concept-development ledger. <em>(New criterion — its 8 points come from Narrative, Structural, Technical, Honesty &amp; Reinforcement.)</em></td></tr>
+    <tr><td>12</td><td class="page-c">Conceptual depth / flesh-out</td><td class="w-c">8</td><td style="text-align:left">A load-bearing concept gets development space <em>proportional to its importance</em> — built slowly across as many pages as it needs, never crammed into one dense step. The pillars (neural networks, attention) each earn a multi-page arc. Judged <em>across pages</em> against the concept-development ledger.</td></tr>
+    <tr><td>13</td><td class="page-c">Traceability / glass-box</td><td class="w-c">5</td><td style="text-align:left">When the page shows a computation, the reader can trace it end-to-end with real numbers — input → weights → each intermediate output → result — grounded in a diagram, not a black box (e.g. L1.5's wired X→hidden→Y trace, L3's score→softmax→mix, the L5c forward-pass series). A result shown without the path that produced it scores low. <em>(New criterion — its 5 points come from the saturated/mechanical axes.)</em></td></tr>
   </tbody>
 </table>
 </div>
@@ -177,37 +178,38 @@
     {"k": "C2", "name": "Clarity", "w": 9},
     {"k": "C3", "name": "Concrete", "w": 9},
     {"k": "C4a", "name": "Accuracy", "w": 8},
-    {"k": "C4b", "name": "Honesty", "w": 5},
-    {"k": "C5", "name": "Narrative", "w": 6},
-    {"k": "C6", "name": "Reinforce", "w": 7},
-    {"k": "C7", "name": "Structure", "w": 6},
-    {"k": "C8", "name": "Technical", "w": 6},
+    {"k": "C4b", "name": "Honesty", "w": 4},
+    {"k": "C5", "name": "Narrative", "w": 5},
+    {"k": "C6", "name": "Reinforce", "w": 6},
+    {"k": "C7", "name": "Structure", "w": 5},
+    {"k": "C8", "name": "Technical", "w": 5},
     {"k": "C9", "name": "Access", "w": 8},
     {"k": "C10", "name": "Flow", "w": 8},
     {"k": "C11", "name": "Pacing", "w": 8},
-    {"k": "C12", "name": "Depth", "w": 8}
+    {"k": "C12", "name": "Depth", "w": 8},
+    {"k": "C13", "name": "Trace", "w": 5}
   ],
   "pages": [
-    {"p": "L4g", "href": "lesson_04g.html", "s": [4, 4, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 4], "total": 92, "band": "Exemplary"},
-    {"p": "L4f", "href": "lesson_04f.html", "s": [5, 4, 5, 4, 5, 5, 5, 4, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c·enc", "href": "lesson_05c_encode.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c", "href": "lesson_05c.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c·att", "href": "lesson_05c_attention.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L1", "href": "lesson_01.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L6", "href": "lesson_06.html", "s": [4, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5", "href": "lesson_05.html", "s": [5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5c·neu", "href": "lesson_05c_neurons.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5c·out", "href": "lesson_05c_output.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L1.6", "href": "lesson_01_6.html", "s": [5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L1.5", "href": "lesson_01_5.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5], "total": 95, "band": "Exemplary"},
-    {"p": "L4", "href": "lesson_04.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 5, 5], "total": 96, "band": "Exemplary"},
-    {"p": "L4h", "href": "lesson_04h.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], "total": 96, "band": "Exemplary"},
-    {"p": "L3a", "href": "lesson_03a.html", "s": [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L2a", "href": "lesson_02a.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L2", "href": "lesson_02.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L5b", "href": "lesson_05b.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L3", "href": "lesson_03.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5], "total": 99, "band": "Exemplary"},
-    {"p": "L5a", "href": "lesson_05a.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5], "total": 99, "band": "Exemplary"}
+    {"p": "L4g", "href": "lesson_04g.html", "s": [4, 4, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 4, 4], "total": 91, "band": "Exemplary"},
+    {"p": "L4f", "href": "lesson_04f.html", "s": [5, 4, 5, 4, 5, 5, 5, 4, 4, 5, 4, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L5c·enc", "href": "lesson_05c_encode.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L5c", "href": "lesson_05c.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L5c·att", "href": "lesson_05c_attention.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L1", "href": "lesson_01.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 5], "total": 93, "band": "Exemplary"},
+    {"p": "L6", "href": "lesson_06.html", "s": [4, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L5", "href": "lesson_05.html", "s": [5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L1.6", "href": "lesson_01_6.html", "s": [5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L5c·neu", "href": "lesson_05c_neurons.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L5c·out", "href": "lesson_05c_output.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
+    {"p": "L4h", "href": "lesson_04h.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4], "total": 95, "band": "Exemplary"},
+    {"p": "L1.5", "href": "lesson_01_5.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5], "total": 96, "band": "Exemplary"},
+    {"p": "L4", "href": "lesson_04.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 5, 5, 5], "total": 96, "band": "Exemplary"},
+    {"p": "L2a", "href": "lesson_02a.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L5b", "href": "lesson_05b.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L3a", "href": "lesson_03a.html", "s": [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
+    {"p": "L2", "href": "lesson_02.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5], "total": 97, "band": "Exemplary"},
+    {"p": "L5a", "href": "lesson_05a.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 4], "total": 98, "band": "Exemplary"},
+    {"p": "L3", "href": "lesson_03.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5], "total": 99, "band": "Exemplary"}
   ]
 }
 </script>

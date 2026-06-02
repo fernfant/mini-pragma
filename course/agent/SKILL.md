@@ -77,6 +77,13 @@ but **these principles are about the HTML lesson pages.**
    idea gets a paragraph; a foundational one gets an arc. This is *how much total
    room* a concept gets, distinct from #11 Pacing (the runway each idea gets on a
    page it's already on).
+12. **Make computations glass-box.** When you show the model computing something,
+   let the reader trace *every number* — input → weights → each neuron/score/
+   probability → result — grounded in a diagram, not asserted and skipped. A wired
+   figure that assembles the output in front of the reader beats a sentence that
+   states it. Where you can only show an outcome (a slider → a curve), still expose
+   the path that produced it somewhere on the page. Black boxes are for the parts
+   you've *already* opened.
 
 ## 4. Structure: the 15-step spine
 
@@ -177,15 +184,16 @@ reference (section id / line).
 | 2 | **Age-appropriate clarity** | 9 | Plain second-person voice; every term earned; short sentences; a 12–14-yo could follow unaided. |
 | 3 | **Concrete-first pedagogy** | 9 | Opens with a real worked example/numbers; one idea per step; generalises only after. |
 | 4a | **Numeric/factual accuracy** | 8 | Every cited figure (params, accuracy, layer counts, demo numbers) matches the companion code or is explicitly labelled "illustrative"; zero unverified assertions. |
-| 4b | **Honest framing** | 5 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
-| 5 | **Narrative continuity** | 6 | Re-uses the running example; connects back/forward; fits the spine story. |
-| 6 | **Reinforcement** | 7 | Inline checks + recap + quiz; questions test understanding, not recall. |
-| 7 | **Structural correctness** | 6 | Correct pills (right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
-| 8 | **Technical soundness** | 6 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
+| 4b | **Honest framing** | 4 | Simplifications flagged in-clause; no analogy sold as fact that the reader must later un-learn; "it got worse, here's why" arcs kept honest. |
+| 5 | **Narrative continuity** | 5 | Re-uses the running example; connects back/forward; fits the spine story. |
+| 6 | **Reinforcement** | 6 | Inline checks + recap + quiz; questions test understanding, not recall. |
+| 7 | **Structural correctness** | 5 | Correct pills (right `current`), spinebar step/width, reciprocal pagination, recap→quiz→pager order. |
+| 8 | **Technical soundness** | 5 | All inline JS passes `node --check`; widgets guarded; JSON valid; no external deps. |
 | 9 | **Accessibility** | 8 | Every interactive widget is keyboard-operable with visible focus; every figure/SVG has a text equivalent (`<figcaption>` or aria-label); colour is never the sole signal (callout `good`/`bad` also carry a word/icon). |
 | 10 | **Flow / sequencing** | 8 | A 12–14-yo can read top-to-bottom *once*, never backtracking: every term is defined before first use, each step says how it builds on the last, one new idea per step, order goes concrete→abstract / simple→hard. Distinct from #2 (per-sentence pitch) and #5 (cross-lesson threading) — this is *within-page* logical flow. |
 | 11 | **Pacing / gradual build-up** | 8 | Every genuinely new, load-bearing concept gets real runway: plain idea → name → micro-example → use. A concept is never named-and-used inside a single clause or parenthetical. Distinct from #2 (per-sentence pitch), #3 (concrete *opening*) and #10 (ordering / used-before-defined) — this is *how much runway each new idea gets*. |
 | 12 | **Conceptual depth / flesh-out** | 8 | A load-bearing concept is developed *in proportion to its importance* — built slowly across as many steps/pages as it needs (intuition → mechanism → worked example → generalisation → use), never crammed into one dense step. The course's pillars (neural networks, attention) each earn a multi-page arc. Judged **across pages** against the concept-development ledger, not the page in isolation. Distinct from #11 Pacing (*within-page* runway per idea) — this asks whether a concept gets **enough total real-estate at all**. |
+| 13 | **Traceability / glass-box** | 5 | When the page shows a computation, the reader can trace it end-to-end with real numbers — input → weights → each intermediate output → final result — grounded in a diagram, not a black box. A wired figure or staged trace where every number is followable earns 5; a result shown without the path that produced it scores low. |
 
 **Scoring #11 (Pacing).** For each genuinely new, load-bearing concept on the page, check the four-beat runway: (1) plain-idea sentence, (2) name introduced, (3) a micro-example or worked instance, (4) use. Score = how consistently concepts get all four: every load-bearing concept gets full runway → 5; one concept named-and-used in a single clause/parenthetical with no micro-example → 4; several rushed → 3; most concepts compressed → ≤2. Justify by citing the rushed concept and its section id (e.g. "`#train`: cross-entropy named and used in one line"). A concept that is a deliberate *callback* to an earlier full treatment does not need re-runway — a one-line re-gloss suffices.
 
@@ -193,7 +201,11 @@ reference (section id / line).
 
 **Scoring #12 (Conceptual depth / flesh-out).** Unlike every other criterion, this is judged **across pages**, against the **concept-development ledger** (`course/agent/reports/concept_development_*.md`). Each core concept is rated **importance** (H/M/L) and **development** (how many spine steps/pages build it, and how slowly). Score a page by the concept it is *responsible for*: 5 = a high-importance concept gets a slow, multi-beat build with room to breathe (a pillar earns a multi-page arc); a lightweight concept is fully covered in its space. 4 = slightly under-developed for its weight (could use one more worked beat or a split). 3 = a major concept crammed into a single page/step its importance doesn't justify (e.g. all of "what a neural network is" on one page; all of attention on one). ≤2 = a foundational idea introduced and used with almost no build. Distinct from #11 Pacing (*within-page* runway per new idea) — #12 asks whether the concept gets **enough total real-estate at all**. Justify by citing the concept, its importance, and its current page/step count. When the ledger shows a high-importance concept under-developed, the fix is usually **new/split pages**, not edits to the existing one — so a low #12 is a *roadmap signal*, and the per-page deduction lands on the page currently carrying the overloaded concept.
 
-> **Weights changed in this revision** (to seat #12 at weight 8 while the total stays 100): Narrative 8→6, Structural 8→6, Technical 8→6, Honest framing 6→5, Reinforcement 8→7. The pedagogically central axes — **Interactivity (12), Concrete-first (9), Clarity (9), Accuracy (8), Accessibility, Flow, Pacing** — are protected. The 8 points come from the **saturated** axis the framework review flagged (Narrative scores 5 almost everywhere) and the two **mechanical pass/fail** axes (Structural & Technical are gate-checks that idle at 4–5, so a graded 0–5 scale wastes their weight), plus a point each off Honesty (also saturated) and Reinforcement.
+**Scoring #13 (Traceability / glass-box).** For the page's central computation, ask: *can the reader follow every number from input to output?* 5 = a glass-box trace — the input/signal is shown, the weights are visible (edges on a diagram, or a worked sum), each intermediate (hidden activation, score, probability) is displayed, and the final result is **assembled in front of the reader** (e.g. L1.5's wired X→hidden→Y trace; L3's score→softmax→mix; the L5c forward-pass series). 4 = worked with numbers but one stage is summarised or no diagram grounds it. 3 = the result is shown as an outcome (a slider→curve) with the internal path left a black box. ≤2 = pure prose/formula, no traceable instance. Most relevant for **mechanism** pages; for **applied/outcome** pages, trace the *recipe* end-to-end instead of penalising. Justify by naming the computation and the stage that's hidden.
+
+> **Weights changed in the v12 revision** (to seat #12 Conceptual-depth at 8): Narrative 8→6, Structural 8→6, Technical 8→6, Honesty 6→5, Reinforcement 8→7 — from the saturated/mechanical axes; the pedagogically central axes stayed put.
+>
+> **Weights changed in the v13 revision** (to seat #13 Traceability at 5): Honesty 5→4, Narrative 6→5, Reinforcement 7→6, Structural 6→5, Technical 6→5 — again from the saturated (Honesty, Narrative) and mechanical pass/fail (Structural, Technical) axes, leaving **Interactivity (12), Concrete-first (9), Clarity (9), Accuracy (8), Accessibility (8), Flow (8), Pacing (8), Conceptual-depth (8)** untouched.
 
 **Total /100.** Bands: 90–100 exemplary · 75–89 strong · 60–74 acceptable ·
 40–59 weak · <40 failing. Report per-criterion score, weighted subtotal, total,
