@@ -208,5 +208,68 @@
     });
   };
 
+  // gradeTryit — turn each ".tryit" capstone into a self-graded check.
+  // Reveal each answer, mark ✓/✗; PASS shows only when more than 80% are correct.
+  function gradeTryit() {
+    document.querySelectorAll(".tryit").forEach(function (box) {
+      var items = Array.prototype.slice.call(box.querySelectorAll("ol > li"));
+      if (!items.length) return;
+      var state = items.map(function () { return null; });  // null | true | false
+      var NEED = Math.floor(items.length * 0.8) + 1;        // smallest count that is > 80%
+      var res = document.createElement("div");
+      res.className = "ti-result";
+      res.setAttribute("aria-live", "polite");
+      box.appendChild(res);
+      function update() {
+        var graded = state.filter(function (s) { return s !== null; }).length;
+        var correct = state.filter(function (s) { return s === true; }).length;
+        if (graded < items.length) {
+          res.className = "ti-result";
+          res.innerHTML = '<span class="ti-prog">Reveal each answer and mark it — grade all ' + items.length +
+            ' to see your result (' + graded + '/' + items.length + ' done). Aim for more than 80% to pass.</span>';
+          return;
+        }
+        var pct = Math.round(correct / items.length * 100);
+        var pass = pct > 80;
+        res.className = "ti-result " + (pass ? "pass" : "fail");
+        res.innerHTML = '<span class="ti-badge">' + (pass ? "✅ PASS" : "🔁 Keep trying") + '</span>' +
+          '<span class="ti-score">' + correct + ' / ' + items.length + ' correct (' + pct + '%)</span>' +
+          (pass ? '' : '<span class="ti-hint">You need more than 80% (' + NEED + ' of ' + items.length +
+            '). Re-read the ones you missed, then mark them again.</span>');
+      }
+      function mkBtn(kind, label) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "ti-gbtn ti-" + kind;
+        b.textContent = label;
+        b.setAttribute("aria-pressed", "false");
+        return b;
+      }
+      items.forEach(function (li, i) {
+        var g = document.createElement("div");
+        g.className = "ti-grade";
+        var q = document.createElement("span");
+        q.className = "ti-q";
+        q.textContent = "Did you get it?";
+        var yes = mkBtn("yes", "✓ Yes");
+        var no = mkBtn("no", "✗ Not quite");
+        function set(v) {
+          state[i] = v;
+          yes.classList.toggle("on", v === true);
+          no.classList.toggle("on", v === false);
+          yes.setAttribute("aria-pressed", v === true ? "true" : "false");
+          no.setAttribute("aria-pressed", v === false ? "true" : "false");
+          update();
+        }
+        yes.addEventListener("click", function () { set(true); });
+        no.addEventListener("click", function () { set(false); });
+        g.appendChild(q); g.appendChild(yes); g.appendChild(no);
+        li.appendChild(g);
+      });
+      update();
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", linkGlossary);
+  document.addEventListener("DOMContentLoaded", gradeTryit);
 })();

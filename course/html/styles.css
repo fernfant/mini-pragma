@@ -966,3 +966,20 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .tryit details.ti-answer summary::after { content:"  ▸ check"; color:#94a3b8; font-weight:400; font-size:11px; }
 .tryit details.ti-answer[open] summary::after { content:"  ▾ hide"; }
 .tryit details.ti-answer p { margin:6px 0 0; font-size:13.5px; color:var(--text,#1a1a1a); }
+
+/* "Try it yourself" self-grading (gradeTryit in course.js) */
+.tryit .ti-grade { display:flex; align-items:center; gap:8px; margin:8px 0 2px; flex-wrap:wrap; }
+.tryit .ti-q { font-size:12.5px; color:#9a6b4f; }
+.tryit .ti-gbtn { border:1.5px solid #d8b59c; background:#fff; color:#8a5a3c; border-radius:6px; padding:3px 11px; font-size:12.5px; font-weight:600; cursor:pointer; }
+.tryit .ti-gbtn:focus-visible { outline:2px solid var(--accent,#b9410a); outline-offset:2px; }
+.tryit .ti-gbtn.ti-yes.on { background:#047857; border-color:#047857; color:#fff; }
+.tryit .ti-gbtn.ti-no.on  { background:#b45309; border-color:#b45309; color:#fff; }
+.tryit .ti-result { margin-top:16px; padding:11px 15px; border-radius:8px; font-size:14px; background:#fff; border:1px solid #fed7aa; }
+.tryit .ti-result.pass { background:#ecfdf5; border-color:#6ee7b7; }
+.tryit .ti-result.fail { background:#fffbeb; border-color:#fcd34d; }
+.tryit .ti-badge { font-weight:800; margin-right:10px; }
+.tryit .ti-result.pass .ti-badge { color:#047857; }
+.tryit .ti-result.fail .ti-badge { color:#b45309; }
+.tryit .ti-score { color:#475569; font-weight:600; }
+.tryit .ti-prog { color:#9a6b4f; }
+.tryit .ti-hint { display:block; margin-top:5px; color:#6b7280; font-size:12.5px; }
