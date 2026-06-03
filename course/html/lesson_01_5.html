@@ -177,6 +177,65 @@ for _ in range(1000):
   sync();
 })();</script>
 
+<p>The widget is a toy. Here's the <strong>actual loop</strong> — plain Python, no PyTorch, every line readable — that you can <strong>run and edit right on this page</strong>:</p>
+
+<div class="widget">
+  <h3>🐍 Run it yourself — real Python, right here</h3>
+  <div class="pg-sub">Hit <b>Run</b> and watch the loss print out and <strong>stick at ~2.8</strong>. Then change <code>lr</code> or the number of steps and run again — it still won't drop below ~2.8. That's the wall. <span style="color:#64748b;">(Loads Python in your browser the first time you click — needs internet for that one download; after that it's instant.)</span></div>
+  <textarea id="rp-code" spellcheck="false" aria-label="Editable Python code: fit the U-shaped data with a straight line" style="width:100%;min-height:250px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;line-height:1.55;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#0f172a;color:#e2e8f0;box-sizing:border-box;"># Fit the U-shaped data with a STRAIGHT line. Watch it fail.
+x = [0, 1, 2, 3, 4]
+y = [3, 0, -1, 0, 3]          # the U:  y = x*x - 4*x + 3
+
+w, b = 0.0, 0.0               # the two knobs
+lr   = 0.02                   # learning rate  (try changing me!)
+
+for step in range(2001):
+    gw = gb = 0.0
+    for xi, yi in zip(x, y):
+        err = (w*xi + b) - yi          # how wrong we are here
+        gw += 2 * err * xi             # which way to nudge w, b
+        gb += 2 * err
+    w -= lr * gw / len(x)              # take a small step downhill
+    b -= lr * gb / len(x)
+    if step % 500 == 0:
+        loss = sum(((w*xi + b) - yi)**2 for xi, yi in zip(x, y)) / len(x)
+        print(f"step {step:4d}   loss {loss:.3f}   (w={w:.2f}, b={b:.2f})")
+
+print("The line is stuck at ~2.8 - it cannot bend into a U.")</textarea>
+  <div style="margin:8px 0;"><button id="rp-run">▶ Run</button><button class="alt" id="rp-reset">Reset code</button></div>
+  <pre id="rp-out" style="min-height:60px;white-space:pre-wrap;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;">(output appears here)</pre>
+</div>
+<script>(function(){
+  var ta=document.getElementById('rp-code'); if(!ta) return;
+  var DEFAULT=ta.value, out=document.getElementById('rp-out'), pyReady=null;
+  var EXPECTED='step    0   loss 3.453   (w=0.08, b=0.04)\nstep  500   loss 2.800   (w=0.00, b=1.00)\nstep 1000   loss 2.800   (w=0.00, b=1.00)\nstep 1500   loss 2.800   (w=0.00, b=1.00)\nstep 2000   loss 2.800   (w=0.00, b=1.00)\nThe line is stuck at ~2.8 - it cannot bend into a U.';
+  function ensurePy(){
+    if(pyReady) return pyReady;
+    pyReady=new Promise(function(res,rej){
+      var s=document.createElement('script');
+      s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+      s.onload=function(){ if(typeof loadPyodide!=='function'){rej(new Error('no loader'));return;} loadPyodide().then(res).catch(rej); };
+      s.onerror=function(){ rej(new Error('script load failed')); };
+      document.head.appendChild(s);
+    });
+    return pyReady;
+  }
+  document.getElementById('rp-run').addEventListener('click',function(){
+    var btn=this; btn.disabled=true; out.textContent='Loading Python… (first time only — a few seconds)';
+    ensurePy().then(function(py){
+      var buf='';
+      py.setStdout({batched:function(s){buf+=s+'\n';}});
+      try{ py.runPython(ta.value); out.textContent=buf||'(no output)'; }
+      catch(e){ out.textContent=buf+'\n⚠️ Python error:\n'+(e&&e.message?e.message:e); }
+      btn.disabled=false;
+    }).catch(function(){
+      out.textContent='Couldn’t load Python (it needs internet the first time you click Run). Here’s exactly what it prints:\n\n'+EXPECTED;
+      btn.disabled=false;
+    });
+  });
+  document.getElementById('rp-reset').addEventListener('click',function(){ ta.value=DEFAULT; out.textContent='(output appears here)'; });
+})();</script>
+
 <h2 class="step" id="step-3"><span class="step-num">Step 3</span> Trick: give linear regression more features</h2>
 
 <div id="pred-s3"></div>
