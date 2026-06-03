@@ -809,6 +809,15 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     </div>
   </div>
   <div id="pn-params" style="margin-top:14px;"></div>
+  <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+    <h3 style="margin:0 0 2px;font-size:1.02em;">🔎 Now run it forwards — inference</h3>
+    <div class="pg-sub">Training's done; the weights are frozen. Pick a number and watch it turn into <strong>bits</strong>, flow through the layers, light up the neurons that fire, and come out the other side as a <strong>prediction</strong> — using the net exactly as you just trained it.</div>
+    <label for="pi-x" style="display:block;margin:10px 0 4px;">Input <code>x</code> = <output id="pi-xv" class="nr-mono">3.0</output></label>
+    <input id="pi-x" type="range" min="0" max="4" step="0.5" value="3" style="width:260px;" aria-label="Input x from 0 to 4">
+    <div id="pi-bits" style="margin:10px 0;"></div>
+    <div id="pi-flow"></div>
+    <p id="pi-out" style="margin-top:10px;font-weight:600;"></p>
+  </div>
 </div>
 <script>(function(){
   var cv=document.getElementById('pn-cv'); if(!cv) return; var ctx=cv.getContext('2d');
@@ -866,7 +875,34 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     var tbl='<table class="pn-tbl" style="margin-top:10px;"><thead><tr><th></th><th style="color:#3b82f6;">weight in</th><th style="color:#a855f7;">bias</th><th style="color:#047857;">weight out</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3" style="text-align:right;color:#64748b;">output bias&nbsp;</td><td>'+bar(b2,'#a855f7')+num(b2)+'</td></tr></tfoot></table>';
     document.getElementById('pn-params').innerHTML=svg+tbl;
   }
-  function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();}
+  function f32bits(x){var b=new ArrayBuffer(4);new Float32Array(b)[0]=x;var u=new Uint32Array(b)[0],s='';for(var i=31;i>=0;i--)s+=(u>>>i)&1;return s;}
+  function bitsHTML(x){var bs=f32bits(x),cells='';
+    for(var i=0;i<32;i++){var col=i===0?'#dc2626':(i<9?'#2563eb':'#475569');cells+='<span style="display:inline-block;width:12px;height:17px;line-height:17px;text-align:center;font-family:ui-monospace,monospace;font-size:9px;color:#fff;background:'+col+';margin:1px;border-radius:2px;">'+bs[i]+'</span>';}
+    return '<div style="font-size:12px;color:#475569;margin-bottom:4px;">The number <code>'+x.toFixed(1)+'</code> is really just 32 on/off switches — <span style="color:#dc2626;font-weight:700">sign</span>, <span style="color:#2563eb;font-weight:700">exponent</span>, <span style="color:#475569;font-weight:700">fraction</span> (float32, exactly what the computer feeds the net — you don’t need to read it):</div><div style="display:flex;flex-wrap:wrap;max-width:500px;">'+cells+'</div>';}
+  function infer(){
+    var xEl=document.getElementById('pi-x'); if(!xEl) return;
+    var x=+xEl.value; document.getElementById('pi-xv').textContent=x.toFixed(1);
+    document.getElementById('pi-bits').innerHTML=bitsHTML(x);
+    var f=fwd(x),truth=x*x-4*x+3,maxh=0.0001; for(var j=0;j<H;j++) maxh=Math.max(maxh,f.h[j]);
+    var SW=560,IX=66,HX=292,OX=498,CY=150,hy=[]; for(j=0;j<H;j++) hy.push(34+j*(232/(H-1)));
+    var e=[];
+    for(j=0;j<H;j++){var on=f.h[j]>1e-9;
+      e.push('<line x1="'+(IX+17)+'" y1="'+CY+'" x2="'+(HX-15)+'" y2="'+hy[j]+'" stroke="'+(on?'#3b82f6':'#cbd5e1')+'" stroke-width="'+(on?2.2:1)+'" opacity="'+(on?0.85:0.35)+'"/>');}
+    for(j=0;j<H;j++){var c=w2[j]*f.h[j],col=c>=0?'#10b981':'#f59e0b',wd=(0.6+Math.min(Math.abs(c),3)/3*4.4).toFixed(1),onj=f.h[j]>1e-9;
+      e.push('<line x1="'+(HX+15)+'" y1="'+hy[j]+'" x2="'+(OX-19)+'" y2="'+CY+'" stroke="'+col+'" stroke-width="'+wd+'" opacity="'+(onj?0.8:0.12)+'"/>');}
+    e.push('<text x="'+IX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">number in</text>');
+    e.push('<text x="'+HX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">neurons fire (ReLU)</text>');
+    e.push('<text x="'+OX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">prediction</text>');
+    e.push('<circle cx="'+IX+'" cy="'+CY+'" r="17" fill="#1a1a1a"/><text x="'+IX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">'+x.toFixed(1)+'</text><text x="'+IX+'" y="'+(CY+32)+'" text-anchor="middle" font-size="8.5" fill="#94a3b8">scaled u='+f.u.toFixed(2)+'</text>');
+    for(j=0;j<H;j++){var onn=f.h[j]>1e-9,t=Math.min(f.h[j]/maxh,1),fill=onn?'rgba(16,185,129,'+(0.18+0.62*t).toFixed(2)+')':'#f1f5f9';
+      e.push('<circle cx="'+HX+'" cy="'+hy[j]+'" r="13" fill="'+fill+'" stroke="'+(onn?'#10b981':'#cbd5e1')+'" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4)+'" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="'+(onn?'#065f46':'#94a3b8')+'">'+(onn?f.h[j].toFixed(1):'0')+'</text>');}
+    e.push('<circle cx="'+OX+'" cy="'+CY+'" r="19" fill="#ecfdf5" stroke="#10b981" stroke-width="2.2"/><text x="'+OX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">'+f.y.toFixed(1)+'</text>');
+    document.getElementById('pi-flow').innerHTML='<svg viewBox="0 0 '+SW+' 290" role="img" aria-label="Forward pass for the chosen input: the number enters on the left, lights up the hidden neurons that fire (shaded green with their values), and those feed the prediction on the right." style="width:100%;max-width:'+SW+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+    var err=Math.abs(f.y-truth);
+    document.getElementById('pi-out').innerHTML='Network predicts <b style="color:#047857">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; truth (x²−4x+3) = <b>'+truth.toFixed(2)+'</b> &nbsp;·&nbsp; off by '+err.toFixed(2)+(err<0.3?' &nbsp;✅ spot on':' &nbsp;— train the net above to close the gap');
+  }
+  var piEl=document.getElementById('pi-x'); if(piEl) piEl.addEventListener('input',infer);
+  function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();infer();}
   document.getElementById('pn-step').addEventListener('click',function(){gstep();sync();});
   var SPEEDS=[{n:1,ms:80,t:'🐢 slow'},{n:4,ms:55,t:'🚶 med'},{n:12,ms:40,t:'🐇 fast'}],spi=0;
   function startTimer(){var s=SPEEDS[spi];timer=setInterval(function(){for(var k=0;k<s.n;k++)gstep();sync();if(step>=2500||loss()<0.01){clearInterval(timer);timer=null;document.getElementById('pn-train').textContent='Train ▶';}},s.ms);}
