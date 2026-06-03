@@ -91,12 +91,28 @@
       <div id="px-note" style="font-size:12px;color:#475569;margin-top:8px;"></div>
     </div>
   </div>
+  <div style="font-size:12px;color:#475569;margin:14px 0 0;">Now the <b>same 25 numbers</b> as the network's <b>input nodes</b> (filled = pixel on). Each one wires to <em>every</em> hidden neuron — so here <code>W₁</code> is <b>4×25</b>. Draw above and watch the input column change:</div>
+  <div id="px-net" style="margin-top:6px;"></div>
 </div>
 <script>(function(){
   var grid=document.getElementById('px-grid'); if(!grid) return;
   var N=5, three=[1,1,1,1,0, 0,0,0,1,0, 0,1,1,1,0, 0,0,0,1,0, 1,1,1,1,0], cells=three.slice();
   function build(){grid.innerHTML='';for(var i=0;i<N*N;i++){(function(i){var c=document.createElement('button');c.setAttribute('aria-label','pixel '+(i+1)+(cells[i]?' on':' off'));c.style.cssText='width:32px;height:32px;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;padding:0;background:'+(cells[i]?'#1a1a1a':'#fff')+';';c.addEventListener('click',function(){cells[i]=cells[i]?0:1;c.style.background=cells[i]?'#1a1a1a':'#fff';c.setAttribute('aria-label','pixel '+(i+1)+(cells[i]?' on':' off'));render();});grid.appendChild(c);})(i);}}
-  function render(){document.getElementById('px-vec').textContent='['+cells.join(', ')+']';var on=0;for(var i=0;i<cells.length;i++)on+=cells[i];document.getElementById('px-note').innerHTML='That is a list of <b>'+cells.length+' numbers</b> ('+on+' switched on). A real 28×28 photo of a digit makes a list of <b>784</b> numbers. The list length = how many <b>pixels</b> — never how many bits.';}
+  function net(){
+    var host=document.getElementById('px-net'); if(!host) return;
+    var H=4,NH=cells.length,W=520,IX=80,HX=320,PT=18,Ht=Math.max(360,NH*13+36),e=[],i,j;
+    var iy=[]; for(i=0;i<NH;i++) iy.push(PT+(Ht-2*PT)*(NH>1?i/(NH-1):0.5));
+    var hy=[]; for(j=0;j<H;j++) hy.push(PT+(Ht-2*PT)*(H>1?j/(H-1):0.5));
+    for(i=0;i<NH;i++)for(j=0;j<H;j++) e.push('<line x1="'+(IX+7)+'" y1="'+iy[i].toFixed(1)+'" x2="'+(HX-10)+'" y2="'+hy[j].toFixed(1)+'" stroke="#3b82f6" stroke-width="0.6" opacity="0.10"/>');
+    e.push('<text x="'+IX+'" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">'+NH+' inputs (1/pixel)</text>');
+    e.push('<text x="'+HX+'" y="11" text-anchor="middle" font-size="10" font-weight="700" fill="#475569">hidden ('+H+')</text>');
+    for(i=0;i<NH;i++) e.push('<circle cx="'+IX+'" cy="'+iy[i].toFixed(1)+'" r="6" fill="'+(cells[i]?'#1a1a1a':'#fff')+'" stroke="#94a3b8" stroke-width="1"/>');
+    for(j=0;j<H;j++) e.push('<circle cx="'+HX+'" cy="'+hy[j].toFixed(1)+'" r="11" fill="#fff" stroke="#94a3b8" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4).toFixed(1)+'" text-anchor="middle" font-size="9" fill="#64748b">h'+(j+1)+'</text>');
+    e.push('<text x="'+IX+'" y="'+(Ht-3)+'" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="#1e40af">'+NH+'×1</text>');
+    e.push('<text x="'+((IX+HX)/2)+'" y="'+(Ht-3)+'" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#b45309">W₁: '+H+'×'+NH+'</text>');
+    host.innerHTML='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="The '+NH+' drawn pixels shown as '+NH+' input nodes, filled when the pixel is on, each wired to '+H+' hidden neurons; the first weight matrix is '+H+' by '+NH+'." style="width:100%;max-width:'+W+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+  }
+  function render(){document.getElementById('px-vec').textContent='['+cells.join(', ')+']';var on=0;for(var i=0;i<cells.length;i++)on+=cells[i];document.getElementById('px-note').innerHTML='That is a list of <b>'+cells.length+' numbers</b> ('+on+' switched on). A real 28×28 photo of a digit makes a list of <b>784</b> numbers. The list length = how many <b>pixels</b> — never how many bits.';net();}
   document.getElementById('px-clear').addEventListener('click',function(){for(var i=0;i<cells.length;i++)cells[i]=0;build();render();});
   document.getElementById('px-3').addEventListener('click',function(){cells=three.slice();build();render();});
   build(); render();
