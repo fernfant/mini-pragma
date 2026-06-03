@@ -151,6 +151,23 @@
   <p style="margin:.6em 0 0;">So it's the <em>same</em> story as the pixels, just with a lookup bolted on the front: a picture is <em>already</em> numbers, so you flatten it to a vector; a word is <em>not</em>, and its ID is meaningless, so you look it up to <strong>get</strong> a vector. Either way the net eats a list of <code>d</code> meaningful numbers — never a bare ID, never a packed byte. That lookup table <em>is</em> the <strong>embedding</strong>, and <a href="lesson_02.html">Lesson 2</a> is all about learning it.</p>
 </div>
 
+<div class="callout good">
+  <strong>Picture vs word — two routes to the very same thing (a length-<code>d</code> vector):</strong>
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;">
+    <div style="flex:1 1 240px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+      <div style="font-weight:700;margin-bottom:4px;">🖼 A picture — <em>already</em> numbers</div>
+      <div style="font-size:13px;color:#475569;">Each pixel is a brightness number, so you just <b>flatten</b> the grid into one list. <b>No lookup needed.</b></div>
+      <div style="font-family:ui-monospace,monospace;font-size:11.5px;margin-top:7px;color:#334155;">grid &nbsp;→&nbsp; flatten &nbsp;→&nbsp; <span style="color:#1e40af">[1, 0, 1, …]</span></div>
+    </div>
+    <div style="flex:1 1 240px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+      <div style="font-weight:700;margin-bottom:4px;">🔤 A word — <em>not</em> numbers</div>
+      <div style="font-size:13px;color:#475569;">Letters aren't numbers, and its ID is a <b>meaningless label</b> — so you <b>look it up</b> in the embedding table to <b>get</b> a list of numbers.</div>
+      <div style="font-family:ui-monospace,monospace;font-size:11.5px;margin-top:7px;color:#334155;">"cat" &nbsp;→&nbsp; ID 5342 &nbsp;→&nbsp; look up &nbsp;→&nbsp; <span style="color:#1e40af">[0.6, −0.2, …]</span></div>
+    </div>
+  </div>
+  <p style="margin:.6em 0 0;">Both arrive at the <strong>same place</strong>: a length-<code>d</code> vector of meaningful numbers — the net's actual input. A picture is already there; a word needs the lookup to get there.</p>
+</div>
+
 <h2 class="step" id="neuron-row"><span class="step-num">Row</span> One neuron = one row of weights</h2>
 
 <p>Remember the <strong>OR neuron</strong> back on <a href="lesson_01_5.html">L1.5</a>? It took two inputs, <code>A</code> and <code>B</code>, and gave <em>each one its own weight</em>. That's the rule: a neuron reading a <code>d</code>-number input needs <strong>d weights</strong> — exactly one per input number. Lay those weights out in a <strong>row</strong>:</p>
