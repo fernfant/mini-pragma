@@ -143,6 +143,14 @@
   .dimline{font-family:ui-monospace,monospace;font-size:14px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin:10px 0;}
 </style>
 
+<div class="callout info">
+  <strong>So why does Lesson 2 encode a word as an integer? (Connecting the two.)</strong>
+  <p style="margin:.6em 0 0;">This looks like a contradiction — we just said don't cram separate things into one number, yet a word gets a single integer. Here's the resolution. A word like <code>"cat"</code> first gets a number, say <code>5342</code>. But that integer is a <strong>name / row-number — an ID, not a measurement</strong> (exactly the kind we just said you must <em>not</em> feed in directly: <code>5342</code> isn't "bigger" than <code>17</code>, and "cat" isn't 313× "the").</p>
+  <p style="margin:.6em 0 0;">So the net <strong>never sees that integer.</strong> The ID is only an <strong>address</strong>: it looks up <strong>row 5342</strong> of a big <strong>embedding table</strong>, which hands back a <strong>list of <code>d</code> real numbers</strong> — and <em>those</em> are meaningful (each a learned coordinate of the word's meaning) and trainable.</p>
+  <div style="font-family:ui-monospace,monospace;font-size:12px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin:.55em 0;">"cat" &nbsp;→&nbsp; ID <b>5342</b> <span style="color:#64748b">(just a label)</span> &nbsp;→&nbsp; look up row 5342 &nbsp;→&nbsp; <span style="color:#1e40af">[0.6, −0.2, 0.9, …]</span> <span style="color:#64748b">(the embedding — a length-<code>d</code> vector, the real input)</span></div>
+  <p style="margin:.6em 0 0;">So it's the <em>same</em> story as the pixels, just with a lookup bolted on the front: a picture is <em>already</em> numbers, so you flatten it to a vector; a word is <em>not</em>, and its ID is meaningless, so you look it up to <strong>get</strong> a vector. Either way the net eats a list of <code>d</code> meaningful numbers — never a bare ID, never a packed byte. That lookup table <em>is</em> the <strong>embedding</strong>, and <a href="lesson_02.html">Lesson 2</a> is all about learning it.</p>
+</div>
+
 <h2 class="step" id="neuron-row"><span class="step-num">Row</span> One neuron = one row of weights</h2>
 
 <p>Remember the <strong>OR neuron</strong> back on <a href="lesson_01_5.html">L1.5</a>? It took two inputs, <code>A</code> and <code>B</code>, and gave <em>each one its own weight</em>. That's the rule: a neuron reading a <code>d</code>-number input needs <strong>d weights</strong> — exactly one per input number. Lay those weights out in a <strong>row</strong>:</p>
