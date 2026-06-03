@@ -811,12 +811,20 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   <div id="pn-params" style="margin-top:14px;"></div>
   <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
     <h3 style="margin:0 0 2px;font-size:1.02em;">🔎 Now run it forwards — inference</h3>
-    <div class="pg-sub">Training's done; the weights are frozen. Pick a number and watch it turn into <strong>bits</strong>, flow through the layers, light up the neurons that fire, and come out the other side as a <strong>prediction</strong> — using the net exactly as you just trained it.</div>
+    <div class="pg-sub">Pick a number and watch it turn into <strong>bits</strong>, flow through the layers, light up the neurons that fire, and come out the other side as a <strong>prediction</strong> — using the net exactly as it is right now. (Train above and you'll watch the prediction sharpen.)</div>
     <label for="pi-x" style="display:block;margin:10px 0 4px;">Input <code>x</code> = <output id="pi-xv" class="nr-mono">3.0</output></label>
-    <input id="pi-x" type="range" min="0" max="4" step="0.5" value="3" style="width:260px;" aria-label="Input x from 0 to 4">
+    <input id="pi-x" type="range" min="0" max="4" step="0.25" value="3" style="width:260px;" aria-label="Input x from 0 to 4">
     <div id="pi-bits" style="margin:10px 0;"></div>
     <div id="pi-flow"></div>
     <p id="pi-out" style="margin-top:10px;font-weight:600;"></p>
+
+    <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:12px;">
+      <h4 style="margin:0 0 2px;font-size:1.0em;">🧩 Where Y comes from — 6 bends stacking up</h4>
+      <div class="pg-sub">This is the whole secret of inference. Each hidden neuron outputs <strong>one simple bend</strong> (a thin coloured line). The network's answer <code>Y</code> is just those six bends <strong>added together</strong> (plus a bias) — the thick blue line. Drag <code>x</code> above, or train, and watch the pieces <em>and</em> the total move.</div>
+      <canvas id="pd-cv" width="560" height="300" aria-label="Six faint coloured curves, one per hidden neuron's output, plus a bold blue curve that is their sum (the network's output Y), and a dashed target parabola. A vertical line marks the chosen input x; dots mark each neuron's value and the summed Y at that x." style="width:100%;max-width:560px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;display:block;margin-top:8px;"></canvas>
+      <div id="pd-leg" style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#475569;margin:7px 0 0;"></div>
+      <div id="pd-rows" style="margin-top:12px;"></div>
+    </div>
   </div>
 </div>
 <script>(function(){
@@ -879,6 +887,40 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   function bitsHTML(x){var bs=f32bits(x),cells='';
     for(var i=0;i<32;i++){var col=i===0?'#dc2626':(i<9?'#2563eb':'#475569');cells+='<span style="display:inline-block;width:12px;height:17px;line-height:17px;text-align:center;font-family:ui-monospace,monospace;font-size:9px;color:#fff;background:'+col+';margin:1px;border-radius:2px;">'+bs[i]+'</span>';}
     return '<div style="font-size:12px;color:#475569;margin-bottom:4px;">The number <code>'+x.toFixed(1)+'</code> is really just 32 on/off switches — <span style="color:#dc2626;font-weight:700">sign</span>, <span style="color:#2563eb;font-weight:700">exponent</span>, <span style="color:#475569;font-weight:700">fraction</span> (float32, exactly what the computer feeds the net — you don’t need to read it):</div><div style="display:flex;flex-wrap:wrap;max-width:500px;">'+cells+'</div>';}
+  var COLS=['#ef4444','#f59e0b','#10b981','#06b6d4','#8b5cf6','#ec4899'];
+  function decompAt(x){var u=(x-2)/2,cs=[],y=b2;for(var j=0;j<H;j++){var z=w1[j]*u+b1[j],hh=z>0?z:0;cs.push(w2[j]*hh);y+=w2[j]*hh;}return{cs:cs,y:y,u:u};}
+  function drawDecomp(){
+    var pc=document.getElementById('pd-cv'); if(!pc) return; var c2=pc.getContext('2d');
+    var W=pc.width,Ht=pc.height,PL=30,PB=20,PT=8,PR=8,N=84,xs=[],ser=[],sm=[],tg=[],lo=1e9,hi=-1e9;
+    for(var j=0;j<H;j++)ser.push([]);
+    for(var i=0;i<=N;i++){var x=XMIN+(XMAX-XMIN)*i/N;xs.push(x);var d=decompAt(x);for(j=0;j<H;j++){ser[j].push(d.cs[j]);lo=Math.min(lo,d.cs[j]);hi=Math.max(hi,d.cs[j]);}sm.push(d.y);var tv=x*x-4*x+3;tg.push(tv);lo=Math.min(lo,d.y,tv);hi=Math.max(hi,d.y,tv);}
+    lo=Math.min(lo,0);hi=Math.max(hi,0);if(hi-lo<2){hi+=1;lo-=1;}var pd=(hi-lo)*0.08;lo-=pd;hi+=pd;
+    function PX(x){return PL+(x-XMIN)/(XMAX-XMIN)*(W-PL-PR);}
+    function PY(y){return Ht-PB-(y-lo)/(hi-lo)*(Ht-PT-PB);}
+    c2.clearRect(0,0,W,Ht);
+    c2.strokeStyle='#eee';c2.fillStyle='#9ca3af';c2.font='10px ui-sans-serif,system-ui';c2.lineWidth=1;c2.textAlign='center';
+    for(var gx=0;gx<=4;gx++){c2.beginPath();c2.moveTo(PX(gx),PT);c2.lineTo(PX(gx),Ht-PB);c2.stroke();c2.fillText(gx,PX(gx),Ht-6);}
+    c2.strokeStyle='#d1d5db';c2.beginPath();c2.moveTo(PL,PY(0));c2.lineTo(W-PR,PY(0));c2.stroke();
+    c2.strokeStyle='#9ca3af';c2.setLineDash([5,4]);c2.lineWidth=1.5;c2.beginPath();tg.forEach(function(v,i){var X=PX(xs[i]),Y=PY(v);i?c2.lineTo(X,Y):c2.moveTo(X,Y);});c2.stroke();c2.setLineDash([]);
+    for(j=0;j<H;j++){c2.strokeStyle=COLS[j];c2.globalAlpha=0.55;c2.lineWidth=1.6;c2.beginPath();ser[j].forEach(function(v,i){var X=PX(xs[i]),Y=PY(v);i?c2.lineTo(X,Y):c2.moveTo(X,Y);});c2.stroke();}
+    c2.globalAlpha=1;
+    c2.strokeStyle='#2563eb';c2.lineWidth=3;c2.beginPath();sm.forEach(function(v,i){var X=PX(xs[i]),Y=PY(v);i?c2.lineTo(X,Y):c2.moveTo(X,Y);});c2.stroke();
+    var xv=+document.getElementById('pi-x').value,dd=decompAt(xv);
+    c2.strokeStyle='#1a1a1a';c2.globalAlpha=.28;c2.lineWidth=1;c2.beginPath();c2.moveTo(PX(xv),PT);c2.lineTo(PX(xv),Ht-PB);c2.stroke();c2.globalAlpha=1;
+    for(j=0;j<H;j++){c2.fillStyle=COLS[j];c2.globalAlpha=.85;c2.beginPath();c2.arc(PX(xv),PY(dd.cs[j]),3,0,7);c2.fill();}c2.globalAlpha=1;
+    c2.fillStyle='#2563eb';c2.beginPath();c2.arc(PX(xv),PY(dd.y),4.5,0,7);c2.fill();
+  }
+  function renderRows(){
+    var rEl=document.getElementById('pd-rows'); if(!rEl) return;
+    var x=+document.getElementById('pi-x').value,f=fwd(x),truth=x*x-4*x+3,maxc=0.5;
+    for(var j=0;j<H;j++) maxc=Math.max(maxc,Math.abs(w2[j]*f.h[j]));
+    var rows='';
+    for(j=0;j<H;j++){var h=f.h[j],c=w2[j]*f.h[j],on=h>1e-9,bw=(Math.min(Math.abs(c)/maxc,1)*64).toFixed(0);
+      rows+='<tr><td style="color:'+COLS[j]+';font-weight:700;">h'+(j+1)+'</td><td style="font-family:ui-monospace,monospace;font-size:11px;">'+(on?h.toFixed(2):'<span style="color:#cbd5e1">0 · off</span>')+'</td><td style="font-family:ui-monospace,monospace;font-size:11px;color:#64748b;">×'+w2[j].toFixed(2)+'</td><td><span style="display:inline-block;height:9px;width:'+bw+'px;background:'+COLS[j]+';border-radius:2px;opacity:'+(on?0.85:0.25)+';vertical-align:middle;"></span></td><td style="font-family:ui-monospace,monospace;font-size:11px;text-align:right;">'+(c>=0?'+':'')+c.toFixed(2)+'</td></tr>';}
+    var err=Math.abs(f.y-truth);
+    rEl.innerHTML='<div style="font-size:12px;color:#475569;margin-bottom:4px;">At <code>x='+x.toFixed(2)+'</code> (scaled <code>u='+f.u.toFixed(2)+'</code>): each neuron’s output <b>h</b>, times its outgoing weight, is its <b>contribution</b>.</div><table class="pn-tbl"><thead><tr><th></th><th>output h</th><th>weight</th><th>bar</th><th>adds</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="5" style="color:#64748b;">Add all six + bias '+b2.toFixed(2)+' = <b style="color:#2563eb;">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; target '+truth.toFixed(2)+' &nbsp;·&nbsp; off by '+err.toFixed(2)+'</td></tr></tfoot></table>';
+  }
+  (function(){var leg=document.getElementById('pd-leg');if(!leg)return;var s='';for(var j=0;j<H;j++)s+='<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:14px;height:3px;background:'+COLS[j]+';display:inline-block;border-radius:2px;"></span>h'+(j+1)+'</span>';s+='<span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#2563eb;"><span style="width:16px;height:4px;background:#2563eb;display:inline-block;border-radius:2px;"></span>Y (the sum)</span><span style="display:inline-flex;align-items:center;gap:4px;color:#6b7280;"><span style="width:14px;border-top:2px dashed #9ca3af;display:inline-block;"></span>target</span>';leg.innerHTML=s;})();
   function infer(){
     var xEl=document.getElementById('pi-x'); if(!xEl) return;
     var x=+xEl.value; document.getElementById('pi-xv').textContent=x.toFixed(1);
@@ -900,6 +942,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     document.getElementById('pi-flow').innerHTML='<svg viewBox="0 0 '+SW+' 290" role="img" aria-label="Forward pass for the chosen input: the number enters on the left, lights up the hidden neurons that fire (shaded green with their values), and those feed the prediction on the right." style="width:100%;max-width:'+SW+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
     var err=Math.abs(f.y-truth);
     document.getElementById('pi-out').innerHTML='Network predicts <b style="color:#047857">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; truth (x²−4x+3) = <b>'+truth.toFixed(2)+'</b> &nbsp;·&nbsp; off by '+err.toFixed(2)+(err<0.3?' &nbsp;✅ spot on':' &nbsp;— train the net above to close the gap');
+    drawDecomp(); renderRows();
   }
   var piEl=document.getElementById('pi-x'); if(piEl) piEl.addEventListener('input',infer);
   function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();infer();}
