@@ -190,6 +190,23 @@ vectors = emb(torch.tensor(ids))             # 2 vectors of 4 numbers each</code
 
 <p>The embedding table is just a 2-D array of numbers. Looking up a word's vector is literally indexing the table at its ID row. No math, just memory lookup.</p>
 
+<div class="callout info">
+  <strong>🔗 This vector is the "list of numbers" from <a href="lesson_01_5b.html">L1.5b</a>.</strong> There we said a neural net always eats a <strong>list of <code>d</code> numbers</strong> (a vector) — and that length is the number of <em>columns</em> of the first weight matrix. This embedding <em>is</em> that list for a word (here <code>d=4</code>). So whatever the input, the net ends up seeing the same shape — there are just two routes to get there:
+  <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;">
+    <div style="flex:1 1 240px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+      <div style="font-weight:700;margin-bottom:4px;">🖼 A picture — <em>already</em> numbers</div>
+      <div style="font-size:13px;color:var(--text-dim);">Each pixel is a brightness number → just <b>flatten</b> the grid. <b>No lookup.</b></div>
+      <div style="font-family:ui-monospace,monospace;font-size:11.5px;margin-top:7px;">grid → flatten → [1, 0, 1, …]</div>
+    </div>
+    <div style="flex:1 1 240px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;">
+      <div style="font-weight:700;margin-bottom:4px;">🔤 A word — <em>not</em> numbers</div>
+      <div style="font-size:13px;color:var(--text-dim);">Its ID is a <b>meaningless label</b>, not a measurement → <b>look it up</b> in the table to <b>get</b> a vector.</div>
+      <div style="font-family:ui-monospace,monospace;font-size:11.5px;margin-top:7px;">"dog" → id 2 → look up → [0.32, −1.26, …]</div>
+    </div>
+  </div>
+  <p style="margin:.6em 0 0;">Both arrive at the <strong>same thing</strong>: a length-<code>d</code> vector of meaningful numbers. The lookup is the <em>only</em> extra step a word needs — precisely because (unlike a pixel) a word isn't already a number, and its ID is a <em>name</em>, not a <em>measurement</em>.</p>
+</div>
+
 <h3 id="onehot">The hidden binary step: one-hot</h3>
 
 <p>Here's the part that surprises people. That "just grab row 2" is secretly a piece of math — and it's the one place a <strong>truly binary</strong> input shows up. Turn the word's id into a <strong>one-hot vector</strong>: a row of <code>0</code>s with a single <code>1</code> in the word's slot. Multiply that binary vector by the table, and you get exactly that word's row. Pick a word and watch it happen:</p>
