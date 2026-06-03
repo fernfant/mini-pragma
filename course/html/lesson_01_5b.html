@@ -288,7 +288,7 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
 
 <div class="widget">
   <h3>🎚 Trace the signal from X to Y</h3>
-  <div class="pg-sub">Each hidden neuron looks at <strong>2 pixels</strong> and fires (outputs 1) only when <em>both</em> are on: <code>h = ReLU(pixel + pixel − 1)</code>. The output neuron adds up their votes with its own weights: <code>Y = 1·h₁ + 3·h₂ + 1·h₃ − 2·h₄</code>.</div>
+  <div class="pg-sub">Each hidden neuron looks at <strong>2 pixels</strong> and fires (outputs 1) only when <em>both</em> are on: <code>h = ReLU(pixel + pixel − 1)</code>. The output neuron adds up their votes with its own weights: <code>Y = 1·h₁ + 3·h₂ + 1·h₃ − 2·h₄</code>. <span style="color:var(--text-dim);">The <b>faint dashed</b> wires are connections with <b>weight 0</b> — every neuron <em>does</em> connect to every pixel (a full 4×6 matrix), it just ignores four of them.</span></div>
   <div id="nd-pixels" role="group" aria-label="The 6-pixel input signal — toggle each pixel on or off" style="margin:10px 0 14px;"></div>
   <svg id="nd-svg" viewBox="0 0 560 290" role="img" aria-label="A wired neural network: six input pixels on the left connect to four hidden detector neurons in the middle, each of which connects to one output neuron Y on the right. Edge thickness shows the weights; node values update as you toggle the pixels." style="width:100%;max-width:580px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;"></svg>
   <div id="nd-trace" style="margin-top:12px;"></div>
@@ -342,10 +342,13 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
   }
   function svg(h,Y){
     const e=[]; // edges first (behind nodes)
-    NEUR.forEach((n,i)=> n.px.forEach(p=>{
-      const on=sig[p]===1;
-      e.push('<line x1="'+(IN_X+13)+'" y1="'+inY[p]+'" x2="'+(HID_X-18)+'" y2="'+hidY[i]+'" stroke="'+(on?n.col:'#dbe2ea')+'" stroke-width="'+(on?2.6:1)+'" opacity="'+(on?0.9:0.45)+'"/>');
-    }));
+    NEUR.forEach((n,i)=>{
+      for(var p=0;p<6;p++){
+        var real=n.px.indexOf(p)>=0, on=sig[p]===1;
+        if(real) e.push('<line x1="'+(IN_X+13)+'" y1="'+inY[p]+'" x2="'+(HID_X-18)+'" y2="'+hidY[i]+'" stroke="'+(on?n.col:'#94a3b8')+'" stroke-width="'+(on?2.6:1.3)+'" opacity="'+(on?0.9:0.5)+'"/>');
+        else e.push('<line x1="'+(IN_X+13)+'" y1="'+inY[p]+'" x2="'+(HID_X-18)+'" y2="'+hidY[i]+'" stroke="#e5e7eb" stroke-width="0.7" opacity="0.6" stroke-dasharray="2 3"/>');
+      }
+    });
     NEUR.forEach((n,i)=>{
       const fire=h[i]>0;
       e.push('<line x1="'+(HID_X+18)+'" y1="'+hidY[i]+'" x2="'+(OUT_X-22)+'" y2="'+OUT_Y+'" stroke="'+(V[i]>0?'#047857':'#b45309')+'" stroke-width="'+(1+Math.abs(V[i])*1.2)+'" opacity="'+(fire?0.9:0.18)+'"/>');
