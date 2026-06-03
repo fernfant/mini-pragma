@@ -402,6 +402,28 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
 </script>
 <!-- ─────────────────── end L2 PLAYGROUND ─────────────────── -->
 
+<h2 class="step" id="sentence"><span class="step-num">Sentence</span> So what's a whole <em>sentence</em>, then?</h2>
+
+<p>One word became a <strong>list of <code>d</code> numbers</strong> (a vector). A sentence is just <strong>several words in a row</strong> — so stack their vectors, one per word, and you get a <strong>grid of numbers</strong>: a matrix. One <strong>row per word</strong>, <code>d</code> <strong>columns</strong> (the embedding numbers).</p>
+
+<div class="callout">
+  <strong>Example — <code>"the dog runs"</code> with <code>d=2</code>:</strong>
+  <pre style="margin:8px 0 0;font-size:13px;line-height:1.6;background:#fff;padding:10px 12px;border-radius:6px;">the  → [ 0.1,  0.9 ]      row 1
+dog  → [ 0.8, −0.3 ]      row 2   ← 3 words tall,
+runs → [−0.5,  0.4 ]      row 3      2 numbers wide  →  a 3×2 matrix</pre>
+  <p style="margin:8px 0 0;">3 words → a <strong>3×2</strong> grid. A 10-word sentence with <code>d=768</code> embeddings → a <strong>10×768</strong> grid. The picture is the same as the pixel image earlier — just now <strong>each row is a word</strong> instead of a pixel.</p>
+</div>
+
+<div class="callout good">
+  <strong>And what is "<code>X</code>"?</strong> <code>X</code> is just the name for <strong>the input you feed the model</strong> — the same <code>X</code> as in <code>Y = f(X)</code> back in Lesson 1.
+  <ul style="margin:.4em 0 .2em;">
+    <li>one <b>word</b> → <code>X</code> is a <b>vector</b> (length <code>d</code>);</li>
+    <li>one <b>sentence</b> → <code>X</code> is a <b>matrix</b> (words × <code>d</code>);</li>
+    <li>the model's job is to turn that <code>X</code> into an answer <code>Y</code> (e.g. the missing word).</li>
+  </ul>
+  <p style="margin:.6em 0 0;">Training shows the model a <strong>different sentence each step</strong> — so <code>X</code> changes every time. One such input (one sentence, with its answer) is called a <strong>training example</strong> (or <em>sample</em>). The whole pile of them is the <strong>dataset</strong>; a small handful fed through together is a <strong>batch</strong>. So "training" = run example after example through the same net, nudging the weights each time. (You'll watch exactly that happen just below.)</p>
+</div>
+
 <h2 class="step" id="connect-l15"><span class="step-num">Connect</span> 🔗 Hold on — where did L1.5's neural net go?</h2>
 
 <p>Fair question, and it's the right moment to ask it. In <a href="lesson_01_5.html">Lesson 1.5</a> our model was a <em>neural network</em>: <code>Linear → ReLU → Linear</code> with hidden units, ReLU bends, and 25 weights sitting in three distinct places. Here in L2 the model looks completely different — it's just a number table with a lookup. Where did the layers go?</p>
