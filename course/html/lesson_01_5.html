@@ -815,8 +815,15 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     <label for="pi-x" style="display:block;margin:10px 0 4px;">Input <code>x</code> = <output id="pi-xv" class="nr-mono">3.0</output></label>
     <input id="pi-x" type="range" min="0" max="4" step="0.25" value="3" style="width:260px;" aria-label="Input x from 0 to 4">
     <div id="pi-bits" style="margin:10px 0;"></div>
+    <div style="margin:4px 0 8px;">
+      <button id="pi-play">▶ Play the flow</button><button class="alt" id="pi-fstep">Step ▶</button><button class="alt" id="pi-freset">Show all at once</button>
+    </div>
     <div id="pi-flow"></div>
+    <div id="pi-stage-cap" style="font-size:12.5px;color:#475569;margin-top:6px;min-height:2.6em;"></div>
     <p id="pi-out" style="margin-top:10px;font-weight:600;"></p>
+    <div class="callout info" style="margin-top:6px;">
+      <strong>“Is it sequential?”</strong> Partly — and this is the key idea. The two layers run <strong>in order</strong>: Layer 2 can’t start until Layer 1 has handed it the hidden values, because it adds those values up. That depth — <strong>layer after layer</strong> — is the only thing that’s sequential. <em>Inside</em> one layer the neurons do <strong>not</strong> take turns: all six fire at the <strong>same instant</strong>, each just reading the same input <code>u</code>. (On a real computer a whole layer is one matrix multiply — done in parallel.) And each different input <code>x</code> is its own independent pass — you could push a thousand through together.
+    </div>
 
     <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:12px;">
       <h4 style="margin:0 0 2px;font-size:1.0em;">🧩 Where Y comes from — 6 bends stacking up</h4>
@@ -921,30 +928,57 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     rEl.innerHTML='<div style="font-size:12px;color:#475569;margin-bottom:4px;">At <code>x='+x.toFixed(2)+'</code> (scaled <code>u='+f.u.toFixed(2)+'</code>): each neuron’s output <b>h</b>, times its outgoing weight, is its <b>contribution</b>.</div><table class="pn-tbl"><thead><tr><th></th><th>output h</th><th>weight</th><th>bar</th><th>adds</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="5" style="color:#64748b;">Add all six + bias '+b2.toFixed(2)+' = <b style="color:#2563eb;">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; target '+truth.toFixed(2)+' &nbsp;·&nbsp; off by '+err.toFixed(2)+'</td></tr></tfoot></table>';
   }
   (function(){var leg=document.getElementById('pd-leg');if(!leg)return;var s='';for(var j=0;j<H;j++)s+='<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:14px;height:3px;background:'+COLS[j]+';display:inline-block;border-radius:2px;"></span>h'+(j+1)+'</span>';s+='<span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#2563eb;"><span style="width:16px;height:4px;background:#2563eb;display:inline-block;border-radius:2px;"></span>Y (the sum)</span><span style="display:inline-flex;align-items:center;gap:4px;color:#6b7280;"><span style="width:14px;border-top:2px dashed #9ca3af;display:inline-block;"></span>target</span>';leg.innerHTML=s;})();
+  var FSTAGES=[
+    'The number arrives and is scaled to <code>u</code>. Nothing downstream has happened yet.',
+    'Layer 1 fires: every neuron multiplies <code>u</code> by its weight and adds its bias — <b>all six at the same instant</b>, none waits for another. (Values shown are <i>before</i> ReLU, so some are negative.)',
+    'ReLU tidies up: keep the value if it’s positive, otherwise snap it to <b>0</b>. Some neurons switch off.',
+    'Layer 2 can start <b>now</b> — only now, because it needs Layer 1’s outputs. Each surviving value is multiplied by its outgoing weight (its “vote”).',
+    'All the votes are added together (plus a bias) → the answer <b>Y</b>.'
+  ];
+  var FULL=5, fstage=FULL, ftimer=null;
+  function stopFlow(){ if(ftimer){clearInterval(ftimer);ftimer=null;} }
+  function flowSVG(f,x,stage){
+    var maxh=0.0001; for(var j=0;j<H;j++) maxh=Math.max(maxh,f.h[j]);
+    var SW=560,IX=66,HX=292,OX=498,CY=150,hy=[]; for(j=0;j<H;j++) hy.push(34+j*(232/(H-1)));
+    var e=[];
+    for(j=0;j<H;j++){var on=f.h[j]>1e-9,a1=stage>=1;
+      e.push('<line x1="'+(IX+17)+'" y1="'+CY+'" x2="'+(HX-15)+'" y2="'+hy[j]+'" stroke="'+(a1&&on?'#3b82f6':'#cbd5e1')+'" stroke-width="'+(a1&&on?2.2:1)+'" opacity="'+(a1?(on?0.85:0.35):0.1)+'"/>');}
+    for(j=0;j<H;j++){var c=w2[j]*f.h[j],col=c>=0?'#10b981':'#f59e0b',wd=(0.6+Math.min(Math.abs(c),3)/3*4.4).toFixed(1),onj=f.h[j]>1e-9,a3=stage>=3;
+      e.push('<line x1="'+(HX+15)+'" y1="'+hy[j]+'" x2="'+(OX-19)+'" y2="'+CY+'" stroke="'+col+'" stroke-width="'+(a3?wd:1)+'" opacity="'+(a3?(onj?0.8:0.12):0.06)+'"/>');}
+    e.push('<text x="'+IX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">number in</text>');
+    e.push('<text x="'+HX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">hidden layer</text>');
+    e.push('<text x="'+OX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">prediction</text>');
+    e.push('<circle cx="'+IX+'" cy="'+CY+'" r="17" fill="#1a1a1a"/><text x="'+IX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">'+x.toFixed(1)+'</text><text x="'+IX+'" y="'+(CY+32)+'" text-anchor="middle" font-size="8.5" fill="#94a3b8">u='+f.u.toFixed(2)+'</text>');
+    for(j=0;j<H;j++){
+      var val,fill,stroke,tc;
+      if(stage<1){ val=''; fill='#f8fafc'; stroke='#e2e8f0'; tc='#cbd5e1'; }
+      else if(stage===1){ val=f.z[j].toFixed(1); fill='#eff6ff'; stroke='#93c5fd'; tc='#1e40af'; }
+      else { var onn=f.h[j]>1e-9,t=Math.min(f.h[j]/maxh,1); fill=onn?'rgba(16,185,129,'+(0.18+0.62*t).toFixed(2)+')':'#f1f5f9'; stroke=onn?'#10b981':'#cbd5e1'; val=onn?f.h[j].toFixed(1):'0'; tc=onn?'#065f46':'#94a3b8'; }
+      e.push('<circle cx="'+HX+'" cy="'+hy[j]+'" r="13" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4)+'" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="'+tc+'">'+val+'</text>');
+    }
+    if(stage>=4){ e.push('<circle cx="'+OX+'" cy="'+CY+'" r="19" fill="#ecfdf5" stroke="#10b981" stroke-width="2.2"/><text x="'+OX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">'+f.y.toFixed(1)+'</text>'); }
+    else { e.push('<circle cx="'+OX+'" cy="'+CY+'" r="19" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/><text x="'+OX+'" y="'+(CY+5)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#cbd5e1">?</text>'); }
+    return '<svg viewBox="0 0 '+SW+' 290" role="img" aria-label="One input flowing through the network in stages: the number enters, the hidden layer computes all neurons at once, ReLU zeroes the negatives, then the output layer weights and sums them into Y." style="width:100%;max-width:'+SW+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+  }
+  function renderFlow(f,x){
+    document.getElementById('pi-flow').innerHTML=flowSVG(f,x,fstage);
+    var cap=document.getElementById('pi-stage-cap');
+    if(cap) cap.innerHTML = fstage>=FULL ? 'The whole forward pass at once. Press <b>▶ Play the flow</b> to watch it happen one stage at a time.' : '<b>Stage '+(fstage+1)+' of 5</b> — '+FSTAGES[fstage];
+  }
   function infer(){
     var xEl=document.getElementById('pi-x'); if(!xEl) return;
     var x=+xEl.value; document.getElementById('pi-xv').textContent=x.toFixed(1);
     document.getElementById('pi-bits').innerHTML=bitsHTML(x);
-    var f=fwd(x),truth=x*x-4*x+3,maxh=0.0001; for(var j=0;j<H;j++) maxh=Math.max(maxh,f.h[j]);
-    var SW=560,IX=66,HX=292,OX=498,CY=150,hy=[]; for(j=0;j<H;j++) hy.push(34+j*(232/(H-1)));
-    var e=[];
-    for(j=0;j<H;j++){var on=f.h[j]>1e-9;
-      e.push('<line x1="'+(IX+17)+'" y1="'+CY+'" x2="'+(HX-15)+'" y2="'+hy[j]+'" stroke="'+(on?'#3b82f6':'#cbd5e1')+'" stroke-width="'+(on?2.2:1)+'" opacity="'+(on?0.85:0.35)+'"/>');}
-    for(j=0;j<H;j++){var c=w2[j]*f.h[j],col=c>=0?'#10b981':'#f59e0b',wd=(0.6+Math.min(Math.abs(c),3)/3*4.4).toFixed(1),onj=f.h[j]>1e-9;
-      e.push('<line x1="'+(HX+15)+'" y1="'+hy[j]+'" x2="'+(OX-19)+'" y2="'+CY+'" stroke="'+col+'" stroke-width="'+wd+'" opacity="'+(onj?0.8:0.12)+'"/>');}
-    e.push('<text x="'+IX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">number in</text>');
-    e.push('<text x="'+HX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">neurons fire (ReLU)</text>');
-    e.push('<text x="'+OX+'" y="16" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">prediction</text>');
-    e.push('<circle cx="'+IX+'" cy="'+CY+'" r="17" fill="#1a1a1a"/><text x="'+IX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">'+x.toFixed(1)+'</text><text x="'+IX+'" y="'+(CY+32)+'" text-anchor="middle" font-size="8.5" fill="#94a3b8">scaled u='+f.u.toFixed(2)+'</text>');
-    for(j=0;j<H;j++){var onn=f.h[j]>1e-9,t=Math.min(f.h[j]/maxh,1),fill=onn?'rgba(16,185,129,'+(0.18+0.62*t).toFixed(2)+')':'#f1f5f9';
-      e.push('<circle cx="'+HX+'" cy="'+hy[j]+'" r="13" fill="'+fill+'" stroke="'+(onn?'#10b981':'#cbd5e1')+'" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4)+'" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="'+(onn?'#065f46':'#94a3b8')+'">'+(onn?f.h[j].toFixed(1):'0')+'</text>');}
-    e.push('<circle cx="'+OX+'" cy="'+CY+'" r="19" fill="#ecfdf5" stroke="#10b981" stroke-width="2.2"/><text x="'+OX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">'+f.y.toFixed(1)+'</text>');
-    document.getElementById('pi-flow').innerHTML='<svg viewBox="0 0 '+SW+' 290" role="img" aria-label="Forward pass for the chosen input: the number enters on the left, lights up the hidden neurons that fire (shaded green with their values), and those feed the prediction on the right." style="width:100%;max-width:'+SW+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+    var f=fwd(x),truth=x*x-4*x+3;
+    renderFlow(f,x);
     var err=Math.abs(f.y-truth);
     document.getElementById('pi-out').innerHTML='Network predicts <b style="color:#047857">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; truth (x²−4x+3) = <b>'+truth.toFixed(2)+'</b> &nbsp;·&nbsp; off by '+err.toFixed(2)+(err<0.3?' &nbsp;✅ spot on':' &nbsp;— train the net above to close the gap');
     drawDecomp(); renderRows();
   }
-  var piEl=document.getElementById('pi-x'); if(piEl) piEl.addEventListener('input',infer);
+  var piEl=document.getElementById('pi-x'); if(piEl) piEl.addEventListener('input',function(){stopFlow();fstage=FULL;infer();});
+  document.getElementById('pi-play').addEventListener('click',function(){stopFlow();fstage=0;var x=+piEl.value;renderFlow(fwd(x),x);ftimer=setInterval(function(){if(fstage>=4){stopFlow();return;}fstage++;var xx=+piEl.value;renderFlow(fwd(xx),xx);},1100);});
+  document.getElementById('pi-fstep').addEventListener('click',function(){stopFlow();fstage=(fstage>=4)?0:fstage+1;var x=+piEl.value;renderFlow(fwd(x),x);});
+  document.getElementById('pi-freset').addEventListener('click',function(){stopFlow();fstage=FULL;var x=+piEl.value;renderFlow(fwd(x),x);});
   function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();infer();}
   document.getElementById('pn-step').addEventListener('click',function(){gstep();sync();});
   var SPEEDS=[{n:1,ms:80,t:'🐢 slow'},{n:4,ms:55,t:'🚶 med'},{n:12,ms:40,t:'🐇 fast'}],spi=0;
