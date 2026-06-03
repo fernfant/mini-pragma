@@ -768,6 +768,27 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 })();
 </script>
 
+<h2 class="step" id="as-nets"><span class="step-num">Map</span> Those L1 boxes, as neural networks</h2>
+
+<p>Remember the boxes from <a href="lesson_01.html#model">Lesson 1</a> — 0 to 4 parameters, climbing from a flat line to a straight line to a parabola to an S-curve? Each one is a tiny <strong>neural network</strong>. Here is the exact mapping, drawn the same way as every network in the course — and it explains <em>why</em> we just had to add a hidden layer:</p>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0;">
+  <div id="net-map-1"></div>
+  <div id="net-map-2"></div>
+  <div id="net-map-3"></div>
+  <div id="net-map-4"></div>
+</div>
+<script>document.addEventListener("DOMContentLoaded",function(){
+  netSchematic("net-map-1",{layers:[{n:1,label:"x",kind:"in"},{n:1,label:"y",kind:"out"}],caption:"📈 y = w·x (line through origin) — one weight, NO hidden layer."});
+  netSchematic("net-map-2",{layers:[{n:1,label:"x",kind:"in"},{n:1,label:"y",kind:"out",sub:"+ bias"}],caption:"📈 y = w·x + b (any straight line) — same network, plus a bias. Still no hidden layer → still straight."});
+  netSchematic("net-map-3",{layers:[{n:1,label:"x",kind:"in"},{n:3,label:"hidden · ReLU",kind:"hidden"},{n:1,label:"y",kind:"out"}],caption:"⌣ parabola (one bend) — to BEND, add a hidden layer with ReLU. ~2–3 hidden neurons does it."});
+  netSchematic("net-map-4",{layers:[{n:1,label:"x",kind:"in"},{n:5,label:"hidden · ReLU",kind:"hidden"},{n:1,label:"y",kind:"out"}],caption:"∿ S-curve (two bends) — more bends, more hidden neurons. Each ReLU unit buys roughly one more bend."});
+});</script>
+
+<div class="callout good">
+  <strong>The pattern that makes neural networks click:</strong> straight lines need <strong>no hidden layer</strong> — a neural net with no hidden layer <em>is</em> linear regression. To fit a <strong>curve</strong>, you add a <strong>hidden layer with ReLU</strong>, and the wigglier the curve, the more hidden neurons you need. (You watched this happen in the <a href="#bends">bends widget</a> above — each neuron = one bend.) That is the entire reason this lesson built a hidden layer.
+</div>
+
 <h2 class="step" id="step-6"><span class="step-num">Step 6</span> Side-by-side comparison</h2>
 
 <div id="pred-s6"></div>
