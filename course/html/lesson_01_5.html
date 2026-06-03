@@ -93,10 +93,10 @@
   q:"Linear regression can only draw STRAIGHT lines. How well will it fit the U-shaped data?",
   options:["Perfectly — lines fit anything","Badly — no straight line follows a U","Only if we train longer"],
   correct:1,
-  reveal:"A straight line goes up the whole way or down the whole way — it can't bend to follow a U. The loss gets stuck around 25 no matter how long we train. That's the wall a neural network breaks through."
+  reveal:"A straight line goes up the whole way or down the whole way — it can't bend to follow a U. The loss gets stuck around 2.8 no matter how long we train. That's the wall a neural network breaks through."
 });});</script>
 
-<p>Same model as L1: <code>y = w*x + b</code>. Two parameters. After 1000 steps the loss settles near <strong>25</strong> (compare to L1's <code>0.0001</code> on its straight-line data). No straight line can pass through a U-shape.</p>
+<p>Same model as L1: <code>y = w*x + b</code>. Two parameters. After 1000 steps the loss settles near <strong>2.8</strong> and stops (compare to L1's <code>0.0001</code> on its straight-line data). No straight line can pass through a U-shape — so let's <em>watch</em> it fail.</p>
 
 <pre><code>w = torch.tensor(0.0, requires_grad=True)
 b = torch.tensor(0.0, requires_grad=True)
@@ -106,6 +106,76 @@ for _ in range(1000):
     y_pred = w * x_data + b
     loss = ((y_pred - y_true) ** 2).mean()
     opt.zero_grad(); loss.backward(); opt.step()</code></pre>
+
+<p><strong>Don't take my word for it — try to fit the U with a straight line yourself.</strong> Drag the slope and intercept, or hit <em>Auto-train</em>, and watch the loss get <strong>stuck around 2.8</strong>. A line goes up the whole way or down the whole way; it can't follow a U. <em>This wall is the whole reason the rest of the lesson exists.</em></p>
+
+<div class="widget">
+  <h3>🎚 Try to fit the curve with a straight line — it can't bend</h3>
+  <div class="widget-row two">
+    <canvas id="ln-cv" width="500" height="360" aria-label="A U-shaped scatter of five points with a straight line through them; the line stays straight and cannot follow the U, leaving big gaps no matter how you tilt or slide it. Red sticks show the leftover error at each point."></canvas>
+    <div class="controls">
+      <label><span class="lbl">slope w</span><input id="ln-w" type="range" min="-4" max="4" step="0.01" value="0"><span class="val" id="ln-wv">0.00</span></label>
+      <label><span class="lbl">intercept b</span><input id="ln-b" type="range" min="-3" max="6" step="0.01" value="0"><span class="val" id="ln-bv">0.00</span></label>
+      <div style="margin-top:10px;">
+        <button id="ln-step">Step ×1</button><button id="ln-run">Auto-train</button><button class="alt" id="ln-reset">Reset</button>
+      </div>
+      <table class="stats">
+        <tr><th>step</th><td id="ln-stepc">0</td></tr>
+        <tr><th>loss</th><td id="ln-loss">—</td></tr>
+        <tr><th>best a line can do</th><td>≈ 2.80</td></tr>
+      </table>
+      <p style="font-size:12px;color:#64748b;margin:8px 0 0;">Compare: the parabola below reaches loss ≈ <b>0</b>.</p>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  var cv=document.getElementById('ln-cv'); if(!cv) return; var ctx=cv.getContext('2d');
+  var DX=[0,1,2,3,4], TA=1,TW=-4,TB=3; var DY=DX.map(function(x){return TA*x*x+TW*x+TB;});
+  var w=0,b=0,step=0,timer=null;
+  function model(x){return w*x+b;}
+  function loss(){var s=0;DX.forEach(function(x,i){var e=model(x)-DY[i];s+=e*e;});return s/DX.length;}
+  var XMIN=-0.4,XMAX=4.4,YMIN=-2,YMAX=4,PADL=40,PADB=26,PADT=10,PADR=12;
+  function px(x){return PADL+(x-XMIN)/(XMAX-XMIN)*(cv.width-PADL-PADR);}
+  function py(y){return cv.height-PADB-(y-YMIN)/(YMAX-YMIN)*(cv.height-PADT-PADB);}
+  function gstep(){var lr=0.02,gw=0,gb=0,n=DX.length;
+    DX.forEach(function(x,i){var e=model(x)-DY[i];gw+=2*e*x;gb+=2*e;});
+    w-=lr*gw/n; b-=lr*gb/n; step++;
+    document.getElementById('ln-w').value=w; document.getElementById('ln-b').value=b; sync();}
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.fillStyle='#999';ctx.font='11px ui-sans-serif,system-ui';ctx.textAlign='center';
+    for(var gx=0;gx<=4;gx++){ctx.beginPath();ctx.moveTo(px(gx),PADT);ctx.lineTo(px(gx),cv.height-PADB);ctx.stroke();ctx.fillText(gx,px(gx),cv.height-9);}
+    ctx.textAlign='right';for(var gy=-2;gy<=4;gy++){ctx.beginPath();ctx.moveTo(PADL,py(gy));ctx.lineTo(cv.width-PADR,py(gy));ctx.stroke();ctx.fillText(gy,PADL-6,py(gy)+4);}
+    ctx.textAlign='left';ctx.font='12px ui-sans-serif,system-ui';
+    ctx.fillStyle='#10b981';ctx.fillText('— the U-shaped data',PADL+8,PADT+14);
+    ctx.fillStyle='#3b82f6';ctx.fillText('— your straight line y = w·x + b',PADL+8,PADT+30);
+    ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+    DX.forEach(function(x,i){ctx.beginPath();ctx.moveTo(px(x),py(DY[i]));ctx.lineTo(px(x),py(model(x)));ctx.stroke();});
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2.5;ctx.beginPath();
+    ctx.moveTo(px(XMIN),py(model(XMIN)));ctx.lineTo(px(XMAX),py(model(XMAX)));ctx.stroke();
+    ctx.fillStyle='#10b981';DX.forEach(function(x,i){ctx.beginPath();ctx.arc(px(x),py(DY[i]),6,0,7);ctx.fill();});
+  }
+  function sync(){
+    document.getElementById('ln-wv').textContent=w.toFixed(2);
+    document.getElementById('ln-bv').textContent=b.toFixed(2);
+    document.getElementById('ln-stepc').textContent=step;
+    document.getElementById('ln-loss').textContent=loss().toFixed(2);
+    draw();
+  }
+  document.getElementById('ln-w').addEventListener('input',function(e){w=+e.target.value;sync();});
+  document.getElementById('ln-b').addEventListener('input',function(e){b=+e.target.value;sync();});
+  document.getElementById('ln-step').addEventListener('click',gstep);
+  document.getElementById('ln-run').addEventListener('click',function(){
+    var btn=this;
+    if(timer){clearInterval(timer);timer=null;btn.textContent='Auto-train';return;}
+    btn.textContent='Stop';
+    timer=setInterval(function(){for(var k=0;k<8;k++)gstep();if(step>=2500){clearInterval(timer);timer=null;btn.textContent='Auto-train';}},30);
+  });
+  document.getElementById('ln-reset').addEventListener('click',function(){
+    if(timer){clearInterval(timer);timer=null;document.getElementById('ln-run').textContent='Auto-train';}
+    w=0;b=0;step=0;document.getElementById('ln-w').value=0;document.getElementById('ln-b').value=0;sync();});
+  sync();
+})();</script>
 
 <h2 class="step" id="step-3"><span class="step-num">Step 3</span> Trick: give linear regression more features</h2>
 
