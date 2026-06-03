@@ -450,22 +450,33 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
   <p style="margin:.6em 0 0;">It goes into the first weight matrix, just like before — with one rule that makes the whole thing work: <strong>the same weight matrix is applied to each word-row on its own.</strong></p>
   <style>
     .seqmm{background:#fff;border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin:.6em 0;}
-    .seqmm .lane{display:flex;align-items:center;gap:9px;margin:8px 0;flex-wrap:wrap;}
-    .seqmm .wl{min-width:38px;font-family:ui-monospace,monospace;font-weight:700;color:#b9410a;text-align:right;font-size:12.5px;}
-    .seqmm .strip{display:inline-flex;gap:2px;}
-    .seqmm .strip i{display:inline-block;width:14px;height:14px;border-radius:2px;}
-    .seqmm .in i{background:#bfdbfe;border:1px solid #93c5fd;}
-    .seqmm .out i{background:#bbf7d0;border:1px solid #6ee7b7;}
-    .seqmm .wbox{display:inline-flex;align-items:center;justify-content:center;width:42px;height:30px;background:#fff7ed;border:1.6px solid #fdba74;border-radius:6px;font-weight:800;color:#b45309;font-size:14px;}
+    .seqmm .lane{display:flex;align-items:center;gap:8px;margin:7px 0;flex-wrap:wrap;}
+    .seqmm .wl{min-width:40px;font-family:ui-monospace,monospace;font-weight:700;color:#b9410a;text-align:right;font-size:12.5px;}
+    .seqmm .strip{display:inline-flex;gap:4px;}
+    .seqmm .nb{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:24px;border-radius:4px;font-family:ui-monospace,monospace;font-size:12px;font-weight:600;padding:0 5px;}
+    .seqmm .in .nb{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;}
+    .seqmm .out .nb{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;}
+    .seqmm .wbox{display:inline-flex;align-items:center;justify-content:center;width:38px;height:26px;background:#fff7ed;border:1.6px solid #fdba74;border-radius:6px;font-weight:800;color:#b45309;font-size:13px;}
     .seqmm .ar2{color:#9aa3b2;font-weight:700;font-size:16px;}
+    .seqmm .work{font-family:ui-monospace,monospace;font-size:12px;background:#f8fafc;border:1px solid var(--border);border-radius:6px;padding:8px 10px;margin:6px 0;line-height:1.75;color:#334155;}
   </style>
   <div class="seqmm">
-    <div style="font-size:12px;color:#475569;margin-bottom:2px;">Each word rides <b>its own lane</b> through the <b>same</b> weight matrix:</div>
-    <div class="lane"><span class="wl">the</span><span class="strip in"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="ar2">→</span><span class="wbox" title="weight matrix · 768→H">W</span><span class="ar2">→</span><span class="strip out"><i></i><i></i><i></i></span></div>
-    <div class="lane"><span class="wl">dog</span><span class="strip in"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="ar2">→</span><span class="wbox" title="same weight matrix">W</span><span class="ar2">→</span><span class="strip out"><i></i><i></i><i></i></span></div>
-    <div class="lane"><span class="wl">runs</span><span class="strip in"><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="ar2">→</span><span class="wbox" title="same weight matrix">W</span><span class="ar2">→</span><span class="strip out"><i></i><i></i><i></i></span></div>
-    <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5;"><span style="color:#1e40af">▦</span> blue = a word's <b>768</b> numbers · <b style="color:#b45309">W</b> maps 768→H, <b>identical in every lane</b> · <span style="color:#047857">▦</span> green = its <b>H</b> outputs. A 10-word sentence = <b>10 lanes</b>; the weights never change with length. And the <b>lanes never touch</b> — words can't mix here (that's attention's job).</div>
+    <div style="font-size:12px;color:#475569;">Let's open that box on the tiny sentence (<code>d=2</code>; let's pick <code>H=3</code> hidden units). First, a made-up weight matrix <b>W</b> — 3 units, 2 weights each — and <b>the same W is used for every word</b>:</div>
+    <table class="smtx" style="margin:8px 0;">
+      <tr><td></td><td class="clab">&times; num&nbsp;1</td><td class="clab">&times; num&nbsp;2</td></tr>
+      <tr><td class="wlab">unit 1</td><td class="val">1</td><td class="val">0</td></tr>
+      <tr><td class="wlab">unit 2</td><td class="val">0</td><td class="val">1</td></tr>
+      <tr><td class="wlab">unit 3</td><td class="val">1</td><td class="val">1</td></tr>
+    </table>
+    <div style="font-size:12px;color:#475569;">Push <b>"the"</b> <code>= [0.1, 0.9]</code> through — each unit is a dot product, then ReLU:</div>
+    <div class="work">unit 1 = 1&middot;0.1 + 0&middot;0.9 = <b>0.1</b><br>unit 2 = 0&middot;0.1 + 1&middot;0.9 = <b>0.9</b><br>unit 3 = 1&middot;0.1 + 1&middot;0.9 = <b>1.0</b> &nbsp;&rarr; all &ge; 0, ReLU keeps them &nbsp;&rarr; &nbsp;<b>the &rarr; [0.1, 0.9, 1.0]</b></div>
+    <div style="font-size:12px;color:#475569;">Now the <b>same W</b> on all three words:</div>
+    <div class="lane"><span class="wl">the</span><span class="strip in"><span class="nb">0.1</span><span class="nb">0.9</span></span><span class="ar2">&rarr;</span><span class="wbox">W</span><span class="ar2">&rarr;</span><span class="strip out"><span class="nb">0.1</span><span class="nb">0.9</span><span class="nb">1.0</span></span></div>
+    <div class="lane"><span class="wl">dog</span><span class="strip in"><span class="nb">0.8</span><span class="nb">&minus;0.3</span></span><span class="ar2">&rarr;</span><span class="wbox">W</span><span class="ar2">&rarr;</span><span class="strip out"><span class="nb">0.8</span><span class="nb">0</span><span class="nb">0.5</span></span></div>
+    <div class="lane"><span class="wl">runs</span><span class="strip in"><span class="nb">&minus;0.5</span><span class="nb">0.4</span></span><span class="ar2">&rarr;</span><span class="wbox">W</span><span class="ar2">&rarr;</span><span class="strip out"><span class="nb">0</span><span class="nb">0.4</span><span class="nb">0</span></span></div>
+    <div style="font-size:11px;color:#64748b;margin-top:6px;line-height:1.5;">ReLU zeroed the negatives (dog's &minus;0.3; two of runs'). The grid went from <b>3&times;2 &rarr; 3&times;3</b> &mdash; still one row per word, now <code>H=3</code> numbers each. <span style="color:#94a3b8;">(Weights are made up; a trained net learns its own.)</span> A 10-word sentence would be <b>10 lanes</b> through this same W, and the <b>lanes never touch</b> &mdash; words can't mix yet (that's attention).</div>
   </div>
+
   <p style="margin:.6em 0 0;">Each word's 768 numbers become <code>H</code> numbers; stack the 10 results back up → a <strong>10×H</strong> grid. Reading the shapes answers your question directly:</p>
   <ul style="margin:.4em 0 .2em;">
     <li><strong>768 (<code>d</code>)</strong> is what the weight matrix is <em>sized to</em> — the inner number that must match. It's the per-word width.</li>
