@@ -128,11 +128,21 @@
     e.push('<text x="'+((HX+OX)/2)+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#047857">W₂: 1×6</text>');
     document.getElementById('em-svg').innerHTML='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="An input vector of d nodes fully connected to 6 hidden nodes and then one output. The first weight matrix is labelled 6 by d and the second 1 by 6, so the input width sets the first matrix width." style="width:100%;max-width:'+W+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
     document.getElementById('em-note').innerHTML = d===1
-      ? 'This is our toy net: <b>1 number in</b>, so <code>W₁</code> is <b>6×1</b>. A single number is the smallest possible input “vector”.'
-      : '<b>'+d+' numbers in</b> — a length-'+d+' <b>embedding</b> — so <code>W₁</code> grows to <b>6×'+d+'</b>: one weight per input-number, per neuron. All '+d+' numbers still feed every neuron.';
+      ? '<b>1 input node</b> (<code>d=1</code>): the input is a single number <code>x</code> — a "vector" of length 1. The <b>6 lines</b> fanning out are <b>weights</b> (W₁ has 6×1 = 6 of them, one per neuron) — <em>not</em> 6 inputs.'
+      : '<b>'+d+' input nodes</b> (<code>d='+d+'</code>): the input is a length-'+d+' list — an <b>embedding</b>. Now W₁ has <b>6×'+d+' = '+(6*d)+' weights</b> (one per input-number, per neuron). More lines = more <em>weights</em>, still just '+d+' inputs.';
   }
   sl.addEventListener('input',draw); draw();
 })();</script>
+
+<div class="callout info">
+  <strong>“So when is it 2 input nodes, and when 1?”</strong> The number of input nodes = <strong>how many numbers it takes to describe one example</strong> (its <em>features</em>) — the <em>problem</em> decides it, not the network:
+  <ul style="margin:.4em 0 .2em;">
+    <li>the logic-gate neuron back on <a href="lesson_01_5.html">L1.5</a> took <strong>2</strong> numbers (inputs <code>A</code> and <code>B</code>) → <code>d=2</code>, so 2 input nodes;</li>
+    <li>the curve-fitter takes <strong>1</strong> number (<code>x</code>) → <code>d=1</code>, so 1 input node;</li>
+    <li>a 28×28 image takes <strong>784</strong> numbers (one per pixel) → <code>d=784</code>, so 784 input nodes.</li>
+  </ul>
+  Two things people mix up here: at <code>d=1</code> the "vector" is just <em>one number</em> (a length-1 list); and the lines fanning out are <strong>weights</strong> (there are 6×<code>d</code> of them), <strong>not</strong> inputs — they're how each input reaches every neuron. <em>Slide <code>d</code> above and watch only the <strong>left column</strong> (inputs) and the <strong>W₁ label</strong> change.</em>
+</div>
 
 <div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
 
