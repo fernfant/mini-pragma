@@ -481,9 +481,32 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
   <ul style="margin:.4em 0 .2em;">
     <li><strong>768 (<code>d</code>)</strong> is what the weight matrix is <em>sized to</em> — the inner number that must match. It's the per-word width.</li>
     <li><strong>H (hidden units) — yes, pre-set, your choice</strong>, exactly as in <a href="lesson_01_5b.html">L1.5b</a>. It's how many numbers each word turns into.</li>
-    <li><strong>10 (the number of words)</strong> just <em>rides along</em> as the number of rows — it <strong>never enters the weight matrix</strong>. So <em>one</em> fixed weight matrix handles a sentence of <strong>any</strong> length.</li>
+    <li><strong>10 (the number of words)</strong> = how many rows go through <strong>at once</strong>. All 10 words are pushed through in <strong>one pass</strong>, each meeting the <em>same</em> W — they're <strong>not</strong> separate steps, just more rows. So the word-count <strong>never enters the weight matrix</strong>, and one fixed W handles a sentence of <strong>any</strong> length.</li>
   </ul>
   <p style="margin:.6em 0 0;">That's also this layer's <strong>limit</strong>: it reshuffles the 768 numbers <em>inside</em> each word, but treats the 10 words <strong>independently</strong> — "dog" never gets to look at "the" or "runs". Letting the words mix is a separate trick: <strong>attention</strong> (<a href="lesson_03.html">Lesson 3</a>).</p>
+</div>
+
+<div class="callout info">
+  <strong>Three different "manys" — and they're easy to mix up. Let's pin them down:</strong>
+  <table style="border-collapse:collapse;width:100%;margin:10px 0 4px;font-size:13px;">
+    <thead><tr style="text-align:left;color:#475569;border-bottom:1px solid var(--border);">
+      <th style="padding:6px 8px;">The "many"</th><th style="padding:6px 8px;">Lives…</th><th style="padding:6px 8px;">What it actually is</th></tr></thead>
+    <tbody>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:6px 8px;"><b style="color:#1e40af;">the d numbers in a word</b><br><span style="color:#64748b;">(e.g. 768)</span></td>
+        <td style="padding:6px 8px;">inside <b>one word</b></td>
+        <td style="padding:6px 8px;">the <b>features</b> — the columns the weight matrix multiplies.</td></tr>
+      <tr style="border-bottom:1px solid var(--border);">
+        <td style="padding:6px 8px;"><b style="color:#b9410a;">the words in a sentence</b><br><span style="color:#64748b;">(e.g. 10)</span></td>
+        <td style="padding:6px 8px;">inside <b>one input X</b></td>
+        <td style="padding:6px 8px;">rows pushed through the <b>same W together, in ONE forward pass</b>. <b>Not</b> separate steps.</td></tr>
+      <tr>
+        <td style="padding:6px 8px;"><b style="color:#047857;">the sentences in training</b><br><span style="color:#64748b;">(thousands)</span></td>
+        <td style="padding:6px 8px;"><b>across training steps</b></td>
+        <td style="padding:6px 8px;"><b>These are the iterations</b> — a new X each step, nudging the weights a little.</td></tr>
+    </tbody>
+  </table>
+  <p style="margin:.5em 0 0;">So a 10-word sentence is <strong>one input</strong>, handled in <strong>one pass</strong> (10 rows at once). The <strong>iterations</strong> are <em>different sentences</em> fed one after another while training. <strong>Words ≠ iterations.</strong></p>
 </div>
 
 <h2 class="step" id="connect-l15"><span class="step-num">Connect</span> 🔗 Hold on — where did L1.5's neural net go?</h2>
