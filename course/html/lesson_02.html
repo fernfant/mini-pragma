@@ -408,9 +408,29 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
 
 <div class="callout">
   <strong>Example — <code>"the dog runs"</code> with <code>d=2</code>:</strong>
-  <pre style="margin:8px 0 0;font-size:13px;line-height:1.6;background:#fff;padding:10px 12px;border-radius:6px;">the  → [ 0.1,  0.9 ]      row 1
-dog  → [ 0.8, −0.3 ]      row 2   ← 3 words tall,
-runs → [−0.5,  0.4 ]      row 3      2 numbers wide  →  a 3×2 matrix</pre>
+  <style>
+    .svis{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:12px 0 4px;}
+    .smtx{border-collapse:separate;border-spacing:0;font-family:ui-monospace,monospace;font-size:13px;}
+    .smtx td{padding:5px 6px;text-align:center;}
+    .smtx .val{background:#eff6ff;border:1px solid #dbeafe;border-radius:5px;color:#1e40af;font-weight:600;min-width:48px;}
+    .smtx .wlab{color:#b9410a;font-weight:700;font-family:ui-sans-serif,system-ui;padding-right:12px;text-align:right;}
+    .smtx .clab{font-family:ui-sans-serif,system-ui;font-size:10.5px;color:#64748b;font-weight:600;padding-bottom:2px;}
+    .svis .ar{font-size:24px;color:#9aa3b2;font-weight:700;}
+    .svis .netbox{background:#ecfdf5;border:2px solid #10b981;border-radius:10px;padding:12px 16px;font-weight:700;color:#047857;text-align:center;line-height:1.25;}
+  </style>
+  <div class="svis">
+    <div style="text-align:center;">
+      <table class="smtx" role="img" aria-label="The sentence 'the dog runs' as a 3 by 2 grid: each row is a word (the, dog, runs), each of the 2 columns is an embedding number. This whole grid is the input X fed into the model.">
+        <tr><td></td><td class="clab">num&nbsp;1</td><td class="clab">num&nbsp;2</td></tr>
+        <tr><td class="wlab">the</td><td class="val">0.1</td><td class="val">0.9</td></tr>
+        <tr><td class="wlab">dog</td><td class="val">0.8</td><td class="val">−0.3</td></tr>
+        <tr><td class="wlab">runs</td><td class="val">−0.5</td><td class="val">0.4</td></tr>
+      </table>
+      <div style="font-size:11px;color:#64748b;margin-top:6px;"><b style="color:#1a1a2e;">X</b> = the input · a <b>3×2</b> grid<br>↓ each <b style="color:#b9410a;">row = a word</b> (in order) &nbsp;·&nbsp; → each <b style="color:#1e40af;">column = an embedding number</b></div>
+    </div>
+    <span class="ar">→</span>
+    <div class="netbox">into<br>the model</div>
+  </div>
   <p style="margin:8px 0 0;">3 words → a <strong>3×2</strong> grid. A 10-word sentence with <code>d=768</code> embeddings → a <strong>10×768</strong> grid.</p>
   <p style="margin:8px 0 0;"><strong>One honest difference from the image.</strong> A pixel is a <em>single</em> number, so a picture flattens into <em>one long vector</em> (a flat list). But a <strong>word</strong> is <em>already</em> a whole vector of <code>d</code> numbers — so a sentence is <strong>2-D</strong>: a "which-word" axis (the rows) <em>and</em> a "which-feature" axis (the <code>d</code> columns). That extra "which-word" axis — the order, and how words relate to each other — is exactly what <strong>attention</strong> (<a href="lesson_03.html">Lesson 3</a>) works along.</p>
 </div>
