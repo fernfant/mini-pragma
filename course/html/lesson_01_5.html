@@ -122,7 +122,84 @@ for _ in range(1000):
 
 <pre><code>y = w₁ · x + w₂ · x² + b</code></pre>
 
-<p>Still linear regression (3 parameters). But now it can fit a parabola. After 2000 steps the loss drops to near zero and the recovered coefficients almost exactly match the true rule.</p>
+<p>Still linear regression (3 parameters). But now it can fit a parabola. <strong>Try it below</strong> — drag <code>a</code>, <code>w</code>, <code>b</code> to bend the blue curve onto the points, then hit <em>Auto-train</em> and watch gradient descent recover <code>y = x² − 4x + 3</code> on its own. (This is the purple 3-parameter box from <a href="lesson_01.html#model">Lesson 1</a>, live.)</p>
+
+<div class="widget">
+  <h3>🎚 Interactive: fit a parabola by hand — 3 parameters (a, w, b)</h3>
+  <div class="widget-row two">
+    <canvas id="pq-cv" width="500" height="360" aria-label="A U-shaped scatter of five points with the model's curve y = a·x² + w·x + b drawn through them; the curve bends to fit the points as you tune a, w, b or run gradient descent."></canvas>
+    <div class="controls">
+      <label><span class="lbl">a (the x² weight)</span><input id="pq-a" type="range" min="-2" max="3" step="0.01" value="0"><span class="val" id="pq-av">0.00</span></label>
+      <label><span class="lbl">w (the x weight)</span><input id="pq-w" type="range" min="-6" max="6" step="0.01" value="0"><span class="val" id="pq-wv">0.00</span></label>
+      <label><span class="lbl">b (intercept)</span><input id="pq-b" type="range" min="-3" max="6" step="0.01" value="0"><span class="val" id="pq-bv">0.00</span></label>
+      <label><span class="lbl">Learning rate</span><input id="pq-lr" type="range" min="0.001" max="0.01" step="0.0005" value="0.004"><span class="val" id="pq-lrv">0.0040</span></label>
+      <div style="margin-top:10px;">
+        <button id="pq-step">Step ×1</button><button id="pq-run">Auto-train</button><button class="alt" id="pq-reset">Reset</button>
+      </div>
+      <table class="stats">
+        <tr><th>step</th><td id="pq-stepc">0</td></tr>
+        <tr><th>loss</th><td id="pq-loss">—</td></tr>
+        <tr><th>true a</th><td>1.00</td></tr>
+        <tr><th>true w</th><td>−4.00</td></tr>
+        <tr><th>true b</th><td>3.00</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  var cv=document.getElementById('pq-cv'); if(!cv) return; var ctx=cv.getContext('2d');
+  var DX=[0,1,2,3,4], TA=1, TW=-4, TB=3;            // secret rule y = x² − 4x + 3
+  var DY=DX.map(function(x){return TA*x*x+TW*x+TB;});
+  var a=0,w=0,b=0,step=0,timer=null;
+  function model(x){return a*x*x+w*x+b;}
+  function loss(){var s=0;DX.forEach(function(x,i){var e=model(x)-DY[i];s+=e*e;});return s/DX.length;}
+  var XMIN=-0.4,XMAX=4.4,YMIN=-2,YMAX=4,PADL=40,PADB=26,PADT=10,PADR=12;
+  function px(x){return PADL+(x-XMIN)/(XMAX-XMIN)*(cv.width-PADL-PADR);}
+  function py(y){return cv.height-PADB-(y-YMIN)/(YMAX-YMIN)*(cv.height-PADT-PADB);}
+  function gstep(){var lr=+document.getElementById('pq-lr').value,ga=0,gw=0,gb=0,n=DX.length;
+    DX.forEach(function(x,i){var e=model(x)-DY[i];ga+=2*e*x*x;gw+=2*e*x;gb+=2*e;});
+    a-=lr*ga/n; w-=lr*gw/n; b-=lr*gb/n; step++;
+    document.getElementById('pq-a').value=a; document.getElementById('pq-w').value=w; document.getElementById('pq-b').value=b; sync();}
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.fillStyle='#999';ctx.font='11px ui-sans-serif,system-ui';ctx.textAlign='center';
+    for(var gx=0;gx<=4;gx++){ctx.beginPath();ctx.moveTo(px(gx),PADT);ctx.lineTo(px(gx),cv.height-PADB);ctx.stroke();ctx.fillText(gx,px(gx),cv.height-9);}
+    ctx.textAlign='right';for(var gy=-2;gy<=4;gy++){ctx.beginPath();ctx.moveTo(PADL,py(gy));ctx.lineTo(cv.width-PADR,py(gy));ctx.stroke();ctx.fillText(gy,PADL-6,py(gy)+4);}
+    ctx.textAlign='left';ctx.font='12px ui-sans-serif,system-ui';
+    ctx.fillStyle='#10b981';ctx.fillText('— truth (y = x² − 4x + 3)',PADL+8,PADT+14);
+    ctx.fillStyle='#3b82f6';ctx.fillText('— model (y = a·x² + w·x + b)',PADL+8,PADT+30);
+    ctx.strokeStyle='#10b981';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();
+    for(var t=0;t<=120;t++){var x=XMIN+(XMAX-XMIN)*t/120,yy=TA*x*x+TW*x+TB;if(t===0)ctx.moveTo(px(x),py(yy));else ctx.lineTo(px(x),py(yy));}ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle='#f87171';ctx.lineWidth=1.5;
+    DX.forEach(function(x,i){ctx.beginPath();ctx.moveTo(px(x),py(DY[i]));ctx.lineTo(px(x),py(model(x)));ctx.stroke();});
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2.5;ctx.beginPath();
+    for(var u=0;u<=120;u++){var x2=XMIN+(XMAX-XMIN)*u/120,ym=model(x2);if(u===0)ctx.moveTo(px(x2),py(ym));else ctx.lineTo(px(x2),py(ym));}ctx.stroke();
+    ctx.fillStyle='#10b981';DX.forEach(function(x,i){ctx.beginPath();ctx.arc(px(x),py(DY[i]),6,0,7);ctx.fill();});
+  }
+  function sync(){
+    document.getElementById('pq-av').textContent=a.toFixed(2);
+    document.getElementById('pq-wv').textContent=w.toFixed(2);
+    document.getElementById('pq-bv').textContent=b.toFixed(2);
+    document.getElementById('pq-stepc').textContent=step;
+    document.getElementById('pq-loss').textContent=loss().toFixed(2);
+    draw();
+  }
+  document.getElementById('pq-a').addEventListener('input',function(e){a=+e.target.value;sync();});
+  document.getElementById('pq-w').addEventListener('input',function(e){w=+e.target.value;sync();});
+  document.getElementById('pq-b').addEventListener('input',function(e){b=+e.target.value;sync();});
+  document.getElementById('pq-lr').addEventListener('input',function(e){document.getElementById('pq-lrv').textContent=(+e.target.value).toFixed(4);});
+  document.getElementById('pq-step').addEventListener('click',gstep);
+  document.getElementById('pq-run').addEventListener('click',function(){
+    var btn=this;
+    if(timer){clearInterval(timer);timer=null;btn.textContent='Auto-train';return;}
+    btn.textContent='Stop';
+    timer=setInterval(function(){for(var k=0;k<15;k++)gstep();if(step>=4000||loss()<0.002){clearInterval(timer);timer=null;btn.textContent='Auto-train';}},30);
+  });
+  document.getElementById('pq-reset').addEventListener('click',function(){
+    if(timer){clearInterval(timer);timer=null;document.getElementById('pq-run').textContent='Auto-train';}
+    a=0;w=0;b=0;step=0;document.getElementById('pq-a').value=0;document.getElementById('pq-w').value=0;document.getElementById('pq-b').value=0;sync();});
+  sync();
+})();</script>
 
 <p>🤔 <strong>The catch.</strong> How would you know to add <code>x²</code>? What if the relationship were <code>sin(x)</code> or something more complex? For simple data you can guess; for complex data (text, images, banking events) there are too many possible features to enumerate. That's where neural networks come in.</p>
 
