@@ -296,6 +296,15 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
 
 <p style="font-size:13px;color:var(--text-dim);">We hand-wired the weights so you can trace every step. A <em>trained</em> network learns its own weights — usually messier — but the flow is identical: signal <code>X</code> → multiply by weights &amp; ReLU → hidden outputs <code>h</code> → multiply by weights → output <code>Y</code>. Stack layers (next lesson) and later neurons detect features built from earlier ones.</p>
 
+<div class="callout">
+  <strong>“But each neuron only touches 2 pixels — didn't a layer use the <em>full</em> H×d matrix?”</strong>
+  <p style="margin:.6em 0 0;">It does, and this net obeys that exactly — it's just a <strong>4×6 matrix</strong> (<code>H=4</code> detectors × <code>d=6</code> pixels). A detector that "only looks at 2 pixels" simply has <strong>weight 0</strong> on the other four, so we didn't bother drawing those wires. Here's the real <code>W₁</code> — each row is one detector, <b>1</b> = looks here, faint <span style="color:#cbd5e1">0</span> = ignores:</p>
+  <div class="mxrow">
+    <div><div class="mx" style="grid-template-columns:repeat(6,auto)"><span style="font-weight:700">1</span><span style="font-weight:700">1</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="font-weight:700">1</span><span style="font-weight:700">1</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="font-weight:700">1</span><span style="font-weight:700">1</span><span style="font-weight:700">1</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="color:#cbd5e1">0</span><span style="font-weight:700">1</span></div><span class="mxlab">W₁ (4×6) — rows: left-edge · centre · right-edge · two-ends</span></div>
+  </div>
+  <p style="margin:.6em 0 0;">So <strong>“sparse wiring” is just zeros in the matrix.</strong> The layer is still the same <code>W₁·X</code> you built two sections up: <code>[4×6] · [6×1] = [4×1]</code>, one number per detector. (A <em>trained</em> net usually fills those zeros with small non-zero numbers — every neuron ends up listening a little to every pixel. We zeroed them by hand only to keep the picture readable.)</p>
+</div>
+
 <script>
 (() => {
   const pxHost = document.getElementById('nd-pixels');
