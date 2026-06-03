@@ -1,75 +1,108 @@
-<svg viewBox="0 0 720 280" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
+<svg viewBox="0 0 1180 295" xmlns="http://www.w3.org/2000/svg" font-family="ui-sans-serif, system-ui, sans-serif">
   <defs>
     <marker id="mb-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
       <path d="M0 0 L10 5 L0 10 z" fill="#666"/>
     </marker>
   </defs>
 
-  <text x="360" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">
-    A model is just a box with parameters.
-  </text>
-  <text x="360" y="42" text-anchor="middle" font-size="12" fill="#555">
-    More parameters = more shapes it can guess.
-  </text>
+  <text x="590" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">A model is just a box with parameters.</text>
+  <text x="590" y="42" text-anchor="middle" font-size="12" fill="#555">More parameters = more shapes it can guess. (Watch the little plot in each box.)</text>
 
-  <!-- Panel 1: 0 parameters -->
+  <!-- ===== Panel 1: 0 parameters ===== -->
   <g transform="translate(20, 70)">
     <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">0 parameters</text>
-    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">just guesses 0 every time</text>
-    <!-- input arrow -->
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">always guesses 0</text>
     <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
-    <!-- box -->
     <rect x="42" y="50" width="120" height="60" rx="8" fill="#f4f4f5" stroke="#a1a1aa" stroke-width="1.5"/>
     <text x="102" y="86" text-anchor="middle" font-size="13" font-weight="600" fill="#555">y = 0</text>
-    <!-- output arrow -->
     <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
-    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">no parameters to turn —</text>
-    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">nothing to learn</text>
+    <rect x="50" y="120" width="100" height="38" rx="5" fill="#fff" stroke="#e5e7eb"/>
+    <line x1="52" y1="139" x2="148" y2="139" stroke="#eee" stroke-width="1"/>
+    <polyline points="52,139 148,139" fill="none" stroke="#9ca3af" stroke-width="2"/>
+    <text x="105" y="174" text-anchor="middle" font-size="11" fill="#888">flat — nothing to learn</text>
   </g>
 
-  <!-- Panel 2: 1 parameter -->
+  <!-- ===== Panel 2: 1 weight ===== -->
   <g transform="translate(248, 70)">
     <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">1 weight (w)</text>
     <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">lines through the origin</text>
     <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
     <rect x="42" y="50" width="120" height="60" rx="8" fill="#dbeafe" stroke="#3b82f6" stroke-width="1.8"/>
-    <!-- parameter -->
-    <circle cx="102" cy="60" r="6" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
-    <line x1="102" y1="58" x2="106" y2="54" stroke="#3b82f6" stroke-width="1.8"/>
-    <text x="116" y="64" font-size="10" fill="#3b82f6">w</text>
-    <text x="102" y="92" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">y = w·x</text>
+    <circle cx="102" cy="62" r="6" fill="#fff" stroke="#3b82f6" stroke-width="2"/>
+    <line x1="102" y1="60" x2="106" y2="56" stroke="#3b82f6" stroke-width="1.8"/>
+    <text x="116" y="66" font-size="10" fill="#3b82f6">w</text>
+    <text x="102" y="94" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">y = w·x</text>
     <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
-    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">can tilt the line —</text>
-    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">but must pass through (0,0)</text>
+    <rect x="50" y="120" width="100" height="38" rx="5" fill="#fff" stroke="#e5e7eb"/>
+    <line x1="52" y1="139" x2="148" y2="139" stroke="#eee" stroke-width="1"/>
+    <polyline points="52,155 64,151 76,147 88,143 100,139 112,135 124,131 136,127 148,123" fill="none" stroke="#3b82f6" stroke-width="2"/>
+    <text x="105" y="174" text-anchor="middle" font-size="11" fill="#888">tilts, but pinned at (0,0)</text>
   </g>
 
-  <!-- Panel 3: 2 parameters -->
+  <!-- ===== Panel 3: 2 parameters ===== -->
   <g transform="translate(476, 70)">
     <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">2 parameters (w, b)</text>
     <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">any straight line</text>
     <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
     <rect x="42" y="50" width="120" height="60" rx="8" fill="#dcfce7" stroke="#10b981" stroke-width="1.8"/>
-    <!-- parameter 1 -->
-    <circle cx="76" cy="60" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
-    <line x1="76" y1="58" x2="80" y2="54" stroke="#10b981" stroke-width="1.8"/>
-    <text x="76" y="50" text-anchor="middle" font-size="10" fill="#10b981">w</text>
-    <!-- parameter 2 -->
-    <circle cx="128" cy="60" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
-    <line x1="128" y1="58" x2="132" y2="55" stroke="#10b981" stroke-width="1.8"/>
-    <text x="128" y="50" text-anchor="middle" font-size="10" fill="#10b981">b</text>
-    <text x="102" y="92" text-anchor="middle" font-size="13" font-weight="600" fill="#1a1a1a">y = w·x + b</text>
+    <circle cx="80" cy="62" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
+    <line x1="80" y1="60" x2="84" y2="56" stroke="#10b981" stroke-width="1.8"/>
+    <text x="80" y="50" text-anchor="middle" font-size="10" fill="#10b981">w</text>
+    <circle cx="124" cy="62" r="6" fill="#fff" stroke="#10b981" stroke-width="2"/>
+    <line x1="124" y1="60" x2="128" y2="57" stroke="#10b981" stroke-width="1.8"/>
+    <text x="124" y="50" text-anchor="middle" font-size="10" fill="#10b981">b</text>
+    <text x="102" y="94" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1a1a1a">y = w·x + b</text>
     <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
     <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
-    <text x="105" y="160" text-anchor="middle" font-size="11" fill="#888">tilt AND slide up/down —</text>
-    <text x="105" y="176" text-anchor="middle" font-size="11" fill="#888">this is Lesson 1's model</text>
+    <rect x="50" y="120" width="100" height="38" rx="5" fill="#fff" stroke="#e5e7eb"/>
+    <line x1="52" y1="139" x2="148" y2="139" stroke="#eee" stroke-width="1"/>
+    <polyline points="52,143 64,141 76,138 88,136 100,133 112,131 124,129 136,126 148,124" fill="none" stroke="#10b981" stroke-width="2"/>
+    <text x="105" y="174" text-anchor="middle" font-size="11" fill="#888">tilt AND slide — Lesson 1</text>
   </g>
 
-  <text x="360" y="262" text-anchor="middle" font-size="11.5" fill="#555">
-    Training = turning the parameters until the box's <tspan font-style="italic">y</tspan> matches the truth as closely as possible.
-  </text>
+  <!-- ===== Panel 4: 3 parameters (parabola) ===== -->
+  <g transform="translate(704, 70)">
+    <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">3 parameters</text>
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">a parabola — it can bend!</text>
+    <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
+    <rect x="42" y="50" width="120" height="60" rx="8" fill="#f3e8ff" stroke="#a855f7" stroke-width="1.8"/>
+    <circle cx="70" cy="62" r="5.5" fill="#fff" stroke="#a855f7" stroke-width="2"/><text x="70" y="50" text-anchor="middle" font-size="10" fill="#a855f7">a</text>
+    <circle cx="102" cy="62" r="5.5" fill="#fff" stroke="#a855f7" stroke-width="2"/><text x="102" y="50" text-anchor="middle" font-size="10" fill="#a855f7">w</text>
+    <circle cx="134" cy="62" r="5.5" fill="#fff" stroke="#a855f7" stroke-width="2"/><text x="134" y="50" text-anchor="middle" font-size="10" fill="#a855f7">b</text>
+    <text x="102" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1a1a">y = a·x² + w·x + b</text>
+    <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
+    <rect x="50" y="120" width="100" height="38" rx="5" fill="#fff" stroke="#e5e7eb"/>
+    <line x1="52" y1="139" x2="148" y2="139" stroke="#eee" stroke-width="1"/>
+    <polyline points="52,123 64,136 76,145 88,150 100,152 112,150 124,145 136,136 148,123" fill="none" stroke="#a855f7" stroke-width="2"/>
+    <text x="105" y="174" text-anchor="middle" font-size="11" fill="#888">one bend (a curve!)</text>
+  </g>
+
+  <!-- ===== Panel 5: 4 parameters (cubic) ===== -->
+  <g transform="translate(932, 70)">
+    <text x="105" y="0" text-anchor="middle" font-size="13" font-weight="700" fill="#1a1a1a">4 parameters</text>
+    <text x="105" y="16" text-anchor="middle" font-size="11" fill="#888">a cubic — an S-shape</text>
+    <line x1="0" y1="80" x2="40" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="20" y="70" text-anchor="middle" font-size="11" fill="#666">x</text>
+    <rect x="42" y="50" width="120" height="60" rx="8" fill="#ffedd5" stroke="#f59e0b" stroke-width="1.8"/>
+    <circle cx="64" cy="62" r="5" fill="#fff" stroke="#f59e0b" stroke-width="2"/><text x="64" y="50" text-anchor="middle" font-size="9.5" fill="#b45309">c</text>
+    <circle cx="90" cy="62" r="5" fill="#fff" stroke="#f59e0b" stroke-width="2"/><text x="90" y="50" text-anchor="middle" font-size="9.5" fill="#b45309">a</text>
+    <circle cx="116" cy="62" r="5" fill="#fff" stroke="#f59e0b" stroke-width="2"/><text x="116" y="50" text-anchor="middle" font-size="9.5" fill="#b45309">w</text>
+    <circle cx="142" cy="62" r="5" fill="#fff" stroke="#f59e0b" stroke-width="2"/><text x="142" y="50" text-anchor="middle" font-size="9.5" fill="#b45309">b</text>
+    <text x="102" y="95" text-anchor="middle" font-size="11" font-weight="600" fill="#1a1a1a">y = c·x³ + ⋯ + b</text>
+    <line x1="164" y1="80" x2="208" y2="80" stroke="#666" stroke-width="2" marker-end="url(#mb-arrow)"/>
+    <text x="190" y="70" text-anchor="middle" font-size="11" fill="#666">y</text>
+    <rect x="50" y="120" width="100" height="38" rx="5" fill="#fff" stroke="#e5e7eb"/>
+    <line x1="52" y1="139" x2="148" y2="139" stroke="#eee" stroke-width="1"/>
+    <polyline points="52,156 64,146 76,141 88,139 100,139 112,139 124,137 136,132 148,122" fill="none" stroke="#f59e0b" stroke-width="2"/>
+    <text x="105" y="174" text-anchor="middle" font-size="11" fill="#888">two bends — wigglier still</text>
+  </g>
+
+  <text x="590" y="284" text-anchor="middle" font-size="11.5" fill="#555">Training = turning the parameters until the box's <tspan font-style="italic">y</tspan> matches the truth as closely as possible. More knobs → more shapes it can match.</text>
 </svg>
