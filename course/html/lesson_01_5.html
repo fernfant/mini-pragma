@@ -900,7 +900,8 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   function f32bits(x){var b=new ArrayBuffer(4);new Float32Array(b)[0]=x;var u=new Uint32Array(b)[0],s='';for(var i=31;i>=0;i--)s+=(u>>>i)&1;return s;}
   function bitsHTML(x){var bs=f32bits(x),cells='';
     for(var i=0;i<32;i++){var col=i===0?'#dc2626':(i<9?'#2563eb':'#475569');cells+='<span style="display:inline-block;width:12px;height:17px;line-height:17px;text-align:center;font-family:ui-monospace,monospace;font-size:9px;color:#fff;background:'+col+';margin:1px;border-radius:2px;">'+bs[i]+'</span>';}
-    return '<div style="font-size:12px;color:#475569;margin-bottom:4px;">The number <code>'+x.toFixed(1)+'</code> is really just 32 on/off switches — <span style="color:#dc2626;font-weight:700">sign</span>, <span style="color:#2563eb;font-weight:700">exponent</span>, <span style="color:#475569;font-weight:700">fraction</span> (float32, exactly what the computer feeds the net — you don’t need to read it):</div><div style="display:flex;flex-wrap:wrap;max-width:500px;">'+cells+'</div>';}
+    return '<div style="font-size:12px;color:#475569;margin-bottom:4px;">How the computer <em>stores</em> the number <code>'+x.toFixed(1)+'</code> — 32 on/off switches (float32): <span style="color:#dc2626;font-weight:700">sign</span>, <span style="color:#2563eb;font-weight:700">exponent</span>, <span style="color:#475569;font-weight:700">fraction</span>. You don’t need to read them.</div><div style="display:flex;flex-wrap:wrap;max-width:500px;">'+cells+'</div>'+
+      '<div style="font-size:12px;color:#475569;margin-top:8px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:8px 10px;">⚠️ Those 32 bits are <b>just storage</b> for <b>one number</b>. The network does <b>not</b> get 32 inputs — it gets <b>the single number '+x.toFixed(1)+'</b>, and sends that <em>same</em> one number to <b>every</b> neuron (each multiplies it by its own weight). <b>You do not need one neuron per bit.</b><div style="font-family:ui-monospace,monospace;font-size:11px;color:#334155;margin-top:6px;">32 bits &nbsp;=&nbsp; one number ('+x.toFixed(1)+') &nbsp;→&nbsp; one input wire &nbsp;→&nbsp; fans out to all '+H+' neurons</div></div>';}
   var COLS=['#ef4444','#f59e0b','#10b981','#06b6d4','#8b5cf6','#ec4899'];
   function decompAt(x){var u=(x-2)/2,cs=[],y=b2;for(var j=0;j<H;j++){var z=w1[j]*u+b1[j],hh=z>0?z:0;cs.push(w2[j]*hh);y+=w2[j]*hh;}return{cs:cs,y:y,u:u};}
   function drawDecomp(){
@@ -1017,6 +1018,53 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   document.getElementById('pn-reset').addEventListener('click',function(){if(timer){clearInterval(timer);timer=null;document.getElementById('pn-train').textContent='Train ▶';}reset();sync();});
   sync();
 })();</script>
+
+<h2 class="step" id="inputs"><span class="step-num">Inputs</span> What actually goes IN — turning things into numbers</h2>
+
+<p>A natural question pops up the moment you see those bits: <em>the number 3 is stored as 32 bits — do the bits go in one per neuron? Do you need 32 neurons?</em> <strong>No.</strong> And clearing this up is the key to how <em>everything</em> gets into a neural net.</p>
+
+<p>A neural net only eats <strong>a list of numbers</strong> (a <span class="term" data-def="a list of numbers, e.g. [3, 0, 1]">vector</span>). The length of that list is the number of <strong>features</strong> — one slot per real, separate thing about the input. The bits <em>inside</em> each number are just how it's stored; they are never the inputs.</p>
+
+<ul>
+  <li><b>A single number</b> (our <code>x</code>): the list has length <b>1</b>. That one number is fed to <em>every</em> neuron. Not 32 — the bits don't count as inputs.</li>
+  <li><b>An image</b>: one number per <b>pixel</b> (how bright it is). A 28×28 photo becomes a list of <b>784</b> numbers.</li>
+  <li><b>A word</b>: letters aren't numbers, so we <em>hand each word its own short list of numbers</em> and let training tune them. That learned list is called an <b>embedding</b> — the whole of <a href="lesson_02.html">Lesson 2</a>.</li>
+</ul>
+
+<div id="pred-inputs"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-inputs",{
+  q:"The number 3 is stored in 32 bits. How many inputs does the net actually see for it?",
+  options:["32 — one input per bit","1 — it's a single number","8 — one per byte"],
+  correct:1,
+  reveal:"Just 1. The 32 bits are only how the computer stores that one number. The net sees the single value 3 and sends it to every neuron. Bits are storage, not inputs — so you never need one neuron per bit."
+});});</script>
+
+<div class="widget">
+  <h3>🖼 Turn a picture into a list of numbers</h3>
+  <div class="pg-sub">Click the squares to draw (or hit <b>Draw a 3</b>). An image is just a grid of brightness numbers. Flatten it row by row into one long list — and <b>that list is what the net eats</b>. Each number is one input, and (just like the single <code>x</code> above) each one feeds every neuron.</div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+    <div>
+      <div id="px-grid" style="display:grid;grid-template-columns:repeat(5,32px);gap:3px;"></div>
+      <div style="margin-top:8px;"><button id="px-3">Draw a 3</button><button class="alt" id="px-clear">Clear</button></div>
+    </div>
+    <div style="flex:1 1 250px;min-width:230px;">
+      <div style="font-size:12px;color:#475569;margin-bottom:4px;">The input list (read left→right, top→bottom):</div>
+      <div id="px-vec" style="font-family:ui-monospace,monospace;font-size:11px;line-height:1.7;color:#334155;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px;word-break:break-word;"></div>
+      <div id="px-note" style="font-size:12px;color:#475569;margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+<script>(function(){
+  var grid=document.getElementById('px-grid'); if(!grid) return;
+  var N=5, three=[1,1,1,1,0, 0,0,0,1,0, 0,1,1,1,0, 0,0,0,1,0, 1,1,1,1,0], cells=three.slice();
+  function build(){grid.innerHTML='';for(var i=0;i<N*N;i++){(function(i){var c=document.createElement('button');c.setAttribute('aria-label','pixel '+(i+1)+(cells[i]?' on':' off'));c.style.cssText='width:32px;height:32px;border:1px solid #cbd5e1;border-radius:4px;cursor:pointer;padding:0;background:'+(cells[i]?'#1a1a1a':'#fff')+';';c.addEventListener('click',function(){cells[i]=cells[i]?0:1;c.style.background=cells[i]?'#1a1a1a':'#fff';c.setAttribute('aria-label','pixel '+(i+1)+(cells[i]?' on':' off'));render();});grid.appendChild(c);})(i);}}
+  function render(){document.getElementById('px-vec').textContent='['+cells.join(', ')+']';var on=0;for(var i=0;i<cells.length;i++)on+=cells[i];document.getElementById('px-note').innerHTML='That is a list of <b>'+cells.length+' numbers</b> ('+on+' switched on). A real 28×28 photo of a digit makes a list of <b>784</b> numbers. The list length = how many <b>pixels</b> — never how many bits.';}
+  document.getElementById('px-clear').addEventListener('click',function(){for(var i=0;i<cells.length;i++)cells[i]=0;build();render();});
+  document.getElementById('px-3').addEventListener('click',function(){cells=three.slice();build();render();});
+  build(); render();
+})();</script>
+
+<div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
 
 <h2 class="step" id="bends"><span class="step-num">Bends</span> How the bends add up to the curve</h2>
 
