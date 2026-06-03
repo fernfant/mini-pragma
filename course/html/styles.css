@@ -1021,3 +1021,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .pn-tbl th { font-weight:600; padding:3px 8px; text-align:left; font-size:11px; }
 .pn-tbl td { padding:2px 8px; white-space:nowrap; }
 .pn-tbl tfoot td { border-top:1px solid var(--border); padding-top:6px; }
+
+
+/* runnable python cells */
+.runpy-code{width:100%;min-height:240px;box-sizing:border-box;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#0f172a;color:#e2e8f0;}
+.runpy-ctrl{margin:8px 0;}
+.runpy-lbl{font-size:11px;color:#64748b;margin:2px 0 3px;font-weight:600;}
+.runpy-out{min-height:60px;white-space:pre-wrap;background:#0f172a;color:#d1fae5;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;}

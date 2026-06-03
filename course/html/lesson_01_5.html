@@ -179,10 +179,10 @@ for _ in range(1000):
 
 <p>The widget is a toy. Here's the <strong>actual loop</strong> — plain Python, no PyTorch, every line readable — that you can <strong>run and edit right on this page</strong>:</p>
 
-<div class="widget">
+<div class="widget runpy">
   <h3>🐍 Run it yourself — real Python, right here</h3>
-  <div class="pg-sub">Hit <b>Run</b> and watch the loss print out and <strong>stick at ~2.8</strong>. Then change <code>lr</code> or the number of steps and run again — it still won't drop below ~2.8. That's the wall. <span style="color:#64748b;">(Loads Python in your browser the first time you click — needs internet for that one download; after that it's instant.)</span></div>
-  <textarea id="rp-code" spellcheck="false" aria-label="Editable Python code: fit the U-shaped data with a straight line" style="width:100%;min-height:250px;font-family:ui-monospace,SFMono-Regular,monospace;font-size:13px;line-height:1.55;border:1px solid var(--border);border-radius:8px;padding:12px 14px;background:#0f172a;color:#e2e8f0;box-sizing:border-box;"># Fit the U-shaped data with a STRAIGHT line. Watch it fail.
+  <div class="pg-sub">Hit <b>Run</b> and watch the loss print out and <strong>stick at ~2.8</strong>. Then change <code>lr</code> or the number of steps and run again — it still won’t drop below ~2.8. That’s the wall. <span style="color:#64748b;">(Loads Python in your browser the first time you click — needs internet for that one download; after that it’s instant.)</span></div>
+  <textarea class="runpy-code" spellcheck="false" aria-label="Editable Python: fit the U-shaped data with a straight line"># Fit the U-shaped data with a STRAIGHT line. Watch it fail.
 x = [0, 1, 2, 3, 4]
 y = [3, 0, -1, 0, 3]          # the U:  y = x*x - 4*x + 3
 
@@ -202,40 +202,13 @@ for step in range(2001):
         print(f"step {step:4d}   loss {loss:.3f}   (w={w:.2f}, b={b:.2f})")
 
 print("The line is stuck at ~2.8 - it cannot bend into a U.")</textarea>
-  <div style="margin:8px 0;"><button id="rp-run">▶ Run</button><button class="alt" id="rp-reset">Reset code</button></div>
-  <div style="font-size:11px;color:#64748b;margin:2px 0 3px;font-weight:600;">output ▾</div>
-  <pre id="rp-out" style="min-height:60px;white-space:pre-wrap;background:#0f172a;color:#d1fae5;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;">(output appears here)</pre>
+  <pre class="runpy-expected" hidden>step    0   loss 3.453   (w=0.08, b=0.04)
+step  500   loss 2.800   (w=0.00, b=1.00)
+step 1000   loss 2.800   (w=0.00, b=1.00)
+step 1500   loss 2.800   (w=0.00, b=1.00)
+step 2000   loss 2.800   (w=0.00, b=1.00)
+The line is stuck at ~2.8 - it cannot bend into a U.</pre>
 </div>
-<script>(function(){
-  var ta=document.getElementById('rp-code'); if(!ta) return;
-  var DEFAULT=ta.value, out=document.getElementById('rp-out'), pyReady=null;
-  var EXPECTED='step    0   loss 3.453   (w=0.08, b=0.04)\nstep  500   loss 2.800   (w=0.00, b=1.00)\nstep 1000   loss 2.800   (w=0.00, b=1.00)\nstep 1500   loss 2.800   (w=0.00, b=1.00)\nstep 2000   loss 2.800   (w=0.00, b=1.00)\nThe line is stuck at ~2.8 - it cannot bend into a U.';
-  function ensurePy(){
-    if(pyReady) return pyReady;
-    pyReady=new Promise(function(res,rej){
-      var s=document.createElement('script');
-      s.src='https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
-      s.onload=function(){ if(typeof loadPyodide!=='function'){rej(new Error('no loader'));return;} loadPyodide().then(res).catch(rej); };
-      s.onerror=function(){ rej(new Error('script load failed')); };
-      document.head.appendChild(s);
-    });
-    return pyReady;
-  }
-  document.getElementById('rp-run').addEventListener('click',function(){
-    var btn=this; btn.disabled=true; out.textContent='Loading Python… (first time only — a few seconds)';
-    ensurePy().then(function(py){
-      var buf='';
-      py.setStdout({batched:function(s){buf+=s+'\n';}});
-      try{ py.runPython(ta.value); out.textContent=buf||'(no output)'; }
-      catch(e){ out.textContent=buf+'\n⚠️ Python error:\n'+(e&&e.message?e.message:e); }
-      btn.disabled=false;
-    }).catch(function(){
-      out.textContent='Couldn’t load Python (it needs internet the first time you click Run). Here’s exactly what it prints:\n\n'+EXPECTED;
-      btn.disabled=false;
-    });
-  });
-  document.getElementById('rp-reset').addEventListener('click',function(){ ta.value=DEFAULT; out.textContent='(output appears here)'; });
-})();</script>
 
 <h2 class="step" id="step-3"><span class="step-num">Step 3</span> Trick: give linear regression more features</h2>
 
@@ -331,6 +304,42 @@ print("The line is stuck at ~2.8 - it cannot bend into a U.")</textarea>
     a=0;w=0;b=0;step=0;document.getElementById('pq-a').value=0;document.getElementById('pq-w').value=0;document.getElementById('pq-b').value=0;sync();});
   sync();
 })();</script>
+
+<p>Now run that "extra feature" idea for real — add <code>x*x</code> and watch the loss <strong>crash toward 0</strong> (it discovers <code>y = x² − 4x + 3</code> on its own):</p>
+
+<div class="widget runpy">
+  <h3>🐍 Run it yourself — add x² and watch the loss crash</h3>
+  <div class="pg-sub">The <em>same</em> loop as Step 2, with <b>one</b> new line: a <code>w2 * x*x</code> term. Run it — the loss falls to almost 0. (Take that term back out and you’re stuck at 2.8 again.)</div>
+  <textarea class="runpy-code" spellcheck="false" aria-label="Editable Python: fit the curve by adding an x-squared feature"># Step 2's loop, plus ONE new feature: x squared.
+x = [0, 1, 2, 3, 4]
+y = [3, 0, -1, 0, 3]              # the U:  y = x*x - 4*x + 3
+
+w1, w2, b = 0.0, 0.0, 0.0         # weight for x, weight for x*x, bias
+lr = 0.004
+
+for step in range(4001):
+    g1 = g2 = gb = 0.0
+    for xi, yi in zip(x, y):
+        pred = w1*xi + w2*(xi*xi) + b      # <-- the only new bit: w2 * x*x
+        err  = pred - yi
+        g1 += 2*err*xi
+        g2 += 2*err*(xi*xi)
+        gb += 2*err
+    w1 -= lr*g1/len(x)
+    w2 -= lr*g2/len(x)
+    b  -= lr*gb/len(x)
+    if step % 1000 == 0:
+        loss = sum((w1*xi + w2*xi*xi + b - yi)**2 for xi, yi in zip(x, y)) / len(x)
+        print(f"step {step:4d}   loss {loss:.4f}   (w2={w2:.2f}, w1={w1:.2f}, b={b:.2f})")
+
+print("Loss crashed to ~0 - it recovered y = x*x - 4*x + 3 by itself.")</textarea>
+  <pre class="runpy-expected" hidden>step    0   loss 2.8858   (w2=0.07, w1=0.02, b=0.01)
+step 1000   loss 0.5078   (w2=0.63, w1=-2.29, b=1.66)
+step 2000   loss 0.0950   (w2=0.84, w1=-3.26, b=2.42)
+step 3000   loss 0.0178   (w2=0.93, w1=-3.68, b=2.75)
+step 4000   loss 0.0033   (w2=0.97, w1=-3.86, b=2.89)
+Loss crashed to ~0 - it recovered y = x*x - 4*x + 3 by itself.</pre>
+</div>
 
 <p>🤔 <strong>The catch.</strong> How would you know to add <code>x²</code>? What if the relationship were <code>sin(x)</code> or something more complex? For simple data you can guess; for complex data (text, images, banking events) there are too many possible features to enumerate. That's where neural networks come in.</p>
 

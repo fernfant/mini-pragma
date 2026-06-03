@@ -374,3 +374,53 @@
   document.addEventListener("DOMContentLoaded", linkGlossary);
   document.addEventListener("DOMContentLoaded", gradeTryit);
 })();
+
+
+/* ---- Runnable Python cells (Pyodide, lazy + shared) ---------------------- */
+(function(){
+  var pyReady = null;
+  function ensurePyodide(){
+    if (pyReady) return pyReady;
+    pyReady = new Promise(function(res, rej){
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.js';
+      s.onload = function(){ if (typeof loadPyodide !== 'function'){ rej(new Error('no loader')); return; } loadPyodide().then(res).catch(rej); };
+      s.onerror = function(){ rej(new Error('script load failed')); };
+      document.head.appendChild(s);
+    });
+    return pyReady;
+  }
+  function initRunpy(){
+    var blocks = document.querySelectorAll('.runpy');
+    for (var i = 0; i < blocks.length; i++) (function(box){
+      if (box.dataset.rpInit) return; box.dataset.rpInit = '1';
+      var ta = box.querySelector('.runpy-code'); if (!ta) return;
+      var DEFAULT = ta.value;
+      var expEl = box.querySelector('.runpy-expected');
+      var EXPECTED = expEl ? expEl.textContent : '';
+      if (expEl) expEl.remove();
+      var ctrl = document.createElement('div'); ctrl.className = 'runpy-ctrl';
+      var runBtn = document.createElement('button'); runBtn.type = 'button'; runBtn.textContent = '▶ Run';
+      var rstBtn = document.createElement('button'); rstBtn.type = 'button'; rstBtn.className = 'alt'; rstBtn.textContent = 'Reset code';
+      ctrl.appendChild(runBtn); ctrl.appendChild(rstBtn);
+      var lbl = document.createElement('div'); lbl.className = 'runpy-lbl'; lbl.textContent = 'output ▾';
+      var out = document.createElement('pre'); out.className = 'runpy-out'; out.textContent = '(output appears here)';
+      box.appendChild(ctrl); box.appendChild(lbl); box.appendChild(out);
+      runBtn.addEventListener('click', function(){
+        runBtn.disabled = true; out.textContent = 'Loading Python… (first time only — a few seconds)';
+        ensurePyodide().then(function(py){
+          var buf = ''; py.setStdout({ batched: function(s){ buf += s + '\n'; } });
+          try { py.runPython(ta.value); out.textContent = buf || '(no output)'; }
+          catch(e){ out.textContent = buf + '\n⚠️ Python error:\n' + (e && e.message ? e.message : e); }
+          runBtn.disabled = false;
+        }).catch(function(){
+          out.textContent = 'Couldn’t load Python (it needs internet the first time you click Run).' + (EXPECTED ? '\nHere’s what it prints:\n\n' + EXPECTED : '');
+          runBtn.disabled = false;
+        });
+      });
+      rstBtn.addEventListener('click', function(){ ta.value = DEFAULT; out.textContent = '(output appears here)'; });
+    })(blocks[i]);
+  }
+  if (document.readyState !== 'loading') initRunpy(); else document.addEventListener('DOMContentLoaded', initRunpy);
+  window.initRunpy = initRunpy;
+})();
