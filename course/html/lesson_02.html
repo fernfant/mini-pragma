@@ -523,6 +523,16 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
   <p style="margin:.5em 0 0;font-size:13px;">Each output cell = <strong>one row of X · one column of W</strong>. E.g. <code>Z[the, u3] = (0.1, 0.9) · (1, 1) = 0.1·1 + 0.9·1 = <b>1.0</b></code>. Then <strong>ReLU</strong> on Z zeros the negatives → the final 3×3 grid (one row per word, 3 numbers each).</p>
   <p style="margin:.5em 0 0;font-size:12px;color:#64748b;">(Same 3 units as just above — there each unit was a <em>row</em> of weights; with the words laid out as rows here, each unit stands up as a <em>column</em> of W. Same weights, same answers — just turned to line the shapes up.)</p>
 
+  <div class="callout">
+    <strong>"Could we pick 5 instead of 3?"</strong> Yes — <code>H</code> (how many hidden units) is <em>your</em> dial. Choose <code>H=5</code> and the shapes just get wider: <b>W → [2×5]</b>, <b>Z → [3×5]</b> — each word now described by 5 numbers. Pick 100, 768, 3072: same picture, wider.
+    <div style="background:#fff;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin:.6em 0;font-size:13px;">
+      <div style="margin-bottom:6px;"><b>Mind the words</b> — these are <em>two different dials</em>, and you set both:</div>
+      <div style="margin:5px 0;"><b style="color:#1e40af;">WIDTH</b> = hidden <b>units</b> in one layer &nbsp;<span style="font-family:ui-monospace,monospace;color:#64748b;">input → ( ● ● ● ● ● ) ← H=5 wide</span></div>
+      <div style="margin:5px 0;"><b style="color:#047857;">DEPTH</b> = hidden <b>layers</b> stacked &nbsp;<span style="font-family:ui-monospace,monospace;color:#64748b;">input → [layer 1] → [layer 2] → [layer 3] → out</span></div>
+    </div>
+    <p style="margin:.4em 0 0;">"5 hidden <em>units</em>" makes one layer wider (what we just did). "5 hidden <em>layers</em>" is <strong>depth</strong> — five layers in a row, <em>each</em> with its own weight matrix. That stacking is exactly <a href="lesson_01_6.html">L1.6</a>.</p>
+  </div>
+
   <p style="margin:.6em 0 0;">In general: each word's 768 numbers become <code>H</code> numbers; stack the 10 results back up → a <strong>10×H</strong> grid. Reading the shapes answers your question directly:</p>
   <ul style="margin:.4em 0 .2em;">
     <li><strong>768 (<code>d</code>)</strong> is what the weight matrix is <em>sized to</em> — the inner number that must match. It's the per-word width.</li>
