@@ -102,50 +102,121 @@
   build(); render();
 })();</script>
 
+<div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
+
+
+<style>
+  .mxrow{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:12px 0;}
+  .mx{display:inline-grid;gap:3px 14px;padding:6px 9px;border-left:2px solid #475569;border-right:2px solid #475569;border-radius:5px;font-family:ui-monospace,monospace;font-size:14px;}
+  .mx span{text-align:center;min-width:1.5em;}
+  .mxlab{display:block;text-align:center;margin-top:4px;font-size:11px;color:#64748b;}
+  .mxop{font-size:20px;color:#94a3b8;}
+  .mxcap{font-size:12.5px;color:#475569;max-width:230px;}
+  .dimline{font-family:ui-monospace,monospace;font-size:14px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:9px 12px;margin:10px 0;}
+</style>
+
+<h2 class="step" id="neuron-row"><span class="step-num">Row</span> One neuron = one row of weights</h2>
+
+<p>Remember the <strong>OR neuron</strong> back on <a href="lesson_01_5.html">L1.5</a>? It took two inputs, <code>A</code> and <code>B</code>, and gave <em>each one its own weight</em>. That's the rule: a neuron reading a <code>d</code>-number input needs <strong>d weights</strong> — exactly one per input number. Lay those weights out in a <strong>row</strong>:</p>
+
+<div class="mxrow">
+  <div><div class="mx" style="grid-template-columns:repeat(2,auto)"><span>1</span><span>1</span></div><span class="mxlab">OR neuron's weights — a 1×2 row</span></div>
+  <span class="mxop">·</span>
+  <div><div class="mx" style="grid-template-columns:auto"><span>A</span><span>B</span></div><span class="mxlab">input — a 2×1 column</span></div>
+  <span class="mxop">=</span>
+  <span class="mxcap"><code>1·A + 1·B</code>, then add the bias and ReLU.</span>
+</div>
+
+<p>That "multiply each matching pair, then add them up" is called a <strong>dot product</strong>. So: <strong>one neuron = one dot product</strong> of <em>its</em> weight-row with the input column. A 1-input neuron has a 1-long row; the OR neuron a 2-long row; an image neuron a 784-long row. The row length always equals <code>d</code>, the input width.</p>
+
+<h2 class="step" id="layer-matrix"><span class="step-num">Matrix</span> A layer = a stack of rows = a matrix</h2>
+
+<p>A layer is just <strong>several neurons side by side</strong>, each with its own weight-row. <strong>Stack the rows</strong> and you get a grid of numbers — a <strong>matrix</strong>. Here are two neurons reading the same two inputs (one tuned for OR, one for AND):</p>
+
+<div class="mxrow">
+  <div><div class="mx" style="grid-template-columns:repeat(2,auto)"><span>1</span><span>1</span><span>1</span><span>1</span></div><span class="mxlab">W₁ — 2 rows × 2 columns. Row 1 = OR neuron, row 2 = AND neuron.</span></div>
+</div>
+
+<p>The matrix has <strong>two dimensions</strong>, and each comes from a completely different place:</p>
+<ul>
+  <li><strong>Columns = inputs</strong> (<code>d</code>) — one column per input number. The <em>data</em> sets this: 1 for our curve, 2 for <code>A,B</code>, 784 for an image.</li>
+  <li><strong>Rows = hidden neurons</strong> (<code>H</code>) — one row per neuron. <em>You</em> set this (next section).</li>
+</ul>
+<p>A weight matrix is therefore always <strong>H rows × d columns</strong> — written <code>H×d</code>.</p>
+
+<h2 class="step" id="where-h"><span class="step-num">Choice</span> Where does the number of hidden units come from?</h2>
+
+<p>This is the part that surprises people: <strong>you pick it.</strong> The input width <code>d</code> is forced on you by the data — a photo <em>has</em> 784 pixels, full stop. But the number of hidden neurons <code>H</code> is a <strong>dial you turn</strong> when you design the net.</p>
+
+<p>Each hidden neuron is one little <strong>detector</strong> — or, for our curve, one <strong>bend</strong>. So the dial trades off:</p>
+<ul>
+  <li>more hidden units → more patterns the layer can spot, more bends to fit a wiggly curve — but more weights to train;</li>
+  <li>too few → the layer can't capture the shape (one bend can't make a U);</li>
+  <li>it's a knob you tune by trying — the data doesn't decide it.</li>
+</ul>
+<p>Our curve net used <code>H=6</code>; the OR/AND layer above used <code>H=2</code>; one layer of real BERT uses <code>H=3072</code>. Same idea, different dial setting.</p>
+
+<h2 class="step" id="matmul"><span class="step-num">Multiply</span> The multiply: rows and columns must line up</h2>
+
+<p>Running the <em>whole layer</em> at once is <strong>one matrix multiply</strong>: the weight matrix <code>W₁</code> times the input column <code>x</code>. There's exactly one rule — the matrix's <strong>columns</strong> must equal the vector's <strong>rows</strong>. The two <em>inner</em> numbers have to match; then they cancel and tell you the output size:</p>
+
+<div class="dimline">W₁ [2×<b style="color:#b45309">2</b>] &nbsp;·&nbsp; x [<b style="color:#b45309">2</b>×1] &nbsp;=&nbsp; z [2×1] &nbsp;&nbsp;<span style="color:#64748b">— the inner <b style="color:#b45309">2</b>s match (legal!), and cancel → result is 2×1.</span></div>
+
+<p>With the input <code>x = [1, 0]</code> (A on, B off):</p>
+<div class="mxrow">
+  <div><div class="mx" style="grid-template-columns:repeat(2,auto)"><span>1</span><span>1</span><span>1</span><span>1</span></div><span class="mxlab">W₁ (2×2)</span></div>
+  <span class="mxop">·</span>
+  <div><div class="mx" style="grid-template-columns:auto"><span>1</span><span>0</span></div><span class="mxlab">x (2×1)</span></div>
+  <span class="mxop">=</span>
+  <div><div class="mx" style="grid-template-columns:auto"><span>1</span><span>1</span></div><span class="mxlab">z (2×1)</span></div>
+</div>
+<p>Row by row — each row is one neuron's dot product: <br>
+row 1 · x = <code>1·1 + 1·0 = <b>1</b></code> &nbsp;·&nbsp; row 2 · x = <code>1·1 + 1·0 = <b>1</b></code>.<br>
+Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5, −0.5]</code>, then ReLU → <strong>[0.5, 0]</strong>: the OR neuron fires, the AND neuron stays off. The shapes lined up — <code>(2×2)·(2×1) → (2×1)</code>, one number out per neuron.</p>
+
+<div id="pred-mm"></div>
+<script>document.addEventListener("DOMContentLoaded",function(){predict("pred-mm",{
+  q:"An image gives d=784 inputs and you choose H=100 hidden neurons. What shape is the weight matrix W₁, and how many weights is that?",
+  options:["784×100, = 78,400 weights","100×784, = 78,400 weights","100×100, = 10,000 weights"],
+  correct:1,
+  reveal:"100×784 — rows = neurons (H, your choice), columns = inputs (d, the data). That's 100×784 = 78,400 weights, one per (neuron, input) pair. The multiply [100×784]·[784×1] = [100×1] gives one number per neuron."
+});});</script>
+
+<p>Turn <em>both</em> dials below and watch the matrix shape — and the multiply — stay legal:</p>
+
 <div class="widget">
-  <h3>📐 The matrix shapes — and where the embedding plugs in</h3>
-  <div class="pg-sub">The input is a <b>list of numbers</b>, and its <b>length</b> sets the <b>width of the first weight matrix</b>. Slide the input width to watch it: our toy net uses <b>1</b> number; a word's embedding uses several. The hidden layer stays 6, so <code>W₁</code> is always <b>6 × (input width)</b>, and every input number wires into every neuron.</div>
-  <label for="em-d" style="display:block;margin:6px 0 4px;">Input width <code>d</code> = <output id="em-dv" class="nr-mono">1</output> <span style="color:#64748b;font-size:.85em;">(how many numbers go in — i.e. the embedding length)</span></label>
-  <input id="em-d" type="range" min="1" max="8" step="1" value="1" style="width:260px;" aria-label="input width d from 1 to 8">
+  <h3>📐 Build the weight matrix — slide both dimensions</h3>
+  <div class="pg-sub"><b>d</b> = how many numbers go in (the <em>data</em> sets it). <b>H</b> = how many hidden neurons (<em>you</em> choose). The matrix <code>W₁</code> is always <b>H rows × d columns</b>.</div>
+  <label for="em-d" style="display:block;margin:8px 0 2px;">Input width <code>d</code> = <output id="em-dv" class="nr-mono">2</output> <span style="color:#64748b;font-size:.85em;">(columns — one per input number)</span></label>
+  <input id="em-d" type="range" min="1" max="8" step="1" value="2" style="width:240px;" aria-label="input width d from 1 to 8">
+  <label for="em-H" style="display:block;margin:8px 0 2px;">Hidden units <code>H</code> = <output id="em-Hv" class="nr-mono">4</output> <span style="color:#64748b;font-size:.85em;">(rows — one per neuron, your choice)</span></label>
+  <input id="em-H" type="range" min="1" max="8" step="1" value="4" style="width:240px;" aria-label="hidden units H from 1 to 8">
   <div id="em-svg" style="margin-top:8px;"></div>
+  <div id="em-mm" class="dimline" style="margin-top:8px;"></div>
   <div id="em-note" style="font-size:12px;color:#475569;margin-top:6px;"></div>
 </div>
 <script>(function(){
-  var sl=document.getElementById('em-d'); if(!sl) return;
+  var sd=document.getElementById('em-d'), sh=document.getElementById('em-H'); if(!sd||!sh) return;
   function ys(n,Ht,PT){var a=[];for(var i=0;i<n;i++)a.push(PT+(Ht-2*PT)*(n===1?0.5:i/(n-1)));return a;}
   function draw(){
-    var d=+sl.value; document.getElementById('em-dv').textContent=d;
-    var H=6,W=560,Ht=300,IX=82,HX=292,OX=498,PT=42,iy=ys(d,Ht,PT),hy=ys(H,Ht,PT),cy=Ht/2,e=[],i,j;
+    var d=+sd.value, H=+sh.value;
+    document.getElementById('em-dv').textContent=d; document.getElementById('em-Hv').textContent=H;
+    var W=520,Ht=320,IX=120,HX=380,PT=42,iy=ys(d,Ht,PT),hy=ys(H,Ht,PT),e=[],i,j;
     for(i=0;i<d;i++)for(j=0;j<H;j++) e.push('<line x1="'+(IX+12)+'" y1="'+iy[i].toFixed(1)+'" x2="'+(HX-12)+'" y2="'+hy[j].toFixed(1)+'" stroke="#3b82f6" stroke-width="1" opacity="0.16"/>');
-    for(j=0;j<H;j++) e.push('<line x1="'+(HX+12)+'" y1="'+hy[j].toFixed(1)+'" x2="'+(OX-13)+'" y2="'+cy+'" stroke="#10b981" stroke-width="1.2" opacity="0.3"/>');
-    e.push('<text x="'+IX+'" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">input</text><text x="'+HX+'" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">hidden (6)</text><text x="'+OX+'" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">output</text>');
+    e.push('<text x="'+IX+'" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">input ('+d+')</text><text x="'+HX+'" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">hidden ('+H+')</text>');
     for(i=0;i<d;i++) e.push('<circle cx="'+IX+'" cy="'+iy[i].toFixed(1)+'" r="11" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.6"/><text x="'+IX+'" y="'+(iy[i]+4).toFixed(1)+'" text-anchor="middle" font-size="9" font-family="ui-monospace,monospace" fill="#1e40af">'+(d===1?'x':'e'+(i+1))+'</text>');
     for(j=0;j<H;j++) e.push('<circle cx="'+HX+'" cy="'+hy[j].toFixed(1)+'" r="11" fill="#fff" stroke="#94a3b8" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4).toFixed(1)+'" text-anchor="middle" font-size="9" fill="#64748b">h'+(j+1)+'</text>');
-    e.push('<circle cx="'+OX+'" cy="'+cy+'" r="13" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/><text x="'+OX+'" y="'+(cy+4)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#047857">Y</text>');
-    e.push('<text x="'+IX+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="#1e40af">'+d+'×1</text>');
-    e.push('<text x="'+((IX+HX)/2)+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#b45309">W₁: 6×'+d+'</text>');
-    e.push('<text x="'+HX+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="#64748b">6×1</text>');
-    e.push('<text x="'+((HX+OX)/2)+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#047857">W₂: 1×6</text>');
-    document.getElementById('em-svg').innerHTML='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="An input vector of d nodes fully connected to 6 hidden nodes and then one output. The first weight matrix is labelled 6 by d and the second 1 by 6, so the input width sets the first matrix width." style="width:100%;max-width:'+W+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
-    document.getElementById('em-note').innerHTML = d===1
-      ? '<b>1 input node</b> (<code>d=1</code>): the input is a single number <code>x</code> — a "vector" of length 1. The <b>6 lines</b> fanning out are <b>weights</b> (W₁ has 6×1 = 6 of them, one per neuron) — <em>not</em> 6 inputs.'
-      : '<b>'+d+' input nodes</b> (<code>d='+d+'</code>): the input is a length-'+d+' list — an <b>embedding</b>. Now W₁ has <b>6×'+d+' = '+(6*d)+' weights</b> (one per input-number, per neuron). More lines = more <em>weights</em>, still just '+d+' inputs.';
+    e.push('<text x="'+IX+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="10" font-family="ui-monospace,monospace" fill="#1e40af">x: '+d+'×1</text><text x="'+((IX+HX)/2)+'" y="'+(Ht-8)+'" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#b45309">W₁: '+H+'×'+d+'</text>');
+    document.getElementById('em-svg').innerHTML='<svg viewBox="0 0 '+W+' '+Ht+'" role="img" aria-label="d input nodes fully connected to H hidden nodes; the weight matrix W1 is H rows by d columns, so the multiply is H by d times d by 1 giving H by 1." style="width:100%;max-width:'+W+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+    document.getElementById('em-mm').innerHTML='<span style="color:#b45309">W₁ ['+H+'×<b>'+d+'</b>]</span> &nbsp;·&nbsp; <span style="color:#1e40af">x [<b>'+d+'</b>×1]</span> &nbsp;=&nbsp; <span style="color:#047857">z ['+H+'×1]</span> &nbsp;<span style="color:#64748b">— inner <b>'+d+'</b>s match → '+H+'×1 out.</span>';
+    document.getElementById('em-note').innerHTML='<b>'+H+' rows</b> (one per neuron — <em>you</em> chose '+H+') × <b>'+d+' columns</b> (one per input — the <em>data</em> set '+d+') = <b>'+(H*d)+' weights</b>.';
   }
-  sl.addEventListener('input',draw); draw();
+  sd.addEventListener('input',draw); sh.addEventListener('input',draw); draw();
 })();</script>
 
 <div class="callout info">
-  <strong>“So when is it 2 input nodes, and when 1?”</strong> The number of input nodes = <strong>how many numbers it takes to describe one example</strong> (its <em>features</em>) — the <em>problem</em> decides it, not the network:
-  <ul style="margin:.4em 0 .2em;">
-    <li>the logic-gate neuron back on <a href="lesson_01_5.html">L1.5</a> took <strong>2</strong> numbers (inputs <code>A</code> and <code>B</code>) → <code>d=2</code>, so 2 input nodes;</li>
-    <li>the curve-fitter takes <strong>1</strong> number (<code>x</code>) → <code>d=1</code>, so 1 input node;</li>
-    <li>a 28×28 image takes <strong>784</strong> numbers (one per pixel) → <code>d=784</code>, so 784 input nodes.</li>
-  </ul>
-  Two things people mix up here: at <code>d=1</code> the "vector" is just <em>one number</em> (a length-1 list); and the lines fanning out are <strong>weights</strong> (there are 6×<code>d</code> of them), <strong>not</strong> inputs — they're how each input reaches every neuron. <em>Slide <code>d</code> above and watch only the <strong>left column</strong> (inputs) and the <strong>W₁ label</strong> change.</em>
+  <strong>“So when is it 2 input nodes, and when 1?”</strong> The number of input nodes = <strong>how many numbers describe one example</strong> (its features), set by the <em>problem</em>: the logic gate took <strong>2</strong> (<code>A,B</code>), the curve-fitter takes <strong>1</strong> (<code>x</code>), an image takes <strong>784</strong>. That count is the <code>d</code> — the matrix's column count. The number of <em>rows</em> is <code>H</code>, which you choose. Two dials, two dimensions.
 </div>
-
-<div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
-
 
 <h2 class="step" id="detect"><span class="step-num">Detect</span> What does each neuron actually <em>detect</em>?</h2>
 
