@@ -795,6 +795,68 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
 
 <p>The notebook shows Karpathy-style snapshots at steps 0 / 100 / 500 / 1000 / 2000 — you can SEE each hidden unit's "knee" sliding into place over training. By step 2000 the 8 knees cover different slices of x and sum (weighted by layer 2) to recreate the parabola.</p>
 
+<p>You don't have to take its word for it — <strong>train it right here and watch every weight and bias move.</strong> The table below is the network's parameters: one row per hidden neuron, showing its <span style="color:#3b82f6;font-weight:700">weight in</span>, its <span style="color:#a855f7;font-weight:700">bias</span>, and its <span style="color:#047857;font-weight:700">weight out</span> — the exact parts of the neuron diagram above. Hit <em>Train</em> and watch the flat line bend into the parabola as those numbers slide. (6 hidden neurons here, so the table stays readable.)</p>
+
+<div class="widget">
+  <h3>🎚 Train the net — watch the weights &amp; biases move</h3>
+  <div class="widget-row two">
+    <canvas id="pn-cv" width="500" height="300" aria-label="A U-shaped scatter with the neural network's curve fitting it; the curve bends from a flat line into the parabola as you train."></canvas>
+    <div class="controls">
+      <div style="margin:0 0 10px;">
+        <button id="pn-train">Train ▶</button><button id="pn-step">Step ×1</button><button class="alt" id="pn-reset">Reset</button>
+      </div>
+      <table class="stats"><tr><th>step</th><td id="pn-stepc">0</td></tr><tr><th>loss</th><td id="pn-loss">—</td></tr></table>
+    </div>
+  </div>
+  <div id="pn-params" style="margin-top:14px;"></div>
+</div>
+<script>(function(){
+  var cv=document.getElementById('pn-cv'); if(!cv) return; var ctx=cv.getContext('2d');
+  var H=6;
+  var DX=[],DY=[]; for(var xx=0;xx<=4.0001;xx+=0.5){DX.push(xx);DY.push(xx*xx-4*xx+3);}
+  var INIT={w1:[3,3,3,-3,-3,-3],b1:[2.4,0.6,-1.2,-1.2,0.6,2.4],w2:[0.1,-0.1,0.1,0.1,-0.1,0.1],b2:0.667};
+  var w1,b1,w2,b2,step,timer=null,LR=0.08;
+  function reset(){w1=INIT.w1.slice();b1=INIT.b1.slice();w2=INIT.w2.slice();b2=INIT.b2;step=0;}
+  reset();
+  function fwd(x){var u=(x-2)/2,h=[],z=[];for(var j=0;j<H;j++){var zz=w1[j]*u+b1[j];z[j]=zz;h[j]=zz>0?zz:0;}var y=b2;for(j=0;j<H;j++)y+=w2[j]*h[j];return{u:u,z:z,h:h,y:y};}
+  function loss(){var s=0;for(var i=0;i<DX.length;i++){var e=fwd(DX[i]).y-DY[i];s+=e*e;}return s/DX.length;}
+  function gstep(){var n=DX.length,gw1=Array(H).fill(0),gb1=Array(H).fill(0),gw2=Array(H).fill(0),gb2=0;
+    for(var i=0;i<n;i++){var f=fwd(DX[i]),e=f.y-DY[i];gb2+=2*e;for(var j=0;j<H;j++){gw2[j]+=2*e*f.h[j];var dz=f.z[j]>0?2*e*w2[j]:0;gw1[j]+=dz*f.u;gb1[j]+=dz;}}
+    for(j=0;j<H;j++){w1[j]-=LR*gw1[j]/n;b1[j]-=LR*gb1[j]/n;w2[j]-=LR*gw2[j]/n;}b2-=LR*gb2/n;step++;}
+  var XMIN=-0.4,XMAX=4.4,YMIN=-2,YMAX=4,PADL=40,PADB=24,PADT=10,PADR=12;
+  function px(x){return PADL+(x-XMIN)/(XMAX-XMIN)*(cv.width-PADL-PADR);}
+  function py(y){return cv.height-PADB-(y-YMIN)/(YMAX-YMIN)*(cv.height-PADT-PADB);}
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.fillStyle='#999';ctx.font='11px ui-sans-serif,system-ui';ctx.textAlign='center';
+    for(var gx=0;gx<=4;gx++){ctx.beginPath();ctx.moveTo(px(gx),PADT);ctx.lineTo(px(gx),cv.height-PADB);ctx.stroke();ctx.fillText(gx,px(gx),cv.height-8);}
+    ctx.textAlign='right';for(var gy=-2;gy<=4;gy+=2){ctx.beginPath();ctx.moveTo(PADL,py(gy));ctx.lineTo(cv.width-PADR,py(gy));ctx.stroke();ctx.fillText(gy,PADL-6,py(gy)+4);}
+    ctx.strokeStyle='#10b981';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();
+    for(var t=0;t<=120;t++){var x=XMIN+(XMAX-XMIN)*t/120,yy=x*x-4*x+3;if(t===0)ctx.moveTo(px(x),py(yy));else ctx.lineTo(px(x),py(yy));}ctx.stroke();ctx.setLineDash([]);
+    ctx.strokeStyle='#3b82f6';ctx.lineWidth=2.5;ctx.beginPath();
+    for(var u=0;u<=120;u++){var x2=XMIN+(XMAX-XMIN)*u/120,ym=fwd(x2).y;if(u===0)ctx.moveTo(px(x2),py(ym));else ctx.lineTo(px(x2),py(ym));}ctx.stroke();
+    ctx.fillStyle='#10b981';DX.forEach(function(x,i){ctx.beginPath();ctx.arc(px(x),py(DY[i]),4,0,7);ctx.fill();});
+    ctx.textAlign='left';ctx.font='12px ui-sans-serif,system-ui';ctx.fillStyle='#10b981';ctx.fillText('— truth (parabola)',PADL+8,PADT+13);ctx.fillStyle='#3b82f6';ctx.fillText('— the network',PADL+8,PADT+28);
+  }
+  function bar(v,color){var W=58,c=W/2,f=Math.min(Math.abs(v)/3.5,1)*c,left=v<0?c-f:c;
+    return '<span style="display:inline-block;width:'+W+'px;height:11px;background:#eef2f7;border-radius:3px;position:relative;vertical-align:middle;"><span style="position:absolute;left:'+left.toFixed(1)+'px;top:0;width:'+f.toFixed(1)+'px;height:100%;background:'+color+';border-radius:3px;"></span><span style="position:absolute;left:'+c+'px;top:-2px;width:1px;height:15px;background:#cbd5e1;"></span></span>';}
+  function num(v){return ' <span style="font-family:ui-monospace,monospace;font-size:11px;color:#475569;">'+(v>=0?'+':'')+v.toFixed(2)+'</span>';}
+  function params(){
+    var rows='';
+    for(var j=0;j<H;j++){rows+='<tr><td style="color:#64748b;">h'+(j+1)+'</td><td>'+bar(w1[j],'#3b82f6')+num(w1[j])+'</td><td>'+bar(b1[j],'#a855f7')+num(b1[j])+'</td><td>'+bar(w2[j],'#047857')+num(w2[j])+'</td></tr>';}
+    document.getElementById('pn-params').innerHTML='<table class="pn-tbl"><thead><tr><th></th><th style="color:#3b82f6;">weight in</th><th style="color:#a855f7;">bias</th><th style="color:#047857;">weight out</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3" style="text-align:right;color:#64748b;">output bias&nbsp;</td><td>'+bar(b2,'#a855f7')+num(b2)+'</td></tr></tfoot></table>';
+  }
+  function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();}
+  document.getElementById('pn-step').addEventListener('click',function(){gstep();sync();});
+  document.getElementById('pn-train').addEventListener('click',function(){var btn=this;
+    if(timer){clearInterval(timer);timer=null;btn.textContent='Train ▶';return;}
+    btn.textContent='Stop';
+    timer=setInterval(function(){for(var k=0;k<12;k++)gstep();sync();if(step>=2500||loss()<0.01){clearInterval(timer);timer=null;btn.textContent='Train ▶';}},45);
+  });
+  document.getElementById('pn-reset').addEventListener('click',function(){if(timer){clearInterval(timer);timer=null;document.getElementById('pn-train').textContent='Train ▶';}reset();sync();});
+  sync();
+})();</script>
+
 <h2 class="step" id="bends"><span class="step-num">Bends</span> How the bends add up to the curve</h2>
 
 <p>You trained the MLP — but <em>how</em> do a handful of straight ReLU pieces fit a curve? Each neuron contributes one <strong>bend</strong> that switches on past its own kink. Drag the input <code>x</code> and watch the neurons light up left-to-right: each active bend adds its slope, so the line steepens into the curve. This is the flip side of the detector idea — there each neuron <em>recognised</em> a feature; here each neuron <em>builds</em> a piece of the output.</p>

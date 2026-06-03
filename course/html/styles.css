@@ -1015,3 +1015,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .netfig { margin:18px 0; text-align:center; background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; }
 .netfig svg { height:auto; display:block; margin:0 auto; }
 .netfig .nf-cap { font-size:13px; color:var(--text-dim); margin:10px auto 0; max-width:620px; }
+
+/* live MLP-trainer parameter table (L1.5 "train the net") */
+.pn-tbl { border-collapse:collapse; font-size:12px; margin-top:4px; }
+.pn-tbl th { font-weight:600; padding:3px 8px; text-align:left; font-size:11px; }
+.pn-tbl td { padding:2px 8px; white-space:nowrap; }
+.pn-tbl tfoot td { border-top:1px solid var(--border); padding-top:6px; }
