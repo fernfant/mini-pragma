@@ -803,7 +803,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     <canvas id="pn-cv" width="500" height="300" aria-label="A U-shaped scatter with the neural network's curve fitting it; the curve bends from a flat line into the parabola as you train."></canvas>
     <div class="controls">
       <div style="margin:0 0 10px;">
-        <button id="pn-train">Train ▶</button><button id="pn-step">Step ×1</button><button class="alt" id="pn-reset">Reset</button>
+        <button id="pn-train">Train ▶</button><button id="pn-step">Step ×1</button><button class="alt" id="pn-reset">Reset</button><button class="alt" id="pn-speed" aria-label="training speed">🐢 slow</button>
       </div>
       <table class="stats"><tr><th>step</th><td id="pn-stepc">0</td></tr><tr><th>loss</th><td id="pn-loss">—</td></tr></table>
     </div>
@@ -848,11 +848,13 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   }
   function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();}
   document.getElementById('pn-step').addEventListener('click',function(){gstep();sync();});
-  document.getElementById('pn-train').addEventListener('click',function(){var btn=this;
-    if(timer){clearInterval(timer);timer=null;btn.textContent='Train ▶';return;}
-    btn.textContent='Stop';
-    timer=setInterval(function(){for(var k=0;k<12;k++)gstep();sync();if(step>=2500||loss()<0.01){clearInterval(timer);timer=null;btn.textContent='Train ▶';}},45);
+  var SPEEDS=[{n:1,ms:80,t:'🐢 slow'},{n:4,ms:55,t:'🚶 med'},{n:12,ms:40,t:'🐇 fast'}],spi=0;
+  function startTimer(){var s=SPEEDS[spi];timer=setInterval(function(){for(var k=0;k<s.n;k++)gstep();sync();if(step>=2500||loss()<0.01){clearInterval(timer);timer=null;document.getElementById('pn-train').textContent='Train ▶';}},s.ms);}
+  document.getElementById('pn-train').addEventListener('click',function(){
+    if(timer){clearInterval(timer);timer=null;this.textContent='Train ▶';return;}
+    this.textContent='Stop'; startTimer();
   });
+  document.getElementById('pn-speed').addEventListener('click',function(){spi=(spi+1)%SPEEDS.length;this.textContent=SPEEDS[spi].t;if(timer){clearInterval(timer);startTimer();}});
   document.getElementById('pn-reset').addEventListener('click',function(){if(timer){clearInterval(timer);timer=null;document.getElementById('pn-train').textContent='Train ▶';}reset();sync();});
   sync();
 })();</script>
