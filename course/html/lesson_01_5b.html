@@ -118,6 +118,18 @@
   build(); render();
 })();</script>
 
+<div class="callout">
+  <strong>The non-obvious bit: when is something ONE input, and when is it MANY?</strong>
+  <p style="margin:.6em 0 0;">A single number like <code>x</code> is <strong>one input</strong> when its <em>size</em> is the meaning — a thermometer reading of <code>23</code> really is "a touch more than <code>22</code>". One genuine quantity → one slot → <code>x → … → Y</code>.</p>
+  <p style="margin:.6em 0 0;">But <strong>8 black-and-white pixels are 8 separate facts</strong> about 8 separate places. "So why not pack them into one number 0–255?" You <em>could</em> — <code>p₁·128 + p₂·64 + … + p₈·1</code> — but it wrecks the meaning three ways:</p>
+  <ul style="margin:.4em 0 .2em;">
+    <li>it secretly declares <strong>pixel 1 is worth 128× pixel 8</strong> — an importance order the image never had;</li>
+    <li>flip pixel 1 and the number jumps by <strong>128</strong>; flip pixel 8 and it nudges by <strong>1</strong> — so "close numbers" stops meaning "similar pictures";</li>
+    <li>the net then gets <strong>one weight</strong> for the whole byte, so it can never learn "pixel 3 matters, pixel 7 doesn't." It's stuck.</li>
+  </ul>
+  <p style="margin:.6em 0 0;">That packed number is an <strong>ID, not a measurement</strong> — like turning 8 light switches into a single "score" and handing someone only the score: they can't tell which switches are on, and a bigger score doesn't mean a brighter room. So the rule, brought to earth: <strong>one quantity whose magnitude means something → one input; a bag of separate things → one input each.</strong> A photo is 784 separate brightness readings → 784 inputs, never one giant number.</p>
+</div>
+
 <div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
 
 
