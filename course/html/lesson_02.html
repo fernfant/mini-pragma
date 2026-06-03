@@ -876,8 +876,8 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
 </div>
 
 <div class="widget runpy">
-  <h3>🐍 Run it — watch two words drift together</h3>
-  <p>No grid, no sliders — just gradient descent. We say which words show up together, start everyone at random, and let it learn. Watch <code>dog·puppy</code> climb to 1 while <code>dog·table</code> stays near 0.</p>
+  <h3>🐍 Run it — broken embeddings, then fix them by training</h3>
+  <p>Start everyone at <strong>random</strong> and check: can it tell that <code>dog</code> and <code>puppy</code> are alike? <strong>No</strong> — untrained, it scores them the same as <code>dog</code> and <code>table</code>. Useless. Then we train on which words share company, and run the <em>same</em> check again.</p>
   <textarea class="runpy-code"># Tiny word2vec: nudge words that appear together to point the same way.
 import random
 random.seed(0)
@@ -886,11 +886,18 @@ words    = ["dog", "puppy", "cat", "kitten", "table", "chair"]
 together = [("dog","puppy"), ("cat","kitten"), ("table","chair")]  # want dot -> 1
 apart    = [("dog","table"), ("cat","chair"), ("puppy","chair")]   # want dot -> 0
 
-# every word starts as 2 small random numbers
+# every word starts as 2 small RANDOM numbers — untrained
 emb = {w: [random.uniform(-0.3, 0.3), random.uniform(-0.3, 0.3)] for w in words}
 
 def dot(a, b): return a[0]*b[0] + a[1]*b[1]
 
+# --- BEFORE training: is it any good? ---
+print("untrained (random):")
+print(f"  dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   (these ARE alike)")
+print(f"  dog·table = {dot(emb['dog'],emb['table']):+.2f}   (these are NOT)")
+print("  -> both near 0: it can't tell puppy from table. useless.\n")
+
+# --- train: nudge each pair toward its target, thousands of times ---
 lr = 0.05
 pairs = [(p, 1.0) for p in together] + [(p, 0.0) for p in apart]
 for step in range(2001):
@@ -902,21 +909,21 @@ for step in range(2001):
         for i in range(2):
             va[i] -= lr*ga[i]
             vb[i] -= lr*gb[i]
-    if step % 500 == 0:
-        print(f"step {step:4d}   dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   dog·table = {dot(emb['dog'],emb['table']):+.2f}")
 
-print()
-print("Words used alike (dog/puppy) now point the SAME way (dot near 1);")
-print("unrelated words (dog/table) stay apart (dot near 0).")
-print("Nobody hand-coded that — it fell out of which words share company.")</textarea>
-  <pre class="runpy-expected" hidden>step    0   dog·puppy = -0.02   dog·table = +0.01
-step  500   dog·puppy = +1.00   dog·table = -0.00
-step 1000   dog·puppy = +1.00   dog·table = -0.00
-step 1500   dog·puppy = +1.00   dog·table = -0.00
-step 2000   dog·puppy = +1.00   dog·table = -0.00
+# --- AFTER training: run the EXACT same check ---
+print("trained:")
+print(f"  dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   (alike -> near 1)")
+print(f"  dog·table = {dot(emb['dog'],emb['table']):+.2f}   (different -> near 0)")
+print("\nNobody hand-coded that — it fell out of which words share company.")</textarea>
+  <pre class="runpy-expected" hidden>untrained (random):
+  dog·puppy = -0.03   (these ARE alike)
+  dog·table = +0.00   (these are NOT)
+  -> both near 0: it can't tell puppy from table. useless.
 
-Words used alike (dog/puppy) now point the SAME way (dot near 1);
-unrelated words (dog/table) stay apart (dot near 0).
+trained:
+  dog·puppy = +1.00   (alike -> near 1)
+  dog·table = -0.00   (different -> near 0)
+
 Nobody hand-coded that — it fell out of which words share company.</pre>
 </div>
 
