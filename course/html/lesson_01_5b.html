@@ -129,6 +129,13 @@
 
 <p>That "multiply each matching pair, then add them up" is called a <strong>dot product</strong>. So: <strong>one neuron = one dot product</strong> of <em>its</em> weight-row with the input column. A 1-input neuron has a 1-long row; the OR neuron a 2-long row; an image neuron a 784-long row. The row length always equals <code>d</code>, the input width.</p>
 
+<details class="callout" style="margin:14px 0;">
+  <summary style="cursor:pointer;font-weight:600;">🤔 “Why <em>two</em> inputs — why not one number with 2 bits (0–3)?”</summary>
+  <p style="margin:.6em 0 0;">Because <code>A</code> and <code>B</code> are <strong>two separate facts</strong> (two switches), and we want the neuron to weigh each one <em>on its own</em>. Two input slots → two weights (<code>wA</code>, <code>wB</code>) → the neuron can say “A counts +1 <em>and</em> B counts +1” (OR), or “only A matters”, or anything in between.</p>
+  <p style="margin:.6em 0 0;">Pack them into one number instead — say <code>2·A + B</code>, giving 0, 1, 2, 3 — and the neuron gets <strong>one</strong> weight for the whole thing. It can only stretch that single number; it <em>can’t pull A’s effect apart from B’s</em>. Worse, the packing invents a <strong>fake ordering</strong>: it claims “A-on (=2) is bigger than B-on (=1)”, but they’re just two independent switches — there’s no real “bigger”.</p>
+  <p style="margin:.6em 0 0;">So the rule from the bits section flips around neatly: the <em>bits inside one number</em> are just storage of <strong>one</strong> fact (never inputs); but <strong>genuinely separate facts each get their own input slot</strong> — one weight apiece. <span style="color:#64748b;">(Honest nuance: for plain OR you could <em>just about</em> get away with the packed number — “fire if &gt; 0” — but for a trickier pattern like XOR even that breaks, and either way you’ve thrown away the neuron’s ability to judge each fact on its own.)</span></p>
+</details>
+
 <h2 class="step" id="layer-matrix"><span class="step-num">Matrix</span> A layer = a stack of rows = a matrix</h2>
 
 <p>A layer is just <strong>several neurons side by side</strong>, each with its own weight-row. <strong>Stack the rows</strong> and you get a grid of numbers — a <strong>matrix</strong>. Here are two neurons reading the same two inputs (one tuned for OR, one for AND):</p>
