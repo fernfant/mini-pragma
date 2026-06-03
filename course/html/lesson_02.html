@@ -411,7 +411,8 @@ ${a} · ${b} = <span class="pg-ans">${sim.toFixed(2)}</span>   ${verdict}`;
   <pre style="margin:8px 0 0;font-size:13px;line-height:1.6;background:#fff;padding:10px 12px;border-radius:6px;">the  → [ 0.1,  0.9 ]      row 1
 dog  → [ 0.8, −0.3 ]      row 2   ← 3 words tall,
 runs → [−0.5,  0.4 ]      row 3      2 numbers wide  →  a 3×2 matrix</pre>
-  <p style="margin:8px 0 0;">3 words → a <strong>3×2</strong> grid. A 10-word sentence with <code>d=768</code> embeddings → a <strong>10×768</strong> grid. The picture is the same as the pixel image earlier — just now <strong>each row is a word</strong> instead of a pixel.</p>
+  <p style="margin:8px 0 0;">3 words → a <strong>3×2</strong> grid. A 10-word sentence with <code>d=768</code> embeddings → a <strong>10×768</strong> grid.</p>
+  <p style="margin:8px 0 0;"><strong>One honest difference from the image.</strong> A pixel is a <em>single</em> number, so a picture flattens into <em>one long vector</em> (a flat list). But a <strong>word</strong> is <em>already</em> a whole vector of <code>d</code> numbers — so a sentence is <strong>2-D</strong>: a "which-word" axis (the rows) <em>and</em> a "which-feature" axis (the <code>d</code> columns). That extra "which-word" axis — the order, and how words relate to each other — is exactly what <strong>attention</strong> (<a href="lesson_03.html">Lesson 3</a>) works along.</p>
 </div>
 
 <div class="callout good">
