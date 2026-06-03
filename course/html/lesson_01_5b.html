@@ -405,6 +405,18 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
 </script>
 
 
+<div class="callout good">
+  <strong>What can 6 numbers actually stand for? (Grounding <code>d=6</code>.)</strong>
+  <p style="margin:.6em 0 0;">Six inputs = <strong>six separate facts about one thing</strong>. Small, but plenty of real problems live right here:</p>
+  <ul style="margin:.4em 0 .2em;">
+    <li><strong>A house</strong> → <code>[bedrooms, bathrooms, size, age, distance-to-centre, garden?]</code> → predict its price. <em>(That's literally <a href="lesson_05a.html">Lesson 5a</a>.)</em></li>
+    <li><strong>A day's weather</strong> → <code>[temp, humidity, wind, pressure, rain, cloud]</code> → predict tomorrow.</li>
+    <li><strong>A person's day</strong> → <code>[steps, sleep, resting-HR, calories, active-mins, weight]</code> → flag "unusual day".</li>
+    <li><strong>A tiny image</strong> → a 2×3 grid of 6 pixel-brightnesses (our strip is just 1×6).</li>
+  </ul>
+  <p style="margin:.6em 0 0;">The recipe never changes — only <code>d</code> grows. A phone photo is <strong>d ≈ 150,000</strong> (pixels × 3 colours); one word's embedding is <strong>d ≈ 768</strong> in a real model. Same <code>W·x + bias → ReLU</code>, just a much wider matrix. You've now seen the whole machine at <code>d=1</code>, <code>d=2</code> and <code>d=6</code> — the big ones work <em>exactly</em> the same.</p>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
