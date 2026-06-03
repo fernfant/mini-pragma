@@ -81,7 +81,7 @@
     <span style="background:#fef3c7;">3 acceptable</span>
     <span style="background:#fee2e2;">≤2 weak</span>
   </span>
-  Pages are sorted by total, lowest first (all Exemplary now — the spread is just 90–98). A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
+  Pages are sorted by total, lowest first (20 Exemplary + 1 Strong — spread 85–99). A score of 5/5 means "exemplary <em>and</em> can't be improved"; 3 means "fine, nothing wrong".
 </div>
 
 
@@ -89,13 +89,13 @@
 <h2 class="step"><span class="step-num">Scores</span> Per-page × per-criterion</h2>
 
 <div class="sc-wrap">
-  <table class="sc" id="sc-table" aria-label="Scorecard: 20 lesson pages scored 0 to 5 across 13 criteria, with weighted total out of 100 and band."></table>
+  <table class="sc" id="sc-table" aria-label="Scorecard: 21 lesson pages scored 0 to 5 across 14 criteria, with weighted total out of 100 and band."></table>
 </div>
-<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 12 · Clarity 9 · Concrete-first 9 · Accuracy 8 · Honesty 4 · Narrative 5 · Reinforcement 6 · Structure 5 · Technical 5 · Accessibility 8 · Flow 8 · Pacing 8 · Conceptual depth 8 · <strong>Traceability 5</strong>.</p>
+<p style="font-size:12.5px;color:var(--text-dim);">Criterion weights (sum 100): Interactivity 10 · Clarity 8 · Concrete-first 9 · Accuracy 8 · Honesty 4 · Narrative 4 · Reinforcement 5 · Structure 5 · Technical 5 · Accessibility 8 · Flow 8 · Pacing 8 · Conceptual depth 6 · Traceability 5 · <strong>Focus &amp; load 7</strong>.</p>
 
 
 
-<h2 class="step"><span class="step-num">Rubric</span> The 13 criteria</h2>
+<h2 class="step"><span class="step-num">Rubric</span> The 14 criteria</h2>
 
 <div class="sc-wrap">
 <table class="sc crit-tbl">
@@ -115,8 +115,13 @@
     <tr><td>11</td><td class="page-c">Pacing / gradual build-up</td><td class="w-c">8</td><td style="text-align:left">Every genuinely new, load-bearing concept gets real runway — plain idea → name → micro-example → use — never named-and-used inside a single clause or parenthetical. Distinct from clarity (per-sentence pitch), concrete-first (the opening), and flow (ordering).</td></tr>
     <tr><td>12</td><td class="page-c">Conceptual depth / flesh-out</td><td class="w-c">8</td><td style="text-align:left">A load-bearing concept gets development space <em>proportional to its importance</em> — built slowly across as many pages as it needs, never crammed into one dense step. The pillars (neural networks, attention) each earn a multi-page arc. Judged <em>across pages</em> against the concept-development ledger.</td></tr>
     <tr><td>13</td><td class="page-c">Traceability / glass-box</td><td class="w-c">5</td><td style="text-align:left">When the page shows a computation, the reader can trace it end-to-end with real numbers — input → weights → each intermediate output → result — grounded in a diagram, not a black box (e.g. L1.5's wired X→hidden→Y trace, L3's score→softmax→mix, the L5c forward-pass series). A result shown without the path that produced it scores low. <em>(New criterion — its 5 points come from the saturated/mechanical axes.)</em></td></tr>
+    <tr><td>14</td><td class="page-c">Focus &amp; cognitive load</td><td class="w-c">7</td><td style="text-align:left">The page teaches <strong>one</strong> coherent idea with <strong>one</strong> running example and <strong>one</strong> consistent notation. Penalize a second competing example, a symbol reused for two things (e.g. <code>X</code> = a single number in one widget and a 6-pixel vector in another), or more new load-bearing concepts than a 12–14-yo holds in one read. Judged by a fresh cold-read counting distinct examples, notations &amp; new concepts. <em>(New in v12 — its 7 points come from Interactivity/Clarity/Narrative/Reinforcement/Depth, the axes that were rewarding richness and so encouraging overload.)</em></td></tr>
   </tbody>
 </table>
+</div>
+
+<div class="callout bad">
+  🔍 <strong>Why the rubric missed the L1.5 overload (and how C14 fixes it).</strong> For a long stretch L1.5 scored <strong>96 "Exemplary"</strong> while genuinely confusing a real reader — it had piled a single-number net <em>and</em> a 6-pixel detector net <em>and</em> an inputs/embedding section onto one page, reusing the symbol <code>X</code> for both a number and a vector. The rubric didn't flag it because every axis it had either <strong>rewarded richness</strong> (Interactivity, Conceptual depth, Reinforcement — so each added widget <em>raised</em> the score) or checked only <strong>local</strong> ordering (Flow's cold-read confirmed each transition was smooth; the <code>X</code> collision lived <em>between</em> two individually-fine widgets). Nothing measured <strong>scope</strong> or <strong>notation consistency</strong> — and the page was scored once, then grew 6+ more additions across later sessions with no re-score. <strong>C14 Focus &amp; cognitive load</strong> closes the gap. Pre-split L1.5 would have scored C14 ≈ 2; the split (L1.5 = single number, <a href="lesson_01_5b.html">L1.5b</a> = "what goes in") brings both back to focus.
 </div>
 
 <h2 class="step"><span class="step-num">Pacing</span> Concepts introduced too fast (C11 gaps) — now fixed</h2>
@@ -166,6 +171,9 @@
 <div class="callout good">
   ✏️ <strong>What changed in v11 — Concrete-first to 5 across all lessons.</strong> Every lesson now opens with a real worked number, not a framing sentence. Nine pages that led with setup prose got a concrete first line — <em>"the word once is six numbers <code>[0.6, −0.2, …]</code>"</em> (Encode), <em>"<code>tip = 0.2 × bill</code>, £50 → £10"</em> (L1), <em>"once upon a → time"</em> (L5c), a worked HOT-vs-COLD session (L6), and so on. The other four (L2a, L4g, L4h, L5) already opened with real numbers and were credited as-is. C3 Concrete-first goes to <strong>5 on all 18</strong> (avg 4.28 → 5.00); spine average <strong>93.8 → 95.0</strong>, all-18 <strong>93.1 → 94.6</strong>. With Concrete maxed, the live diagnostic above now points at the true next gap: <strong>Flow (4.50)</strong>. <em>(Self-assessed; the concrete leads are genuine edits, but a fresh independent cold-read could shade a borderline one back to 4.)</em>
 </div>
+<div class="callout good">
+  🧭 <strong>What changed in v12 — added C14 Focus &amp; cognitive load, and split L1.5.</strong> A real learner got lost on L1.5: it had become two lessons in one (a single-number net + a pixel-vector detector + an inputs/embedding section), with <code>X</code> meaning a number in one place and a vector in another. The rubric had rated it 96 — because it had <em>no axis for scope or notation consistency</em>, and several axes actively rewarded adding more. Fix: (1) new criterion <strong>C14</strong> (weight 7, carved from Interactivity 12→10, Clarity 9→8, Narrative 5→4, Reinforcement 6→5, Depth 8→6); (2) <strong>L1.5 split</strong> into L1.5 (pure single-number) + new <strong>L1.5b "What goes into a neural network"</strong> (vectors / pixels / embeddings / matrix shapes, unified under input width <code>d</code>); spine renumbered 15→16. C14 is a conservative first pass (flat 4 pending a per-page Focus audit), which is why the average eases to <strong>93.6</strong> with L1.5b landing <strong>85 (Strong)</strong> — the honest "stricter lens" dip, same as when C11 was introduced.
+</div>
 </div>
 </details>
 
@@ -175,45 +183,46 @@
 
 <script id="sc-data" type="application/json">{
   "criteria": [
-    {"k": "C1", "name": "Interactivity", "w": 12},
-    {"k": "C2", "name": "Clarity", "w": 9},
+    {"k": "C1", "name": "Interactivity", "w": 10},
+    {"k": "C2", "name": "Clarity", "w": 8},
     {"k": "C3", "name": "Concrete", "w": 9},
     {"k": "C4a", "name": "Accuracy", "w": 8},
     {"k": "C4b", "name": "Honesty", "w": 4},
-    {"k": "C5", "name": "Narrative", "w": 5},
-    {"k": "C6", "name": "Reinforce", "w": 6},
+    {"k": "C5", "name": "Narrative", "w": 4},
+    {"k": "C6", "name": "Reinforce", "w": 5},
     {"k": "C7", "name": "Structure", "w": 5},
     {"k": "C8", "name": "Technical", "w": 5},
     {"k": "C9", "name": "Access", "w": 8},
     {"k": "C10", "name": "Flow", "w": 8},
     {"k": "C11", "name": "Pacing", "w": 8},
-    {"k": "C12", "name": "Depth", "w": 8},
-    {"k": "C13", "name": "Trace", "w": 5}
+    {"k": "C12", "name": "Depth", "w": 6},
+    {"k": "C13", "name": "Trace", "w": 5},
+    {"k": "C14", "name": "Focus", "w": 7}
   ],
   "pages": [
-    {"p": "L4g", "href": "lesson_04g.html", "s": [4, 4, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 4, 5], "total": 92, "band": "Exemplary"},
-    {"p": "L4f", "href": "lesson_04f.html", "s": [5, 4, 5, 4, 5, 5, 5, 4, 4, 5, 4, 5, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c·enc", "href": "lesson_05c_encode.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c", "href": "lesson_05c.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L5c·att", "href": "lesson_05c_attention.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L1", "href": "lesson_01.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 5], "total": 93, "band": "Exemplary"},
-    {"p": "L1.6", "href": "lesson_01_6.html", "s": [5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5", "href": "lesson_05.html", "s": [5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L6", "href": "lesson_06.html", "s": [4, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 5, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5c·neu", "href": "lesson_05c_neurons.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L5c·out", "href": "lesson_05c_output.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5], "total": 94, "band": "Exemplary"},
-    {"p": "L4h", "href": "lesson_04h.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5], "total": 96, "band": "Exemplary"},
-    {"p": "L1.5", "href": "lesson_01_5.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5], "total": 96, "band": "Exemplary"},
-    {"p": "L4", "href": "lesson_04.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 5, 5, 5], "total": 96, "band": "Exemplary"},
-    {"p": "L2a", "href": "lesson_02a.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L5b", "href": "lesson_05b.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L3a", "href": "lesson_03a.html", "s": [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L2", "href": "lesson_02.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5], "total": 97, "band": "Exemplary"},
-    {"p": "L5a", "href": "lesson_05a.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5], "total": 99, "band": "Exemplary"},
-    {"p": "L3", "href": "lesson_03.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5], "total": 99, "band": "Exemplary"}
+    {"p": "L1.5b", "href": "lesson_01_5b.html", "s": [4, 4, 5, 5, 5, 4, 4, 4, 5, 4, 4, 4, 4, 4, 4], "total": 85, "band": "Strong"},
+    {"p": "L4g", "href": "lesson_04g.html", "s": [4, 4, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 4, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L4f", "href": "lesson_04f.html", "s": [5, 4, 5, 4, 5, 5, 5, 4, 4, 5, 4, 5, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L5c\u00b7enc", "href": "lesson_05c_encode.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L5c", "href": "lesson_05c.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L5c\u00b7att", "href": "lesson_05c_attention.html", "s": [4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 5, 4, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L1", "href": "lesson_01.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 4, 4, 5, 5, 5, 5, 4], "total": 92, "band": "Exemplary"},
+    {"p": "L1.6", "href": "lesson_01_6.html", "s": [5, 4, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L5", "href": "lesson_05.html", "s": [5, 4, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L6", "href": "lesson_06.html", "s": [4, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4, 5, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L5c\u00b7neu", "href": "lesson_05c_neurons.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L5c\u00b7out", "href": "lesson_05c_output.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 4, 4, 4, 5, 5, 4], "total": 93, "band": "Exemplary"},
+    {"p": "L1.5", "href": "lesson_01_5.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4], "total": 94, "band": "Exemplary"},
+    {"p": "L4", "href": "lesson_04.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 4, 4, 5, 5, 5, 4], "total": 94, "band": "Exemplary"},
+    {"p": "L4h", "href": "lesson_04h.html", "s": [4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 4], "total": 95, "band": "Exemplary"},
+    {"p": "L2a", "href": "lesson_02a.html", "s": [5, 4, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L5b", "href": "lesson_05b.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L3a", "href": "lesson_03a.html", "s": [5, 5, 4, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L2", "href": "lesson_02.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 4, 5, 5, 5, 4], "total": 96, "band": "Exemplary"},
+    {"p": "L5a", "href": "lesson_05a.html", "s": [5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 5, 5, 4], "total": 98, "band": "Exemplary"},
+    {"p": "L3", "href": "lesson_03.html", "s": [5, 5, 5, 5, 5, 5, 5, 5, 4, 5, 5, 5, 5, 5, 4], "total": 98, "band": "Exemplary"}
   ]
-}
-</script>
+}</script>
 <script>
 (function(){
   var el = document.getElementById('sc-table');
