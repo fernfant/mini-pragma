@@ -273,6 +273,7 @@ for _ in range(1000):
 <div class="playground" id="pg-neuron">
   <div class="pg-head">🧠 Teach one neuron to think</div>
   <div class="pg-sub">Drag the two weights and the bias. The table re-computes the neuron for all four possible inputs at once. The hit the <b>set OR</b> / <b>set AND</b> presets — can you get 4/4? Then switch the target to <b>XOR</b> and try to beat it…</div>
+  <div class="pg-sub" style="margin-top:4px;">This neuron reads <b>2 inputs</b> (<code>A</code> and <code>B</code>) — so its input width is <code>d=2</code>, and it gets <b>2 weights</b> (<code>wA</code>, <code>wB</code>). One number per input, always. <a href="lesson_01_5b.html">L1.5b</a> shows how stacking neurons like this turns the weights into a <b>matrix</b>.</div>
 
   <div class="pg-controls" style="flex-wrap:wrap;gap:16px;">
     <label>wA <input id="nr-wa" type="range" min="-2" max="2" step="0.1" value="1" style="width:130px;"> <span id="nr-wa-v" class="nr-mono">+1.0</span></label>

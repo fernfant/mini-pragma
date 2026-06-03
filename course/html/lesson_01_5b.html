@@ -220,9 +220,11 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
 
 <h2 class="step" id="detect"><span class="step-num">Detect</span> What does each neuron actually <em>detect</em>?</h2>
 
-<p>Now a net whose input is <strong>wider than one number</strong>. Here's the intuition that makes neural networks click: <strong>each hidden neuron is a little detector that fires when it spots its pattern</strong>, and the output neuron tallies their votes into the answer <code>Y</code>. Trace one signal all the way through <code>input → hidden → output</code> — where the weights are, what each neuron outputs, and how they add back into <code>Y</code>.</p>
+<p>Time to see a whole net put it together. This one has exactly the shapes you just built: <strong>input width <code>d=6</code></strong> (a 6-pixel strip) and <strong><code>H=4</code> hidden neurons</strong> — so its first weight matrix is <code>4×6</code>. Watch the same <em>row-times-vector</em> happen on real wires.</p>
 
-<p>The <strong>signal</strong> <code>X</code> is a tiny <strong>6-pixel strip</strong> — each pixel on (1) or off (0). We've hand-wired this net to answer one question: <em>is the bright part in the centre?</em> Toggle pixels and follow the wires.</p>
+<p>Here's the intuition that makes neural networks click: <strong>each hidden neuron is a little detector that fires when it spots its pattern</strong> (its weight-row matches the input), and the output neuron tallies their votes into the answer <code>Y</code>. Trace one signal all the way through <code>input → hidden → output</code>.</p>
+
+<p>The input vector <code>X</code> is a tiny <strong>6-pixel strip</strong> — each pixel on (1) or off (0), so <code>d=6</code>. We've hand-wired this net to answer one question: <em>is the bright part in the centre?</em> Toggle pixels and follow the wires.</p>
 
 <div class="widget">
   <h3>🎚 Trace the signal from X to Y</h3>
