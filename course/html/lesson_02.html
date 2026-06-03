@@ -126,6 +126,33 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
   <div id="emb-app"></div>
 </div>
 
+<div class="widget runpy">
+  <h3>🐍 Run it — look up a word, score the similarity</h3>
+  <p>That whole grid is just a few lines of Python: a word is a list of numbers, and the <em>dot product</em> is the similarity score. Change the numbers and re-run.</p>
+  <textarea class="runpy-code"># Each word is a list of numbers (its embedding). Similar words point the same way.
+emb = {
+    "dog":  [0.9, 0.1],
+    "cat":  [0.8, 0.2],
+    "runs": [-0.3, 0.9],
+}
+
+def dot(a, b):                       # dot product = a similarity score
+    return sum(ai*bi for ai, bi in zip(a, b))
+
+print("dog  =", emb["dog"])          # look up a word's vector
+print("cat  =", emb["cat"])
+print("runs =", emb["runs"])
+print()
+print("dog · cat  =", round(dot(emb["dog"], emb["cat"]), 2), " (high  -> alike)")
+print("dog · runs =", round(dot(emb["dog"], emb["runs"]), 2), " (low   -> different)")</textarea>
+  <pre class="runpy-expected" hidden>dog  = [0.9, 0.1]
+cat  = [0.8, 0.2]
+runs = [-0.3, 0.9]
+
+dog · cat  = 0.74  (high  -> alike)
+dog · runs = -0.18  (low   -> different)</pre>
+</div>
+
 <h2 class="step" id="emerge"><span class="step-num">Twist</span> The mind-blowing twist</h2>
 
 <p>In real AI, the slots <strong>aren't given human-readable names</strong>. The computer doesn't know what "is_furry" means. It just sees:</p>
@@ -846,6 +873,51 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
 
 <div class="callout">
   <strong>This style of game is called <em>skip-gram</em> (or word2vec).</strong> Just pairs of words. No sentences, no surrounding context. Simple to grasp, but limited — to teach the model that "dog" is related to "puppy" we'd have to write that pair down ourselves. With a vocabulary of 30,000 words, that's a non-starter.
+</div>
+
+<div class="widget runpy">
+  <h3>🐍 Run it — watch two words drift together</h3>
+  <p>No grid, no sliders — just gradient descent. We say which words show up together, start everyone at random, and let it learn. Watch <code>dog·puppy</code> climb to 1 while <code>dog·table</code> stays near 0.</p>
+  <textarea class="runpy-code"># Tiny word2vec: nudge words that appear together to point the same way.
+import random
+random.seed(0)
+
+words    = ["dog", "puppy", "cat", "kitten", "table", "chair"]
+together = [("dog","puppy"), ("cat","kitten"), ("table","chair")]  # want dot -> 1
+apart    = [("dog","table"), ("cat","chair"), ("puppy","chair")]   # want dot -> 0
+
+# every word starts as 2 small random numbers
+emb = {w: [random.uniform(-0.3, 0.3), random.uniform(-0.3, 0.3)] for w in words}
+
+def dot(a, b): return a[0]*b[0] + a[1]*b[1]
+
+lr = 0.05
+pairs = [(p, 1.0) for p in together] + [(p, 0.0) for p in apart]
+for step in range(2001):
+    for (a, b), target in pairs:
+        va, vb = emb[a], emb[b]
+        err = dot(va, vb) - target          # how far off is this pair?
+        ga = [2*err*vb[0], 2*err*vb[1]]      # nudge each vector to shrink the error
+        gb = [2*err*va[0], 2*err*va[1]]
+        for i in range(2):
+            va[i] -= lr*ga[i]
+            vb[i] -= lr*gb[i]
+    if step % 500 == 0:
+        print(f"step {step:4d}   dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   dog·table = {dot(emb['dog'],emb['table']):+.2f}")
+
+print()
+print("Words used alike (dog/puppy) now point the SAME way (dot near 1);")
+print("unrelated words (dog/table) stay apart (dot near 0).")
+print("Nobody hand-coded that — it fell out of which words share company.")</textarea>
+  <pre class="runpy-expected" hidden>step    0   dog·puppy = -0.02   dog·table = +0.01
+step  500   dog·puppy = +1.00   dog·table = -0.00
+step 1000   dog·puppy = +1.00   dog·table = -0.00
+step 1500   dog·puppy = +1.00   dog·table = -0.00
+step 2000   dog·puppy = +1.00   dog·table = -0.00
+
+Words used alike (dog/puppy) now point the SAME way (dot near 1);
+unrelated words (dog/table) stay apart (dot near 0).
+Nobody hand-coded that — it fell out of which words share company.</pre>
 </div>
 
 <h3>Is this what BERT does?</h3>
