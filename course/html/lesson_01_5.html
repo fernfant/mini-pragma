@@ -752,7 +752,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     <div class="pg-sub">Pick a number and watch it turn into <strong>bits</strong>, flow through the layers, light up the neurons that fire, and come out the other side as a <strong>prediction</strong> — using the net exactly as it is right now. (Train above and you'll watch the prediction sharpen.)</div>
     <label for="pi-x" style="display:block;margin:10px 0 4px;">Input <code>x</code> = <output id="pi-xv" class="nr-mono">3.0</output></label>
     <input id="pi-x" type="range" min="0" max="4" step="0.25" value="3" style="width:260px;" aria-label="Input x from 0 to 4">
-    <div id="pi-bits" style="margin:10px 0;"></div>
+    <details class="callout" style="margin:8px 0;"><summary style="cursor:pointer;font-weight:600;">🔬 Optional — how that one number is stored as bits</summary><div id="pi-bits" style="margin:10px 0;"></div></details>
     <div style="margin:4px 0 8px;">
       <button id="pi-play">▶ Play the flow</button><button class="alt" id="pi-fstep">Step ▶</button><button class="alt" id="pi-freset">Show all at once</button>
     </div>
@@ -770,13 +770,12 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
       <div class="callout" style="margin-top:8px;">The <b>only</b> step that isn’t a plain multiply-and-add is <b>ReLU</b> (the bend). Take it away and the two matrix steps squash into a single matrix — and one matrix can only draw a <b>straight line</b>. The bends <em>between</em> the matrix multiplies are what let the network curve. <span style="color:#64748b;">(Here the input is a single number, so the “matrix” is just a column of 6 weights. In later lessons the input is a whole vector and the matrix is a full grid — but it’s the same idea.)</span></div>
     </div>
 
-    <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:12px;">
-      <h4 style="margin:0 0 2px;font-size:1.0em;">🧩 Where Y comes from — 6 bends stacking up</h4>
+    <details class="callout" style="margin-top:14px;"><summary style="cursor:pointer;font-weight:700;">🧩 Optional — watch Y built from the 6 bends (the “Bends” section below does this hands-on)</summary>
       <div class="pg-sub">This is the whole secret of inference. Each hidden neuron outputs <strong>one simple bend</strong> (a thin coloured line). The network's answer <code>Y</code> is just those six bends <strong>added together</strong> (plus a bias) — the thick blue line. Drag <code>x</code> above, or train, and watch the pieces <em>and</em> the total move.</div>
       <canvas id="pd-cv" width="560" height="300" aria-label="Six faint coloured curves, one per hidden neuron's output, plus a bold blue curve that is their sum (the network's output Y), and a dashed target parabola. A vertical line marks the chosen input x; dots mark each neuron's value and the summed Y at that x." style="width:100%;max-width:560px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;display:block;margin-top:8px;"></canvas>
       <div id="pd-leg" style="display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:#475569;margin:7px 0 0;"></div>
       <div id="pd-rows" style="margin-top:12px;"></div>
-    </div>
+    </details>
   </div>
 </div>
 <script>(function(){
