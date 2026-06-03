@@ -278,67 +278,44 @@ for _ in range(1000):
 
 <p>Before we wire up a whole network, let's zoom <em>all the way in</em> to its single building block: <strong>one neuron</strong> (the old-school name is a <strong>perceptron</strong>, invented back in 1958). This matters because a neural net isn't a new mysterious thing — it's just <strong>thousands of copies of this one tiny gadget, wired together</strong>. BERT, ChatGPT, PRAGMA: all the same atom, repeated.</p>
 
-<h3 id="neuron">A neuron is just a tiny voting machine</h3>
+<h3 id="neuron">A neuron is a line with a bend</h3>
 
-<p>Give a neuron a few input numbers. It does three dead-simple things:</p>
+<p>Here's the whole idea, and it's small. A neuron takes our input number <code>x</code> and does <strong>two tiny steps</strong>:</p>
 <ol>
-  <li><strong>Weigh each input</strong> — multiply every input by its own number, the <em>weight</em>. The weight says how much that input gets to "vote".</li>
-  <li><strong>Add up the votes</strong> — sum all the weighted inputs, plus one extra number called the <em>bias</em> (a thumb on the scale that makes the neuron easier or harder to set off).</li>
-  <li><strong>Decide</strong> — if the total clears the line, the neuron <strong>fires</strong> (outputs&nbsp;1). If not, it stays quiet (outputs&nbsp;0).</li>
+  <li><strong>A line.</strong> Multiply <code>x</code> by a weight <code>w</code>, add a bias <code>b</code> → <code>w·x + b</code>. That's <em>exactly</em> Lesson 1's model — tilt and slide. On its own, still dead straight.</li>
+  <li><strong>A bend.</strong> Pass that through <strong>ReLU</strong>: keep the value if it's positive, otherwise flatten it to <code>0</code>. That flattening puts <strong>one kink</strong> in the line.</li>
 </ol>
 
-<figure class="figure-wide" style="margin:22px 0;">
-  <svg viewBox="0 0 770 330" width="100%" style="background:#f8fafc;border:1px solid #e5e5e5;border-radius:12px;max-width:770px;display:block;">
-    <defs><marker id="nh-arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#475569"/></marker></defs>
+<p>That's the entire neuron, in one line:</p>
+<pre style="margin:10px 0;background:#fff;color:#1a1a1a;padding:12px 16px;border:1px solid #e5e5e5;border-radius:6px;font-size:15px;"><code style="color:#1a1a1a;">output = ReLU( <span style="color:#1d4ed8;font-weight:700;">w</span>·x + <span style="color:#7e22ce;font-weight:700;">b</span> )</code></pre>
 
-    <!-- inputs -->
-    <circle cx="78" cy="118" r="26" fill="#3b82f6"/>
-    <text x="78" y="125" fill="#fff" font-size="20" font-weight="700" text-anchor="middle">A</text>
-    <circle cx="78" cy="223" r="26" fill="#3b82f6"/>
-    <text x="78" y="230" fill="#fff" font-size="20" font-weight="700" text-anchor="middle">B</text>
-    <text x="78" y="285" fill="#475569" font-size="13" text-anchor="middle">your inputs (0 or 1)</text>
+<p>A straight line with one bend in it — a <strong>hinge</strong>:</p>
 
-    <!-- weighted arrows into the sum -->
-    <line x1="104" y1="120" x2="333" y2="162" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
-    <line x1="104" y1="221" x2="333" y2="188" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
-    <text x="212" y="126" fill="#1d4ed8" font-size="15" font-weight="700" text-anchor="middle">× wA</text>
-    <text x="212" y="216" fill="#1d4ed8" font-size="15" font-weight="700" text-anchor="middle">× wB</text>
-    <text x="208" y="252" fill="#64748b" font-size="12" text-anchor="middle">weights = how loud each input gets to vote</text>
-
-    <!-- bias -->
-    <circle cx="383" cy="58" r="24" fill="#a855f7"/>
-    <text x="383" y="65" fill="#fff" font-size="19" font-weight="700" text-anchor="middle">b</text>
-    <text x="415" y="52" fill="#7e22ce" font-size="13">bias — a thumb on the scale</text>
-    <line x1="383" y1="82" x2="383" y2="128" stroke="#475569" stroke-width="2" marker-end="url(#nh-arr)"/>
-
-    <!-- summation -->
-    <circle cx="383" cy="175" r="46" fill="#14b8a6"/>
-    <text x="383" y="191" fill="#fff" font-size="36" font-weight="700" text-anchor="middle">&#931;</text>
-    <text x="383" y="247" fill="#0f766e" font-size="13" text-anchor="middle">add up the votes (+ bias)</text>
-
-    <!-- arrow to activation -->
-    <line x1="430" y1="175" x2="527" y2="175" stroke="#475569" stroke-width="2.5" marker-end="url(#nh-arr)"/>
-
-    <!-- activation -->
-    <rect x="532" y="145" width="92" height="60" rx="10" fill="#f59e0b"/>
-    <text x="578" y="186" fill="#fff" font-size="26" font-weight="700" text-anchor="middle">f</text>
-    <text x="578" y="231" fill="#b45309" font-size="13" text-anchor="middle">decide: fire or not?</text>
-
-    <!-- arrow to output -->
-    <line x1="624" y1="175" x2="688" y2="175" stroke="#475569" stroke-width="2.5" marker-end="url(#nh-arr)"/>
-    <text x="722" y="168" fill="#047857" font-size="18" font-weight="700" text-anchor="middle">1 or 0</text>
-    <text x="722" y="196" fill="#047857" font-size="12" text-anchor="middle">the answer</text>
-  </svg>
-  <figcaption>Read it left to right: each <span style="color:#1d4ed8;font-weight:700;">input</span> is multiplied by its <span style="color:#1d4ed8;font-weight:700;">weight</span> → everything is <span style="color:#0f766e;font-weight:700;">added up</span> (plus the <span style="color:#7e22ce;font-weight:700;">bias</span>) → the <span style="color:#b45309;font-weight:700;">activation</span> makes the yes/no call → out comes the <span style="color:#047857;font-weight:700;">answer</span>. For our OR neuron: <code>wA=1</code>, <code>wB=1</code>, <code>b=−0.5</code>, and <code>f</code> = "fire if the total is above 0".</figcaption>
-</figure>
-
-<div class="callout">
-  <strong>The entire neuron, in one line:</strong>
-  <pre style="margin:10px 0;background:#fff;color:#1a1a1a;padding:12px 16px;border:1px solid #e5e5e5;border-radius:6px;font-size:15px;"><code style="color:#1a1a1a;">output = fire?(  <span style="color:#1d4ed8;font-weight:700;">wA</span>·A  +  <span style="color:#1d4ed8;font-weight:700;">wB</span>·B  +  <span style="color:#7e22ce;font-weight:700;">bias</span>  )</code></pre>
-  <code>A</code> and <code>B</code> are the inputs. <span style="color:#1d4ed8;font-weight:700;">wA</span>, <span style="color:#1d4ed8;font-weight:700;">wB</span> are the weights it learns (the weights from L1!). <span style="color:#7e22ce;font-weight:700;">bias</span> shifts the line. <code>fire?</code> is the yes/no decision. That's the whole thing — a weighted sum and a threshold.
+<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0;">
+  <figure style="margin:0;text-align:center;">
+    <svg viewBox="0 0 150 100" width="150" style="background:#fff;border:1px solid var(--border);border-radius:8px;" role="img" aria-label="A straight rising line, negative on the left and positive on the right.">
+      <line x1="10" y1="68" x2="140" y2="68" stroke="#e5e7eb"/>
+      <line x1="12" y1="92" x2="138" y2="18" stroke="#3b82f6" stroke-width="2.5"/>
+    </svg>
+    <figcaption style="font-size:11px;color:#64748b;margin-top:2px;">step 1: <code>w·x + b</code> (a line)</figcaption>
+  </figure>
+  <span style="font-size:14px;color:#9aa3b2;font-weight:700;">ReLU →</span>
+  <figure style="margin:0;text-align:center;">
+    <svg viewBox="0 0 150 100" width="150" style="background:#fff;border:1px solid var(--border);border-radius:8px;" role="img" aria-label="The same line flattened to zero on the left, giving one bend (a hinge), then rising.">
+      <line x1="10" y1="68" x2="140" y2="68" stroke="#e5e7eb"/>
+      <line x1="12" y1="68" x2="70" y2="68" stroke="#10b981" stroke-width="2.5"/>
+      <line x1="70" y1="68" x2="138" y2="18" stroke="#10b981" stroke-width="2.5"/>
+      <circle cx="70" cy="68" r="3.5" fill="#10b981"/>
+    </svg>
+    <figcaption style="font-size:11px;color:#64748b;margin-top:2px;">step 2: <code>ReLU(...)</code> — one bend</figcaption>
+  </figure>
 </div>
 
-<p>Too simple to be useful? Watch. With the right weights, this <em>one</em> neuron can compute real logic. Let's teach it <strong>OR</strong> (fire if A <em>or</em> B is on) and <strong>AND</strong> (fire only if <em>both</em> are on). Inputs are just 0 (off) or 1 (on).</p>
+<p>That bend is the whole point. The straight line failed because it <em>couldn't</em> bend — you just watched it stick at <strong>2.8</strong>. One neuron gives you <em>one</em> bend; still not enough for a U on its own. But stack several neurons (each its own bend) and <strong>add the bends up</strong>, and you can trace any wiggle. First, though, an optional detour for the curious:</p>
+
+<details class="callout"><summary style="cursor:pointer;font-weight:700;">🧩 Optional side-quest — a neuron as a yes/no <em>decision-maker</em> (logic gates, XOR, growing to a deep net)</summary>
+
+<p style="margin-top:.7em;">Swap the soft ReLU bend for a hard <em>fire-or-stay-quiet</em> threshold and the same weighted-sum core becomes a little <strong>logic gate</strong>. With two on/off inputs <code>A</code>, <code>B</code>, one neuron can compute <strong>OR</strong> and <strong>AND</strong> — but <em>not</em> <strong>XOR</strong> (that needs a second layer, which is the real reason networks have layers). Have a play:</p>
 
 <div class="playground" id="pg-neuron">
   <div class="pg-head">🧠 Teach one neuron to think</div>
@@ -531,6 +508,10 @@ for _ in range(1000):
 });});</script>
 
 <p>A neural network is best pictured as a <strong>pipeline that transforms numbers through layers</strong>. Each layer takes the previous stage's numbers, does one specific operation, and hands them on. The simplest version (a Multilayer Perceptron, or MLP) — and the one we'll use today — looks like this:</p>
+
+</details>
+
+<p><strong>Back to the curve.</strong> Stack a row of these bend-neurons into a <strong>hidden layer</strong>, then let an output neuron <strong>add their bends together</strong>. That's the whole network — the familiar <code>(1) → (8) → (1)</code> shape, with ReLU as the bend in the middle:</p>
 
 <div id="net-l15-shape"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){netSchematic("net-l15-shape",{layers:[{n:1,label:"input",kind:"in",sub:"shape (1)"},{n:8,label:"hidden · ReLU",kind:"hidden",sub:"shape (8)"},{n:1,label:"output",kind:"out",sub:"shape (1)"}],caption:"The MLP, same picture as always: shape changes (1) → (8) → (1). The two Linear layers carry the weights (16 + 9 = 25 parameters); ReLU carries none — it's just the bend."});});</script>
