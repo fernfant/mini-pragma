@@ -826,6 +826,13 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     </div>
 
     <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:12px;">
+      <h4 style="margin:0 0 2px;font-size:1.0em;">🟰 Same maths, two pictures: “neurons” = “matrix multiply”</h4>
+      <div class="pg-sub">Good instinct — under the hood it’s just multiply-and-add. A <b>neuron</b> isn’t a separate machine: it’s a <b>name for one row of weights + a bias</b>. Doing all six rows at once <em>is</em> “multiply the input by the weight matrix.” Same calculation, two pictures. Here it is with the live numbers (each coloured row is one of the neurons above):</div>
+      <div id="pi-matrix"></div>
+      <div class="callout" style="margin-top:8px;">The <b>only</b> step that isn’t a plain multiply-and-add is <b>ReLU</b> (the bend). Take it away and the two matrix steps squash into a single matrix — and one matrix can only draw a <b>straight line</b>. The bends <em>between</em> the matrix multiplies are what let the network curve. <span style="color:#64748b;">(Here the input is a single number, so the “matrix” is just a column of 6 weights. In later lessons the input is a whole vector and the matrix is a full grid — but it’s the same idea.)</span></div>
+    </div>
+
+    <div style="margin-top:16px;border-top:1px dashed var(--border);padding-top:12px;">
       <h4 style="margin:0 0 2px;font-size:1.0em;">🧩 Where Y comes from — 6 bends stacking up</h4>
       <div class="pg-sub">This is the whole secret of inference. Each hidden neuron outputs <strong>one simple bend</strong> (a thin coloured line). The network's answer <code>Y</code> is just those six bends <strong>added together</strong> (plus a bias) — the thick blue line. Drag <code>x</code> above, or train, and watch the pieces <em>and</em> the total move.</div>
       <canvas id="pd-cv" width="560" height="300" aria-label="Six faint coloured curves, one per hidden neuron's output, plus a bold blue curve that is their sum (the network's output Y), and a dashed target parabola. A vertical line marks the chosen input x; dots mark each neuron's value and the summed Y at that x." style="width:100%;max-width:560px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;display:block;margin-top:8px;"></canvas>
@@ -927,6 +934,25 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     var err=Math.abs(f.y-truth);
     rEl.innerHTML='<div style="font-size:12px;color:#475569;margin-bottom:4px;">At <code>x='+x.toFixed(2)+'</code> (scaled <code>u='+f.u.toFixed(2)+'</code>): each neuron’s output <b>h</b>, times its outgoing weight, is its <b>contribution</b>.</div><table class="pn-tbl"><thead><tr><th></th><th>output h</th><th>weight</th><th>bar</th><th>adds</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="5" style="color:#64748b;">Add all six + bias '+b2.toFixed(2)+' = <b style="color:#2563eb;">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; target '+truth.toFixed(2)+' &nbsp;·&nbsp; off by '+err.toFixed(2)+'</td></tr></tfoot></table>';
   }
+  function renderMatrix(){
+    var el=document.getElementById('pi-matrix'); if(!el) return;
+    var x=+document.getElementById('pi-x').value,f=fwd(x),rows='';
+    for(var j=0;j<H;j++){var on=f.h[j]>1e-9;
+      rows+='<tr><td style="color:'+COLS[j]+';font-weight:700;font-size:11px;">h'+(j+1)+'</td>'+
+        '<td style="font-family:ui-monospace,monospace;font-size:11px;text-align:right;">'+w1[j].toFixed(2)+'</td>'+
+        '<td style="font-size:11px;color:#94a3b8;">× u('+f.u.toFixed(2)+')</td>'+
+        '<td style="font-family:ui-monospace,monospace;font-size:11px;">+ '+b1[j].toFixed(2)+'</td>'+
+        '<td style="font-size:11px;color:#94a3b8;">=</td>'+
+        '<td style="font-family:ui-monospace,monospace;font-size:11px;text-align:right;">'+f.z[j].toFixed(2)+'</td>'+
+        '<td style="font-size:11px;color:#94a3b8;">→ReLU→</td>'+
+        '<td style="font-family:ui-monospace,monospace;font-size:11px;font-weight:700;text-align:right;color:'+(on?'#065f46':'#cbd5e1')+';">'+(on?f.h[j].toFixed(2):'0')+'</td></tr>';
+    }
+    var dot=''; for(j=0;j<H;j++) dot+=(j?' + ':'')+'<span style="color:'+COLS[j]+';">'+w2[j].toFixed(2)+'·'+f.h[j].toFixed(2)+'</span>';
+    el.innerHTML='<div style="font-size:11.5px;color:#475569;margin:2px 0 4px;"><b>Layer 1</b> — “input × weight + bias” for every neuron at once. <em>This whole block is one matrix multiply:</em></div>'+
+      '<table class="pn-tbl"><tbody>'+rows+'</tbody></table>'+
+      '<div style="font-size:11.5px;color:#475569;margin:10px 0 4px;"><b>Layer 2</b> — one dot product of those outputs with the output weights:</div>'+
+      '<div style="font-family:ui-monospace,monospace;font-size:11px;background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:8px 10px;overflow-x:auto;">Y = '+dot+' + '+b2.toFixed(2)+' = <b style="color:#2563eb;">'+f.y.toFixed(2)+'</b></div>';
+  }
   (function(){var leg=document.getElementById('pd-leg');if(!leg)return;var s='';for(var j=0;j<H;j++)s+='<span style="display:inline-flex;align-items:center;gap:4px;"><span style="width:14px;height:3px;background:'+COLS[j]+';display:inline-block;border-radius:2px;"></span>h'+(j+1)+'</span>';s+='<span style="display:inline-flex;align-items:center;gap:4px;font-weight:700;color:#2563eb;"><span style="width:16px;height:4px;background:#2563eb;display:inline-block;border-radius:2px;"></span>Y (the sum)</span><span style="display:inline-flex;align-items:center;gap:4px;color:#6b7280;"><span style="width:14px;border-top:2px dashed #9ca3af;display:inline-block;"></span>target</span>';leg.innerHTML=s;})();
   var FSTAGES=[
     'The number arrives and is scaled to <code>u</code>. Nothing downstream has happened yet.',
@@ -973,7 +999,7 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     renderFlow(f,x);
     var err=Math.abs(f.y-truth);
     document.getElementById('pi-out').innerHTML='Network predicts <b style="color:#047857">Y = '+f.y.toFixed(2)+'</b> &nbsp;·&nbsp; truth (x²−4x+3) = <b>'+truth.toFixed(2)+'</b> &nbsp;·&nbsp; off by '+err.toFixed(2)+(err<0.3?' &nbsp;✅ spot on':' &nbsp;— train the net above to close the gap');
-    drawDecomp(); renderRows();
+    drawDecomp(); renderRows(); renderMatrix();
   }
   var piEl=document.getElementById('pi-x'); if(piEl) piEl.addEventListener('input',function(){stopFlow();fstage=FULL;infer();});
   document.getElementById('pi-play').addEventListener('click',function(){stopFlow();fstage=0;var x=+piEl.value;renderFlow(fwd(x),x);ftimer=setInterval(function(){if(fstage>=4){stopFlow();return;}fstage++;var xx=+piEl.value;renderFlow(fwd(xx),xx);},1100);});
