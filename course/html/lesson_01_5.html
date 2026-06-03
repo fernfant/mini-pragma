@@ -842,9 +842,29 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
     return '<span style="display:inline-block;width:'+W+'px;height:11px;background:#eef2f7;border-radius:3px;position:relative;vertical-align:middle;"><span style="position:absolute;left:'+left.toFixed(1)+'px;top:0;width:'+f.toFixed(1)+'px;height:100%;background:'+color+';border-radius:3px;"></span><span style="position:absolute;left:'+c+'px;top:-2px;width:1px;height:15px;background:#cbd5e1;"></span></span>';}
   function num(v){return ' <span style="font-family:ui-monospace,monospace;font-size:11px;color:#475569;">'+(v>=0?'+':'')+v.toFixed(2)+'</span>';}
   function params(){
+    // --- live wired diagram (the network coming to life) ---
+    var SW=560,IX=56,HX=292,OX=504,CY=165,hy=[];
+    for(var j=0;j<H;j++) hy.push(40+j*(250/(H-1)));
+    function ew(v){return (0.6+Math.min(Math.abs(v),4)/4*4.4).toFixed(1);}
+    function eo(v){return (0.22+Math.min(Math.abs(v),4)/4*0.62).toFixed(2);}
+    var e=[];
+    for(j=0;j<H;j++){var c1=w1[j]>=0?'#3b82f6':'#ef4444';
+      e.push('<line x1="'+(IX+15)+'" y1="'+CY+'" x2="'+(HX-15)+'" y2="'+hy[j]+'" stroke="'+c1+'" stroke-width="'+ew(w1[j])+'" opacity="'+eo(w1[j])+'"/>');}
+    for(j=0;j<H;j++){var c2=w2[j]>=0?'#10b981':'#f59e0b',mx=((HX+15+OX-18)/2).toFixed(0),my=((hy[j]+CY)/2-3).toFixed(0);
+      e.push('<line x1="'+(HX+15)+'" y1="'+hy[j]+'" x2="'+(OX-18)+'" y2="'+CY+'" stroke="'+c2+'" stroke-width="'+ew(w2[j])+'" opacity="'+eo(w2[j])+'"/>');
+      e.push('<text x="'+mx+'" y="'+my+'" font-size="9.5" fill="'+c2+'" font-family="ui-monospace,monospace">×'+w2[j].toFixed(1)+'</text>');}
+    e.push('<text x="'+IX+'" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">input</text>');
+    e.push('<text x="'+HX+'" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">6 hidden neurons</text>');
+    e.push('<text x="'+OX+'" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#475569">output</text>');
+    e.push('<circle cx="'+IX+'" cy="'+CY+'" r="15" fill="#1a1a1a"/><text x="'+IX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">x</text>');
+    for(j=0;j<H;j++){e.push('<circle cx="'+HX+'" cy="'+hy[j]+'" r="13" fill="#fff" stroke="#94a3b8" stroke-width="1.6"/><text x="'+HX+'" y="'+(hy[j]+4)+'" text-anchor="middle" font-size="9.5" fill="#94a3b8">h'+(j+1)+'</text><text x="'+HX+'" y="'+(hy[j]+26)+'" text-anchor="middle" font-size="9.5" fill="#a855f7" font-family="ui-monospace,monospace">b '+b1[j].toFixed(1)+'</text>');}
+    e.push('<circle cx="'+OX+'" cy="'+CY+'" r="18" fill="#ecfdf5" stroke="#10b981" stroke-width="2"/><text x="'+OX+'" y="'+(CY+4)+'" text-anchor="middle" font-size="12" font-weight="700" fill="#047857">Y</text><text x="'+OX+'" y="'+(CY+34)+'" text-anchor="middle" font-size="9.5" fill="#a855f7" font-family="ui-monospace,monospace">bias '+b2.toFixed(1)+'</text>');
+    var svg='<div style="font-size:12px;color:#475569;margin:2px 0 4px;">The network itself, live — edge <b>thickness</b> = weight size; <span style="color:#3b82f6;">blue</span>/<span style="color:#10b981;">green</span> positive, <span style="color:#ef4444;">red</span>/<span style="color:#f59e0b;">amber</span> negative; <span style="color:#a855f7;">purple</span> = each neuron’s bias. Watch them move as it trains.</div><svg viewBox="0 0 '+SW+' 320" role="img" aria-label="The 1 to 6 to 1 network drawn as nodes and weighted edges; thickness and colour show the trained weights and each neuron bias is labelled, updating as the network trains." style="width:100%;max-width:'+SW+'px;height:auto;border:1px solid var(--border);border-radius:8px;background:#fff;">'+e.join('')+'</svg>';
+    // --- precise table ---
     var rows='';
-    for(var j=0;j<H;j++){rows+='<tr><td style="color:#64748b;">h'+(j+1)+'</td><td>'+bar(w1[j],'#3b82f6')+num(w1[j])+'</td><td>'+bar(b1[j],'#a855f7')+num(b1[j])+'</td><td>'+bar(w2[j],'#047857')+num(w2[j])+'</td></tr>';}
-    document.getElementById('pn-params').innerHTML='<table class="pn-tbl"><thead><tr><th></th><th style="color:#3b82f6;">weight in</th><th style="color:#a855f7;">bias</th><th style="color:#047857;">weight out</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3" style="text-align:right;color:#64748b;">output bias&nbsp;</td><td>'+bar(b2,'#a855f7')+num(b2)+'</td></tr></tfoot></table>';
+    for(j=0;j<H;j++){rows+='<tr><td style="color:#64748b;">h'+(j+1)+'</td><td>'+bar(w1[j],'#3b82f6')+num(w1[j])+'</td><td>'+bar(b1[j],'#a855f7')+num(b1[j])+'</td><td>'+bar(w2[j],'#047857')+num(w2[j])+'</td></tr>';}
+    var tbl='<table class="pn-tbl" style="margin-top:10px;"><thead><tr><th></th><th style="color:#3b82f6;">weight in</th><th style="color:#a855f7;">bias</th><th style="color:#047857;">weight out</th></tr></thead><tbody>'+rows+'</tbody><tfoot><tr><td colspan="3" style="text-align:right;color:#64748b;">output bias&nbsp;</td><td>'+bar(b2,'#a855f7')+num(b2)+'</td></tr></tfoot></table>';
+    document.getElementById('pn-params').innerHTML=svg+tbl;
   }
   function sync(){document.getElementById('pn-stepc').textContent=step;document.getElementById('pn-loss').textContent=loss().toFixed(3);draw();params();}
   document.getElementById('pn-step').addEventListener('click',function(){gstep();sync();});
