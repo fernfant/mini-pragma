@@ -644,6 +644,60 @@ loss    = -log(p_truth)
 step 100   loss 0.073     ← already nailed it
 step 400   loss 0.006     ← essentially zero</code></pre>
 
+<div class="widget runpy">
+  <h3>🐍 Run it — watch the model go from clueless to correct</h3>
+  <p>That loss crash, live. We start the weights at a blank slate (knows nothing), play the fill-in-the-blank game a few hundred times, and re-check. This is a stripped-down TinyMLM — <strong>no attention, just a score table + cross-entropy + the L1 train loop</strong> — so it runs in your browser, but it's the same game and the same 3-line loop.</p>
+  <textarea class="runpy-code">import math
+vocab = ["<pad>", "<mask>", "dog", "cat", "fish", "bark", "meow", "swim"]
+tok = {w: i for i, w in enumerate(vocab)}
+V = len(vocab)
+pairs = [("dog", "bark"), ("cat", "meow"), ("fish", "swim")]
+
+# fill-in-the-blank examples: see one word, guess its partner (both directions)
+examples = []
+for a, b in pairs:
+    examples += [(tok[a], tok[b]), (tok[b], tok[a])]
+
+# model = a score table. logits for input word i are W[i]. start blank: knows nothing.
+W = [[0.0]*V for _ in range(V)]
+
+def softmax(z):
+    m = max(z); e = [math.exp(v-m) for v in z]; s = sum(e)
+    return [v/s for v in e]
+
+def report(tag):
+    print(tag)
+    for a, b in pairs:
+        p = softmax(W[tok[a]])
+        best = max(range(V), key=lambda k: p[k])
+        loss = -math.log(p[tok[b]])
+        print(f"  {a:<4}-> {vocab[best]:<5} (loss {loss:.2f})  {'✓' if best==tok[b] else '✗'}")
+
+report("BEFORE training (blank-slate weights):")
+print("  -> every guess is a shrug; it knows nothing.\n")
+
+lr = 0.5
+for step in range(300):                  # the L1 loop: guess -> wrongness -> nudge
+    for i, t in examples:
+        p = softmax(W[i])
+        for k in range(V):
+            W[i][k] -= lr * (p[k] - (1.0 if k == t else 0.0))
+
+report("AFTER training on masked examples:")
+print("  -> it rediscovered the 3 hidden rules from blanks alone.")</textarea>
+  <pre class="runpy-expected" hidden>BEFORE training (blank-slate weights):
+  dog -> &lt;pad&gt; (loss 2.08)  ✗
+  cat -> &lt;pad&gt; (loss 2.08)  ✗
+  fish-> &lt;pad&gt; (loss 2.08)  ✗
+  -> every guess is a shrug; it knows nothing.
+
+AFTER training on masked examples:
+  dog -> bark  (loss 0.01)  ✓
+  cat -> meow  (loss 0.01)  ✓
+  fish-> swim  (loss 0.01)  ✓
+  -> it rediscovered the 3 hidden rules from blanks alone.</pre>
+</div>
+
 <h2 class="step" id="step-9"><span class="step-num">Step 9</span> Test the trained model on each rule</h2>
 
 <pre><code>Fill in the blank:

@@ -144,6 +144,49 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <strong>"the" got smarter.</strong> It started as <code>[1, 0]</code> (bland — could mean anything). After attention, it's much closer to cat's vector. It now means "the <em>cat</em>", not just "the".
 </div>
 
+<div class="widget runpy">
+  <h3>🐍 Run it — why a word needs its neighbours ("river bank" vs "savings bank")</h3>
+  <p>Remember the two banks from the top of the page? Here's the payoff. Without attention, <code>bank</code> has <strong>one</strong> fixed vector — the model can't tell the two apart. Run attention (score → softmax → mix) and watch the same word split into two.</p>
+  <textarea class="runpy-code">import math
+# each word is [water-ness, money-ness]
+vec = {"river": [1.0, 0.0], "savings": [0.0, 1.0], "bank": [0.5, 0.5]}
+
+def dot(a, b): return sum(x*y for x, y in zip(a, b))
+def softmax(s):
+    m = max(s); e = [math.exp(v-m) for v in s]; t = sum(e)
+    return [v/t for v in e]
+
+def attend(sentence):                  # the 3 moves: score -> softmax -> mix
+    X = [vec[w] for w in sentence]
+    out = []
+    for i in range(len(X)):
+        scores = [dot(X[i], X[j]) for j in range(len(X))]
+        w = softmax(scores)
+        out.append([sum(w[j]*X[j][k] for j in range(len(X))) for k in range(2)])
+    return out
+
+print("WITHOUT attention — 'bank' is ONE fixed vector in both sentences:")
+print("  river bank   -> bank =", vec["bank"])
+print("  savings bank -> bank =", vec["bank"])
+print("  -> identical. nothing tells the two banks apart.\n")
+
+rb = attend(["river", "bank"])[1]      # the 'bank' row
+sb = attend(["savings", "bank"])[1]
+print("WITH attention — 'bank' absorbs its neighbour:")
+print("  river bank   -> bank =", [round(v, 2) for v in rb])
+print("  savings bank -> bank =", [round(v, 2) for v in sb])
+print("  -> now different! water-bank vs money-bank, from the same word.")</textarea>
+  <pre class="runpy-expected" hidden>WITHOUT attention — 'bank' is ONE fixed vector in both sentences:
+  river bank   -> bank = [0.5, 0.5]
+  savings bank -> bank = [0.5, 0.5]
+  -> identical. nothing tells the two banks apart.
+
+WITH attention — 'bank' absorbs its neighbour:
+  river bank   -> bank = [0.75, 0.25]
+  savings bank -> bank = [0.25, 0.75]
+  -> now different! water-bank vs money-bank, from the same word.</pre>
+</div>
+
 <!-- ─────────── L3 PLAYGROUND: run attention by hand ─────────── -->
 <div class="playground" id="pg-l3-attn">
   <div class="pg-head">🧪 Now you do it — run attention on your own vectors</div>
