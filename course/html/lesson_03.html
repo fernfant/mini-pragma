@@ -67,6 +67,8 @@
   </ol>
 </details>
 
+<p>In <a href="lesson_02.html">Lesson 2</a> every word got its own vector — but that vector is <strong>fixed</strong>: <code>bank</code> has one set of numbers no matter the sentence. Here's why that's not enough.</p>
+
 <p>Read this sentence: "the river <strong>bank</strong>" vs "the savings <strong>bank</strong>." Same word, two meanings — and the only thing that tells them apart is the <em>neighbours</em>. A word’s meaning depends on the words around it, so each word needs a way to <strong>look at the others</strong> and pull in what matters. That move is <strong>attention</strong>, and this lesson builds the idea with a worked example you can play with. The formal machinery (Q, K, V, multi-head) waits for <a href="lesson_03a.html">L3a</a> — here we just get the idea.</p>
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s attention scores, percentages, and blended vectors — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>

@@ -72,6 +72,8 @@
   </ol>
 </details>
 
+<p>In <a href="lesson_04.html">Lesson 4</a> you trained a tiny BERT to fill in blanks in <em>sentences</em>. PRAGMA is the <strong>same machine</strong> — embed → attention → head, trained by masking — just pointed at <strong>bank transactions</strong> instead of words. The only genuinely new idea is how you turn an event into tokens, so that's where we start.</p>
+
 <figure class="figure-wide">
   <img src="../visuals/data_flow.svg" alt="How data flows through the model: words to ids to vectors to attention to a guess">
   <figcaption><code>pragma_mini.py</code> is exactly this pipeline in code — embed, stack attention+feed-forward, then a head.</figcaption>
