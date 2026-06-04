@@ -987,6 +987,9 @@ Nobody hand-coded that — it fell out of which words appear together.</pre>
 
 <p>Notice the structure: animals all share "the X plays / runs" sentences. Sounds all share "X is loud". Places all share "X is big". Then each animal has one personal "says SOUND" sentence to give it individual identity.</p>
 
+<details class="callout">
+<summary>🔬 The training mechanics, step by step — <em>optional deep-dive</em> (the full masked-LM round is re-taught in <a href="lesson_04.html">L4</a>; <a href="lesson_02a.html">L2a</a> pushes the scaling &amp; batches much further)</summary>
+
 <h3>One round of training, walked through step by step</h3>
 
 <p>This is the heart of the lesson — and it's the part that needs care, not speed. Let's follow <strong>one single training round</strong> from start to finish, with concrete numbers at every step. (We're going to use tiny <strong>2-number embeddings</strong> in this walkthrough so we can do the math on paper. The real experiment above used 8 numbers per word, but the steps are identical — just longer rows.)</p>
@@ -1155,6 +1158,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
     <li>"N steps" doesn't mean "N passes through the data" — it means N individual nudges, each on one (or one batch of) example(s).</li>
   </ul>
 </div>
+</details>
 
 <h3>What the model learned (real numbers from 3,000 training steps)</h3>
 
