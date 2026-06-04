@@ -684,10 +684,11 @@ details.go-deeper[open] > summary::after { content: "  ▾ hide"; }
   margin: 4px 0 14px;
 }
 .playground .pg-code {
+  position: relative;
   background: #0f172a;
   border: 1px solid #334155;
   border-radius: 8px;
-  padding: 14px 16px;
+  padding: 30px 16px 14px;
   margin: 0;
   font-family: ui-monospace, "SF Mono", Monaco, monospace;
   font-size: 13px;
@@ -695,6 +696,23 @@ details.go-deeper[open] > summary::after { content: "  ▾ hide"; }
   white-space: pre;
   overflow-x: auto;
   color: #e2e8f0;
+}
+/* honesty badge: these blocks are a live sketch driven by the sliders, NOT a
+   Python runtime. Distinguishes them from the real Pyodide .runpy-code editors. */
+.playground .pg-code::before {
+  content: "📊 live sketch — recomputes in your browser (not a Python REPL; the 🐍 cells & notebook are)";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  padding: 4px 10px;
+  font-family: var(--font, system-ui, sans-serif);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #94a3b8;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+  border-radius: 8px 8px 0 0;
+  white-space: normal;
 }
 .playground .pg-code .pg-comment { color: #64748b; }
 .playground .pg-code .pg-keyword { color: #c4b5fd; }

@@ -673,6 +673,7 @@ def report(tag):
         loss = -math.log(p[tok[b]])
         print(f"  {a:<4}-> {vocab[best]:<5} (loss {loss:.2f})  {'✓' if best==tok[b] else '✗'}")
 
+print(f"score table W: shape {V} x {V}  (a row of {V} logits per input word)\n")
 report("BEFORE training (blank-slate weights):")
 print("  -> every guess is a shrug; it knows nothing.\n")
 
@@ -685,7 +686,9 @@ for step in range(300):                  # the L1 loop: guess -> wrongness -> nu
 
 report("AFTER training on masked examples:")
 print("  -> it rediscovered the 3 hidden rules from blanks alone.")</textarea>
-  <pre class="runpy-expected" hidden>BEFORE training (blank-slate weights):
+  <pre class="runpy-expected" hidden>score table W: shape 8 x 8  (a row of 8 logits per input word)
+
+BEFORE training (blank-slate weights):
   dog -> &lt;pad&gt; (loss 2.08)  ✗
   cat -> &lt;pad&gt; (loss 2.08)  ✗
   fish-> &lt;pad&gt; (loss 2.08)  ✗
@@ -707,6 +710,7 @@ AFTER training on masked examples:
 
 <div class="callout good">
   <strong>You've now seen a real Transformer learn from scratch.</strong> Same recipe as ChatGPT — just smaller.
+  <p style="margin:8px 0 0;font-size:13.5px;"><strong>One honest caveat:</strong> the cell you ran in your browser was the <em>stripped-down</em> version — no attention, just a score table — so it could run without PyTorch. The <em>full</em> TinyMLM (with the attention layer from Step 5) is what trains in the <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener">notebook</a>. Same game, same loop, same loss crash — it just also lets the words look at each other.</p>
 </div>
 
 <h2 class="step" id="step-10"><span class="step-num">Step 10</span> What did the embeddings learn?</h2>

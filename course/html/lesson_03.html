@@ -67,9 +67,9 @@
   </ol>
 </details>
 
-<p>In <a href="lesson_02.html">Lesson 2</a> every word got its own vector — but that vector is <strong>fixed</strong>: <code>bank</code> has one set of numbers no matter the sentence. Here's why that's not enough.</p>
+<p>In <a href="lesson_02.html">Lesson 2</a> every word got its own vector — but that vector is <strong>fixed</strong>: <code>bark</code> has one set of numbers no matter the sentence. Here's why that's not enough.</p>
 
-<p>Read this sentence: "the river <strong>bank</strong>" vs "the savings <strong>bank</strong>." Same word, two meanings — and the only thing that tells them apart is the <em>neighbours</em>. A word’s meaning depends on the words around it, so each word needs a way to <strong>look at the others</strong> and pull in what matters. That move is <strong>attention</strong>, and this lesson builds the idea with a worked example you can play with. The formal machinery (Q, K, V, multi-head) waits for <a href="lesson_03a.html">L3a</a> — here we just get the idea.</p>
+<p>Read this: "the dog's <strong>bark</strong>" vs "the tree's <strong>bark</strong>." Same word, two meanings — and the only thing that tells them apart is the <em>neighbours</em>. A word’s meaning depends on the words around it, so each word needs a way to <strong>look at the others</strong> and pull in what matters. That move is <strong>attention</strong>, and this lesson builds the idea with a worked example you can play with. The formal machinery (Q, K, V, multi-head) waits for <a href="lesson_03a.html">L3a</a> — here we just get the idea.</p>
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s attention scores, percentages, and blended vectors — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
@@ -147,11 +147,11 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
 </div>
 
 <div class="widget runpy">
-  <h3>🐍 Run it — why a word needs its neighbours ("river bank" vs "savings bank")</h3>
-  <p>Remember the two banks from the top of the page? Here's the payoff. Without attention, <code>bank</code> has <strong>one</strong> fixed vector — the model can't tell the two apart. Run attention (score → softmax → mix) and watch the same word split into two.</p>
+  <h3>🐍 Run it — why a word needs its neighbours (a dog's "bark" vs a tree's "bark")</h3>
+  <p>Remember the two barks from the top of the page? Here's the payoff. Without attention, <code>bark</code> has <strong>one</strong> fixed vector — the model can't tell the two apart. Run attention (score → softmax → mix) and watch the same word split into two. Note the shapes: 2 words in → a (2, 2) attention matrix → 2 new vectors out.</p>
   <textarea class="runpy-code">import math
-# each word is [water-ness, money-ness]
-vec = {"river": [1.0, 0.0], "savings": [0.0, 1.0], "bank": [0.5, 0.5]}
+# each word is a 2-number vector: [animal-ness, plant-ness]
+vec = {"dog": [1.0, 0.0], "tree": [0.0, 1.0], "bark": [0.5, 0.5]}
 
 def dot(a, b): return sum(x*y for x, y in zip(a, b))
 def softmax(s):
@@ -159,34 +159,28 @@ def softmax(s):
     return [v/t for v in e]
 
 def attend(sentence):                  # the 3 moves: score -> softmax -> mix
-    X = [vec[w] for w in sentence]
+    X = [vec[w] for w in sentence]     # X shape = (2 words, 2 numbers)
     out = []
     for i in range(len(X)):
-        scores = [dot(X[i], X[j]) for j in range(len(X))]
-        w = softmax(scores)
+        scores = [dot(X[i], X[j]) for j in range(len(X))]   # row of (2,)
+        w = softmax(scores)                                  # (2,) sums to 1.0
         out.append([sum(w[j]*X[j][k] for j in range(len(X))) for k in range(2)])
-    return out
+    return out                         # out shape = (2 words, 2 numbers)
 
-print("WITHOUT attention — 'bank' is ONE fixed vector in both sentences:")
-print("  river bank   -> bank =", vec["bank"])
-print("  savings bank -> bank =", vec["bank"])
-print("  -> identical. nothing tells the two banks apart.\n")
+print("WITHOUT attention — 'bark' is ONE fixed vector, shape (2,):")
+print("  bark =", vec["bark"], " -> same whether it's a DOG's bark or a TREE's bark.\n")
 
-rb = attend(["river", "bank"])[1]      # the 'bank' row
-sb = attend(["savings", "bank"])[1]
-print("WITH attention — 'bank' absorbs its neighbour:")
-print("  river bank   -> bank =", [round(v, 2) for v in rb])
-print("  savings bank -> bank =", [round(v, 2) for v in sb])
-print("  -> now different! water-bank vs money-bank, from the same word.")</textarea>
-  <pre class="runpy-expected" hidden>WITHOUT attention — 'bank' is ONE fixed vector in both sentences:
-  river bank   -> bank = [0.5, 0.5]
-  savings bank -> bank = [0.5, 0.5]
-  -> identical. nothing tells the two banks apart.
+print("WITH attention (2 words in -> attention matrix (2, 2) -> 2 vectors out):")
+print("  'dog bark'  -> bark =", [round(v, 2) for v in attend(["dog", "bark"])[1]])
+print("  'tree bark' -> bark =", [round(v, 2) for v in attend(["tree", "bark"])[1]])
+print("  -> now different! the same word splits in two, from its neighbour.")</textarea>
+  <pre class="runpy-expected" hidden>WITHOUT attention — 'bark' is ONE fixed vector, shape (2,):
+  bark = [0.5, 0.5]  -> same whether it's a DOG's bark or a TREE's bark.
 
-WITH attention — 'bank' absorbs its neighbour:
-  river bank   -> bank = [0.75, 0.25]
-  savings bank -> bank = [0.25, 0.75]
-  -> now different! water-bank vs money-bank, from the same word.</pre>
+WITH attention (2 words in -> attention matrix (2, 2) -> 2 vectors out):
+  'dog bark'  -> bark = [0.75, 0.25]
+  'tree bark' -> bark = [0.25, 0.75]
+  -> now different! the same word splits in two, from its neighbour.</pre>
 </div>
 
 <!-- ─────────── L3 PLAYGROUND: run attention by hand ─────────── -->

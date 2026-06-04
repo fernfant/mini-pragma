@@ -133,9 +133,9 @@ You · Grandma =  10×4 + 7×0 + 9×0 + 1×9 =  49    (small = not similar)</cod
   <p>That whole grid is just a few lines of Python: a word is a list of numbers, and the <em>dot product</em> is the similarity score. Change the numbers and re-run.</p>
   <textarea class="runpy-code"># Each word is a list of numbers (its embedding). Similar words point the same way.
 emb = {
-    "dog":  [0.9, 0.1],
-    "cat":  [0.8, 0.2],
-    "runs": [-0.3, 0.9],
+    "dog":  [0.9, 0.1],   # animal
+    "cat":  [0.8, 0.2],   # animal
+    "bark": [0.1, 0.9],   # a sound
 }
 
 def dot(a, b):                       # dot product = a similarity score
@@ -143,16 +143,16 @@ def dot(a, b):                       # dot product = a similarity score
 
 print("dog  =", emb["dog"])          # look up a word's vector
 print("cat  =", emb["cat"])
-print("runs =", emb["runs"])
+print("bark =", emb["bark"])
 print()
-print("dog · cat  =", round(dot(emb["dog"], emb["cat"]), 2), " (high  -> alike)")
-print("dog · runs =", round(dot(emb["dog"], emb["runs"]), 2), " (low   -> different)")</textarea>
+print("dog · cat  =", round(dot(emb["dog"], emb["cat"]), 2), " (high  -> alike: both animals)")
+print("dog · bark =", round(dot(emb["dog"], emb["bark"]), 2), " (low   -> different: animal vs sound)")</textarea>
   <pre class="runpy-expected" hidden>dog  = [0.9, 0.1]
 cat  = [0.8, 0.2]
-runs = [-0.3, 0.9]
+bark = [0.1, 0.9]
 
-dog · cat  = 0.74  (high  -> alike)
-dog · runs = -0.18  (low   -> different)</pre>
+dog · cat  = 0.74  (high  -> alike: both animals)
+dog · bark = 0.18  (low   -> different: animal vs sound)</pre>
 </div>
 
 <h2 class="step" id="emerge"><span class="step-num">Twist</span> The mind-blowing twist</h2>
@@ -881,14 +881,14 @@ L4     words ──→ [ embed → (attention + MLP) × N ]    ──→ guess  
 
 <div class="widget runpy">
   <h3>🐍 Run it — broken embeddings, then fix them by training</h3>
-  <p>Start everyone at <strong>random</strong> and check: can it tell that <code>dog</code> and <code>puppy</code> are alike? <strong>No</strong> — untrained, it scores them the same as <code>dog</code> and <code>table</code>. Useless. Then we train on which words share company, and run the <em>same</em> check again.</p>
+  <p>Start everyone at <strong>random</strong> and check: can it tell that <code>dog</code> and <code>bark</code> go together? <strong>No</strong> — untrained, it scores them the same as <code>dog</code> and <code>meow</code>. Useless. Then we train on which words share company, and run the <em>same</em> check again.</p>
   <textarea class="runpy-code"># Tiny word2vec: nudge words that appear together to point the same way.
 import random
 random.seed(0)
 
-words    = ["dog", "puppy", "cat", "kitten", "table", "chair"]
-together = [("dog","puppy"), ("cat","kitten"), ("table","chair")]  # want dot -> 1
-apart    = [("dog","table"), ("cat","chair"), ("puppy","chair")]   # want dot -> 0
+words    = ["dog", "bark", "cat", "meow"]
+together = [("dog","bark"), ("cat","meow")]                  # co-occur -> want dot -> 1
+apart    = [("dog","cat"), ("dog","meow"), ("bark","meow")]  # don't    -> want dot -> 0
 
 # every word starts as 2 small RANDOM numbers — untrained
 emb = {w: [random.uniform(-0.3, 0.3), random.uniform(-0.3, 0.3)] for w in words}
@@ -897,9 +897,9 @@ def dot(a, b): return a[0]*b[0] + a[1]*b[1]
 
 # --- BEFORE training: is it any good? ---
 print("untrained (random):")
-print(f"  dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   (these ARE alike)")
-print(f"  dog·table = {dot(emb['dog'],emb['table']):+.2f}   (these are NOT)")
-print("  -> both near 0: it can't tell puppy from table. useless.\n")
+print(f"  dog·bark = {dot(emb['dog'],emb['bark']):+.2f}   (they co-occur -> should be alike)")
+print(f"  dog·meow = {dot(emb['dog'],emb['meow']):+.2f}   (never together -> should not)")
+print("  -> both near 0: no idea that bark goes with dog.\n")
 
 # --- train: nudge each pair toward its target, thousands of times ---
 lr = 0.05
@@ -915,20 +915,20 @@ for step in range(2001):
             vb[i] -= lr*gb[i]
 
 # --- AFTER training: run the EXACT same check ---
-print("trained:")
-print(f"  dog·puppy = {dot(emb['dog'],emb['puppy']):+.2f}   (alike -> near 1)")
-print(f"  dog·table = {dot(emb['dog'],emb['table']):+.2f}   (different -> near 0)")
-print("\nNobody hand-coded that — it fell out of which words share company.")</textarea>
+print("trained on which words share company:")
+print(f"  dog·bark = {dot(emb['dog'],emb['bark']):+.2f}   (alike -> near 1)")
+print(f"  dog·meow = {dot(emb['dog'],emb['meow']):+.2f}   (different -> near 0)")
+print("\nNobody hand-coded that — it fell out of which words appear together.")</textarea>
   <pre class="runpy-expected" hidden>untrained (random):
-  dog·puppy = -0.03   (these ARE alike)
-  dog·table = +0.00   (these are NOT)
-  -> both near 0: it can't tell puppy from table. useless.
+  dog·bark = -0.03   (they co-occur -> should be alike)
+  dog·meow = +0.02   (never together -> should not)
+  -> both near 0: no idea that bark goes with dog.
 
-trained:
-  dog·puppy = +1.00   (alike -> near 1)
-  dog·table = -0.00   (different -> near 0)
+trained on which words share company:
+  dog·bark = +1.00   (alike -> near 1)
+  dog·meow = -0.00   (different -> near 0)
 
-Nobody hand-coded that — it fell out of which words share company.</pre>
+Nobody hand-coded that — it fell out of which words appear together.</pre>
 </div>
 
 <h3>Is this what BERT does?</h3>
