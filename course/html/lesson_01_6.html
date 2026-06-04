@@ -68,6 +68,10 @@
 
 <p>On <a href="lesson_01_5.html">L1.5</a> you trained one small <code>Linear → ReLU → Linear</code> network to fit a curve. Here’s the secret: <strong>that exact block is the engine inside every Transformer.</strong> This lesson takes the little MLP you just built and shows what happens when you <em>stack</em> it — how a pile of identical blocks becomes BERT’s body, and why depth is where the power comes from.</p>
 
+<div class="callout info">
+  <strong>🗺 This one is a preview — the map, not the territory.</strong> You’ve genuinely built <em>one</em> of BERT’s three pieces: the MLP, which becomes the feed-forward block. The other two — <a href="lesson_02.html">embeddings</a> (next, in L2) and <a href="lesson_03.html">attention</a> (L3) — you’ll build from scratch in the coming lessons, and <a href="lesson_04.html">L4</a> assembles all three. So if <strong>attention</strong> is still a black box here, that’s expected — this page just shows where your MLP ends up in the finished machine, so each piece you build next has a slot to click into.
+</div>
+
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s the vectors climbing the 18-block stack — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
 <div id="net-l16"></div>
