@@ -146,7 +146,8 @@ new "cat" = 0.00 × [1, 0] + 1.00 × [2, 3] = [2, 3]         ← stayed itself</
   <strong>"the" got smarter.</strong> It started as <code>[1, 0]</code> (bland — could mean anything). After attention, it's much closer to cat's vector. It now means "the <em>cat</em>", not just "the".
 </div>
 
-<div class="widget runpy">
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 7 of 15 — attention</div>
   <h3>🐍 Run it — why a word needs its neighbours (a dog's "bark" vs a tree's "bark")</h3>
   <p>Remember the two barks from the top of the page? Here's the payoff. Without attention, <code>bark</code> has <strong>one</strong> fixed vector — the model can't tell the two apart. Run attention (score → softmax → mix) and watch the same word split into two. Note the shapes: 2 words in → a (2, 2) attention matrix → 2 new vectors out.</p>
   <textarea class="runpy-code">import math

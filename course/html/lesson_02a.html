@@ -298,6 +298,56 @@ r();})();</script>
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 6 of 15 — the engine trains the embeddings</div>
+  <h3>🐍 Watch two words drift together — trained by the L1.5 engine</h3>
+  <p>The same <code>Value</code> machine from L1.5 now shapes the embeddings: it nudges words that belong together until they point the same way. Start random, train, and <code>dog·bark</code> climbs to 1 while <code>dog·meow</code> stays near 0.</p>
+  <textarea class="runpy-code">class Value:                          # the engine from L1.5 (+ and * are enough here)
+    def __init__(self, d, c=()): self.data=d; self.grad=0.0; self._backward=lambda:None; self._prev=set(c)
+    def __add__(self, o):
+        o=o if isinstance(o,Value) else Value(o); out=Value(self.data+o.data,(self,o))
+        def b(): self.grad+=out.grad; o.grad+=out.grad
+        out._backward=b; return out
+    def __mul__(self, o):
+        o=o if isinstance(o,Value) else Value(o); out=Value(self.data*o.data,(self,o))
+        def b(): self.grad+=o.data*out.grad; o.grad+=self.data*out.grad
+        out._backward=b; return out
+    def __sub__(self, o): return self + (o*-1 if isinstance(o,Value) else Value(-o))
+    def backward(self):
+        order=[]; seen=set()
+        def bld(v):
+            if v not in seen:
+                seen.add(v)
+                for c in v._prev: bld(c)
+                order.append(v)
+        bld(self); self.grad=1.0
+        for v in reversed(order): v._backward()
+
+import random
+random.seed(0)
+words = ["dog", "bark", "cat", "meow"]
+emb = {w: [Value(random.uniform(-0.3, 0.3)) for _ in range(2)] for w in words}
+def dot(a, b): return a[0]*b[0] + a[1]*b[1]
+
+together = [("dog","bark"), ("cat","meow")]                  # want dot -> 1
+apart    = [("dog","cat"), ("dog","meow"), ("bark","meow")]  # want dot -> 0
+ps = [p for w in words for p in emb[w]]
+
+print("before:  dog.bark = %.2f   dog.meow = %.2f" % (dot(emb["dog"],emb["bark"]).data, dot(emb["dog"],emb["meow"]).data))
+for step in range(300):
+    for (a, b), target in [(p,1.0) for p in together] + [(p,0.0) for p in apart]:
+        diff = dot(emb[a], emb[b]) - target
+        loss = diff * diff
+        for p in ps: p.grad = 0.0
+        loss.backward()
+        for p in ps: p.data -= 0.1 * p.grad
+print("after:   dog.bark = %.2f   dog.meow = %.2f" % (dot(emb["dog"],emb["bark"]).data, dot(emb["dog"],emb["meow"]).data))
+print("trained by the SAME engine from L1.5 — dog & bark now point together.")</textarea>
+  <pre class="runpy-expected" hidden>before:  dog.bark = -0.03   dog.meow = 0.02
+after:   dog.bark = 1.00   dog.meow = -0.00
+trained by the SAME engine from L1.5 — dog & bark now point together.</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

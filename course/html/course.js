@@ -66,7 +66,7 @@
     if (!wrap) return;
     // Skip these containers entirely.
     const SKIP = new Set(["PRE", "CODE", "A", "BUTTON", "H1", "H2", "H3", "H4",
-                          "SCRIPT", "STYLE", "SELECT", "OPTION", "FIGCAPTION"]);
+                          "SCRIPT", "STYLE", "SELECT", "OPTION", "FIGCAPTION", "TEXTAREA"]);
     const skipClass = ["lesson-toc", "lesson-links", "quiz", "mission", "roadmap"];
     // Longest terms first so "gradient descent" beats "gradient".
     const terms = Object.keys(GLOSSARY).sort((a, b) => b.length - a.length);
