@@ -320,6 +320,32 @@ loss = sum(squared) / 5 = <span style="color:${lossColor};font-weight:700;">${lo
   <p>Two things jump out: by step <strong>10</strong> the loss is already tiny (the model basically nails the slope). The remaining 990 steps are just sliding <code>b</code> the last bit toward 1.0. Big models on hard problems need <em>millions</em> of steps; tiny problems need almost none.</p>
 </details>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 1 of 15 — the seed</div>
+  <h3>🐍 Start the one file you'll grow all course</h3>
+  <p>Everything above, in code you can run. A model is one number; "learning" is nudging it until the guesses match. This is literally the first thing in <code>mini.py</code> — the file that, rung by rung, grows into a real transformer by the end of the course.</p>
+  <textarea class="runpy-code">w = 0.2
+def model(x): return w * x          # guess a tip from a bill
+
+print("start:  w =", w, " guess for a £50 bill =", model(50))
+
+bill, real_tip = 50, 8.0            # the real tip was £8, not £10
+for step in range(2001):
+    err = model(bill) - real_tip    # how wrong is the guess?
+    w  -= 0.0001 * err * bill       # nudge w to shrink the error
+    if step % 500 == 0:
+        print(f"step {step:4d}   w = {w:.3f}   guess = {model(bill):.2f}")
+
+print("learned: w =", round(w, 3), " guess for £50 =", round(model(50), 2))</textarea>
+  <pre class="runpy-expected" hidden>start:  w = 0.2  guess for a £50 bill = 10.0
+step    0   w = 0.190   guess = 9.50
+step  500   w = 0.160   guess = 8.00
+step 1000   w = 0.160   guess = 8.00
+step 1500   w = 0.160   guess = 8.00
+step 2000   w = 0.160   guess = 8.00
+learned: w = 0.16  guess for £50 = 8.0</pre>
+</div>
+
 <h2 class="step" id="takeaway"><span class="step-num">Takeaway</span> The big takeaway</h2>
 
 <div class="callout good">

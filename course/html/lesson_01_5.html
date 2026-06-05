@@ -1131,6 +1131,47 @@ y = sum(w2[i]*h_relu[i] <span class="pg-keyword">for</span> i <span class="pg-ke
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 2 of 15 — the engine</div>
+  <h3>🐍 Build the machine that does the nudging</h3>
+  <p>In L1 you nudged <code>w</code> by hand. Since then you've called <code>loss.backward()</code> to get that nudge automatically — so let's build the ~20-line machine behind it. A <code>Value</code> is a number that <em>remembers how it was made</em>, so it can hand back its own gradient. Watch it find the <strong>same</strong> nudge you worked out by hand in L1.</p>
+  <textarea class="runpy-code">class Value:                         # a number that remembers how it was built
+    def __init__(self, data, _children=()):
+        self.data=data; self.grad=0.0; self._backward=lambda:None; self._prev=set(_children)
+    def __add__(self, o):
+        o=o if isinstance(o,Value) else Value(o); out=Value(self.data+o.data,(self,o))
+        def _b(): self.grad+=out.grad; o.grad+=out.grad
+        out._backward=_b; return out
+    def __mul__(self, o):
+        o=o if isinstance(o,Value) else Value(o); out=Value(self.data*o.data,(self,o))
+        def _b(): self.grad+=o.data*out.grad; o.grad+=self.data*out.grad
+        out._backward=_b; return out
+    def backward(self):              # fill in every .grad, working backwards
+        order=[]; seen=set()
+        def build(v):
+            if v not in seen:
+                seen.add(v)
+                for c in v._prev: build(c)
+                order.append(v)
+        build(self); self.grad=1.0
+        for v in reversed(order): v._backward()
+
+w = Value(0.2)                       # the same w as Lesson 1 — now a Value
+pred = w * 50                        # guess for a £50 bill
+err  = pred + (-8.0)                 # pred - real_tip  (the real tip was £8)
+loss = (err * err) * 0.5             # squared error
+loss.backward()                      # the machine fills in every .grad
+
+print("guess      =", pred.data)
+print("loss       =", loss.data)
+print("w.grad     =", w.grad, " <- the nudge direction the machine found")
+print("by hand(L1): err * bill =", (pred.data - 8.0) * 50)</textarea>
+  <pre class="runpy-expected" hidden>guess      = 10.0
+loss       = 2.0
+w.grad     = 100.0  <- the nudge direction the machine found
+by hand(L1): err * bill = 100.0</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

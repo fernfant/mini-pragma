@@ -1046,3 +1046,11 @@ button:focus-visible, a:focus-visible, input:focus-visible, [tabindex]:focus-vis
 .runpy-ctrl{margin:8px 0;}
 .runpy-lbl{font-size:11px;color:#64748b;margin:2px 0 3px;font-weight:600;}
 .runpy-out{min-height:60px;white-space:pre-wrap;background:#0f172a;color:#d1fae5;border:1px solid #334155;border-radius:8px;padding:12px 14px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.55;}
+
+/* mini.py windows — the one growing file (the spine artifact, rung by rung) */
+.widget.runpy.mini-window { border: 2px solid #6366f1; }
+.mini-tag {
+  display: inline-block; margin: 0 0 8px; padding: 3px 11px;
+  border-radius: 999px; font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  color: #3730a3; background: #eef2ff; border: 1px solid #c7d2fe;
+}
