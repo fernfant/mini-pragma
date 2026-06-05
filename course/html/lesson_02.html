@@ -1273,6 +1273,30 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 5 of 15 — words become vectors</div>
+  <h3>🐍 An embedding is a row you look up by id</h3>
+  <p>Now <code>mini.py</code> can read words: each word has an id, and the id picks a <strong>row</strong> out of a big table of numbers. That row is the word's embedding — the same vocabulary (<code>dog, bark, cat, meow, fish, swim</code>) it keeps right to the end of the course.</p>
+  <textarea class="runpy-code">import random
+random.seed(0)
+
+vocab = ["<pad>", "<mask>", "dog", "cat", "fish", "bark", "meow", "swim"]
+tok = {w: i for i, w in enumerate(vocab)}
+D = 4
+emb = [[round(random.uniform(-1, 1), 2) for _ in range(D)] for _ in vocab]
+
+def embed(word): return emb[tok[word]]
+
+print("vocab:", vocab)
+print("dog  is id", tok["dog"], "-> vector", embed("dog"))
+print("bark is id", tok["bark"], "-> vector", embed("bark"))
+print("an embedding is just the row you look up by a word's id.")</textarea>
+  <pre class="runpy-expected" hidden>vocab: ['&lt;pad&gt;', '&lt;mask&gt;', 'dog', 'cat', 'fish', 'bark', 'meow', 'swim']
+dog  is id 2 -> vector [-0.05, 0.17, 0.82, 0.01]
+bark is id 5 -> vector [-0.38, 0.46, 0.8, 0.37]
+an embedding is just the row you look up by a word's id.</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

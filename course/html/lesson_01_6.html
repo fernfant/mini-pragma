@@ -567,6 +567,28 @@ Linear(2048, 512)</code></pre>
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 4 of 15 — the MLP block (the FFN)</div>
+  <h3>🐍 Stack two layers with a bend between them</h3>
+  <p>Linear → ReLU → Linear. The ReLU "bend" zeroes the negatives — that's what lets the network leave straight lines behind. <strong>This exact block is the feed-forward sub-layer inside every transformer.</strong></p>
+  <textarea class="runpy-code">def dot(a, b): return sum(ai*bi for ai, bi in zip(a, b))
+def relu(v): return [z if z > 0 else 0 for z in v]
+def linear(x, W, b): return [dot(row, x) + bi for row, bi in zip(W, b)]
+
+x  = [1.0, -2.0]
+W1 = [[1,1],[2,-1],[0,1]]; b1 = [0,0,1]      # 2 -> 3 (hidden)
+W2 = [[1,0,-1],[0,1,1]];   b2 = [0,0]        # 3 -> 2 (out)
+
+h = relu(linear(x, W1, b1))
+y = linear(h, W2, b2)
+print("x      =", x)
+print("hidden =", h, "  <- ReLU zeroed the negatives (the 'bend')")
+print("output =", y)</textarea>
+  <pre class="runpy-expected" hidden>x      = [1.0, -2.0]
+hidden = [0, 4.0, 0]   &lt;- ReLU zeroed the negatives (the 'bend')
+output = [0.0, 4.0]</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

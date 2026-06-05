@@ -420,6 +420,26 @@ Add the biases (OR <code>−0.5</code>, AND <code>−1.5</code>) → <code>[0.5,
   <p style="margin:.6em 0 0;">The recipe never changes — only <code>d</code> grows. A phone photo is <strong>d ≈ 150,000</strong> (pixels × 3 colours); one word's embedding is <strong>d ≈ 768</strong> in a real model. Same <code>W·x + bias → ReLU</code>, just a much wider matrix. You've now seen the whole machine at <code>d=1</code>, <code>d=2</code> and <code>d=6</code> — the big ones work <em>exactly</em> the same.</p>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 3 of 15 — inputs become a vector</div>
+  <h3>🐍 The input grows from one number into a list</h3>
+  <p>In L1 the input was one number. Real inputs are <em>vectors</em>, and a layer is just a <strong>dot product per neuron</strong> — each row of weights times the input. (In the full <code>mini.py</code> these are <code>Value</code>s so they can train; here we just watch the shapes line up.)</p>
+  <textarea class="runpy-code">def dot(a, b): return sum(ai*bi for ai, bi in zip(a, b))
+
+x = [3, 1]                      # input is now 2 numbers — a vector
+W = [[2, 0],                    # 2 neurons, each with 2 weights
+     [1, 1]]
+b = [0, -1]
+
+out = [dot(row, x) + bi for row, bi in zip(W, b)]
+print("x  =", x, " (a vector of 2)")
+print("W  =", W, " (2 x 2)")
+print("out =", out, " <- one number per neuron")</textarea>
+  <pre class="runpy-expected" hidden>x  = [3, 1]  (a vector of 2)
+W  = [[2, 0], [1, 1]]  (2 x 2)
+out = [6, 3]  &lt;- one number per neuron</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
