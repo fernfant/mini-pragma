@@ -572,6 +572,30 @@ target:  the    cat   sat   on    the   mat  &lt;eos&gt;
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 10 of 15 — make it WRITE (the causal mask)</div>
+  <h3>🐍 One rule change turns it into a text writer</h3>
+  <p>BERT (rung 9) lets every word peek both ways. To <em>generate</em> text — GPT-style — a word may only look <strong>left</strong>, never at the future. That single rule is the <strong>causal mask</strong>.</p>
+  <textarea class="runpy-code">import math
+def softmax(s):
+    m=max(s); e=[math.exp(v-m) for v in s]; t=sum(e); return [v/t for v in e]
+words = ["the", "dog", "says", "___"]
+print("causal attention — for WRITING, a word may only look LEFT:")
+for i, wd in enumerate(words):
+    masked = [1.0 if j <= i else -1e9 for j in range(4)]   # block the future
+    w = softmax(masked)
+    print(f"  {wd:4s} can see -> {[round(x,2) for x in w]}")
+print("each row spreads weight only over 0..i, never the future.")
+print("that one rule (the causal mask) turns BERT into a GPT-style writer.")</textarea>
+  <pre class="runpy-expected" hidden>causal attention — for WRITING, a word may only look LEFT:
+  the  can see -> [1.0, 0.0, 0.0, 0.0]
+  dog  can see -> [0.5, 0.5, 0.0, 0.0]
+  says can see -> [0.33, 0.33, 0.33, 0.0]
+  ___  can see -> [0.25, 0.25, 0.25, 0.25]
+each row spreads weight only over 0..i, never the future.
+that one rule (the causal mask) turns BERT into a GPT-style writer.</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

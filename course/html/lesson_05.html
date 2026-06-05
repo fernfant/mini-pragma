@@ -438,6 +438,27 @@ answer:  <span class="pg-ans">${answer}</span>  (id ${t2i[answer]})`;
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 12 of 15 — same machine, new data (PRAGMA)</div>
+  <h3>🐍 Feed it bank events instead of words</h3>
+  <p>The payoff of one file: <code>mini.py</code> never changes. PRAGMA just hands it different <em>tokens</em> — a transaction becomes key+value tokens, embedded and attended exactly like words.</p>
+  <textarea class="runpy-code">event = {"merchant": "Tesco", "amount": "14.99", "type": "groceries"}
+tokens = []
+for k, v in event.items():
+    tokens += [f"<{k}>", v]                      # key token, then value token
+vocab = ["<pad>","<mask>","<merchant>","<amount>","<type>","Tesco","14.99","groceries"]
+tok = {w: i for i, w in enumerate(vocab)}
+ids = [tok[t] for t in tokens]
+print("event :", event)
+print("tokens:", tokens)
+print("ids   :", ids)
+print("same mini.py: embed -> attention -> head. Only the vocabulary changed.")</textarea>
+  <pre class="runpy-expected" hidden>event : {'merchant': 'Tesco', 'amount': '14.99', 'type': 'groceries'}
+tokens: ['&lt;merchant>', 'Tesco', '&lt;amount>', '14.99', '&lt;type>', 'groceries']
+ids   : [2, 5, 3, 6, 4, 7]
+same mini.py: embed -> attention -> head. Only the vocabulary changed.</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>

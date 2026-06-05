@@ -238,6 +238,37 @@ action=search    price=luxury   beds=studio  area=jvc    ...</code></pre>
   </ol>
 </div>
 
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 15 of 15 — the whole journey</div>
+  <h3>🐍 From one multiply to a transformer — every line yours</h3>
+  <p>Run it. This is the file you grew, rung by rung, from <code>tip = 0.2 * bill</code> to a working transformer.</p>
+  <textarea class="runpy-code">rungs = [
+  "L1   : tip = 0.2 * bill        # a model is one number",
+  "L1.5 : the Value engine        # it computes the nudge for you",
+  "L1.5b: x is a vector           # inputs become lists",
+  "L1.6 : Linear-ReLU-Linear      # the FFN block",
+  "L2   : embeddings              # words -> vectors",
+  "L2a  : train the embeddings    # similar words cluster",
+  "L3   : attention               # words look at each other",
+  "L3a  : Q / K / V               # how attention routes",
+  "L4   : masked language model   # it learns dog -> bark",
+]
+for r in rungs: print(r)
+print()
+print("From one multiply to a working transformer. You wrote every line.")</textarea>
+  <pre class="runpy-expected" hidden>L1   : tip = 0.2 * bill        # a model is one number
+L1.5 : the Value engine        # it computes the nudge for you
+L1.5b: x is a vector           # inputs become lists
+L1.6 : Linear-ReLU-Linear      # the FFN block
+L2   : embeddings              # words -> vectors
+L2a  : train the embeddings    # similar words cluster
+L3   : attention               # words look at each other
+L3a  : Q / K / V               # how attention routes
+L4   : masked language model   # it learns dog -> bark
+
+From one multiply to a working transformer. You wrote every line.</pre>
+</div>
+
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
   <ul>
