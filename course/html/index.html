@@ -73,9 +73,8 @@
   <p style="margin:0 0 8px;"><strong>What it processes:</strong> a sentence with one word hidden — <code>dog ___</code>. <strong>What it learns:</strong> to guess the missing word. To win that <em>fill-in-the-blank</em> game it has to teach <em>itself</em> which words belong together — that <code>dog</code> goes with <code>bark</code>, <code>cat</code> with <code>meow</code> — discovering the structure of its little language from <strong>nothing but examples</strong>, the same way ChatGPT learns English from the internet. Nobody writes those rules down; the model finds them.</p>
   <p style="margin:0 0 8px;"><strong>Under the hood</strong> it's the whole pipeline — words → <strong>embeddings</strong> → <strong>attention</strong> → a prediction <strong>head</strong> — trained by gradient descent on an autograd engine you build too. Pure Python, no PyTorch. One file, grown <em>one rung per lesson</em> — watch for the indigo <strong>🧱 mini.py</strong> boxes.</p>
   <p style="margin:0 0 8px;"><strong>📈 The rungs line up with the path exactly: rung N is built on Step N.</strong> The spinebar's <em>"Step N of 15"</em> and the box's <em>"rung N of 15"</em> count the same 15 — one rung per lesson. Here's the whole climb:</p>
-  <details style="margin:0 0 8px;">
-    <summary style="cursor:pointer;font-weight:600;">📈 The 15 rungs, lesson by lesson</summary>
-    <ol style="margin:8px 0 0;font-size:13.5px;line-height:1.7;">
+  <p style="margin:0 0 4px;font-weight:700;">📈 The 15 rungs, lesson by lesson:</p>
+  <ol style="margin:0 0 8px;padding-left:22px;font-size:13.5px;line-height:1.55;columns:2;column-gap:34px;">
       <li><a href="lesson_01.html">L1</a> — the seed: <code>w·x</code> + the nudge</li>
       <li><a href="lesson_01_5.html">L1.5</a> — the autograd engine (it computes the nudge)</li>
       <li><a href="lesson_01_5b.html">L1.5b</a> — inputs become a vector</li>
@@ -92,7 +91,6 @@
       <li><a href="lesson_05b.html">L5b</a> — same machine, a stream</li>
       <li><a href="lesson_06.html">L6</a> — the whole journey</li>
     </ol>
-  </details>
   <ul style="margin:8px 0 0;">
     <li><strong>See it run</strong> — the trained transformer answering for real — at <a href="lesson_04.html#step-9">Lesson 4, Step&nbsp;9</a>.</li>
     <li><strong>Build it from scratch and train it live</strong>, cell by cell, in the notebook <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_mini.ipynb" target="_blank" rel="noopener">lesson_mini.ipynb</a>.</li>
