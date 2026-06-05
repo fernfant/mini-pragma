@@ -703,14 +703,58 @@ AFTER training on masked examples:
 
 <h2 class="step" id="step-9"><span class="step-num">Step 9</span> Test the trained model on each rule</h2>
 
-<pre><code>Fill in the blank:
-  dog  -> bark    ✓
-  cat  -> meow    ✓
-  fish -> swim    ✓</code></pre>
+<div class="widget runpy mini-window">
+  <div class="mini-tag">🧱 mini.py · rung 9 of 15 — the transformer you built, working</div>
+  <h3>🐍 Ask it to fill in the blank</h3>
+  <p>This is <code>course/mini.py</code> after training — the real attention transformer, every piece you've built since L1 (embeddings + positions + Q/K/V + a head). It learned <code>dog↔bark, cat↔meow, fish↔swim</code> from masked examples alone. Ask it:</p>
+  <textarea class="runpy-code">import math
+# The weights mini.py LEARNED (344 numbers) from playing fill-in-the-blank.
+# (Training the real attention model takes a few seconds — longer than a click —
+#  so it is pre-trained here. Run `python3 mini.py` to train it yourself.)
+W = {"emb":[[-0.2194,0.2085,0.1583,-0.147,-0.0027,-0.0303,0.091,0.1732],[-0.6941,-0.7785,1.0464,0.6965,0.4428,-0.4523,0.0302,0.8574],[0.3781,0.9567,0.384,-1.0628,-1.1775,0.1292,0.7726,-0.649],[-0.1475,-0.3412,-1.4086,-0.2747,0.2825,0.5928,-1.3944,-0.1782],[-0.793,-0.2805,0.3274,-0.8145,-0.0436,-0.1266,-0.2519,-0.9398],[0.9783,0.4289,0.3176,-0.244,-0.2591,0.0755,1.4394,0.0121],[0.1565,0.4241,-1.3338,0.8215,0.7871,0.044,-0.547,0.463],[-0.728,-0.6401,0.8643,0.406,0.476,-0.3014,0.5212,0.3673]],"pos":[[-0.4768,-0.4272,-0.0193,0.2345,0.0152,0.0048,-0.3459,-0.8002],[-0.1912,0.205,0.6449,0.3919,0.2378,-0.4265,0.3684,0.9169]],"Wq":[[0.0943,0.0699,0.4184,-0.1908,-0.0053,0.1804,0.0968,0.2231],[-0.1385,0.0323,0.2929,-0.2877,0.1671,0.194,0.2409,0.1627],[0.2176,0.0285,-0.0315,-0.0706,-0.28,0.248,0.0304,-0.2369],[0.38,0.2255,-0.6429,-0.303,-0.0923,0.3768,0.0409,-0.404],[-0.3386,-0.2881,-0.2135,0.1568,0.2695,0.1716,0.1376,0.0646],[0.0881,0.4271,-0.1473,-0.4331,-0.3913,-0.1258,0.1786,-0.2258],[-0.2778,0.0635,-0.0132,-0.251,-0.1963,-0.0301,-0.1891,-0.0634],[0.2053,-0.1081,-0.3753,0.0294,-0.2521,0.0299,-0.1194,-0.5264]],"Wk":[[-0.2256,0.2342,-0.0769,-0.2122,0.035,0.2224,-0.3263,-0.4172],[-0.1799,0.1367,-0.3593,0.0708,0.065,0.1041,-0.2222,0.0782],[0.026,-0.1943,0.0387,0.1918,0.0024,-0.0891,-0.1802,0.1885],[-0.5445,-0.5142,0.6309,0.4108,-0.0152,0.0178,-0.2542,0.3908],[0.2037,0.0443,-0.1655,-0.3083,0.2288,-0.2653,0.2509,0.3492],[-0.095,-0.4262,0.2827,0.3436,0.138,-0.0284,-0.2058,-0.2178],[-0.1985,0.0742,-0.005,-0.1641,-0.2245,0.0769,-0.1302,0.0264],[-0.2776,0.0146,0.5542,-0.1345,-0.0723,-0.2893,0.2582,0.4443]],"Wv":[[-0.1632,-0.5935,0.9511,1.1278,0.8548,-0.5114,0.9271,1.2029],[0.4947,0.9427,0.4792,-0.1413,-0.6304,-0.323,1.265,-0.2664],[0.8195,0.6083,1.1521,-0.526,-0.9215,-0.1119,1.5642,0.088],[0.0738,0.2127,-0.2988,0.2562,0.0352,-0.3764,-0.4502,0.3271],[0.232,0.0914,-0.172,0.4126,0.2953,-0.0574,0.0007,0.2648],[-0.6961,-0.4117,0.9396,-0.0888,0.1505,-0.2672,0.1679,0.0087],[-0.0027,-0.4178,0.7232,-1.0675,-0.6871,0.109,0.2147,-0.9773],[1.0015,0.3267,-0.8814,-0.0969,-0.2213,0.4705,-0.3062,0.5956]],"Wh":[[-0.3068,0.3163,0.2817,-0.0382,-0.0882,-0.2426,-0.1608,0.3538],[-0.4891,-0.2266,0.3714,-0.0337,0.1238,-0.2663,-0.042,0.0146],[0.998,1.0587,1.4311,-0.3074,0.05,-0.0475,0.1292,0.1659],[0.694,-0.258,-0.8918,0.4819,0.3152,-0.3497,-1.4288,0.1657],[1.5392,-0.2792,0.1455,-0.1487,-0.0096,0.8766,-0.0893,-0.9717],[-1.0626,1.1006,1.2582,-0.2735,-0.3995,-0.1316,0.6804,-0.0089],[-0.842,-1.0179,-1.1251,-0.0612,0.0419,-0.6556,-0.338,0.7426],[-0.6174,-0.2619,-0.6291,-0.145,-0.4218,0.3954,0.7876,-0.9574]],"bh":[-1.2028,-1.2359,0.5531,0.6482,-0.0294,0.3429,0.0484,0.8754]}
+
+vocab = ["<pad>","<mask>","dog","cat","fish","bark","meow","swim"]
+tok = {w:i for i,w in enumerate(vocab)}
+D = 8; SCALE = 1/math.sqrt(D)
+
+def mv(M, x): return [sum(M[r][k]*x[k] for k in range(len(x))) for r in range(len(M))]
+def softmax(s):
+    m=max(s); e=[math.exp(v-m) for v in s]; t=sum(e); return [v/t for v in e]
+
+def forward(tokens, mask_pos):                       # the exact mini.py forward
+    X=[[W["emb"][tok[t]][k]+W["pos"][i][k] for k in range(D)] for i,t in enumerate(tokens)]
+    Q=[mv(W["Wq"],x) for x in X]; K=[mv(W["Wk"],x) for x in X]; V=[mv(W["Wv"],x) for x in X]
+    i=mask_pos
+    w=softmax([sum(Q[i][k]*K[j][k] for k in range(D))*SCALE for j in range(len(X))])
+    ctx=[sum(w[j]*V[j][k] for j in range(len(X))) for k in range(D)]
+    return [sum(W["Wh"][r][k]*ctx[k] for k in range(D))+W["bh"][r] for r in range(len(vocab))]
+
+def fill_blank(tokens, mask_pos):
+    p=softmax(forward(tokens, mask_pos))
+    return vocab[max(range(len(vocab)), key=lambda i:p[i])]
+
+print("Ask the transformer YOU built to fill in the blank:")
+for a,b in [("dog","bark"),("cat","meow"),("fish","swim")]:
+    print(f"   {a} ___   -> {fill_blank([a,'<mask>'],1)}")
+    print(f"   ___ {b}  -> {fill_blank(['<mask>',b],0)}")
+print()
+print("loss while it trained:  2.12 (random)  ->  0.24  ->  0.00  (learned all 3 rules)")
+print("Nobody told it dog goes with bark. It found that from blanks alone.")</textarea>
+  <pre class="runpy-expected" hidden>Ask the transformer YOU built to fill in the blank:
+   dog ___   -> bark
+   ___ bark  -> dog
+   cat ___   -> meow
+   ___ meow  -> cat
+   fish ___   -> swim
+   ___ swim  -> fish
+
+loss while it trained:  2.12 (random)  ->  0.24  ->  0.00  (learned all 3 rules)
+Nobody told it dog goes with bark. It found that from blanks alone.</pre>
+</div>
 
 <div class="callout good">
   <strong>You've now seen a real Transformer learn from scratch.</strong> Same recipe as ChatGPT — just smaller.
-  <p style="margin:8px 0 0;font-size:13.5px;"><strong>One honest caveat:</strong> the cell you ran in your browser was the <em>stripped-down</em> version — no attention, just a score table — so it could run without PyTorch. The <em>full</em> TinyMLM (with the attention layer from Step 5) is what trains in the <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener">notebook</a>. Same game, same loop, same loss crash — it just also lets the words look at each other.</p>
+  <p style="margin:8px 0 0;font-size:13.5px;"><strong>Two cells, two honest jobs:</strong> the live-trainer back in <a href="#step-7">Step 7</a> was the <em>stripped-down</em> version — no attention, just a score table — so it could <em>train</em> in your browser in a blink. The <strong>🧱 mini.py cell above</strong> is the <em>real</em> thing — full Q/K/V attention (L3a) — running the weights it actually learned. Training that full model end-to-end with gradients is what the <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener">notebook</a> does. Same game, same loop — the real one also lets the words look at each other.</p>
 </div>
 
 <h2 class="step" id="step-10"><span class="step-num">Step 10</span> What did the embeddings learn?</h2>
@@ -845,54 +889,7 @@ AFTER training on masked examples:
   </ol>
 </div>
 
-<div class="widget runpy mini-window">
-  <div class="mini-tag">🧱 mini.py · rung 9 of 15 — the transformer you built, working</div>
-  <h3>🐍 Ask it to fill in the blank</h3>
-  <p>This is <code>course/mini.py</code> after training — the real attention transformer, every piece you've built since L1 (embeddings + positions + Q/K/V + a head). It learned <code>dog↔bark, cat↔meow, fish↔swim</code> from masked examples alone. Ask it:</p>
-  <textarea class="runpy-code">import math
-# The weights mini.py LEARNED (344 numbers) from playing fill-in-the-blank.
-# (Training the real attention model takes a few seconds — longer than a click —
-#  so it is pre-trained here. Run `python3 mini.py` to train it yourself.)
-W = {"emb":[[-0.2194,0.2085,0.1583,-0.147,-0.0027,-0.0303,0.091,0.1732],[-0.6941,-0.7785,1.0464,0.6965,0.4428,-0.4523,0.0302,0.8574],[0.3781,0.9567,0.384,-1.0628,-1.1775,0.1292,0.7726,-0.649],[-0.1475,-0.3412,-1.4086,-0.2747,0.2825,0.5928,-1.3944,-0.1782],[-0.793,-0.2805,0.3274,-0.8145,-0.0436,-0.1266,-0.2519,-0.9398],[0.9783,0.4289,0.3176,-0.244,-0.2591,0.0755,1.4394,0.0121],[0.1565,0.4241,-1.3338,0.8215,0.7871,0.044,-0.547,0.463],[-0.728,-0.6401,0.8643,0.406,0.476,-0.3014,0.5212,0.3673]],"pos":[[-0.4768,-0.4272,-0.0193,0.2345,0.0152,0.0048,-0.3459,-0.8002],[-0.1912,0.205,0.6449,0.3919,0.2378,-0.4265,0.3684,0.9169]],"Wq":[[0.0943,0.0699,0.4184,-0.1908,-0.0053,0.1804,0.0968,0.2231],[-0.1385,0.0323,0.2929,-0.2877,0.1671,0.194,0.2409,0.1627],[0.2176,0.0285,-0.0315,-0.0706,-0.28,0.248,0.0304,-0.2369],[0.38,0.2255,-0.6429,-0.303,-0.0923,0.3768,0.0409,-0.404],[-0.3386,-0.2881,-0.2135,0.1568,0.2695,0.1716,0.1376,0.0646],[0.0881,0.4271,-0.1473,-0.4331,-0.3913,-0.1258,0.1786,-0.2258],[-0.2778,0.0635,-0.0132,-0.251,-0.1963,-0.0301,-0.1891,-0.0634],[0.2053,-0.1081,-0.3753,0.0294,-0.2521,0.0299,-0.1194,-0.5264]],"Wk":[[-0.2256,0.2342,-0.0769,-0.2122,0.035,0.2224,-0.3263,-0.4172],[-0.1799,0.1367,-0.3593,0.0708,0.065,0.1041,-0.2222,0.0782],[0.026,-0.1943,0.0387,0.1918,0.0024,-0.0891,-0.1802,0.1885],[-0.5445,-0.5142,0.6309,0.4108,-0.0152,0.0178,-0.2542,0.3908],[0.2037,0.0443,-0.1655,-0.3083,0.2288,-0.2653,0.2509,0.3492],[-0.095,-0.4262,0.2827,0.3436,0.138,-0.0284,-0.2058,-0.2178],[-0.1985,0.0742,-0.005,-0.1641,-0.2245,0.0769,-0.1302,0.0264],[-0.2776,0.0146,0.5542,-0.1345,-0.0723,-0.2893,0.2582,0.4443]],"Wv":[[-0.1632,-0.5935,0.9511,1.1278,0.8548,-0.5114,0.9271,1.2029],[0.4947,0.9427,0.4792,-0.1413,-0.6304,-0.323,1.265,-0.2664],[0.8195,0.6083,1.1521,-0.526,-0.9215,-0.1119,1.5642,0.088],[0.0738,0.2127,-0.2988,0.2562,0.0352,-0.3764,-0.4502,0.3271],[0.232,0.0914,-0.172,0.4126,0.2953,-0.0574,0.0007,0.2648],[-0.6961,-0.4117,0.9396,-0.0888,0.1505,-0.2672,0.1679,0.0087],[-0.0027,-0.4178,0.7232,-1.0675,-0.6871,0.109,0.2147,-0.9773],[1.0015,0.3267,-0.8814,-0.0969,-0.2213,0.4705,-0.3062,0.5956]],"Wh":[[-0.3068,0.3163,0.2817,-0.0382,-0.0882,-0.2426,-0.1608,0.3538],[-0.4891,-0.2266,0.3714,-0.0337,0.1238,-0.2663,-0.042,0.0146],[0.998,1.0587,1.4311,-0.3074,0.05,-0.0475,0.1292,0.1659],[0.694,-0.258,-0.8918,0.4819,0.3152,-0.3497,-1.4288,0.1657],[1.5392,-0.2792,0.1455,-0.1487,-0.0096,0.8766,-0.0893,-0.9717],[-1.0626,1.1006,1.2582,-0.2735,-0.3995,-0.1316,0.6804,-0.0089],[-0.842,-1.0179,-1.1251,-0.0612,0.0419,-0.6556,-0.338,0.7426],[-0.6174,-0.2619,-0.6291,-0.145,-0.4218,0.3954,0.7876,-0.9574]],"bh":[-1.2028,-1.2359,0.5531,0.6482,-0.0294,0.3429,0.0484,0.8754]}
 
-vocab = ["<pad>","<mask>","dog","cat","fish","bark","meow","swim"]
-tok = {w:i for i,w in enumerate(vocab)}
-D = 8; SCALE = 1/math.sqrt(D)
-
-def mv(M, x): return [sum(M[r][k]*x[k] for k in range(len(x))) for r in range(len(M))]
-def softmax(s):
-    m=max(s); e=[math.exp(v-m) for v in s]; t=sum(e); return [v/t for v in e]
-
-def forward(tokens, mask_pos):                       # the exact mini.py forward
-    X=[[W["emb"][tok[t]][k]+W["pos"][i][k] for k in range(D)] for i,t in enumerate(tokens)]
-    Q=[mv(W["Wq"],x) for x in X]; K=[mv(W["Wk"],x) for x in X]; V=[mv(W["Wv"],x) for x in X]
-    i=mask_pos
-    w=softmax([sum(Q[i][k]*K[j][k] for k in range(D))*SCALE for j in range(len(X))])
-    ctx=[sum(w[j]*V[j][k] for j in range(len(X))) for k in range(D)]
-    return [sum(W["Wh"][r][k]*ctx[k] for k in range(D))+W["bh"][r] for r in range(len(vocab))]
-
-def fill_blank(tokens, mask_pos):
-    p=softmax(forward(tokens, mask_pos))
-    return vocab[max(range(len(vocab)), key=lambda i:p[i])]
-
-print("Ask the transformer YOU built to fill in the blank:")
-for a,b in [("dog","bark"),("cat","meow"),("fish","swim")]:
-    print(f"   {a} ___   -> {fill_blank([a,'<mask>'],1)}")
-    print(f"   ___ {b}  -> {fill_blank(['<mask>',b],0)}")
-print()
-print("loss while it trained:  2.12 (random)  ->  0.24  ->  0.00  (learned all 3 rules)")
-print("Nobody told it dog goes with bark. It found that from blanks alone.")</textarea>
-  <pre class="runpy-expected" hidden>Ask the transformer YOU built to fill in the blank:
-   dog ___   -> bark
-   ___ bark  -> dog
-   cat ___   -> meow
-   ___ meow  -> cat
-   fish ___   -> swim
-   ___ swim  -> fish
-
-loss while it trained:  2.12 (random)  ->  0.24  ->  0.00  (learned all 3 rules)
-Nobody told it dog goes with bark. It found that from blanks alone.</pre>
-</div>
 
 <div class="recap">
   <div class="r-title">✅ You can now say…</div>
