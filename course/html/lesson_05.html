@@ -48,7 +48,7 @@
 <div class="wrap">
 
 <h1>Lesson 5 — <code>pragma_mini.py</code> line by line</h1>
-<p class="subtitle">Re-read every line of the toy with full understanding. Each line tagged with the lesson concept it uses.</p>
+<p class="subtitle">The transformer you built — now reading bank transactions instead of sentences. Same machine, brand-new job.</p>
 
 <div class="lesson-links">
   <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_05_pragma_mini.ipynb" target="_blank" rel="noopener"><span class="ico">📓</span> Open the notebook</a>
@@ -71,6 +71,8 @@
     <li><a href="#real">What real PRAGMA adds</a></li>
   </ol>
 </details>
+
+<p>A bank just saw this transaction: <code>merchant = Tesco · amount = ??? · type = groceries</code>. Can a machine guess the missing piece? <strong>Yes — with the exact same model you built for <code>the cat sat on the ___</code>.</strong></p>
 
 <p>In <a href="lesson_04.html">Lesson 4</a> you trained a tiny BERT to fill in blanks in <em>sentences</em>. PRAGMA is the <strong>same machine</strong> — embed → attention → head, trained by masking — just pointed at <strong>bank transactions</strong> instead of words. The only genuinely new idea is how you turn an event into tokens, so that's where we start.</p>
 

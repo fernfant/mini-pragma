@@ -69,13 +69,13 @@
 
 <aside class="bits-note"><span class="bn-tag">UNDER THE HOOD</span><span class="bn-body"><strong>It’s all just numbers.</strong> Right now that’s the Q·K scores, the √d scale, and softmax — and every number is ultimately just <strong>bits</strong>: <code>0</code>s and <code>1</code>s, the only thing a computer can store.</span><span class="bn-bits" aria-hidden="true">0100&#8201;1010&#8201;1100</span></aside>
 
-<h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> The full formula</h2>
+<h2 class="step" id="qkv"><span class="step-num">Q/K/V</span> Why one vector per word isn't enough</h2>
 
-<p>Real attention uses three learned projections of each word vector — Query, Key, Value — instead of just dotting <code>x</code> with itself:</p>
+<p>Everything earlier in this lesson used just <em>one</em> vector per word: we computed <code>x · xᵀ</code>, where each word is its own Query <em>and</em> its own Key at the same time. That has a hidden flaw — it's <strong>symmetric</strong>. The score for "it" looking at "cat" comes out <em>exactly the same</em> as "cat" looking at "it", because it's the same dot product either way. But real language isn't like that! The word <strong>"it"</strong> is desperately hunting for its noun, while "cat" isn't especially hunting for "it". Their needs are different, so their scores should be different too.</p>
 
-<pre><code>Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V</code></pre>
+<h3 id="qkv-why">The fix: the party-mixer trick</h3>
 
-<p>Don't stall on the <code>/ √d</code> bit yet — it's just a stabiliser, and we unpack it in a moment (<a href="#scale">Why divide by √d?</a>, just below). The heart of the formula is everything else:</p>
+<p>Picture a party where everyone is trying to find the person they came to talk to. Each guest fills out three cards. The <strong>Query</strong> card says <em>"what am I looking for?"</em> The <strong>Key</strong> card says <em>"what do I offer to anyone who's looking?"</em> The <strong>Value</strong> card says <em>"what I'll actually hand over if you pick me."</em> To decide who to listen to, a guest holds up their <strong>Query</strong> and compares it against everyone else's <strong>Key</strong> — a good match means "pay attention to this person" — and then collects that person's <strong>Value</strong>.</p>
 
 <ul>
   <li><strong>Q (query)</strong> — "what am I looking for?"</li>
@@ -83,19 +83,19 @@
   <li><strong>V (value)</strong> — "what do I actually contribute if matched?"</li>
 </ul>
 
-<p>The three matrices are trainable weights nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Q/K/V give the model more flexibility — each word can ask different questions of others than what it offers in return.</p>
-
-<h3 id="qkv-why">Why one vector isn't enough (the party-mixer trick)</h3>
-
-<p>Picture a party where everyone is trying to find the person they came to talk to. Each guest fills out three cards. The <strong>Query</strong> card says <em>"what am I looking for?"</em> The <strong>Key</strong> card says <em>"what do I offer to anyone who's looking?"</em> The <strong>Value</strong> card says <em>"what I'll actually hand over if you pick me."</em> To decide who to listen to, a guest holds up their <strong>Query</strong> and compares it against everyone else's <strong>Key</strong> — a good match means "pay attention to this person" — and then collects that person's <strong>Value</strong>.</p>
-
-<p>Everything earlier in this lesson used just <em>one</em> vector per word: we computed <code>x · xᵀ</code>, where each word is its own Query <em>and</em> its own Key at the same time. That has a hidden flaw — it's <strong>symmetric</strong>. The score for "it" looking at "cat" comes out <em>exactly the same</em> as "cat" looking at "it", because it's the same dot product either way. But real language isn't like that! The word <strong>"it"</strong> is desperately hunting for its noun, while "cat" isn't especially hunting for "it". Their needs are different, so their scores should be different too.</p>
-
-<p>Giving each word a <strong>separate</strong> Query and Key fixes this. Now "it" can write a Query that screams <em>"I'm a pronoun, find me a nearby noun!"</em>, and "cat" can write a Key that says <em>"I'm a noun."</em> Those match strongly — so "it" attends to "cat" — but the reverse score can be totally different. This is the asymmetry that the lesson's opening question (<em>"which word does 'it' refer to?"</em>) actually needs. Plain <code>x · xᵀ</code> can't tell apart "who's asking" from "who's being asked"; Q and K can.</p>
+<p>Giving each word a <strong>separate</strong> Query and Key fixes the symmetry. Now "it" can write a Query that screams <em>"I'm a pronoun, find me a nearby noun!"</em>, and "cat" can write a Key that says <em>"I'm a noun."</em> Those match strongly — so "it" attends to "cat" — but the reverse score can be totally different. This is the asymmetry that the lesson's opening question (<em>"which word does 'it' refer to?"</em>) actually needs. Plain <code>x · xᵀ</code> can't tell apart "who's asking" from "who's being asked"; Q and K can.</p>
 
 <div class="callout info">
   <strong>One word, three jobs.</strong> Q, K, and V are just three different views of the same word vector, each made by multiplying it by a learned matrix. Think of it as the word putting on a different hat depending on whether it's <em>asking</em> (Q), <em>being asked</em> (K), or <em>handing over its meaning</em> (V).
 </div>
+
+<h3>The whole story, in one line</h3>
+
+<p>Ask with a Query, match it against everyone's Keys, collect the matching Values — that's the entire idea, and here it is written as a formula:</p>
+
+<pre><code>Attention(Q, K, V) = softmax(Q · Kᵀ / √d) · V</code></pre>
+
+<p>The three matrices that build Q, K, and V are trainable weights, nudged by the same training loop from <a href="lesson_01.html">Lesson 1</a>. Don't stall on the <code>/ √d</code> bit — it's just a stabiliser, unpacked right below.</p>
 
 <h3 id="scale">Why divide by √d?</h3>
 

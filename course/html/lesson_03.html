@@ -81,10 +81,10 @@
 
 <div id="pred-l3"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l3",{
-  q:"Sentence: \"the dog chased cat\". Both dog and cat are animals (similar vectors). Besides itself, which word will 'dog' pay the MOST attention to?",
-  options:["cat — the other animal","chased — the action","the — the filler word"],
+  q:"Sentence: \"the dog chased cat\". A word leans hardest on the words most <em>like</em> itself. Besides itself, which word is 'dog' most alike?",
+  options:["cat — also an animal","chased — an action","the — a filler word"],
   correct:0,
-  reveal:"Attention is driven by similarity (the dot product). dog and cat have alike vectors (both animal-ish), so dog leans on cat. You'll see exactly this in the heatmap and the step-by-step panel below."
+  reveal:"Right — dog and cat are both animals, so dog leans on cat. In a moment you'll measure 'alikeness' by hand (it's called the dot product), and you'll see alike words lean on each other in the heatmap below."
 });});</script>
 
 <h2 class="step" id="overview"><span class="step-num">Map</span> The whole thing on one page</h2>
@@ -121,6 +121,13 @@ cat · cat  =  (2×2) + (3×3)  =  13</code></pre>
 
 <h3 id="step-2">Step 2 — Softmax (turn raw scores into a 100% budget)</h3>
 <p>Each word has 100% attention to spend. Softmax converts raw scores into percentages summing to 1. The biggest score wins most of the budget.</p>
+
+<p>The recipe is just two moves: <strong>grow</strong> each score (raise <em>e</em> ≈ 2.72 to it), then <strong>divide by the total</strong>. Let's do the <code>the</code> row by hand — its scores were <code>[1, 2]</code>:</p>
+<pre><code>e^1 = 2.72,   e^2 = 7.39          ← grow each score
+2.72 / (2.72 + 7.39) = 0.27       ← divide by the total
+7.39 / (2.72 + 7.39) = 0.73
+</code></pre>
+<p>So <code>"the"</code> ends up spending <strong>27%</strong> of its attention on itself and <strong>73%</strong> on <code>"cat"</code> — exactly the first row below. (The <code>cat</code> row's scores <code>[2, 13]</code> are so lopsided that <code>e^13</code> is enormous next to <code>e^2</code>, so it lands ~100% on itself.)</p>
 
 <table class="compact" style="width:auto;">
   <thead><tr><th></th><th>the</th><th>cat</th></tr></thead>

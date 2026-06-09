@@ -182,7 +182,7 @@ b = torch.tensor(0.0, requires_grad=True)</code></pre>
 <p>You just met the gradient — the downhill direction. <strong>SGD</strong> is simply the rule that takes a step that way, over and over, until the loss stops dropping. (It stands for <em>Stochastic Gradient Descent</em>; "stochastic" just means it can use a few examples at a time rather than all of them.) The <code>lr</code> — <em>learning rate</em> — is how big each downhill step is.</p>
 
 <h3 id="loss">The loss (Step 3)</h3>
-<p>The widget above (and the playground below) use the first <strong>5</strong> points <code>x = [1,2,3,4,5]</code>, so <code>y_true = [3, 5, 7, 9, 11]</code>. At step 0 (with <code>w=0, b=0</code>) the model predicts all zeros. The errors are <code>[-3, -5, -7, -9, -11]</code>, squared <code>[9, 25, 49, 81, 121]</code>, summed <code>285</code>, averaged <code>285 / 5 =</code> <strong>57</strong> — exactly the "loss" the widget shows at the start. (The full notebook uses all 8 points, which averages to 62.5 — same idea, a few more points.)</p>
+<p>The widget above (and the playground below) use the first <strong>5</strong> points <code>x = [1,2,3,4,5]</code>, so <code>y_true = [3, 5, 7, 9, 11]</code>. At step 0 (with <code>w=0, b=0</code>) the model predicts all zeros. The errors are <code>[-3, -5, -7, -9, -11]</code>, squared <code>[9, 25, 49, 81, 121]</code>, summed <code>285</code>, averaged <code>285 / 5 =</code> <strong>57</strong> — exactly the "loss" the widget shows at the start.</p>
 
 <div class="callout">
   <strong>Why squared?</strong> Squaring (1) makes all errors positive and (2) penalises big mistakes more than small ones. A miss of 10 contributes 100 to the loss; a miss of 1 contributes only 1.
