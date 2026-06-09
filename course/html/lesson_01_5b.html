@@ -59,7 +59,7 @@
 
 <h2 class="step" id="inputs"><span class="step-num">Inputs</span> What actually goes IN — turning things into numbers</h2>
 
-<p>On <a href="lesson_01_5.html">Lesson 1.5</a> the input was always a <strong>single number</strong> <code>x</code>. But how does an <em>image</em>, or a <em>word</em>, get in? And here is the question that trips everyone up: the number 3 is stored as 32 bits — do those bits go in one per neuron? <strong>No.</strong> Clearing this up is the key to how <em>everything</em> gets into a net.</p>
+<p>On <a href="lesson_01_5.html">Lesson 1.5</a> the input was always a <strong>single number</strong> <code>x</code>. But how does an <em>image</em>, or a <em>word</em>, get in? Here's the whole rule in one line: <strong>a neural net reads a list of numbers, and one number fills one slot.</strong> An image is already numbers (one per pixel), so it goes straight in. A word isn't, so we look one up. Let's see both.</p>
 
 <p>A neural net only eats <strong>a list of numbers</strong> (a <span class="term" data-def="a list of numbers, e.g. [3, 0, 1]">vector</span>). The length of that list is the number of <strong>features</strong> — one slot per real, separate thing about the input. The bits <em>inside</em> each number are just how it's stored; they are never the inputs.</p>
 

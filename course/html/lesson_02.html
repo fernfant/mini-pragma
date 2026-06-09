@@ -171,7 +171,7 @@ dog · bark = 0.18  (low   -> different: animal vs sound)</pre>
 
 <p>Four mystery numbers. <strong>The computer invents its own categories during training.</strong> Slot 1 might end up meaning "animal-ness". Slot 2 might mean something humans can't put a name on at all. It doesn't matter — what matters is that similar words end up with similar number lists, so the dot product comes out big.</p>
 
-<p>These mystery-number lists are called <strong>embeddings</strong>. Each word's list is its <em>embedding vector</em>. Size of the list = <em>embedding dimension</em>: 4 in our toy, 1024 in PRAGMA-Large.</p>
+<p>These mystery-number lists are called <strong>embeddings</strong>. Each word's list is its <em>embedding vector</em>. Size of the list = <em>embedding dimension</em>: 4 in our toy, 1024 in PRAGMA-Large (the real, full-size model this course builds toward).</p>
 
 <h2 class="step" id="step-1"><span class="step-num">Step 1</span> Tokenise — word → integer</h2>
 
@@ -1162,7 +1162,7 @@ step 5000 │ "the bird says tweet"  │ mask pos 3 (tweet)   │ loss 1.46
 
 <h3>What the model learned (real numbers from 3,000 training steps)</h3>
 
-<p>After training, I asked each word: "who are your nearest neighbours?" (highest <em>cosine</em> similarity). <strong>Bold</strong> = a neighbour from the same category — that's the kind of clustering we hoped to see emerge.</p>
+<p>After training, I asked each word: "who are your nearest neighbours?" (who points most the same way — see the note below). <strong>Bold</strong> = a neighbour from the same category — that's the kind of clustering we hoped to see emerge.</p>
 
 <div class="callout">
   <strong>Quick note — "cosine" vs the plain dot product.</strong> Earlier we used the raw dot product to measure similarity. The catch (from the "go deeper" box above): a longer vector gives bigger dot products just for being long, even when its <em>direction</em> isn't a better match. <strong>Cosine similarity</strong> fixes that — it's the same dot product, but first you shrink every vector to the same length, so only the <em>direction</em> counts. That's why it's the fairer "who's most alike?" measure. Same idea, just length-corrected.

@@ -647,7 +647,7 @@ step 400   loss 0.006     ← essentially zero</code></pre>
 
 <div class="widget runpy">
   <h3>🐍 Run it — watch the model go from clueless to correct</h3>
-  <p>That loss crash, live. We start the weights at a blank slate (knows nothing), play the fill-in-the-blank game a few hundred times, and re-check. This is a stripped-down TinyMLM — <strong>no attention, just a score table + cross-entropy + the L1 train loop</strong> — so it runs in your browser, but it's the same game and the same 3-line loop.</p>
+  <p>That loss crash, live. We start the weights at a blank slate (knows nothing), play the fill-in-the-blank game a few hundred times, and re-check. This is a stripped-down TinyMLM — <strong>no attention, just a score table + cross-entropy + the L1 train loop</strong> — so it can <em>train</em> live in your browser in a blink. (The <em>real</em> attention version is two steps down, pre-trained — same game, same loop.)</p>
   <textarea class="runpy-code">import math
 vocab = ["<pad>", "<mask>", "dog", "cat", "fish", "bark", "meow", "swim"]
 tok = {w: i for i, w in enumerate(vocab)}
