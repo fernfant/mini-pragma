@@ -69,8 +69,8 @@
     <li><a href="#step-5">Step 5 — Build the tiny model</a></li>
     <li><a href="#step-6">Step 6 — What the model says BEFORE training</a></li>
     <li><a href="#step-7">Step 7 — Train, with predictions at checkpoints</a></li>
-    <li><a href="#step-9">Step 9 — Test the trained model on each rule</a></li>
-    <li><a href="#step-10">Step 10 — What did the embeddings learn?</a></li>
+    <li><a href="#step-9">Step 8 — Test the trained model on each rule</a></li>
+    <li><a href="#step-10">Step 9 — What did the embeddings learn?</a></li>
     <li><a href="#data-journey">🚀 The data journey — predict the next word, like ChatGPT</a></li>
     <li><a href="#whats-different">What's different in real PRAGMA?</a></li>
   </ol>
@@ -702,7 +702,7 @@ AFTER training on masked examples:
   -> it rediscovered the 3 hidden rules from blanks alone.</pre>
 </div>
 
-<h2 class="step" id="step-9"><span class="step-num">Step 9</span> Test the trained model on each rule</h2>
+<h2 class="step" id="step-9"><span class="step-num">Step 8</span> Test the trained model on each rule</h2>
 
 <div class="widget runpy mini-window">
   <div class="mini-tag">🧱 mini.py · rung 9 of 15 — the transformer you built, working</div>
@@ -758,7 +758,7 @@ Nobody told it dog goes with bark. It found that from blanks alone.</pre>
   <p style="margin:8px 0 0;font-size:13.5px;"><strong>Two cells, two honest jobs:</strong> the live-trainer back in <a href="#step-7">Step 7</a> was the <em>stripped-down</em> version — no attention, just a score table — so it could <em>train</em> in your browser in a blink. The <strong>🧱 mini.py cell above</strong> is the <em>real</em> thing — full Q/K/V attention (L3a) — running the weights it actually learned. Training that full model end-to-end with gradients is what the <a href="https://github.com/fernfant/mini-pragma/blob/main/course/notebooks/lesson_04_tiny_bert.ipynb" target="_blank" rel="noopener">notebook</a> does. Same game, same loop — the real one also lets the words look at each other.</p>
 </div>
 
-<h2 class="step" id="step-10"><span class="step-num">Step 10</span> What did the embeddings learn?</h2>
+<h2 class="step" id="step-10"><span class="step-num">Step 9</span> What did the embeddings learn?</h2>
 
 <p>After training, the 16-dim embedding vectors for <code>dog</code> and <code>bark</code> have moved <em>closer together</em> than at random init — because the model needs them to be predictable from each other. Same for cat/meow and fish/swim. The training game taught the embeddings what's related to what.</p>
 
