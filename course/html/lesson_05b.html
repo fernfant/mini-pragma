@@ -313,6 +313,8 @@
 
 <p>The model has to discover these patterns from the event sequences alone.</p>
 
+<p>And here's why <strong>order</strong> matters — not just which events happened, but the sequence they happened in. The same handful of events can mean opposite things depending on their order. <code>finish → finish → finish → skip</code> reads like someone slowly cooling off and drifting toward the exit. Flip it — <code>skip → finish → finish → finish</code> — and it reads like someone who nearly bailed but got pulled back in. A model that only <em>counts</em> events (three finishes, one skip) sees these two as identical; one that reads them <em>in order</em> spots the trend. That trend is the churn signal.</p>
+
 <h2 class="step" id="arch"><span class="step-num">Arch</span> The architecture <span class="legend-chip">L2</span> <span class="legend-chip">L3</span> <span class="legend-chip">L1.5</span></h2>
 
 <p>You've seen the <em>result</em> — now for the plumbing. The model splits into two pieces: a reusable <strong>encoder</strong> (the part we pre-train on free events) and a tiny <strong>head</strong> (the part we swap in for the labelled churn task).</p>

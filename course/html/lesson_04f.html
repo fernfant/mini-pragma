@@ -206,7 +206,7 @@ ids = [BOS] + [tok2id[w] <span class="pg-keyword">for</span> w <span class="pg-k
 
 <p>Here's a subtlety. Attention (L3) treats its inputs like a <em>bag</em> — it has no built-in sense of <strong>order</strong>. To attention, "dog bites man" and "man bites dog" look the same! For fill-in-the-blank that's often survivable; for <em>writing</em>, word order is everything.</p>
 
-<p>The fix is delightfully simple: we keep a second little embedding table indexed by <strong>position</strong> (slot 0, slot 1, slot 2…), and <strong>add</strong> it to the word embedding. Now each vector carries "<em>what</em> word I am" <em>and</em> "<em>where</em> I sit."</p>
+<p>The fix is delightfully simple: we keep a second little embedding table indexed by <strong>position</strong> (slot 0, slot 1, slot 2…), and <strong>add</strong> it to the word embedding. Now each vector carries "<em>what</em> word I am" <em>and</em> "<em>where</em> I sit." You might worry that adding two vectors muddles them together — but each word has lots of numbers to work with, and during training the model learns to keep the "which word" part and the "which position" part separable.</p>
 
 <pre style="background:#fff;color:#1a1a1a;border:1px solid #e5e5e5;padding:12px 16px;border-radius:6px;font-size:13.5px;line-height:1.7;"><code style="color:#1a1a1a;">word vector ("cat")          [ 0.85, -0.73, -1.49, ... ]
 + position vector (slot 2)   [ 0.10,  0.44, -0.07, ... ]

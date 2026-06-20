@@ -144,7 +144,7 @@
 
 <h2 class="step" id="loop"><span class="step-num">Step 5</span> The 5 lines that ARE machine learning</h2>
 
-<p>Behind that "Auto-train" button is exactly this loop (in PyTorch). It is identical for <em>any</em> model — a linear regression, an embedding, a Transformer, anything with trainable weights.</p>
+<p>Behind that "Auto-train" button is exactly this loop (in PyTorch). It is identical for <em>any</em> model — a linear regression, an embedding, a Transformer, anything with trainable weights. Don't worry about <code>opt</code> yet — it's just the helper that actually does the nudging; we unpack these three lines right below.</p>
 
 <pre><code>for step in range(1000):
     y_pred = w * x + b                       # 1. guess

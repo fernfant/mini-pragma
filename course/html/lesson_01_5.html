@@ -220,7 +220,7 @@ The line is stuck at ~2.8 - it cannot bend into a U.</pre>
   reveal:"Yes! Adding x² as a feature lets a 'linear' model produce a curve — it recovers y ≈ x² − 4x + 3 almost perfectly. It's still linear regression; we just fed it a smarter input. (The catch: how would you KNOW to add x²?)"
 });});</script>
 
-<p>Key insight that confuses everyone: <strong>"linear regression" doesn't mean "fits a line in x"</strong>. It means "linear in the parameters". We can give it any transformation of x as a feature.</p>
+<p>Key insight that confuses everyone: <strong>"linear regression" doesn't mean "fits a line in x"</strong>. It means "linear in the parameters". In plain words: the model still just multiplies each input by a weight and adds them up — all we change is WHAT we feed in (now <code>x</code> AND <code>x²</code>), not how it combines them. We can give it any transformation of x as a feature.</p>
 
 <p>Add <code>x²</code> as a feature and the model becomes:</p>
 

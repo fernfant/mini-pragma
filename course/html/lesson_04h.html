@@ -200,6 +200,8 @@ class GPTConfig:
         x = x + self.mlp(self.ln_2(x))    <span class="c"># 2. think alone (GELU feed-forward)</span>
         return x</pre>
 
+<p>That <code>x = x + …</code> is a <strong>residual connection</strong>: keep the original vector and ADD the block's change on top, so even a very deep stack never loses the original signal.</p>
+
 <p>And the head shares its weights with the token-embedding table — <strong>weight tying</strong>, one of the recipe's cheap wins. (The embedding table turns token ids <em>into</em> vectors; the head turns vectors <em>back into</em> scores per token. Tying them means the <em>same</em> grid of numbers does both jobs — fewer parameters to learn, and the two stay consistent.)</p>
 <pre class="gw-code">self.lm_head = nn.Linear(n_embd, vocab_size, bias=False)
 self.tf.wte.weight = self.lm_head.weight   <span class="c"># same numbers do double duty</span></pre>
@@ -263,7 +265,7 @@ We know't, we know't.
 </div>
 
 <p>Underneath, it's the <strong>same five-line loop from <a href="lesson_01.html">Lesson 1</a></strong> — predict, measure the loss, blame each weight, nudge them, repeat. We just add three real-world training tricks on top. None of them changes <em>what</em> the loop does; they just make the downhill walk smoother so a big model trains without blowing up:</p>
-<p>The three tricks are <strong>AdamW</strong>, a <strong>cosine learning-rate schedule with warmup</strong>, and <strong>gradient clipping</strong>. You can ignore the details on a first read — none of them changes <em>what</em> the loop does. Curious what each one is?</p>
+<p>The three tricks are <strong>AdamW</strong>, a <strong>cosine learning-rate schedule with warmup</strong>, and <strong>gradient clipping</strong>. You can ignore the details on a first read. Curious what each one is?</p>
 <details class="callout">
 <summary>The three training tricks, one line each (optional)</summary>
 <ul style="margin:8px 0 0;">

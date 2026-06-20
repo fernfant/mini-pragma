@@ -399,7 +399,7 @@ AFTER MASKING (random 30%):
 
 <p>Then train <em>only</em> this head on labelled houses, using the same 5-line loop. The encoder is frozen — <code>opt</code> only knows about the head's parameters.</p>
 
-<p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1.</p>
+<p>That's the full <strong>embedding probe</strong> recipe from PRAGMA §3.1.1. (A <strong>probe</strong> is just a tiny add-on layer — all it can do is draw one straight line to split the answers into groups.)</p>
 
 <div id="pred-l5a"></div>
 <script>document.addEventListener("DOMContentLoaded",function(){predict("pred-l5a",{

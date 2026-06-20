@@ -118,7 +118,8 @@
   build(); render();
 })();</script>
 
-<div class="callout">
+<details class="callout" style="margin:14px 0;">
+  <summary style="cursor:pointer;font-weight:600;">Optional: why not pack several values into one number?</summary>
   <strong>The non-obvious bit: when is something ONE input, and when is it MANY?</strong>
   <p style="margin:.6em 0 0;">A single number like <code>x</code> is <strong>one input</strong> when its <em>size</em> is the meaning — a thermometer reading of <code>23</code> really is "a touch more than <code>22</code>". One genuine quantity → one slot → <code>x → … → Y</code>.</p>
   <p style="margin:.6em 0 0;">But <strong>8 black-and-white pixels are 8 separate facts</strong> about 8 separate places. "So why not pack them into one number 0–255?" You <em>could</em> — <code>p₁·128 + p₂·64 + … + p₈·1</code> — but it wrecks the meaning three ways:</p>
@@ -128,7 +129,7 @@
     <li>the net then gets <strong>one weight</strong> for the whole byte, so it can never learn "pixel 3 matters, pixel 7 doesn't." It's stuck.</li>
   </ul>
   <p style="margin:.6em 0 0;">That packed number is an <strong>ID, not a measurement</strong> — like turning 8 light switches into a single "score" and handing someone only the score: they can't tell which switches are on, and a bigger score doesn't mean a brighter room. So the rule, brought to earth: <strong>one quantity whose magnitude means something → one input; a bag of separate things → one input each.</strong> A photo is 784 separate brightness readings → 784 inputs, never one giant number.</p>
-</div>
+</details>
 
 <div class="callout good">The rule: <b>features are the inputs, not bits.</b> The input list has one slot per number / per pixel / per embedding-value — and <b>every</b> slot wires into <b>every</b> neuron of the first layer. That's why you never need "one neuron per bit." Up next in <a href="lesson_02.html">Lesson 2</a>: how words get <em>their</em> lists of numbers.</div>
 
@@ -219,6 +220,8 @@
 <h2 class="step" id="matmul"><span class="step-num">Multiply</span> The multiply: rows and columns must line up</h2>
 
 <p>Running the <em>whole layer</em> at once is <strong>one matrix multiply</strong>: the weight matrix <code>W₁</code> times the input column <code>x</code>. There's exactly one rule — the matrix's <strong>columns</strong> must equal the vector's <strong>rows</strong>. The two <em>inner</em> numbers have to match; then they cancel and tell you the output size:</p>
+
+<p>In plain words: the matrix's columns must equal the input's length. Line those two up and they disappear, leaving just the output size.</p>
 
 <div class="dimline">W₁ [2×<b style="color:#b45309">2</b>] &nbsp;·&nbsp; x [<b style="color:#b45309">2</b>×1] &nbsp;=&nbsp; z [2×1] &nbsp;&nbsp;<span style="color:#64748b">— the inner <b style="color:#b45309">2</b>s match (legal!), and cancel → result is 2×1.</span></div>
 
