@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Concept index — Mini PRAGMA</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .ci-controls { display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:18px 0 6px; }
+  .ci-controls input[type=search] { flex:1; min-width:200px; padding:9px 12px; border:1px solid var(--border); border-radius:8px; font-size:15px; }
+  .ci-fil { padding:6px 12px; border-radius:999px; border:1px solid var(--border); background:var(--bg-card); cursor:pointer; font-size:13px; font-weight:600; color:var(--text-dim); }
+  .ci-fil.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  .ci-legend { font-size:12.5px; color:var(--text-dim); margin:4px 0 18px; display:flex; flex-wrap:wrap; gap:14px; }
+  .ci-part { margin:30px 0 6px; font-size:20px; }
+  .ci-lesson { display:flex; align-items:baseline; gap:10px; margin:18px 0 6px; padding-top:10px; border-top:1px dashed var(--border); }
+  .ci-lesson h3 { margin:0; font-size:16px; }
+  .ci-lesson a.ci-open { font-size:12.5px; font-weight:600; }
+  .ci-row { display:flex; gap:12px; align-items:flex-start; padding:8px 10px; border-radius:8px; }
+  .ci-row:hover { background:var(--code-bg); }
+  .ci-chip { flex:0 0 auto; width:22px; height:22px; border-radius:6px; font-size:12px; font-weight:800; color:#fff; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+  .r5 { background:#10b981; } .r4 { background:#3b82f6; } .r3 { background:#f59e0b; } .r2 { background:#ef4444; }
+  .ci-body { flex:1; }
+  .ci-name { font-weight:700; display:block; }
+  .ci-name a { text-decoration:none; }
+  .ci-name a:hover { text-decoration:underline; }
+  .ci-plain { display:block; color:var(--text-dim); font-size:13.5px; margin-top:2px; }
+  .ci-empty { color:var(--text-faint); font-style:italic; padding:8px 10px; }
+  .ci-count { font-size:12.5px; color:var(--text-faint); font-weight:600; }
+</style>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="index.html" class="brand">📚 Mini PRAGMA</a>
+  <div class="lesson-pills">
+    <a href="index.html">🗺 Roadmap</a>
+    <a href="lesson_01.html">Start · L1</a>
+    <a href="glossary.html">📖 Glossary</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<h1>📑 Concept index</h1>
+<p class="subtitle">Every idea in the course, in order — click any concept to jump straight to where it's taught. The coloured chip is a quick read of <strong>how clearly that idea is introduced</strong> for a beginner (not how hard it is).</p>
+
+<div class="ci-controls">
+  <input type="search" id="ci-search" placeholder="🔎 Search a concept (e.g. softmax, attention, loss)…" aria-label="Search concepts">
+  <button class="ci-fil on" data-fil="all">All</button>
+  <button class="ci-fil" data-fil="5">⭐ Clearest</button>
+  <button class="ci-fil" data-fil="rough">⚠ Worth polishing</button>
+</div>
+<div class="ci-legend">
+  <span><span class="ci-chip r5" style="display:inline-flex;width:18px;height:18px;">5</span> exemplary</span>
+  <span><span class="ci-chip r4" style="display:inline-flex;width:18px;height:18px;">4</span> solid</span>
+  <span><span class="ci-chip r3" style="display:inline-flex;width:18px;height:18px;">3</span> some friction</span>
+  <span><span class="ci-chip r2" style="display:inline-flex;width:18px;height:18px;">2</span> rough</span>
+  <span class="ci-count" id="ci-count"></span>
+</div>
+
+<div id="ci-list"></div>
+
+<div class="recap" style="margin-top:36px;">
+  <div class="r-title">How these ratings were made</div>
+  <p style="margin:6px 0 0;font-size:13.5px;">Each concept was cold-read by a Karpathy-style reviewer pretending to be a 13-year-old with zero ML knowledge, reading top-to-bottom for the first time. The score rates the <em>introduction</em>: is there a concrete example before any jargon? Is the word defined before it's used? One idea at a time? A picture for anything spatial? Most of the course rates 4–5; the few 3s flag spots that could be made even gentler.</p>
+</div>
+
+</div>
+
+<script id="ci-data" type="application/json">
+[
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"Model = numbers + a rule","plain":"Some numbers and a rule that turns an input into a guess.","anchor":"model","r":5},
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"Weight & bias (w, b)","plain":"The weight tilts the line; the bias slides it up or down.","anchor":"model","r":5},
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"Loss","plain":"One number for how far the guesses are from the truth.","anchor":"loss","r":5},
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"Gradient","plain":"Which way to nudge each number to make the loss smaller.","anchor":"magic","r":5},
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"Gradient descent & learning rate","plain":"Keep stepping downhill; the learning rate is the step size.","anchor":"data","r":4},
+{"part":"Part 1 · How learning works","les":"L1","title":"How a model learns","file":"lesson_01.html","name":"The 5-line training loop","plain":"Guess, measure how wrong, find downhill, nudge, repeat.","anchor":"loop","r":4},
+
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"A line can't fit a curve","plain":"A straight line goes one way forever, so it can't follow a U.","anchor":"step-2","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"Features (adding x²)","plain":"Feed the model x² as an extra input and it can suddenly bend.","anchor":"step-3","r":4},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"Neuron","plain":"Multiply inputs by weights, add them up, then do one little bend.","anchor":"step-4","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"ReLU (the bend)","plain":"If a number is negative make it 0, else leave it — that's the kink.","anchor":"step-4","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"MLP / hidden layer","plain":"Stack a row of bend-neurons between two layers to fit any wiggle.","anchor":"step-4","r":4},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"How bends add up to a curve","plain":"Each neuron is one hockey-stick; add several to trace a curve.","anchor":"bends","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5","title":"From a line to a neural net","file":"lesson_01_5.html","name":"Counting parameters","plain":"Count the wires and biases: three per hidden unit, plus one.","anchor":"step-4","r":5},
+
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"Input as a vector","plain":"A net eats a list of numbers — one slot per real feature.","anchor":"inputs","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"One input vs many","plain":"One real quantity = one slot; separate facts = one slot each.","anchor":"inputs","r":4},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"Neuron = a row = a dot product","plain":"A neuron's weights are a row; multiply-and-add it against the input.","anchor":"neuron-row","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"Weight matrix & shapes (H×d)","plain":"Stack one row per neuron: rows are neurons, columns are inputs.","anchor":"layer-matrix","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"Choosing H (hidden units)","plain":"How many hidden neurons is a dial you turn, not the data's call.","anchor":"where-h","r":5},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"Matrix multiply (shapes line up)","plain":"The matrix's columns must match the vector's length.","anchor":"matmul","r":4},
+{"part":"Part 1 · How learning works","les":"L1.5b","title":"What goes into a neural net","file":"lesson_01_5b.html","name":"A neuron as a detector","plain":"Each hidden neuron fires when it spots its pattern; the output tallies the votes.","anchor":"detect","r":5},
+
+{"part":"Part 1 · How learning works","les":"L1.6","title":"Stacking into depth","file":"lesson_01_6.html","name":"Stacking depth","plain":"Each layer reshapes the numbers for the next; deeper finds richer patterns.","anchor":"step-76","r":5},
+{"part":"Part 1 · How learning works","les":"L1.6","title":"Stacking into depth","file":"lesson_01_6.html","name":"Your MLP = the feed-forward block","plain":"The Linear→ReLU→Linear you built is a Transformer's FFN, just bigger.","anchor":"step-75","r":5},
+{"part":"Part 1 · How learning works","les":"L1.6","title":"Stacking into depth","file":"lesson_01_6.html","name":"Softmax (first peek)","plain":"Turns raw scores into fractions that add up to 1.","anchor":"step-77","r":4},
+{"part":"Part 1 · How learning works","les":"L1.6","title":"Stacking into depth","file":"lesson_01_6.html","name":"What IS BERT (the reveal)","plain":"Embed once, repeat attention + feed-forward 18×, read off the answer.","anchor":"step-8","r":5},
+
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Similarity / dot product","plain":"Multiply matching slots and add — a big total means two lists are alike.","anchor":"dot","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Words are vectors","plain":"Every word gets its own little list of numbers.","anchor":"widget","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Tokenise (word → id)","plain":"Give every word a number, like a locker number.","anchor":"step-1","r":4},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Why an id isn't enough","plain":"A locker number tells you nothing; you need a card of scores.","anchor":"why-embed","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Embedding (id → vector)","plain":"The id is a row number; grab that row of the table — that's the word's vector.","anchor":"step-2","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"One-hot","plain":"A row of 0s with a single 1; it just picks one row of the table.","anchor":"onehot","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Embeddings are learned","plain":"Nobody names the slots — training invents the categories so similar words match.","anchor":"emerge","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"A sentence = a matrix","plain":"One word is a row of numbers; a sentence is several rows stacked into a grid.","anchor":"sentence","r":4},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Training embeddings (skip-gram)","plain":"Put the vectors in a guessing game and nudge partners to point the same way.","anchor":"train","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Masked language modelling","plain":"Hide a word in a real sentence, guess it from the rest — the text labels itself.","anchor":"bert-style","r":5},
+{"part":"Part 2 · Words & attention","les":"L2","title":"Tokens & embeddings","file":"lesson_02.html","name":"Steps / epochs / batches","plain":"A step = one nudge; an epoch = one full pass; a batch = several at once.","anchor":"what-is-a-step","r":4},
+
+{"part":"Part 2 · Words & attention","les":"L2a","title":"Scaling up embeddings","file":"lesson_02a.html","name":"Scale fixes things","plain":"Same recipe, more data and bigger vectors — and it gets noticeably better.","anchor":"try2","r":5},
+{"part":"Part 2 · Words & attention","les":"L2a","title":"Scaling up embeddings","file":"lesson_02a.html","name":"Batch (a smoothed nudge)","plain":"Average a few examples' nudges and step once — steadier than one at a time.","anchor":"try3","r":5},
+{"part":"Part 2 · Words & attention","les":"L2a","title":"Scaling up embeddings","file":"lesson_02a.html","name":"The averaging ceiling","plain":"Averaging counts 'the' as much as 'says', so it can't tell which neighbour matters.","anchor":"try3","r":5},
+
+{"part":"Part 2 · Words & attention","les":"L3","title":"Attention","file":"lesson_03.html","name":"Why attention (context changes meaning)","plain":"'bark' means different things by a dog vs a tree — a word must look at its neighbours.","anchor":"intuition","r":5},
+{"part":"Part 2 · Words & attention","les":"L3","title":"Attention","file":"lesson_03.html","name":"Attention = score → softmax → mix","plain":"Score every pair, turn scores into a 100% budget, blend the vectors by it.","anchor":"worked","r":5},
+{"part":"Part 2 · Words & attention","les":"L3","title":"Attention","file":"lesson_03.html","name":"Softmax (worked by hand)","plain":"Grow each score with e^score, then divide by the total so a row adds to 1.","anchor":"step-2","r":5},
+{"part":"Part 2 · Words & attention","les":"L3","title":"Attention","file":"lesson_03.html","name":"Context absorbed ('the' → 'the (cat)')","plain":"After attending, a word's vector has soaked up the words it cared about.","anchor":"transform","r":5},
+
+{"part":"Part 2 · Words & attention","les":"L3a","title":"How attention computes (Q/K/V)","file":"lesson_03a.html","name":"Query / Key / Value","plain":"Each word writes 3 cards: what I want (Q), what I offer (K), what I hand over (V).","anchor":"qkv","r":5},
+{"part":"Part 2 · Words & attention","les":"L3a","title":"How attention computes (Q/K/V)","file":"lesson_03a.html","name":"Scaling by √d","plain":"Long vectors make huge scores; dividing by √d keeps softmax gentle.","anchor":"qkv","r":5},
+{"part":"Part 2 · Words & attention","les":"L3a","title":"How attention computes (Q/K/V)","file":"lesson_03a.html","name":"Multi-head attention","plain":"Run attention several times in parallel, each asking a different question.","anchor":"multi","r":4},
+
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Fill-in-the-blank (MLM)","plain":"Hide a word in a sentence and make the model guess it.","anchor":"big-idea","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Why mask / making labels","plain":"We hide words to MAKE a right-answer out of plain unlabelled text.","anchor":"why-mask","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"The −100 ignore label","plain":"A magic number that tells the loss 'don't grade this spot'.","anchor":"why-mask","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Logits","plain":"Raw scores, one per vocab word — not yet probabilities.","anchor":"step-4","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Softmax","plain":"Turns a list of scores into percentages that add to 100%.","anchor":"step-4","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Cross-entropy (−log)","plain":"How wrong = −log of the probability it gave the right answer.","anchor":"step-4","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Training a real model","plain":"The same 5 lines from L1 — only the model in the middle is new.","anchor":"step-7","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"Before vs after training","plain":"Untrained = random shrug; trained = nails the rule.","anchor":"step-6","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4","title":"Training a tiny BERT","file":"lesson_04.html","name":"What the embeddings learned","plain":"Related words drifted closer together as a side effect of the game.","anchor":"step-10","r":4},
+
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Next-word generation","plain":"Guess the next word, add it, repeat — that's how ChatGPT writes.","anchor":"big-idea","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Position embeddings","plain":"A second vector that says WHERE a word sits; we add it to the word vector.","anchor":"step-4","r":4},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Causal mask","plain":"A rule that blindfolds every word to everything on its right.","anchor":"step-5","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Shift-by-one labels","plain":"Feed the sentence minus its last word; ask for it minus its first.","anchor":"step-7","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"The generate loop","plain":"Run → take the last guess → append it → run again, until the end token.","anchor":"step-8","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Temperature","plain":"A dial for how adventurous each word pick is.","anchor":"step-8","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4f","title":"Next-word generation","file":"lesson_04f.html","name":"Honest loss floor (~0.5)","plain":"Loss can't hit zero because the next word is genuinely uncertain.","anchor":"step-7","r":5},
+
+{"part":"Part 3 · Training a Transformer","les":"L4h","title":"Scaling up to a real GPT","file":"lesson_04h.html","name":"Scaling to GPT (a family)","plain":"GPT-3 is 8 sizes of the SAME code; the small ones are real GPT-3s.","anchor":"trace","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4h","title":"Scaling up to a real GPT","file":"lesson_04h.html","name":"BPE subword tokenizer","plain":"Chop text into common words + rare chunks, so it can spell anything.","anchor":"trace","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4h","title":"Scaling up to a real GPT","file":"lesson_04h.html","name":"Pre-LayerNorm","plain":"Reset a vector's volume to a sane level before each block.","anchor":"trace","r":4},
+{"part":"Part 3 · Training a Transformer","les":"L4h","title":"Scaling up to a real GPT","file":"lesson_04h.html","name":"GELU","plain":"The same bend ReLU did, just smoother.","anchor":"trace","r":5},
+{"part":"Part 3 · Training a Transformer","les":"L4h","title":"Scaling up to a real GPT","file":"lesson_04h.html","name":"Training tricks (AdamW, warmup, clipping)","plain":"Optional add-ons that smooth the downhill walk on a big model.","anchor":"trace","r":5},
+
+{"part":"Part 4 · Real-world PRAGMA","les":"L5","title":"PRAGMA-mini, line by line","file":"lesson_05.html","name":"Key-value tokenisation","plain":"A record isn't a sentence — split each field into a name token + a value token.","anchor":"vocab","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5","title":"PRAGMA-mini, line by line","file":"lesson_05.html","name":"Same machine, new data","plain":"The exact transformer doesn't change — you feed it bank events instead of words.","anchor":"vocab","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5","title":"PRAGMA-mini, line by line","file":"lesson_05.html","name":"Masking as self-labelling","plain":"Hide a value the model knows, make it guess — the data labels itself.","anchor":"mask","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5","title":"PRAGMA-mini, line by line","file":"lesson_05.html","name":"Architecture = assembled parts","plain":"Embed, position, encoder stack, head — most of the 'brain' sits in the layers.","anchor":"arch","r":4},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5","title":"PRAGMA-mini, line by line","file":"lesson_05.html","name":"Inference = forward pass, no learning","plain":"Asking the model is the same run as training, minus the changing-itself part.","anchor":"infer","r":5},
+
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"A house is a short sentence","plain":"A house's attributes are its words; fill-in-the-blank hides one and guesses it.","anchor":"step-1","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"Correlation (what MLM learns)","plain":"Features go together (beach houses have pools) — that's what the game learns.","anchor":"step-1","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"Two games: pre-train vs downstream","plain":"Pre-training (no labels) and the real task (few labels) are two sessions.","anchor":"step-4","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"Fine-tune: freeze + probe head","plain":"Lock the pre-trained part, bolt a tiny new layer on top, train only that.","anchor":"step-7","r":4},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"Pre-train vs from-scratch baseline","plain":"Run it both ways and see if the head-start actually wins.","anchor":"step-8","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5a","title":"House-price predictor","file":"lesson_05a.html","name":"When pre-training wins vs loses","plain":"The head-start helps most with few labels; with tons, from-scratch catches up.","anchor":"step-9","r":5},
+
+{"part":"Part 4 · Real-world PRAGMA","les":"L5b","title":"Streaming churn predictor","file":"lesson_05b.html","name":"Recall vs accuracy (imbalance)","plain":"'Everyone stays' scores 90% but catches zero leavers — measure recall instead.","anchor":"headline","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5b","title":"Streaming churn predictor","file":"lesson_05b.html","name":"Recall vs precision (the alarm line)","plain":"Drag the alarm line: catch more leavers but spam more happy users.","anchor":"threshold","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L5b","title":"Streaming churn predictor","file":"lesson_05b.html","name":"Applying to streaming events","plain":"A customer is a sequence of events over time; recent behaviour carries the signal.","anchor":"data","r":3},
+
+{"part":"Part 4 · Real-world PRAGMA","les":"L6","title":"Capstone — lead prediction","file":"lesson_06.html","name":"Capstone: lead prediction","plain":"Turn a property site's clicks into a spotter for serious buyers.","anchor":"problem","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L6","title":"Capstone — lead prediction","file":"lesson_06.html","name":"Data leakage","plain":"The 'request a viewing' click IS the answer — feeding it in is cheating.","anchor":"data","r":5},
+{"part":"Part 4 · Real-world PRAGMA","les":"L6","title":"Capstone — lead prediction","file":"lesson_06.html","name":"Mean-pooling","plain":"Average all the per-token vectors into one summary of the whole visit.","anchor":"probe","r":4},
+{"part":"Part 4 · Real-world PRAGMA","les":"L6","title":"Capstone — lead prediction","file":"lesson_06.html","name":"Linear probe","plain":"The head can only draw one straight line splitting buyers from browsers.","anchor":"probe","r":4}
+]
+</script>
+
+<script>
+(function(){
+  var data = [];
+  try { data = JSON.parse(document.getElementById('ci-data').textContent); } catch(e) { return; }
+  var list = document.getElementById('ci-list');
+  var search = document.getElementById('ci-search');
+  var countEl = document.getElementById('ci-count');
+  var fil = 'all', q = '';
+
+  function match(c){
+    if (fil === '5' && c.r !== 5) return false;
+    if (fil === 'rough' && c.r >= 4) return false;
+    if (q && (c.name + ' ' + c.plain).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  }
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+  function render(){
+    var rows = data.filter(match);
+    countEl.textContent = rows.length + ' of ' + data.length + ' concepts';
+    if (!rows.length){ list.innerHTML = '<p class="ci-empty">No concepts match — try a different search.</p>'; return; }
+    var html = '', part = '', les = '';
+    rows.forEach(function(c){
+      if (c.part !== part){ part = c.part; html += '<h2 class="ci-part">' + esc(part) + '</h2>'; les = ''; }
+      if (c.les !== les){ les = c.les;
+        html += '<div class="ci-lesson"><h3>' + esc(c.les) + ' — ' + esc(c.title) + '</h3>' +
+                '<a class="ci-open" href="' + c.file + '">open lesson →</a></div>';
+      }
+      html += '<div class="ci-row">' +
+        '<span class="ci-chip r' + c.r + '" title="introduction clarity ' + c.r + '/5">' + c.r + '</span>' +
+        '<span class="ci-body"><span class="ci-name"><a href="' + c.file + '#' + c.anchor + '">' + esc(c.name) + '</a></span>' +
+        '<span class="ci-plain">' + esc(c.plain) + '</span></span></div>';
+    });
+    list.innerHTML = html;
+  }
+
+  search.addEventListener('input', function(){ q = search.value.trim().toLowerCase(); render(); });
+  document.querySelectorAll('.ci-fil').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelectorAll('.ci-fil').forEach(function(x){ x.classList.remove('on'); });
+      b.classList.add('on'); fil = b.getAttribute('data-fil'); render();
+    });
+  });
+  render();
+})();
+</script>
+
+<footer class="site">
+  <p>Built by <a href="https://github.com/fernfant">@fernfant</a> ·
+  <a href="https://github.com/fernfant/mini-pragma">source on GitHub</a> ·
+  MIT licensed</p>
+</footer>
+
+<script src="course.js"></script>
+</body>
+</html>
